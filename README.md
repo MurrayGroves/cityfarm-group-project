@@ -4,14 +4,15 @@
 The aim is to create a virtual system which can be accessed remotely by different farmers and can provide an accessible interface to log animal data such as movements, age, heritage, enclosure etc so that farmers can coordinate dates and their animals more easily to avoid clashes.
 
 ## Stakeholders
+The stakeholders of this project are the livestock manager and livestock assistants at the following farms:
 * Windmill Hill City Farm
-* Hartcliffe Farm
-* St Werburghs
+* Hartcliffe City Farm
+* St Werburghs City Farm
 
 ## User Stories
-(On its way)
+As the livestock manager of three city farms, I would like a system that automates the input of specific dates and relevant animal data into a calendar, so that I can spend time managing other areas of my work.
 
 ## Management Tools
-* [Kanban Board]"https://github.com/orgs/spe-uob/projects/113"
+* [Kanban Board] "https://github.com/orgs/spe-uob/projects/113"
 * Gantt chart on its way
 
