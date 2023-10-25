@@ -7,15 +7,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @SpringBootApplication
-public class CityfarmApplication {
+public class CityFarmApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(CityfarmApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(CityFarmApplication.class, args);
+    }
 
-	@GetMapping("/")
-	public String mainPage() {
-		return "2023-CityFarm\n";
-	}
+    @GetMapping("/")
+    public String mainPage() {
+        return "2023-CityFarm\n";
+    }
 
 }
