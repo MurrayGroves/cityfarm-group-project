@@ -38,5 +38,8 @@ public abstract class AnimalGeneric {
         this.father = father;
         this.alive = alive;
     }
+
+    public AnimalGeneric() {
+    }
 }
 
