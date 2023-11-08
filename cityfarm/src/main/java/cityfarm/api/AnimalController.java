@@ -1,5 +1,7 @@
 package cityfarm.api;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,44 +14,41 @@ import java.util.UUID;
 
 @RestController
 public class AnimalController {
+    @Autowired
+    AnimalRepository animalRepository;
+
+    @Autowired
+    MongoTemplate mongoTemplate;
+
     /**
      * @return a list of all animals in the DB
      */
     @GetMapping("/animals")
     public List<AnimalGeneric> get_animals() {
-        // TODO - Actually get from DB
-        Cow animal_1 = new Cow(UUID.randomUUID().toString(), "Alice", null, null, null, true, false);
-        Cow animal_2 = new Cow(UUID.randomUUID().toString(), "Bob", null, null, null, true, true);
-
-        List<AnimalGeneric> animals = new ArrayList<>();
-        animals.add(animal_1);
-        animals.add(animal_2);
-        return animals;
+        return animalRepository.findAll();
     }
 
     /**
      * @param id ID of the animal you want to retrieve
      * @return object of the specified animal
      */
-    @GetMapping("/animals/{id}")
-    public ResponseEntity<AnimalGeneric> get_animal_by_id(@PathVariable int id) {
-        // TODO - Actually get from DB, instead of generating
-        if (id == 1) {
-            // Return the Animal in a 200 OK response
-            return ResponseEntity.ok().body(
-                    new Cow(UUID.randomUUID().toString(), "Alice", null, null, null, true, false)
-            );
-        }
+    @GetMapping("/animals/by_id/{id}")
+    public ResponseEntity<AnimalGeneric> get_animal_by_id(@PathVariable String id) {
+        AnimalGeneric animal = animalRepository.findAnimalById(id);
 
-        if (id == 2) {
-            // Return the Animal in a 200 OK response
-            return ResponseEntity.ok().body(
-                    new Cow(UUID.randomUUID().toString(), "Bob", null, null, null, true, true)
-            );
-        }
+        return ResponseEntity.ok().body(animal);
+    }
 
-        throw new ResponseStatusException(
-                HttpStatus.NOT_FOUND, "Animal Not Found");
+    /**
+     * Get list of animals with a specific name
+     * @param name name of the animals to search for (case-sensitive and must be exact)
+     * @return list of all animals with that name
+     */
+    @GetMapping("/animals/by_name/{name}")
+    public ResponseEntity<List<AnimalGeneric>> get_animals_by_name(@PathVariable String name) {
+        List<AnimalGeneric> animals = animalRepository.findAnimalByName(name);
+
+        return ResponseEntity.ok().body(animals);
     }
 
 
@@ -61,10 +60,11 @@ public class AnimalController {
     @PostMapping("/animals/create")
     public ResponseEntity<Cow> create_animal(@RequestBody CowGeneric cowReq) {
 
-        Cow cow = new Cow(cowReq, UUID.randomUUID().toString(), System.currentTimeMillis() / 1000L);
-        // TODO - Create animal in DB
+        Cow cow = new Cow(cowReq, null, null);
 
-        String location = String.format("/animals/%s", cow.get_id());
+        animalRepository.save(cow);
+
+        String location = String.format("/animals/by_id/%s", cow.get_id());
         return ResponseEntity.created(URI.create(location)).body(cow);
     }
 }

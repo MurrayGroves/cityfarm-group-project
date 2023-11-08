@@ -1,6 +1,11 @@
 package cityfarm.api;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.PersistenceCreator;
+import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
@@ -11,14 +16,19 @@ import java.util.UUID;
  * Represents a specific & unique cow
  */
 @JsonTypeName("cow")
+@Document("animals")
 public class Cow extends CowGeneric implements AnimalUnique {
+    @Id
     private final String id;
     /**
      * UNIX timestamp the animal was added to the app at
      */
     private final long created_at;
 
-    public Cow(@Nullable String id, @Nullable String name, @Nullable String mother, @Nullable String father, @Nullable Long created_at, @NonNull Boolean alive, @NonNull Boolean tb_inoculated) {
+
+    @JsonCreator
+    @PersistenceCreator
+    public Cow(@JsonProperty("_id") @Nullable String id, @JsonProperty("name") @Nullable String name, @JsonProperty("mother") @Nullable String mother, @JsonProperty("father") @Nullable String father, @JsonProperty("created_at") @Nullable Long created_at, @JsonProperty("alive") @NonNull Boolean alive, @JsonProperty("tb_inoculated") @NonNull Boolean tb_inoculated) {
         // Construct cowGeneric
         super(name, mother, father, alive, tb_inoculated);
 
