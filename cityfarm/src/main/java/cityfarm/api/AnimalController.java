@@ -60,7 +60,7 @@ public class AnimalController {
     @PostMapping("/animals/create")
     public ResponseEntity<Cow> create_animal(@RequestBody CowGeneric cowReq) {
 
-        Cow cow = new Cow(cowReq, UUID.randomUUID().toString(), System.currentTimeMillis() / 1000L);
+        Cow cow = new Cow(cowReq, null, null);
 
         animalRepository.save(cow);
 
