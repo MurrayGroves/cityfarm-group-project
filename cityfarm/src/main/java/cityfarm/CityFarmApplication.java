@@ -15,8 +15,8 @@ public class CityFarmApplication {
     }
 
     @GetMapping("/")
-    public String mainPage() {
-        return "2023-CityFarm\n";
+    public String index() {
+        return "index";
     }
 
 }

@@ -29,7 +29,7 @@ As the livestock manager of three city farms, I would like a system that automat
 
 ### Requirements
 
-- JDK 20
+- JDK 21
 
 - [Docker Compose](https://docs.docker.com/compose/install/)
 
