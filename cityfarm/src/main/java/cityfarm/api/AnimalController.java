@@ -77,4 +77,14 @@ public class AnimalController {
         String location = String.format("/animals/by_id/%s", sheep.get_id());
         return ResponseEntity.created(URI.create(location)).body(sheep);
     }
+
+    public ResponseEntity<Chicken> create_animal(@RequestBody ChickenGeneric chickenReq) {
+
+        Chicken chicken = new Chicken(chickenReq, UUID.randomUUID().toString(), System.currentTimeMillis() / 1000L);
+
+        animalRepository.save(chicken);
+
+        String location = String.format("/animals/by_id/%s", chicken.get_id());
+        return ResponseEntity.created(URI.create(location)).body(chicken);
+    }
 }
