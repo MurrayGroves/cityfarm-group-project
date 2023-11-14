@@ -30,6 +30,17 @@ I am the animal breeder for a city farm outside of the 3 city farm trust and I w
 
 Since there is a powercut at the farm as the livestock mnagaer I want to do an inventory of all our animals to check they're all okay with the powercut so I have got the webapp up on my phone and am using it to check all the pen levels; so the webapp must always be up to date in terms of its database and must be phone compatible because desktops can't be used in this situation.
 
+# Project Structure 
+## Spring boot
+Spring boot is our frontend hosting framework, it allows us to host our webpages and link them to our java backend, it is what's used to get all the internal http requests and then send them on to the server as well as providing the structure for how the actual pages are laid out.
+### ThymeLeaf
+A special mention to thymeleaf, which is a spring boot library. It provides an incredibly useful templating features for formatting the actual front-end pages as well as providing actual means to return and index the pages to the java back-end.
+## React 
+React is a web fron-tend javascript library, it is used to make easy to design and clean looking buttons that also provide markup for holding and hosting text that is easily read by the user.
+## MongoDB
+Mongo DB is our database back-end language, it allows for easy intergration within java which makes the elements incredibly easy to access and manipulate in an object oriented fashion. The flexibility of Mongo allows us to quikly and easily add and edit anials to the database without having to adjust the entire schema of the setup.
+## Java
+All our calculations and backend legic is done within java since it is increadibly easy to then interface with both our database and web frontend due to its object oriented nature allowing us to store tables and records as classes along with doing the same for individual pages for the react files.
 
 
 # Management Tools
