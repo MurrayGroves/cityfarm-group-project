@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
+import java.time.ZonedDateTime;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -28,9 +29,9 @@ public class Sheep extends SheepGeneric implements AnimalUnique{
 
     @JsonCreator
     @PersistenceCreator
-    public Sheep(@JsonProperty("_id") @Nullable String id, @JsonProperty("name") @Nullable String name, @JsonProperty("mother") @Nullable String mother, @JsonProperty("father") @Nullable String father, @JsonProperty("created_at") @Nullable Long created_at, @JsonProperty("alive") @NonNull Boolean alive, @JsonProperty("tb_inoculated") @NonNull Boolean tb_inoculated) {
+    public Sheep(@JsonProperty("_id") @Nullable String id, @JsonProperty("name") @Nullable String name, @JsonProperty("mother") @Nullable String mother, @JsonProperty("father") @Nullable String father, @JsonProperty("breed") @NonNull String breed, @JsonProperty("created_at") @Nullable Long created_at, @JsonProperty("alive") @NonNull Boolean alive, @JsonProperty("male") @NonNull Boolean male, @JsonProperty("dateOfBirth") @NonNull ZonedDateTime dateOfBirth) {
         // Construct sheepGeneric
-        super(name, mother, father, alive, tb_inoculated);
+        super(name, mother, father, breed, alive, male, dateOfBirth);
 
         // Generate `ID` and `created_at` if not present
         this.id = Objects.requireNonNullElseGet(id, () -> UUID.randomUUID().toString());
@@ -45,7 +46,7 @@ public class Sheep extends SheepGeneric implements AnimalUnique{
      */
     public Sheep(@NonNull SheepGeneric sheep, @Nullable String id, @Nullable Long created_at) {
         // Construct sheepGeneric with existing cow's properties
-        super(sheep.name, sheep.mother, sheep.father, sheep.alive, sheep.tb_inoculated);
+        super(sheep.name, sheep.mother, sheep.father, sheep.breed, sheep.alive, sheep.male, sheep.dateOfBirth);
 
         // Generate `ID` and `created_at` if not present
         this.id = Objects.requireNonNullElseGet(id, () -> UUID.randomUUID().toString());

@@ -7,6 +7,7 @@ import org.springframework.data.annotation.PersistenceCreator;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
+import java.time.ZonedDateTime;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -20,9 +21,9 @@ public class Chicken extends ChickenGeneric {
 
     @JsonCreator
     @PersistenceCreator
-    public Chicken(@JsonProperty("_id") @Nullable String id, @JsonProperty("name") @Nullable String name, @JsonProperty("mother") @Nullable String mother, @JsonProperty("father") @Nullable String father, @JsonProperty("created_at") @Nullable Long created_at, @JsonProperty("alive") @NonNull Boolean alive, @JsonProperty("tb_inoculated") @NonNull Boolean tb_inoculated) {
+    public Chicken(@JsonProperty("_id") @Nullable String id, @JsonProperty("name") @Nullable String name, @JsonProperty("mother") @Nullable String mother, @JsonProperty("father") @Nullable String father, @JsonProperty("breed") @Nullable String breed, @JsonProperty("created_at") @Nullable Long created_at, @JsonProperty("alive") @NonNull Boolean alive, @JsonProperty("male") @NonNull Boolean male, @JsonProperty("dateOfBirth") @NonNull ZonedDateTime dateOfBirth) {
         // Construct chickenGeneric
-        super(name, mother, father, alive, tb_inoculated);
+        super(name, mother, father, breed, alive, male, dateOfBirth);
 
         // Generate `ID` and `created_at` if not present
         this.id = Objects.requireNonNullElseGet(id, () -> UUID.randomUUID().toString());
@@ -37,7 +38,7 @@ public class Chicken extends ChickenGeneric {
      */
     public Chicken(@NonNull ChickenGeneric chicken, @Nullable String id, @Nullable Long created_at) {
         // Construct sheepGeneric with existing cow's properties
-        super(chicken.name, chicken.mother, chicken.father, chicken.alive, chicken.tb_inoculated);
+        super(chicken.name, chicken.mother, chicken.father, chicken.breed, chicken.alive, chicken.male, chicken.dateOfBirth);
 
         // Generate `ID` and `created_at` if not present
         this.id = Objects.requireNonNullElseGet(id, () -> UUID.randomUUID().toString());
