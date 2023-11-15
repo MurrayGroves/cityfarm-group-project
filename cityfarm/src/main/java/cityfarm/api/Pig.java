@@ -14,11 +14,11 @@ import java.util.Objects;
 import java.util.UUID;
 
 /**
- * Represents a specific & unique sheep
+ * Represents a specific & unique pig
  */
-@JsonTypeName("sheep")
+@JsonTypeName("pig")
 @Document("animals")
-public class Sheep extends SheepGeneric implements AnimalUnique{
+public class Pig extends PigGeneric implements AnimalUnique{
     @Id
     private final String id;
     /**
@@ -29,9 +29,9 @@ public class Sheep extends SheepGeneric implements AnimalUnique{
 
     @JsonCreator
     @PersistenceCreator
-    public Sheep(@JsonProperty("_id") @Nullable String id, @JsonProperty("name") @Nullable String name, @JsonProperty("mother") @Nullable String mother, @JsonProperty("father") @Nullable String father, @JsonProperty("breed") @NonNull String breed, @JsonProperty("created_at") @Nullable Long created_at, @JsonProperty("alive") @NonNull Boolean alive, @JsonProperty("male") @NonNull Boolean male, @JsonProperty("dateOfBirth") @NonNull ZonedDateTime dateOfBirth) {
-        // Construct sheepGeneric
-        super(name, mother, father, breed, alive, male, dateOfBirth);
+    public Pig(@JsonProperty("_id") @Nullable String id, @JsonProperty("name") @Nullable String name, @JsonProperty("mother") @Nullable String mother, @JsonProperty("father") @Nullable String father, @JsonProperty("breed") @NonNull String breed, @JsonProperty("created_at") @Nullable Long created_at, @JsonProperty("alive") @NonNull Boolean alive, @JsonProperty("male") @NonNull Boolean male, @JsonProperty("dateOfBirth") @NonNull ZonedDateTime dateOfBirth, @JsonProperty("origin") @NonNull String origin) {
+        // Construct pigGeneric
+        super(name, mother, father, breed, alive, male, dateOfBirth, origin);
 
         // Generate `ID` and `created_at` if not present
         this.id = Objects.requireNonNullElseGet(id, () -> UUID.randomUUID().toString());
@@ -39,14 +39,14 @@ public class Sheep extends SheepGeneric implements AnimalUnique{
     }
 
     /**
-     * Copy a generic sheep template to a specific sheep
-     * @param sheep generic sheep to copy attributes from
-     * @param id the unique ID of the new sheep, leave null to generate (recommended unless
-     * @param created_at the current timestamp/creation date of this sheep, leave null to generate (recommended)
+     * Copy a generic pig template to a specific pig
+     * @param pig generic pig to copy attributes from
+     * @param id the unique ID of the new pig, leave null to generate (recommended unless
+     * @param created_at the current timestamp/creation date of this pig, leave null to generate (recommended)
      */
-    public Sheep(@NonNull SheepGeneric sheep, @Nullable String id, @Nullable Long created_at) {
-        // Construct sheepGeneric with existing sheep's properties
-        super(sheep.name, sheep.mother, sheep.father, sheep.breed, sheep.alive, sheep.male, sheep.dateOfBirth);
+    public Pig(@NonNull PigGeneric pig, @Nullable String id, @Nullable Long created_at) {
+        // Construct pigGeneric with existing pig's properties
+        super(pig.name, pig.mother, pig.father, pig.breed, pig.alive, pig.male, pig.dateOfBirth, pig.origin);
 
         // Generate `ID` and `created_at` if not present
         this.id = Objects.requireNonNullElseGet(id, () -> UUID.randomUUID().toString());
