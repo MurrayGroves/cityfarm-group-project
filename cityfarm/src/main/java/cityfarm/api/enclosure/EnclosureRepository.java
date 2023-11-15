@@ -1,5 +1,6 @@
 package cityfarm.api.enclosure;
 
+import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Component;
@@ -8,6 +9,7 @@ import java.util.List;
 
 
 @Component
+@Document("enclosures")
 public interface EnclosureRepository extends MongoRepository<EnclosureGeneric, String> {
     List<EnclosureGeneric> findEnclosureByName(String name);
 

@@ -1,6 +1,7 @@
 package cityfarm.api.enclosure;
 
 import cityfarm.api.AnimalGeneric;
+import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
@@ -9,6 +10,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
+@Document("enclosures")
 public class EnclosureGeneric {
     /**
      * A mapping of animal type to how many of that type the enclosure can hold.
