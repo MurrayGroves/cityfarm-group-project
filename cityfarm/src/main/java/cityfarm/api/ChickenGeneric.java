@@ -11,7 +11,7 @@ public class ChickenGeneric extends AnimalGeneric {
     //public int batchID?
 
 
-    public ChickenGeneric(@Nullable String name, @Nullable String mother, @Nullable String father, @Nullable String breed, @Nonnull Boolean alive, @NonNull Boolean male, @NonNull ZonedDateTime dateOfBirth) {
+    public ChickenGeneric(@Nullable String name, @Nullable String mother, @Nullable String father, @Nullable String breed, @Nonnull Boolean alive, @NonNull Boolean male, @Nullable ZonedDateTime dateOfBirth) {
         super(name, mother, father, breed, alive, male, dateOfBirth);
     }
 }

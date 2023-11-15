@@ -15,7 +15,7 @@ public class GoatGeneric extends AnimalGeneric{
     //public String origin
     //public int eartagsID?
 
-    public GoatGeneric(@Nullable String name, @Nullable String mother, @Nullable String father, @Nullable String breed, @Nonnull Boolean alive, @NonNull Boolean male, @NonNull ZonedDateTime dateOfBirth) {
+    public GoatGeneric(@Nullable String name, @Nullable String mother, @Nullable String father, @Nullable String breed, @Nonnull Boolean alive, @NonNull Boolean male, @Nullable ZonedDateTime dateOfBirth) {
         super(name, mother, father, breed, alive, male, dateOfBirth);
     }
 }

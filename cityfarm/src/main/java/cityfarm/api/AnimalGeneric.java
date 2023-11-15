@@ -4,12 +4,9 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
-import org.springframework.stereotype.Component;
-import org.springframework.validation.annotation.Validated;
-
-import java.util.Objects;
 
 import java.time.ZonedDateTime;
+import java.util.Objects;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 @JsonSubTypes({
@@ -56,10 +53,10 @@ public abstract class AnimalGeneric {
     /**
      * Date of Birth of the animal (date of hatching for birds)
      */
-    @NonNull
+    @Nullable
     public ZonedDateTime dateOfBirth;
 
-    public AnimalGeneric(@Nullable String name, @Nullable String mother, @Nullable String father,@Nullable String breed, @NonNull Boolean alive, @NonNull Boolean male, @NonNull ZonedDateTime dateOfBirth) {
+    public AnimalGeneric(@Nullable String name, @Nullable String mother, @Nullable String father,@Nullable String breed, @NonNull Boolean alive, @NonNull Boolean male, @Nullable ZonedDateTime dateOfBirth) {
         this.name = name;
         this.mother = mother;
         this.father = father;
