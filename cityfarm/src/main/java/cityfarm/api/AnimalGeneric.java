@@ -4,6 +4,10 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
+import org.springframework.stereotype.Component;
+import org.springframework.validation.annotation.Validated;
+
+import java.util.Objects;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 @JsonSubTypes({
@@ -38,10 +42,8 @@ public abstract class AnimalGeneric {
         this.name = name;
         this.mother = mother;
         this.father = father;
-        this.alive = alive;
+        this.alive = Objects.requireNonNull(alive);
     }
 
-    public AnimalGeneric() {
-    }
 }
 
