@@ -45,7 +45,7 @@ public class Sheep extends SheepGeneric implements AnimalUnique{
      * @param created_at the current timestamp/creation date of this sheep, leave null to generate (recommended)
      */
     public Sheep(@NonNull SheepGeneric sheep, @Nullable String id, @Nullable Long created_at) {
-        // Construct sheepGeneric with existing cow's properties
+        // Construct sheepGeneric with existing sheep's properties
         super(sheep.name, sheep.mother, sheep.father, sheep.breed, sheep.alive, sheep.male, sheep.dateOfBirth);
 
         // Generate `ID` and `created_at` if not present

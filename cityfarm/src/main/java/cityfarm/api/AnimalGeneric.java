@@ -11,7 +11,9 @@ import java.time.ZonedDateTime;
 @JsonSubTypes({
         @JsonSubTypes.Type(value = Cow.class, name = "cow"),
         @JsonSubTypes.Type(value = Sheep.class, name = "sheep"),
-        @JsonSubTypes.Type(value = Chicken.class, name = "chicken")
+        @JsonSubTypes.Type(value = Chicken.class, name = "chicken"),
+        @JsonSubTypes.Type(value = Pig.class, name = "pig"),
+        @JsonSubTypes.Type(value = Goat.class, name = "goat")
 })
 public abstract class AnimalGeneric {
     /**

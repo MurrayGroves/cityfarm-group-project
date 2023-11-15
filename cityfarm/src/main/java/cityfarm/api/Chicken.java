@@ -32,12 +32,12 @@ public class Chicken extends ChickenGeneric {
 
     /**
      * Copy a generic chicken template to a specific chicken
-     * @param chicken generic sheep to copy attributes from
+     * @param chicken generic chicken to copy attributes from
      * @param id the unique ID of the new chicken, leave null to generate (recommended unless
-     * @param created_at the current timestamp/creation date of this sheep, leave null to generate (recommended)
+     * @param created_at the current timestamp/creation date of this chicken, leave null to generate (recommended)
      */
     public Chicken(@NonNull ChickenGeneric chicken, @Nullable String id, @Nullable Long created_at) {
-        // Construct sheepGeneric with existing cow's properties
+        // Construct chickenGeneric with existing chicken's properties
         super(chicken.name, chicken.mother, chicken.father, chicken.breed, chicken.alive, chicken.male, chicken.dateOfBirth);
 
         // Generate `ID` and `created_at` if not present
