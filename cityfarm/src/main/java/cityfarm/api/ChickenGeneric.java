@@ -1,9 +1,11 @@
 package cityfarm.api;
 
 import jakarta.annotation.Nonnull;
+import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
+@Document("animals")
 public class ChickenGeneric extends AnimalGeneric {
     public Boolean tb_inoculated;
 

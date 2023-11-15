@@ -16,6 +16,7 @@ import java.util.UUID;
  * Represents a specific & unique cow
  */
 @JsonTypeName("cow")
+@Document("animals")
 public class Cow extends CowGeneric implements AnimalUnique {
     @Id
     private final String id;
