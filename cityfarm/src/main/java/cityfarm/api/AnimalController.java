@@ -33,6 +33,10 @@ public class AnimalController {
     public ResponseEntity<AnimalGeneric> get_animal_by_id(@PathVariable String id) {
         AnimalGeneric animal = animalRepository.findAnimalById(id);
 
+        if (animal == null) {
+            return ResponseEntity.status(404).build();
+        }
+
         return ResponseEntity.ok().body(animal);
     }
 
@@ -57,7 +61,8 @@ public class AnimalController {
     @PostMapping("/api/animals/cow/create")
     public ResponseEntity<Cow> create_animal(@RequestBody CowGeneric cowReq) {
 
-        Cow cow = new Cow(cowReq, UUID.randomUUID().toString(), System.currentTimeMillis() / 1000L);
+
+        Cow cow = new Cow(cowReq, null, null);
 
         animalRepository.save(cow);
 

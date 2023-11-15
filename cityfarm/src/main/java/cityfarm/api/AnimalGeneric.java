@@ -4,6 +4,10 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
+import org.springframework.stereotype.Component;
+import org.springframework.validation.annotation.Validated;
+
+import java.util.Objects;
 
 import java.time.ZonedDateTime;
 
@@ -60,12 +64,10 @@ public abstract class AnimalGeneric {
         this.mother = mother;
         this.father = father;
         this.breed = breed;
-        this.alive = alive;
+        this.alive = Objects.requireNonNull(alive);
         this.male = male;
         this.dateOfBirth = dateOfBirth;
     }
 
-    public AnimalGeneric() {
-    }
 }
 
