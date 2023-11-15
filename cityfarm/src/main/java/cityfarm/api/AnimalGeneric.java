@@ -7,7 +7,9 @@ import org.springframework.lang.Nullable;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 @JsonSubTypes({
-        @JsonSubTypes.Type(value = Cow.class, name = "cow")
+        @JsonSubTypes.Type(value = Cow.class, name = "cow"),
+        @JsonSubTypes.Type(value = Sheep.class, name = "sheep"),
+        @JsonSubTypes.Type(value = Chicken.class, name = "chicken")
 })
 public abstract class AnimalGeneric {
     /**
