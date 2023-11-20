@@ -1,17 +1,23 @@
 package cityfarm.api.enclosure;
 
+import cityfarm.api.AnimalGeneric;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 public class EnclosureController {
     @Autowired
     EnclosureRepository enclosureRepository;
+
+    @Autowired
+    EnclosureRepositoryCustom enclosureRepositoryCustom;
 
     @Autowired
     MongoTemplate mongoTemplate;
@@ -28,13 +34,13 @@ public class EnclosureController {
     }
 
     @GetMapping("/api/enclosures")
-    public List<EnclosureGeneric> get_enclosures() {
+    public List<Enclosure> get_enclosures() {
         return enclosureRepository.findAll();
     }
 
     @GetMapping("/api/enclosures/by_id/{id}")
-    public ResponseEntity<EnclosureGeneric> get_enclosure_by_id(@PathVariable String id) {
-        EnclosureGeneric enclosure = enclosureRepository.findEnclosureById(id);
+    public ResponseEntity<Enclosure> get_enclosure_by_id(@PathVariable String id) {
+        Enclosure enclosure = enclosureRepository.findEnclosureById(id);
 
         if (enclosure == null) {
             return ResponseEntity.notFound().build();
@@ -44,9 +50,30 @@ public class EnclosureController {
     }
 
     @GetMapping("/api/enclosures/by_name/{name}")
-    public ResponseEntity<List<EnclosureGeneric>> get_enclosure_by_name(@PathVariable String name) {
-        List<EnclosureGeneric> enclosure = enclosureRepository.findEnclosureByName(name);
+    public ResponseEntity<List<Enclosure>> get_enclosure_by_name(@PathVariable String name) {
+        List<Enclosure> enclosure = enclosureRepository.findEnclosureByName(name);
 
         return ResponseEntity.ok().body(enclosure);
+    }
+
+    @PatchMapping("/api/enclosures/by_id/{id}/holding")
+    public ResponseEntity<String> set_enclosure_holding(@PathVariable String id, @RequestBody HashMap<String, Set<AnimalGeneric>> holding) {
+        Enclosure enc = enclosureRepository.findEnclosureById(id);
+
+        boolean valid = true;
+        for (String type : holding.keySet()) {
+            if (holding.get(type).size() > enc.capacities.get(type)) {
+                return ResponseEntity.badRequest().body("Holding exceeds capacity");
+            }
+        }
+
+        long res = enclosureRepositoryCustom.updateHolding(id, holding);
+
+        // If no documents updated
+        if (res == 0) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok().build();
     }
 }
