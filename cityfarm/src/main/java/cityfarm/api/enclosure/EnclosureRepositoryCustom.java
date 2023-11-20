@@ -24,4 +24,10 @@ public class EnclosureRepositoryCustom {
         Update update = new Update().set("holding", holding);
         return mongoOperations.updateFirst(query, update, Enclosure.class).getModifiedCount();
     }
+
+    public long updateCapacities(String id, HashMap<String, Integer> capacities) {
+        Query query = new Query(Criteria.where("_id").is(id));
+        Update update = new Update().set("capacities", capacities);
+        return mongoOperations.updateFirst(query, update, Enclosure.class).getModifiedCount();
+    }
 }
