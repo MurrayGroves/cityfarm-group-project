@@ -33,6 +33,10 @@ public class AnimalController {
     public ResponseEntity<AnimalGeneric> get_animal_by_id(@PathVariable String id) {
         AnimalGeneric animal = animalRepository.findAnimalById(id);
 
+        if (animal == null) {
+            return ResponseEntity.status(404).build();
+        }
+
         return ResponseEntity.ok().body(animal);
     }
 
@@ -56,6 +60,7 @@ public class AnimalController {
      */
     @PostMapping("/api/animals/cow/create")
     public ResponseEntity<Cow> create_animal(@RequestBody CowGeneric cowReq) {
+
 
         Cow cow = new Cow(cowReq, null, null);
 
@@ -85,5 +90,27 @@ public class AnimalController {
 
         String location = String.format("/animals/by_id/%s", chicken.get_id());
         return ResponseEntity.created(URI.create(location)).body(chicken);
+    }
+
+    @PostMapping("/api/animals/pig/create")
+    public ResponseEntity<Pig> create_animal(@RequestBody PigGeneric pigReq) {
+
+        Pig pig = new Pig(pigReq, UUID.randomUUID().toString(), System.currentTimeMillis() / 1000L);
+
+        animalRepository.save(pig);
+
+        String location = String.format("/animals/by_id/%s", pig.get_id());
+        return ResponseEntity.created(URI.create(location)).body(pig);
+    }
+
+    @PostMapping("/api/animals/goat/create")
+    public ResponseEntity<Goat> create_animal(@RequestBody GoatGeneric goatReq) {
+
+        Goat goat = new Goat(goatReq, UUID.randomUUID().toString(), System.currentTimeMillis() / 1000L);
+
+        animalRepository.save(goat);
+
+        String location = String.format("/animals/by_id/%s", goat.get_id());
+        return ResponseEntity.created(URI.create(location)).body(goat);
     }
 }
