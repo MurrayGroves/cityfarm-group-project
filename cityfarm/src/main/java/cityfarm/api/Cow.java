@@ -40,15 +40,6 @@ public class Cow extends CowGeneric implements AnimalUnique {
         this.created_at = Objects.requireNonNullElseGet(created_at, () -> System.currentTimeMillis() / 1000);
     }
 
-    public Cow(@JsonProperty("name") @Nullable String name, @JsonProperty("mother") @Nullable String mother, @JsonProperty("father") @Nullable String father, @JsonProperty("alive") @NonNull Boolean alive, @JsonProperty("tb_inoculated") @NonNull Boolean tb_inoculated) {
-        // Construct cowGeneric
-        super(name, mother, father, alive, tb_inoculated);
-
-        // Generate `ID` and `created_at` if not present
-        this.id = UUID.randomUUID().toString();
-        this.created_at = System.currentTimeMillis() / 1000;
-    }
-
     /**
      * Copy a generic cow template to a specific cow
      * @param cow generic cow to copy attributes from
