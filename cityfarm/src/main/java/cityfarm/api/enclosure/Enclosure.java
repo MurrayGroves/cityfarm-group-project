@@ -29,21 +29,21 @@ public class Enclosure extends EnclosureGeneric {
     public Enclosure(@NonNull String name, @Nullable HashMap<String, Integer> capacities, @Nullable HashMap<String, Set<AnimalGeneric>> holding, @JsonProperty("_id") @Nullable String id) {
         super(name, capacities, holding);
 
-        // Generate `ID` and `created_at` if not present
+        // Generate `ID` if not present
         this.id = Objects.requireNonNullElseGet(id, () -> UUID.randomUUID().toString());
     }
 
     public Enclosure(@NonNull String name, @Nullable HashMap<String, Integer> capacities, @Nullable HashMap<String, Set<AnimalGeneric>> holding) {
         super(name, capacities, holding);
 
-        // Generate `ID` and `created_at`
+        // Generate `ID`
         this.id = UUID.randomUUID().toString();
     }
 
     public Enclosure(@NonNull String name) {
         super(name);
 
-        // Generate `ID` and `created_at`
+        // Generate `ID`
         this.id = UUID.randomUUID().toString();
     }
 
