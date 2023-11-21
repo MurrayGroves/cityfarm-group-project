@@ -2,52 +2,31 @@ import './App.css';
 import { Component } from 'react';
 import { useState } from 'react';
 import api from "../api/axiosConfig";
+import "bootstrap/dist/css/bootstrap.css";
+import api from "./api/axiosConfig";
+import { useEffect, useState } from "react";
+import "./App.css";
+import PublisherCrud from "./components/PublisherCrud";
 
-class App extends Component {
+function App() {
+  const [publishers, setPublishers] = useState([]);
 
-  state = {
-    animals: []
-  };
+  /* manage side effects */
+  useEffect(() => {
+    (async () => await load())();
+  }, []);
 
-  async componentDidMount() {
-    /*
-    const response = await fetch('/animals');
-    const body = await response.json();
-    this.setState({animals: body});
-    */
+  async function load() {
+    const result = await api.get("/all");
+    setPublishers(result.data);
   }
 
-  render() {
-    const {animals} = this.state;
-    return (
-      <div>
-        {/*
-        <h1>Bristol City Farm Livestock Management</h1>
-        <div>
-            <h2>Animals</h2>
-            {animals.map(animal =>
-                <div key={animal.id}>
-                  {animal.name}
-                </div>
-            )}
-        </div>
-        */}
-        
-        <h1>Test</h1>
-
-        <table>
-          <tr>
-            <th>Test</th>
-            <th>Test2</th>
-          </tr>
-          <tr>
-            <td>test</td>
-            <td>test2</td>
-          </tr>
-        </table>
-      </div>
-    );
-  }
+  return (
+    <div>
+      <h1 className="text-center">List Of Publisher</h1>
+      <PublisherCrud load={load} publishers={publishers} />
+    </div>
+  );
 }
 
 export default App;
