@@ -14,6 +14,10 @@ on:
   pull_request:
     branches: [ "dev" ]
 
+defaults:
+  run:
+    working-directory: cityfarm
+
 jobs:
   build:
 
