@@ -1,32 +1,31 @@
 import './App.css';
-import { Component } from 'react';
-import { useState } from 'react';
-import api from "../api/axiosConfig";
-import "bootstrap/dist/css/bootstrap.css";
-import api from "./api/axiosConfig";
-import { useEffect, useState } from "react";
-import "./App.css";
-import PublisherCrud from "./components/PublisherCrud";
-
-function App() {
-  const [publishers, setPublishers] = useState([]);
-
-  /* manage side effects */
-  useEffect(() => {
-    (async () => await load())();
-  }, []);
-
-  async function load() {
-    const result = await api.get("/all");
-    setPublishers(result.data);
-  }
-
-  return (
-    <div>
-      <h1 className="text-center">List Of Publisher</h1>
-      <PublisherCrud load={load} publishers={publishers} />
-    </div>
-  );
+import AnimalTable from "./pages/AnimalTable";
+import NavBar from "./components/NavBar";
+import Calendar from "./pages/calendar";
+import {BrowserRouter as Router, Route, Routes} from 'react-router-dom';
+const App = () => {
+    return (
+        <Router>
+        <div className="App">
+            <NavBar/> {/* Navbar available in all pages for navigation*/}
+            <div className="Content">
+                <Routes>
+                    <Route exact path="/" > {/*This is just for testing. Will probably navigate to a home page */}
+                        <AnimalTable/>
+                    </Route>
+                    <Route exact path="/animals" > {/*There won't be pathing issues since all api paths start /api*/}
+                        <AnimalTable/>
+                    </Route>
+                    <Route path="/create" >
+                        {/*<Create/> when implemented*/}
+                    </Route>
+                    <Route path="/calendar" >
+                        <Calendar/>
+                    </Route>
+                </Routes>
+            </div>
+        </div>
+        </Router>
+    )
 }
-
 export default App;
