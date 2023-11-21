@@ -66,4 +66,4 @@ All our calculations and backend legic is done within java since it is increadib
 
 - Run `CityFarmApplication` within IntelliJ
 
-- App available at http://localhost:8080
+- OldApp available at http://localhost:8080
