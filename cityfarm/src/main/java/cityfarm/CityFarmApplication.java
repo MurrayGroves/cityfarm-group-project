@@ -34,6 +34,4 @@ public class CityFarmApplication {
 
     @GetMapping("/add_animal")
     public String add_animals(){return "add_animal";}
-
-
 }
