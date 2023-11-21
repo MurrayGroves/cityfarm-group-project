@@ -21,7 +21,7 @@ public class EnclosureController {
     MongoTemplate mongoTemplate;
 
     @PostMapping("/api/enclosures/create")
-    public ResponseEntity<Enclosure> create_animal(@RequestBody EnclosureGeneric enclosureReq) {
+    public ResponseEntity<Enclosure> create_enclosure(@RequestBody EnclosureGeneric enclosureReq) {
 
         Enclosure enclosure = new Enclosure(enclosureReq);
 
