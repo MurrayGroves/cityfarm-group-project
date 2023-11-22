@@ -6,7 +6,6 @@ import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -24,9 +23,16 @@ public class EnclosureGeneric {
      */
     @NonNull
     public HashMap<String, Set<AnimalGeneric>> holding;
-
+    /**
+     * String for the name of the enclosure
+     */
     @NonNull
     public String name;
+    /**
+     * String for notes related to the enclosure
+     */
+    @Nullable
+    public String notes;
 
     /**
      * Create new enclosure with no animals, and irrelevant capacity
@@ -41,9 +47,10 @@ public class EnclosureGeneric {
      * @param capacities sets the {@link EnclosureGeneric#capacities capacities} field
      * @param holding sets the {@link EnclosureGeneric#holding holding} field, initialising it as empty if null
      */
-    public EnclosureGeneric(@NonNull String name, @Nullable HashMap<String, Integer> capacities, @Nullable HashMap<String, Set<AnimalGeneric>> holding) {
+    public EnclosureGeneric(@NonNull String name, @Nullable HashMap<String, Integer> capacities, @Nullable HashMap<String, Set<AnimalGeneric>> holding, @Nullable String notes) {
         this.capacities = capacities;
         this.holding = Objects.requireNonNullElse(holding, new HashMap<>());
         this.name = name;
+        this.notes = notes;
     }
 }
