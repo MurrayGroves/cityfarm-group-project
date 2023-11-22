@@ -29,9 +29,9 @@ public class Goat extends GoatGeneric implements AnimalUnique{
 
     @JsonCreator
     @PersistenceCreator
-    public Goat(@JsonProperty("_id") @Nullable String id, @JsonProperty("name") @Nullable String name, @JsonProperty("mother") @Nullable String mother, @JsonProperty("father") @Nullable String father, @JsonProperty("breed") @NonNull String breed, @JsonProperty("created_at") @Nullable Long created_at, @JsonProperty("alive") @NonNull Boolean alive, @JsonProperty("male") @NonNull Boolean male, @JsonProperty("dateOfBirth") @NonNull ZonedDateTime dateOfBirth) {
+    public Goat(@JsonProperty("_id") @Nullable String id, @JsonProperty("name") @Nullable String name, @JsonProperty("mother") @Nullable String mother, @JsonProperty("father") @Nullable String father, @JsonProperty("breed") @NonNull String breed, @JsonProperty("created_at") @Nullable Long created_at, @JsonProperty("alive") @NonNull Boolean alive, @JsonProperty("male") @NonNull Boolean male, @JsonProperty("dateOfBirth") @NonNull ZonedDateTime dateOfBirth, @JsonProperty("notes") @Nullable String notes) {
         // Construct goatGeneric
-        super(name, mother, father, breed, alive, male, dateOfBirth);
+        super(name, mother, father, breed, alive, male, dateOfBirth, notes);
 
         // Generate `ID` and `created_at` if not present
         this.id = Objects.requireNonNullElseGet(id, () -> UUID.randomUUID().toString());
@@ -46,7 +46,7 @@ public class Goat extends GoatGeneric implements AnimalUnique{
      */
     public Goat(@NonNull GoatGeneric goat, @Nullable String id, @Nullable Long created_at) {
         // Construct goatGeneric with existing goat's properties
-        super(goat.name, goat.mother, goat.father, goat.breed, goat.alive, goat.male, goat.dateOfBirth);
+        super(goat.name, goat.mother, goat.father, goat.breed, goat.alive, goat.male, goat.dateOfBirth, goat.notes);
 
         // Generate `ID` and `created_at` if not present
         this.id = Objects.requireNonNullElseGet(id, () -> UUID.randomUUID().toString());
