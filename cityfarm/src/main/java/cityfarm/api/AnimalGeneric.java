@@ -2,6 +2,7 @@ package cityfarm.api;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
@@ -16,6 +17,7 @@ import java.util.Objects;
         @JsonSubTypes.Type(value = Pig.class, name = "pig"),
         @JsonSubTypes.Type(value = Goat.class, name = "goat")
 })
+@Document("animals")
 public abstract class AnimalGeneric {
     /**
      * Specific Animal's name, e.g. "Alice"

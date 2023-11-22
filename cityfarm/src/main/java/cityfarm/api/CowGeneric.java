@@ -1,6 +1,7 @@
 package cityfarm.api;
 
 import jakarta.annotation.Nonnull;
+import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.validation.annotation.Validated;
@@ -12,6 +13,7 @@ import java.time.ZonedDateTime;
 /**
  * Represents a non-specific cow
  */
+@Document("animals")
 @Validated
 public class CowGeneric extends AnimalGeneric {
     public boolean tb_inoculated;

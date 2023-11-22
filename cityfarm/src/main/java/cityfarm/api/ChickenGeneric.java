@@ -1,11 +1,12 @@
 package cityfarm.api;
 
 import jakarta.annotation.Nonnull;
+import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
-
 import java.time.ZonedDateTime;
 
+@Document("animals")
 public class ChickenGeneric extends AnimalGeneric {
     //public date hatchDate
     //public int batchID?
