@@ -4,7 +4,7 @@ import SearchBar from "../components/SearchBar";
 
 const animal1 = {
     "type": "cow",
-    "_id": "724a6d0a-de69-4eba-8885-a2d316b4b437",
+    "_id": "0",
     "name": "Bob",
     "mother": null,
     "father": null,
@@ -14,14 +14,17 @@ const animal1 = {
 
 const AnimalTable = () => {
     const [animalList, setAnimalList] = useState([]); /* The State for the list of animals. The initial state is [] */
-    const getAnimals = async () => {
-        const response = await  fetch(`${baseURL}/animals`);
-        const data = await response.json();
-        setAnimalList(data)
-    }
-    useEffect(() => {
-        getAnimals(animalList)
+    const getAnimals = async () => {}
+    useEffect (() => {
+        (async () => {
+            const response = await fetch(`${baseURL}/animals`);
+            const data = await response.json();
+            setAnimalList(data)
+        })()
+        //getAnimals()
     },[]);
+
+    return (<>{animalList}</>)
 
     return(<>
         <SearchBar/>
@@ -37,20 +40,18 @@ const AnimalTable = () => {
                     <th>Mother</th>
                     <th>TB inoculated</th>
                     <th>Alive</th>
-                    <th>Created at</th>
                     </tr>
                     </thead>
                     <tbody>
                         {animalList.map((animal) => (
                             <tr>
-                                <th>{animal._id}</th>
-                                <th>{animal.name}</th>
-                                <th>{animal.type}</th>
-                                <th>{animal.father != null ? animal.father : 'unregistered'}</th>
-                                <th>{animal.mother != null ? animal.mother : 'unregistered'}</th>
-                                <th>{animal.tb_inoculated} </th>
-                                <th>{animal.alive}</th>
-                                <th>{animal._created_at}</th>
+                                <td>{animal._id}</td>
+                                <td>{animal.name}</td>
+                                <td>{animal.type}</td>
+                                <td>{animal.father != null ? animal.father : 'unregistered'}</td>
+                                <td>{animal.mother != null ? animal.mother : 'unregistered'}</td>
+                                <td>{animal.tb_inoculated} </td>
+                                <td>{animal.alive}</td>
                             </tr>
                         ))}
                 </tbody>

@@ -3,8 +3,8 @@ import baseURL from "../api/axiosConfig";
 
 const SearchBar = () => {
     const [searchTerm, setSearchTerm] = useState('');
-    const searchAnimals = async (animalID) => {
-        const response = await  fetch(`${baseURL}animals/by_id/${searchTerm}`);
+    const searchAnimals = async (animalName) => {
+        const response = await  fetch(`${baseURL}/animals/by_name/${searchTerm}`);
         const data = await response.json();
         setSearchTerm(data)
     }

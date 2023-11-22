@@ -15,12 +15,12 @@ table {
 
 
 th {
-  width:30px;
-  height: 30px;
+  width:10px;
+  height: 10px;
   border-bottom: 3px solid black;
 }
 
 td {
-  text-align: top;
+  text-align: center;
   border: 4px solid black;
 }

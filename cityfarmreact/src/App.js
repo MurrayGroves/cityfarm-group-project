@@ -2,7 +2,7 @@
 import './App.css';
 import AnimalTable from "./pages/AnimalTable";
 import NavBar from "./components/NavBar";
-import Calendar from "./pages/calendar";
+import Calendar from "./pages/Calendar";
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
@@ -16,14 +16,12 @@ const App = () => {
                     <Route exact path="/" > {/*This is just for testing. Will probably navigate to a home page */}
                         {/*<AnimalTable/>*/}
                     </Route>
-                    <Route exact path="/animals" > {/*There won't be pathing issues since all api paths start /api*/}
-                        {/*<AnimalTable/>*/}
+                    <Route exact path="/animals" element={<AnimalTable/>}> {/*There won't be pathing issues since all api paths start /api*/}
                     </Route>
-                    <Route path="/create" >
+                    <Route path="/create">
                         {/*<Create/> when implemented*/}
                     </Route>
-                    <Route path="/calendar" >
-                        {/*<Calendar/>*/}   
+                    <Route path="/calendar" element={<Calendar/>}>
                     </Route>
                 </Routes>
             </div>
