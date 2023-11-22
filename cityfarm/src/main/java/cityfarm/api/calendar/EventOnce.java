@@ -9,10 +9,16 @@ import java.time.ZonedDateTime;
 import java.util.List;
 
 public class EventOnce extends Event {
-    private ZonedDateTime datetime;
+    private ZonedDateTime start;
+    private ZonedDateTime end;
 
     @Override
-    public List<ZonedDateTime> nextOccurences(@Nullable ZonedDateTime from, @Nullable Integer num) {
-        return List.of(this.datetime);
+    public List<EventInstance> nextOccurences(@Nullable ZonedDateTime from, @Nullable Integer num) {
+        return List.of(new EventInstance(start, end));
+    }
+
+    @Override
+    public List<EventInstance> occurencesBetween(@Nullable ZonedDateTime from, @Nullable ZonedDateTime to) {
+        return List.of(new EventInstance(start, end));
     }
 }

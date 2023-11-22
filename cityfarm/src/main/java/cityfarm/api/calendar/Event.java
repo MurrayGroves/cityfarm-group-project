@@ -23,8 +23,8 @@ public abstract class Event {
     public List<Person> attachedPeople;
 
     public Boolean allDay;
-    public LocalDateTime start;
-    public LocalDateTime end;
 
-    public abstract List<ZonedDateTime> nextOccurences(@Nullable ZonedDateTime from, @Nullable Integer num);
+    public abstract List<EventInstance> nextOccurences(@Nullable ZonedDateTime from, @Nullable Integer num);
+
+    public abstract List<EventInstance> occurencesBetween(@Nullable ZonedDateTime from, @Nullable ZonedDateTime to);
 }
