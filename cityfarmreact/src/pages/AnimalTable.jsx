@@ -1,7 +1,8 @@
 import React, {useEffect, useState} from "react";
 import baseURL from "../api/axiosConfig.js";
 import SearchBar from "../components/SearchBar";
-const animal1 ={
+
+const animal1 = {
     "type": "cow",
     "_id": "724a6d0a-de69-4eba-8885-a2d316b4b437",
     "name": "Bob",
@@ -9,10 +10,10 @@ const animal1 ={
     "father": null,
     "alive": true,
     "tb_inoculated": true,
-    "_created_at": 1699274299
 }
+
 const AnimalTable = () => {
-    const [animalList, setAnimalList] = useState([]);{/* The State for the list of animals. The initial state is [] */}
+    const [animalList, setAnimalList] = useState([]); /* The State for the list of animals. The initial state is [] */
     const getAnimals = async () => {
         const response = await  fetch(`${baseURL}/animals`);
         const data = await response.json();
@@ -24,7 +25,7 @@ const AnimalTable = () => {
 
     return(<>
         <SearchBar/>
-        animalList?.length > 0 ? (
+        {animalList?.length > 0 ? (
             <div className="Table">
                 <table>
                     <thead>
@@ -59,7 +60,8 @@ const AnimalTable = () => {
             <div className="empty">
                 <h2>No Animals found</h2>
             </div>
-        )
+        )}
     </>)
 }
+
 export default AnimalTable;

@@ -1,12 +1,12 @@
 import {Calendar, dateFnsLocalizer} from 'react-big-calendar';
 import format from 'date-fns/format';
-import parse from "date-fns/parse";
-import startOfWeek from "date-fns/startOfWeek";
-import getDay from "date-fns/getDay";
-import "react-big-calendar/lib/css/react-big-calendar.css";
-import React, {useState} from "react";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css"
+import parse from 'date-fns/parse';
+import startOfWeek from 'date-fns/startOfWeek';
+import getDay from 'date-fns/getDay';
+import 'react-big-calendar/lib/css/react-big-calendar.css';
+import React, {useState} from 'react';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 const locales = {
     "en-GB" : require("date-fns/locale/en-GB")
@@ -35,12 +35,13 @@ const events = [ /*These are example events.*/
         start: new  Date(2023,11,29),
         end: new  Date(2024,1,3)
     }
-    ]
+];
+
 const calendar = () => {
-    const [newEvent,setNewEvent] = useState({title:"",start:"",end:""})
-    const [allEvents,setAllEvents] = useState(events)
+    const [newEvent,setNewEvent] = null //useState({title:"",start:"",end:""})
+    const [allEvents,setAllEvents] = null //useState(events)
     const handleAddEvent = () => {
-        setAllEvents([...allEvents, newEvent]);{/*Adds the new event to the list of allEvents*/}
+        setAllEvents([...allEvents, newEvent]); /*Adds the new event to the list of allEvents} */
     }
     return (
         <div className="calendar">
@@ -65,4 +66,5 @@ const calendar = () => {
             />
         </div>);
 }
+
 export default calendar;

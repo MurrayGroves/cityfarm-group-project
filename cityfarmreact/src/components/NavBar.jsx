@@ -2,10 +2,10 @@ import React, {useState} from 'react'
 import './NavBar.css'
 import {Link} from "react-router-dom";
 
-const NavBar = ()   => {
-    const [open, setOpen] = useState(false); {/*Navbar starts closed*/}
+const NavBar = () => {
+    const [open, setOpen] = useState(false); /*Navbar starts closed*/
     const openNavbar = () => {
-        {open ? setOpen(false) : setOpen(true)} {/*switches the value of open between true and false*/}
+        open ? setOpen(false) : setOpen(true); /*switches the value of open between true and false*/
     }
 
     if (open) {
