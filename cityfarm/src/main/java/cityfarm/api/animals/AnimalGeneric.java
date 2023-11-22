@@ -1,4 +1,4 @@
-package cityfarm.api;
+package cityfarm.api.animals;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;

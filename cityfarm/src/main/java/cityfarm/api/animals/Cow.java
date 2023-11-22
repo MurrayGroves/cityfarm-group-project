@@ -1,4 +1,4 @@
-package cityfarm.api;
+package cityfarm.api.animals;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -8,8 +8,6 @@ import org.springframework.data.annotation.PersistenceCreator;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
-import org.springframework.stereotype.Component;
-import org.springframework.validation.annotation.Validated;
 
 import java.time.ZonedDateTime;
 import java.util.Objects;

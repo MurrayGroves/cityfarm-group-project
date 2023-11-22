@@ -1,4 +1,4 @@
-package cityfarm.api;
+package cityfarm.api.animals;
 
 import jakarta.annotation.Nonnull;
 import org.springframework.data.mongodb.core.mapping.Document;

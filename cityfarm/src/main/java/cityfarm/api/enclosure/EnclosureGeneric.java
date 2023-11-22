@@ -1,12 +1,11 @@
 package cityfarm.api.enclosure;
 
-import cityfarm.api.AnimalGeneric;
+import cityfarm.api.animals.AnimalGeneric;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 

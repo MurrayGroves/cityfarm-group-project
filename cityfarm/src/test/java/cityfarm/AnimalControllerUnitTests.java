@@ -1,22 +1,19 @@
 package cityfarm;
 
-import cityfarm.api.AnimalController;
-import cityfarm.api.AnimalGeneric;
-import cityfarm.api.AnimalRepository;
-import cityfarm.api.Cow;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import cityfarm.api.animals.AnimalController;
+import cityfarm.api.animals.AnimalGeneric;
+import cityfarm.api.animals.AnimalRepository;
+import cityfarm.api.animals.Cow;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 import java.util.Objects;
