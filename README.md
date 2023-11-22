@@ -1,4 +1,5 @@
 # 2023-City Farm
+[![Java CI with Maven](https://github.com/spe-uob/2023-CityFarm/actions/workflows/maven.yml/badge.svg?branch=dev)](https://github.com/spe-uob/2023-CityFarm/actions/workflows/maven.yml)
 
 # Project Description
 
