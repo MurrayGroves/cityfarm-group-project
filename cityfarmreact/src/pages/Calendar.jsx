@@ -12,9 +12,15 @@ const locales = {
     "en-GB" : require("date-fns/locale/en-GB")
 }
 
-const localizer = dateFnsLocalizer(
-    format, parse, startOfWeek, getDay, locales
-);
+const localizer = dateFnsLocalizer({
+    format,
+    parse,
+    startOfWeek,
+    getDay,
+    locales,
+    firstOfWeek: 1,
+    instance: new Date(),
+});
 
 const events = [ /*These are example events.*/
     {
@@ -38,7 +44,7 @@ const events = [ /*These are example events.*/
 ];
 
 const Calendar = () => {
-    const [newEvent,setNewEvent] = useState({title:"",start:"",end:""})
+    const [newEvent,setNewEvent] = useState({        title : "", allDay: true, start: new Date(null,null,null), end:  new Date(null,null,null)})
     const [allEvents,setAllEvents] = useState(events)
     const handleAddEvent = () => {
         setAllEvents([...allEvents, newEvent]); /*Adds the new event to the list of allEvents} */
@@ -53,9 +59,13 @@ const Calendar = () => {
                     onChange={(e) => setNewEvent({...newEvent, title: e.target.value})}/>
                 
                 <DatePicker placeholderText="Start Date" style={{marginRight: "10px"}}
-                selected={newEvent.start} onChange={(e) => setNewEvent({...newEvent, start: e})}/>
+                selected={newEvent.start} onChange={(e) => setNewEvent({...newEvent, start: e})}>
+
+                </DatePicker>
                 <DatePicker placeholderText="End Date" style={{marginRight: "10px"}}
-                 selected={newEvent.end} onChange={(e) => setNewEvent({...newEvent, end: e})}/>
+                 selected={newEvent.end} onChange={(e) => setNewEvent({...newEvent, end: e })}>
+
+                </DatePicker>
                 <button style={{marginTop: "10px"}} onClick={handleAddEvent}>Add Event</button>
             </div>
             <BigCalendar localizer={localizer}
