@@ -63,7 +63,7 @@ public abstract class AnimalGeneric {
     @Nullable
     public String notes;
 
-    public AnimalGeneric(@Nullable String name, @Nullable String mother, @Nullable String father,@Nullable String breed, @NonNull Boolean alive, @NonNull Boolean male, @Nullable ZonedDateTime dateOfBirth, @Nullable String notes ) {
+    public AnimalGeneric(@Nullable String name, @Nullable String mother, @Nullable String father,@Nullable String breed, @NonNull Boolean alive, @NonNull Boolean male, @Nullable ZonedDateTime dateOfBirth, @Nullable String notes) {
         this.name = name;
         this.mother = mother;
         this.father = father;

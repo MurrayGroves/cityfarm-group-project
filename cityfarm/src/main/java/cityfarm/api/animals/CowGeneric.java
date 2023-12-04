@@ -21,6 +21,7 @@ public class CowGeneric extends AnimalGeneric {
   
     public CowGeneric(@Nullable String name, @Nullable String mother, @Nullable String father, @Nullable String breed, @Nonnull Boolean alive, @NonNull Boolean male, @Nullable ZonedDateTime dateOfBirth, @NonNull Boolean tb_inoculated, @Nullable String notes) {
         super(name, mother, father, breed, alive, male, dateOfBirth, notes);
+  
         this.tb_inoculated = Objects.requireNonNull(tb_inoculated);
     }
 
