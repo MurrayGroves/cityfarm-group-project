@@ -1,18 +1,11 @@
 package cityfarm.api.enclosure;
 
-import cityfarm.api.AnimalGeneric;
-import com.mongodb.client.result.UpdateResult;
-import com.mongodb.internal.bulk.UpdateRequest;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
-import org.springframework.data.mongodb.repository.Update;
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 
 
 @Component

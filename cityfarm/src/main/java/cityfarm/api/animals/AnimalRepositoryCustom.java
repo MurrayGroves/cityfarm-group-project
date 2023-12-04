@@ -1,4 +1,4 @@
-package cityfarm.api;
+package cityfarm.api.animals;
 
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Criteria;

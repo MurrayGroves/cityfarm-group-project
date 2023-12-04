@@ -1,9 +1,9 @@
 package cityfarm;
 
-import cityfarm.api.AnimalController;
-import cityfarm.api.AnimalGeneric;
-import cityfarm.api.AnimalRepository;
-import cityfarm.api.Cow;
+import cityfarm.api.animals.AnimalController;
+import cityfarm.api.animals.AnimalGeneric;
+import cityfarm.api.animals.AnimalRepository;
+import cityfarm.api.animals.Cow;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

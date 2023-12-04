@@ -1,6 +1,6 @@
 package cityfarm.api.enclosure;
 
-import cityfarm.api.AnimalGeneric;
+import cityfarm.api.animals.AnimalGeneric;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;

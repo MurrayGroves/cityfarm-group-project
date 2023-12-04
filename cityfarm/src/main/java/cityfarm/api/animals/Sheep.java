@@ -1,7 +1,8 @@
-package cityfarm.api;
+package cityfarm.api.animals;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.PersistenceCreator;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -12,8 +13,12 @@ import java.time.ZonedDateTime;
 import java.util.Objects;
 import java.util.UUID;
 
+/**
+ * Represents a specific & unique sheep
+ */
+@JsonTypeName("sheep")
 @Document("animals")
-public class Chicken extends ChickenGeneric {
+public class Sheep extends SheepGeneric implements AnimalUnique{
     @Id
     private final String id;
     /**
@@ -21,10 +26,11 @@ public class Chicken extends ChickenGeneric {
      */
     private final long created_at;
 
+
     @JsonCreator
     @PersistenceCreator
-    public Chicken(@JsonProperty("_id") @Nullable String id, @JsonProperty("name") @Nullable String name, @JsonProperty("mother") @Nullable String mother, @JsonProperty("father") @Nullable String father, @JsonProperty("breed") @Nullable String breed, @JsonProperty("created_at") @Nullable Long created_at, @JsonProperty("alive") @NonNull Boolean alive, @JsonProperty("male") @NonNull Boolean male, @JsonProperty("dateOfBirth") @NonNull ZonedDateTime dateOfBirth, @JsonProperty("notes") @Nullable String notes) {
-        // Construct chickenGeneric
+    public Sheep(@JsonProperty("_id") @Nullable String id, @JsonProperty("name") @Nullable String name, @JsonProperty("mother") @Nullable String mother, @JsonProperty("father") @Nullable String father, @JsonProperty("breed") @NonNull String breed, @JsonProperty("created_at") @Nullable Long created_at, @JsonProperty("alive") @NonNull Boolean alive, @JsonProperty("male") @NonNull Boolean male, @JsonProperty("dateOfBirth") @NonNull ZonedDateTime dateOfBirth, @JsonProperty("notes") @Nullable String notes) {
+        // Construct sheepGeneric
         super(name, mother, father, breed, alive, male, dateOfBirth, notes);
 
         // Generate `ID` and `created_at` if not present
@@ -33,25 +39,28 @@ public class Chicken extends ChickenGeneric {
     }
 
     /**
-     * Copy a generic chicken template to a specific chicken
-     * @param chicken generic chicken to copy attributes from
-     * @param id the unique ID of the new chicken, leave null to generate (recommended unless
-     * @param created_at the current timestamp/creation date of this chicken, leave null to generate (recommended)
+     * Copy a generic sheep template to a specific sheep
+     * @param sheep generic sheep to copy attributes from
+     * @param id the unique ID of the new sheep, leave null to generate (recommended unless
+     * @param created_at the current timestamp/creation date of this sheep, leave null to generate (recommended)
      */
-    public Chicken(@NonNull ChickenGeneric chicken, @Nullable String id, @Nullable Long created_at) {
-        // Construct chickenGeneric with existing chicken's properties
-        super(chicken.name, chicken.mother, chicken.father, chicken.breed, chicken.alive, chicken.male, chicken.dateOfBirth, chicken.notes);
+    public Sheep(@NonNull SheepGeneric sheep, @Nullable String id, @Nullable Long created_at) {
+        // Construct sheepGeneric with existing sheep's properties
+        super(sheep.name, sheep.mother, sheep.father, sheep.breed, sheep.alive, sheep.male, sheep.dateOfBirth, sheep.notes);
 
         // Generate `ID` and `created_at` if not present
         this.id = Objects.requireNonNullElseGet(id, () -> UUID.randomUUID().toString());
         this.created_at = Objects.requireNonNullElseGet(created_at, () -> System.currentTimeMillis() / 1000);
     }
 
+    @Override
     public String get_id() {
         return id;
     }
 
+    @Override
     public Long get_created_at() {
         return created_at;
     }
 }
+

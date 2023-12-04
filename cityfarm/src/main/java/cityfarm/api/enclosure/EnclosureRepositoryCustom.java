@@ -1,6 +1,6 @@
 package cityfarm.api.enclosure;
 
-import cityfarm.api.AnimalGeneric;
+import cityfarm.api.animals.AnimalGeneric;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;

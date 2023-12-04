@@ -1,6 +1,6 @@
 package cityfarm.api.enclosure;
 
-import cityfarm.api.AnimalGeneric;
+import cityfarm.api.animals.AnimalGeneric;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.data.annotation.Id;
