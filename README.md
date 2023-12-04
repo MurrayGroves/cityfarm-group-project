@@ -32,13 +32,13 @@ Since there is a powercut at the farm as the livestock mnagaer I want to do an i
 
 # Project Structure 
 ## Spring boot
-Spring boot is our frontend hosting framework, it allows us to host our webpages and link them to our java backend, it is what's used to get all the internal http requests and then send them on to the server as well as providing the structure for how the actual pages are laid out.
+Spring boot is our front-end hosting framework, it allows us to host our webpages and link them to our java backend, it is what's used to get all the internal http requests and then send them on to the server as well as providing the structure for how the actual pages are laid out.
 ### ThymeLeaf
 A special mention to thymeleaf, which is a spring boot library. It provides an incredibly useful templating features for formatting the actual front-end pages as well as providing actual means to return and index the pages to the java back-end.
 ## React 
-React is a web fron-tend javascript library, it is used to make easy to design and clean looking buttons that also provide markup for holding and hosting text that is easily read by the user.
+React is a web front-end javascript library, it is used to make easy to design and clean looking buttons that also provide markup for holding and hosting text that is easily read by the user.
 ## MongoDB
-Mongo DB is our database back-end language, it allows for easy intergration within java which makes the elements incredibly easy to access and manipulate in an object oriented fashion. The flexibility of Mongo allows us to quikly and easily add and edit anials to the database without having to adjust the entire schema of the setup.
+Mongo DB is our database back-end language, it allows for easy intergration within java which makes the elements incredibly easy to access and manipulate in an object oriented fashion. The flexibility of Mongo allows us to quickly and easily add and edit animals to the database without having to adjust the entire schema of the setup.
 ## Java
 All our calculations and backend legic is done within java since it is increadibly easy to then interface with both our database and web frontend due to its object oriented nature allowing us to store tables and records as classes along with doing the same for individual pages for the react files.
 
@@ -56,7 +56,7 @@ All our calculations and backend legic is done within java since it is increadib
 
 ### Requirements
 
-- JDK 20
+- JDK 21
 
 - [Docker Compose](https://docs.docker.com/compose/install/)
 
@@ -66,4 +66,4 @@ All our calculations and backend legic is done within java since it is increadib
 
 - Run `CityFarmApplication` within IntelliJ
 
-- OldApp available at http://localhost:8080
+- App available at http://localhost:8080
