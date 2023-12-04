@@ -17,7 +17,7 @@ public class AnimalRepositoryCustom {
     }
 
     public List<AnimalGeneric> findAnimalByName(String name){
-        Criteria regex = Criteria.where(name).regex(".*ab.*", "i");
+        Criteria regex = Criteria.where("name").regex(name, "i");
         return mongoOperations.find(new Query().addCriteria(regex), AnimalGeneric.class);
     }
 
