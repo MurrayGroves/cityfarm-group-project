@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.ZonedDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 
 @Component
@@ -20,10 +21,9 @@ public class EventRepositoryCustom {
             this.mongoOperations = mongoOperations;
         }
 
-        public long findAfter(ZonedDateTime after) {
-            Query query = new Query(Criteria.where("").is(id));
-            Update update = new Update().set("holding", holding);
-            return mongoOperations.updateFirst(query, update, Enclosure.class).getModifiedCount();
+        public List<Event> findAfter(ZonedDateTime after) {
+            Query query = new Query(Criteria.where("end").gt(after).orOperator(Criteria.where("start").gt(after)));
+            return mongoOperations.find(query, Event.class);
         }
 
         public long updateCapacities(String id, HashMap<String, Integer> capacities) {

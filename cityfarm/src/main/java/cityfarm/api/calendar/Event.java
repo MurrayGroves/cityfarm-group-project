@@ -24,7 +24,10 @@ public abstract class Event {
 
     public Boolean allDay;
 
-    public abstract List<EventInstance> nextOccurences(@Nullable ZonedDateTime from, @Nullable Integer num);
+    public ZonedDateTime start;
+    public ZonedDateTime end;
 
-    public abstract List<EventInstance> occurencesBetween(@Nullable ZonedDateTime from, @Nullable ZonedDateTime to);
+    public abstract List<EventInstance> nextOccurences(@NonNull ZonedDateTime from, @Nullable Integer num);
+
+    public abstract List<EventInstance> occurencesBetween(@NonNull ZonedDateTime from, @NonNull ZonedDateTime to);
 }
