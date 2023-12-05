@@ -19,13 +19,14 @@ public class AnimalController {
     @Autowired
     MongoTemplate mongoTemplate;
 
+    HttpHeaders responseHeaders = new HttpHeaders();
+
     /**
      * @return a list of all animals in the DB
      */
     @GetMapping("/api/animals")
     public ResponseEntity<List<AnimalGeneric>> get_animals() {
-        HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.set(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "*");
+        responseHeaders.set(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "http://localhost:3000");
         return ResponseEntity.ok().headers(responseHeaders).body(animalRepository.findAll());
     }
 
@@ -35,13 +36,14 @@ public class AnimalController {
      */
     @GetMapping("/api/animals/by_id/{id}")
     public ResponseEntity<AnimalGeneric> get_animal_by_id(@PathVariable String id) {
+        responseHeaders.set(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "http://localhost:3000");
         AnimalGeneric animal = animalRepository.findAnimalById(id);
 
         if (animal == null) {
             return ResponseEntity.status(404).build();
         }
 
-        return ResponseEntity.ok().body(animal);
+        return ResponseEntity.ok().headers(responseHeaders).body(animal);
     }
 
     /**
@@ -51,9 +53,10 @@ public class AnimalController {
      */
     @GetMapping("/api/animals/by_name/{name}")
     public ResponseEntity<List<AnimalGeneric>> get_animals_by_name(@PathVariable String name) {
+        responseHeaders.set(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "http://localhost:3000");
         List<AnimalGeneric> animals = animalRepository.findAnimalByName(name);
 
-        return ResponseEntity.ok().body(animals);
+        return ResponseEntity.ok().headers(responseHeaders).body(animals);
     }
 
 

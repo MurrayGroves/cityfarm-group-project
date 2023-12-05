@@ -3,6 +3,7 @@ import './App.css';
 import AnimalTable from "./pages/AnimalTable";
 import NavBar from "./components/NavBar";
 import Calendar from "./pages/Calendar";
+import EnclosureTable from './pages/EnclosureTable';
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
@@ -21,6 +22,8 @@ const App = () => {
                         {/*<Create/> when implemented*/}
                     </Route>
                     <Route path="/calendar" element={<Calendar/>}>
+                    </Route>
+                    <Route path="/enclosures" element={<EnclosureTable/>}>
                     </Route>
                 </Routes>
             </div>

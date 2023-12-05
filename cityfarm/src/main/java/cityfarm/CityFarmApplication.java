@@ -21,8 +21,6 @@ public class CityFarmApplication {
     public String home() {
         return "index";
     }
-    @GetMapping("/calendar")
-    public  String calendar(){return"calendar";}
 
     /*
     @GetMapping("/animals")
@@ -32,9 +30,4 @@ public class CityFarmApplication {
         return"animals";
     }
     */
-
-    @GetMapping("/add_animal")
-    public String add_animals(){return "add_animal";}
-
-
 }

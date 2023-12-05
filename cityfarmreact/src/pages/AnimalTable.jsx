@@ -18,6 +18,7 @@ const AnimalTable = () => {
     },[]);
 
     return(<>
+        <h1>Livestock</h1>
         <SearchBar/>
         {animalList?.length > 0 ? (
             <div className="animal-table">
@@ -38,9 +39,9 @@ const AnimalTable = () => {
                             <tr>
                                 <td>{animal._id}</td>
                                 <td>{animal.name}</td>
-                                <td>{animal.type}</td>
-                                <td>{animal.father != null ? animal.father : 'unregistered'}</td>
-                                <td>{animal.mother != null ? animal.mother : 'unregistered'}</td>
+                                <td>{animal.type.toUpperCase()}</td>
+                                <td>{animal.father != null ? animal.father : 'Unregistered'}</td>
+                                <td>{animal.mother != null ? animal.mother : 'Unregistered'}</td>
                                 <td>{animal.tb_inoculated ? 'True' : 'False'}</td>
                                 <td>{animal.alive ? 'True' : 'False'}</td>
                             </tr>

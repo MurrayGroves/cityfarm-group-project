@@ -11,14 +11,16 @@ const NavBar = () => {
     if (open) {
         return(
         <div id="sidebar" className="sidebar" style={{width: 250}}>
-            <a href="javascript:void(0)" onClick={() => openNavbar()}>×</a>
+            <a href="" onClick={() => openNavbar()}>×</a>
             <Link to="/"> Home </Link>
             <Link to="/calendar"> Calendar </Link>
-            <Link to="/animals"> Animals </Link>
+            <Link to="/animals"> Livestock </Link>
+            <Link to="/enclosures"> Enclosures </Link>
             <Link to="/create"> AddAnimal </Link>
         </div>
         )
     }
+    
     return (
         <button className="openbtn" onClick={() => openNavbar()}>☰</button>
     );

@@ -1,29 +1,31 @@
-import React, {useEffect, useState} from "react";
-import baseURL from "../api/axiosConfig";
+import React, {useState} from "react";
+import axios from "../api/axiosConfig";
+import "./SearchBar.css";
+import SearchIcon from './search.png';
 
 const SearchBar = () => {
     const [searchTerm, setSearchTerm] = useState('');
-    const searchAnimals = async (animalName) => {
-        const response = await  fetch(`${baseURL}/animals/by_name/${searchTerm}`);
-        const data = await response.json();
-        setSearchTerm(data)
+    const searchAnimals = async () => {
+        const response = await axios.get(`animals/by_name/${searchTerm}`);
+        console.log(response.data);
+        // handle data
     }
-    useEffect(() => {
-        //searchAnimals(searchTerm);
-    },[]);
+
     return(
         <div className="app">
-            <h1>App</h1>
             <div className="search">
                 <input
-                    placeholder="Search for animals"
+                    placeholder="Search"
                     value= {searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)} /*Sets the "event" to the search term (basically anything in the searchbar gets set to this value)*/
                 />
-                <img //src={SearchIcon} /*TODO: Get an image of a magnifying glass for the searchBar*/
+                <button className="searchButton">
+                <img src={SearchIcon} /*TODO: Get an image of a magnifying glass for the searchBar*/
                      alt="search" /*Alternative tag is useful for screen readers */
-                     onClick={() => searchAnimals(searchTerm)} /*calls the search function to find an animal*/
-                />
+                     height="20"
+                     width="20"
+                     onClick={() => {if(searchTerm !== "") {searchAnimals(searchTerm)}}} /*calls the search function to find an animal / enclosure */
+                /></button>
             </div>
         </div>
     )
