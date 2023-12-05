@@ -20,7 +20,7 @@ const NavBar = () => {
         )
     }
     return (
-        <button className="openbtn" onClick={() => openNavbar()}>☰ </button>
+        <button className="openbtn" onClick={() => openNavbar()}>☰</button>
     );
 }
 export default NavBar;

@@ -33,6 +33,9 @@
 }
 
 .openbtn {
+    position: fixed;
+    left: 0;
+    top: 0;
     font-size: 20px;
     cursor: pointer;
     background-color: #111;

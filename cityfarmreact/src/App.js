@@ -14,7 +14,6 @@ const App = () => {
             <div className="Content">
                 <Routes>
                     <Route exact path="/" > {/*This is just for testing. Will probably navigate to a home page */}
-                        {/*<AnimalTable/>*/}
                     </Route>
                     <Route exact path="/animals" element={<AnimalTable/>}> {/*There won't be pathing issues since all api paths start /api*/}
                     </Route>

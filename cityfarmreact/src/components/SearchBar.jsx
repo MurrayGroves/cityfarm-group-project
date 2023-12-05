@@ -9,7 +9,7 @@ const SearchBar = () => {
         setSearchTerm(data)
     }
     useEffect(() => {
-        searchAnimals(searchTerm);
+        //searchAnimals(searchTerm);
     },[]);
     return(
         <div className="app">

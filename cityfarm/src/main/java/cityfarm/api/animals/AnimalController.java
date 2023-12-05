@@ -1,7 +1,9 @@
 package cityfarm.api.animals;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.actuate.autoconfigure.observation.ObservationProperties;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,9 +23,10 @@ public class AnimalController {
      * @return a list of all animals in the DB
      */
     @GetMapping("/api/animals")
-    public List<AnimalGeneric> get_animals() {
-        return animalRepository.findAll();
-        //return List.of(new CowGeneric("james","daisy","bob",Boolean.TRUE,Boolean.FALSE));
+    public ResponseEntity<List<AnimalGeneric>> get_animals() {
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.set(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "*");
+        return ResponseEntity.ok().headers(responseHeaders).body(animalRepository.findAll());
     }
 
     /**

@@ -1,35 +1,26 @@
 import React, {useEffect, useState} from "react";
-import baseURL from "../api/axiosConfig.js";
+import axios from "../api/axiosConfig";
 import SearchBar from "../components/SearchBar";
-
-const animal1 = {
-    "type": "cow",
-    "_id": "0",
-    "name": "Bob",
-    "mother": null,
-    "father": null,
-    "alive": true,
-    "tb_inoculated": true,
-}
+import "../components/AnimalTable.css";
 
 const AnimalTable = () => {
     const [animalList, setAnimalList] = useState([]); /* The State for the list of animals. The initial state is [] */
-    const getAnimals = async () => {}
     useEffect (() => {
         (async () => {
-            const response = await fetch(`${baseURL}/animals`);
-            const data = await response.json();
-            setAnimalList(data)
+            try {
+                const response = await axios.get(`/animals`);
+                console.log(response);
+                setAnimalList(response.data);
+            } catch (error) {
+                window.alert(error);
+            }
         })()
-        //getAnimals()
     },[]);
-
-    return (<>{animalList}</>)
 
     return(<>
         <SearchBar/>
         {animalList?.length > 0 ? (
-            <div className="Table">
+            <div className="animal-table">
                 <table>
                     <thead>
                     <tr>
@@ -38,7 +29,7 @@ const AnimalTable = () => {
                     <th>Type</th>
                     <th>Father</th>
                     <th>Mother</th>
-                    <th>TB inoculated</th>
+                    <th>TB Inoculated</th>
                     <th>Alive</th>
                     </tr>
                     </thead>
@@ -50,8 +41,8 @@ const AnimalTable = () => {
                                 <td>{animal.type}</td>
                                 <td>{animal.father != null ? animal.father : 'unregistered'}</td>
                                 <td>{animal.mother != null ? animal.mother : 'unregistered'}</td>
-                                <td>{animal.tb_inoculated} </td>
-                                <td>{animal.alive}</td>
+                                <td>{animal.tb_inoculated ? 'True' : 'False'}</td>
+                                <td>{animal.alive ? 'True' : 'False'}</td>
                             </tr>
                         ))}
                 </tbody>

@@ -6,21 +6,3 @@
   justify-content: center;
   align-items: center;
 }
-
-table {
-  border: 2px solid forestgreen;
-  width: 1200px;
-  height: 700px;
-}
-
-
-th {
-  width:10px;
-  height: 10px;
-  border-bottom: 3px solid black;
-}
-
-td {
-  text-align: center;
-  border: 4px solid black;
-}
