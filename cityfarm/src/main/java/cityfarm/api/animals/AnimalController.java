@@ -23,6 +23,7 @@ public class AnimalController {
     @GetMapping("/api/animals")
     public List<AnimalGeneric> get_animals() {
         return animalRepository.findAll();
+        //return List.of(new CowGeneric("james","daisy","bob",Boolean.TRUE,Boolean.FALSE));
     }
 
     /**

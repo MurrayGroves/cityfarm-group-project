@@ -80,18 +80,27 @@
   <table class="table table-dark">
     <thead>
     <tr>
-      <th scope="col">ID</th>
+<!--      <th scope="col">ID</th>-->
+<!--      <th scope="col">Species</th>-->
+<!--      <th scope="col">DOB</th>-->
       <th scope="col">Name</th>
-      <th scope="col">Species</th>
-      <th scope="col">DOB</th>
+      <th scope="col">Mother</th>
+      <th scope="col">Father</th>
+      <th scope="col">Alive</th>
+
     </tr>
     </thead>
     <tbody>
     <tr th:each="animal: ${animals}">
-      <td th:text="${animal.ID}"/>
+<!--      <td th:text="${animal.ID}"/>-->
+<!--      <td th:text="${animal.species}"/>-->
+<!--      <td th:text="${animal.DOB}"/>-->
       <td th:text="${animal.name}"/>
-      <td th:text="${animal.species}"/>
-      <td th:text="${animal.DOB}"/>
+      <td th:text="${animal.mother}"/>
+      <td th:text="${animal.father}"/>
+      <td th:text="${animal.alive}"/>
+
+
     </tr>
     </tbody>
   </table>
