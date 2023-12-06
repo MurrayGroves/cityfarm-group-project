@@ -53,7 +53,7 @@ const Calendar = () => {
         <div className="calendar">
             <h1>Calendar</h1>
             <h2>Add New Event</h2>
-            <div>
+            <div style{{zIndex: 999, position: "relative"}}>
                 <input type="text" placeholder="Add Title" style={{width: "20%", marginRight: "10px"}}
                     value={newEvent.title}
                     onChange={(e) => setNewEvent({...newEvent, title: e.target.value})}/>
