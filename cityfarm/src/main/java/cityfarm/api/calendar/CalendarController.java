@@ -1,15 +1,17 @@
 package cityfarm.api.calendar;
 
 import cityfarm.api.animals.AnimalGeneric;
+import cityfarm.api.db.ZonedDateTimeReadConverter;
+import cityfarm.api.db.ZonedDateTimeWriteConverter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.data.mongodb.core.convert.MongoCustomConversions;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -30,8 +32,8 @@ public class CalendarController {
         return instances;
     }
 
-    @PostMapping("/api/events/create")
-    public ResponseEntity<Event> create_event(Event event) {
+    @PostMapping("/api/events/create/once")
+    public ResponseEntity<Event> create_event(@RequestBody EventOnce event) {
         eventsRepository.save(event);
 
         return ResponseEntity.ok().body(event);

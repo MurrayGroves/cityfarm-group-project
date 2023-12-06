@@ -1,16 +1,22 @@
 package cityfarm.api.calendar;
 
-import cityfarm.api.animals.AnimalUnique;
+import cityfarm.api.animals.*;
 import cityfarm.api.enclosure.Enclosure;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.mongodb.lang.NonNull;
+import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.lang.Nullable;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
 
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = EventOnce.class, name = "once"),
+        @JsonSubTypes.Type(value = EventRecurring.class, name = "recurring"),
+})
+@Document("events")
 public abstract class Event {
     public List<Enclosure> attachedEnclosures;
 
@@ -22,7 +28,7 @@ public abstract class Event {
 
     public List<Person> attachedPeople;
 
-    public Boolean allDay;
+    public Boolean all_day;
 
     public ZonedDateTime start;
     public ZonedDateTime end;
