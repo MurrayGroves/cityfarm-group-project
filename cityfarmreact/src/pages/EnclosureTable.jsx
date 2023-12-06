@@ -22,22 +22,34 @@ const EnclosureTable = () => {
         <SearchBar/>
         {enclosureList?.length > 0 ? (
             <div className="animal-table">
-                <table>
+                <table style={{width: '100%'}}>
                     <thead>
                     <tr>
-                    <th>ID</th>
                     <th>Name</th>
-                    <th>Capacities</th>
                     <th>Holding</th>
-                    </tr>
+                    <th>Capacities</th>
+                    </tr>   
                     </thead>
                     <tbody>
                         {enclosureList.map((enclosure) => (
                             <tr>
-                                <td>{enclosure._id}</td>
                                 <td>{enclosure.name}</td>
-                                <td>{enclosure.capacities}</td>
-                                <td>{enclosure.holding ? 'Livestock' : 'Full'}</td>
+
+                                <td>{Object.keys(enclosure.holding).map((key) => {
+                                    return(<>
+                                        {key}: {Object.keys(enclosure.holding[key]).map((animal) => {
+                                            return(<>
+                                                {enclosure.holding[key][animal].name},
+                                            </>)
+                                        })} <br></br>
+                                    </>)
+                                })}</td>
+
+                                <td>{Object.keys(enclosure.capacities).map((key) => {
+                                    return(<>
+                                        {key}: {enclosure.capacities[key]} <br></br>
+                                    </>)
+                                })}</td>
                             </tr>
                         ))}
                 </tbody>

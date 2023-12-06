@@ -21,6 +21,9 @@ const AnimalTable = () => {
     },[]);
     useEffect (() => {
         (async () => {
+            if (searchTerm === '') {
+                return;
+            }
             try {
                 const response = await axios.get(`/animals`);
                 console.log(response.data);
@@ -32,6 +35,9 @@ const AnimalTable = () => {
     },[clear]);
     useEffect (() => {
         (async () => {
+            if (searchTerm === '') {
+                return;
+            }
             try {
                 const response = await axios.get(`/animals/by_name/${searchTerm}`);
                 console.log(response.data);
@@ -52,7 +58,6 @@ const AnimalTable = () => {
                 <table style={{width: "100%"}}>
                     <thead>
                     <tr>
-                    <th>ID</th>
                     <th>Name</th>
                     <th>Type</th>
                     <th>Father</th>
@@ -65,7 +70,6 @@ const AnimalTable = () => {
                     <tbody>
                         {animalList.map((animal) => (
                             <tr>
-                                <td>{animal._id}</td>
                                 <td>{animal.name}</td>
                                 <td>{animal.type.toUpperCase()}</td>
                                 <td>{animal.father != null ? animal.father : 'Unregistered'}</td>
