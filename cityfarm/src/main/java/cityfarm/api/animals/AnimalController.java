@@ -67,6 +67,9 @@ public class AnimalController {
      */
     @PostMapping("/api/animals/cow/create")
     public ResponseEntity<Cow> create_animal(@RequestBody CowGeneric cowReq) {
+        responseHeaders.set(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "http://localhost:3000");
+        responseHeaders.set(HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS, "GET, POST, OPTIONS");
+        responseHeaders.set(HttpHeaders.ACCESS_CONTROL_ALLOW_HEADERS, "Content-Type, Authorization");
 
 
         Cow cow = new Cow(cowReq, null, null);
@@ -74,50 +77,54 @@ public class AnimalController {
         animalRepository.save(cow);
 
         String location = String.format("/animals/by_id/%s", cow.get_id());
-        return ResponseEntity.created(URI.create(location)).body(cow);
+        return ResponseEntity.created(URI.create(location)).headers(responseHeaders).body(cow);
     }
 
     @PostMapping("/api/animals/sheep/create")
     public ResponseEntity<Sheep> create_animal(@RequestBody SheepGeneric sheepReq) {
+        responseHeaders.set(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "http://localhost:3000");
 
         Sheep sheep = new Sheep(sheepReq, UUID.randomUUID().toString(), System.currentTimeMillis() / 1000L);
 
         animalRepository.save(sheep);
 
         String location = String.format("/animals/by_id/%s", sheep.get_id());
-        return ResponseEntity.created(URI.create(location)).body(sheep);
+        return ResponseEntity.created(URI.create(location)).headers(responseHeaders).body(sheep);
     }
 
     @PostMapping("/api/animals/chicken/create")
     public ResponseEntity<Chicken> create_animal(@RequestBody ChickenGeneric chickenReq) {
+        responseHeaders.set(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "http://localhost:3000");
 
         Chicken chicken = new Chicken(chickenReq, UUID.randomUUID().toString(), System.currentTimeMillis() / 1000L);
 
         animalRepository.save(chicken);
 
         String location = String.format("/animals/by_id/%s", chicken.get_id());
-        return ResponseEntity.created(URI.create(location)).body(chicken);
+        return ResponseEntity.created(URI.create(location)).headers(responseHeaders).body(chicken);
     }
 
     @PostMapping("/api/animals/pig/create")
     public ResponseEntity<Pig> create_animal(@RequestBody PigGeneric pigReq) {
+        responseHeaders.set(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "http://localhost:3000");
 
         Pig pig = new Pig(pigReq, UUID.randomUUID().toString(), System.currentTimeMillis() / 1000L);
 
         animalRepository.save(pig);
 
         String location = String.format("/animals/by_id/%s", pig.get_id());
-        return ResponseEntity.created(URI.create(location)).body(pig);
+        return ResponseEntity.created(URI.create(location)).headers(responseHeaders).body(pig);
     }
 
     @PostMapping("/api/animals/goat/create")
     public ResponseEntity<Goat> create_animal(@RequestBody GoatGeneric goatReq) {
+        responseHeaders.set(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "http://localhost:3000");
 
         Goat goat = new Goat(goatReq, UUID.randomUUID().toString(), System.currentTimeMillis() / 1000L);
 
         animalRepository.save(goat);
 
         String location = String.format("/animals/by_id/%s", goat.get_id());
-        return ResponseEntity.created(URI.create(location)).body(goat);
+        return ResponseEntity.created(URI.create(location)).headers(responseHeaders).body(goat);
     }
 }
