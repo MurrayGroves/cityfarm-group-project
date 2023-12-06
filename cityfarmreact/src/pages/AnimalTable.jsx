@@ -8,6 +8,7 @@ const AnimalTable = () => {
     const [animalList, setAnimalList] = useState([]); /* The State for the list of animals. The initial state is [] */
     const [searchTerm, setSearchTerm] = useState(''); /* The term being search for in the searchbar */
     const [clear, setClear] = useState(0); /* Clear will reset the table to display all animals once updated*/
+    const [create, setCreate] = useState({name: '', type: '', father: '', mother: '', tb_inoculated: '', male: '', alive: ''})
     useEffect (() => {
         (async () => {
             try {
@@ -78,6 +79,66 @@ const AnimalTable = () => {
                                 <td>{animal.alive ? 'Yes' : 'No'}</td>
                             </tr>
                         ))}
+                        <tr>
+                            <td><input placeholder="name" value= {create.name} onChange = {(e) => {
+                                setCreate((prevCreate) => ({
+                                    ...prevCreate,
+                                    name: e.target.value,
+                                  }))
+                            }}></input></td>
+
+                            <td><input placeholder="type" value= {create.type} onChange = {(e) => {
+                                setCreate((prevCreate) => ({
+                                    ...prevCreate,
+                                    type: e.target.value,
+                                  }))
+                            }}></input></td>
+
+                            <td><input placeholder="father" value= {create.father} onChange = {(e) => {
+                                setCreate((prevCreate) => ({
+                                    ...prevCreate,
+                                    father: e.target.value,
+                                  }))
+                            }}></input></td>
+
+                            <td><input placeholder="mother" value= {create.mother} onChange = {(e) => {
+                                setCreate((prevCreate) => ({
+                                    ...prevCreate,
+                                    mother: e.target.value,
+                                  }))
+                            }}></input></td>
+
+                            <td><input placeholder="tb inoculated" value= {create.tb_inoculated} onChange = {(e) => {
+                                setCreate((prevCreate) => ({
+                                    ...prevCreate,
+                                    tb_inoculated: 'true'.includes(e.target.value),
+                                  }))
+                            }}></input></td>
+
+                            <td><input placeholder="gender" value= {create.male} onChange = {(e) => {
+                                setCreate((prevCreate) => ({
+                                    ...prevCreate,
+                                    male: 'true'.includes(e.target.value),
+                                  }))
+                            }}></input></td>
+
+                            <td><input placeholder="live" value= {create.alive} onChange = {(e) => {
+                                setCreate((prevCreate) => ({
+                                    ...prevCreate,
+                                    alive: 'true'.includes(e.target.value),
+                                  }))
+                            }}></input>
+                            <button
+                                height="20"
+                                width="20"
+                                onClick={() => {
+                                    axios.post(`/animals/${create.type}/create`, create, {crossdomain:true ,headers: {    "Access-Control-Allow-Origin": "*",
+                                    "Access-Control-Allow-Credentials": true}});
+                                    window.location.reload(false);
+                                }}>Add
+                            </button>
+                            </td>
+                        </tr>
                 </tbody>
                 </table>
             </div>
