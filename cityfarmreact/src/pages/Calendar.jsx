@@ -7,7 +7,7 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 import React, {useState} from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import EventView from "./EventView";
+//import EventView from "./EventView";
 import clickRef from "react-big-calendar/dist/react-big-calendar";
 
 const locales = {

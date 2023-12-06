@@ -20,6 +20,7 @@ const AnimalTable = () => {
     return(<>
         <h1>Livestock</h1>
         <SearchBar/>
+        {/*<CreateButton/>*/}
         {animalList?.length > 0 ? (
             <div className="animal-table">
                 <table>
@@ -31,7 +32,8 @@ const AnimalTable = () => {
                     <th>Father</th>
                     <th>Mother</th>
                     <th>TB Inoculated</th>
-                    <th>Alive</th>
+                    <th>Gender</th>
+                    <th>Live</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -43,7 +45,8 @@ const AnimalTable = () => {
                                 <td>{animal.father != null ? animal.father : 'Unregistered'}</td>
                                 <td>{animal.mother != null ? animal.mother : 'Unregistered'}</td>
                                 <td>{animal.tb_inoculated ? 'True' : 'False'}</td>
-                                <td>{animal.alive ? 'True' : 'False'}</td>
+                                <td>{animal.male ? 'Male' : 'Female'}</td>
+                                <td>{animal.alive ? 'Yes' : 'No'}</td>
                             </tr>
                         ))}
                 </tbody>

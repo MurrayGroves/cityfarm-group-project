@@ -16,14 +16,14 @@ const App = () => {
                 <Routes>
                     <Route exact path="/" > {/*This is just for testing. Will probably navigate to a home page */}
                     </Route>
+                    <Route path="/calendar" element={<Calendar/>}>
+                    </Route>
                     <Route exact path="/animals" element={<AnimalTable/>}> {/*There won't be pathing issues since all api paths start /api*/}
+                    </Route>
+                    <Route path="/enclosures" element={<EnclosureTable/>}>
                     </Route>
                     <Route path="/create">
                         {/*<Create/> when implemented*/}
-                    </Route>
-                    <Route path="/calendar" element={<Calendar/>}>
-                    </Route>
-                    <Route path="/enclosures" element={<EnclosureTable/>}>
                     </Route>
                 </Routes>
             </div>
