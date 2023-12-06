@@ -112,23 +112,22 @@ const Calendar = () => {
     }
 
     return (
-        <div className="CalendarPage">  
+        <div className="CalendarPage" style={{height: "75%"}}>  
         <h1>Calendar</h1>
-        <div>
-            <div style={{ display: "flex"}}>
-            <div style={{width: "65%", height: "100%"}}><BigCalendar localizer={localizer}
+        <div style={{height: "100%"}}>
+            <div style={{ display: "flex", height: "100%"}}>
+            <div style={{width: "65%"}}><BigCalendar localizer={localizer}
                          events={allEvents}
                          startAccessor="start"
                          endAccessor="end"
-                         style={{height: 500, margin:"50px"}}
+                         style={{height: "100%", margin:"20px 40px 0 0"}} 
                          showMultiDayTimes
                          onSelectEvent={eventSelected}
             /></div>
-            <div style={{width: "35%", minWidth: 359, maxWidth: 359, margin: "50px 50px 0 0", padding: "0px 10px 10px 10px", height: "100%",boxShadow: "0 0 20px rgba(0, 0, 0, 0.15)"}}>
-                <div>
-                {
-                    selectedEvent !== "No event selected" ?
-                        <><h2>Selected Event</h2>
+            <div style={{width: "35%"}}>
+                { selectedEvent !== "No event selected" ?
+                <div style={{width: 358.5, padding: "10px 10px 10px 10px", boxShadow: "0 0 20px rgba(0, 0, 0, 0.15)"}}>
+                        <h2 style={{margin: "0 0 10px 0"}}>Selected Event</h2>
                         <div>
                             <h3>{selectedEvent.title}</h3>
                             {
@@ -142,19 +141,17 @@ const Calendar = () => {
                                     </div>
                             
                             }
-                        </div></>
-                        :
-                        <div></div>                    
-                }
+                        </div> 
                 </div>
-                <div>
-                <h2>Add New Event</h2>
+                :
+                <div></div>
+                }
+                <div style={{width: "85%", width: 358.5, margin: "50px 50px 0 0", padding: "10px 10px 10px 10px", boxShadow: "0 0 20px rgba(0, 0, 0, 0.15)"}}>
+                <h2 style={{margin: "0 0 10px 0"}}>Add New Event</h2>
             <div>
                 <input type="text" placeholder="Add Title" style={{width: "98%"}}
                        value={newEvent.title}
                        onChange={(e) => setNewEvent({...newEvent, title: e.target.value})}/>
-
-
 
                 {showingTime(!newEvent.allDay)}
 
