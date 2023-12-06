@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import axios from "../api/axiosConfig";
+import axios from '../api/axiosConfig'
 import SearchBar from "../components/SearchBar";
 import "../components/AnimalTable.css";
 
@@ -9,7 +9,7 @@ const AnimalTable = () => {
         (async () => {
             try {
                 const response = await axios.get(`/animals`);
-                console.log(response);
+                console.log(response.data);
                 setAnimalList(response.data);
             } catch (error) {
                 window.alert(error);
