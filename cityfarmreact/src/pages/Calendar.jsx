@@ -8,6 +8,7 @@ import React, {useState} from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import clickRef from "react-big-calendar/dist/react-big-calendar";
+import "../components/Calendar.css";
 
 const locales = {
     "en-GB" : require("date-fns/locale/en-GB")
@@ -67,51 +68,55 @@ const Calendar = () => {
     }
     function showingTime(isShown) {
         if (isShown){
-            return(
-
-                <div style={{zIndex : 999 ,position :"relative"}}>
-                    <DatePicker placeholderText="Start Date" style={{marginRight: "10px"}}
+            return(<>
+                <div style={{zIndex : 1, position: "relative", width: "100%"}}>
+                    <DatePicker placeholderText="Start Date"
+                                style={{}}
                                 showTimeSelect
                                 todayButton = "Today"
-                                selected={newEvent.start} onChange={(e) => setNewEvent({...newEvent,
-                        start: e})}
-                                dateFormat="MM/dd/yy h:mm aa">
+                                selected={newEvent.start} onChange={(e) => setNewEvent({...newEvent, start: e})}
+                                dateFormat="dd/MM/yy hh:mm aa">
                     </DatePicker>
-                    <DatePicker placeholderText="End Date" style={{marginRight: "10px"}}
+                    <DatePicker placeholderText="End Date"
+                                style={{}}
                                 showTimeSelect
                                 todayButton = "Today"
                                 selected={newEvent.end} onChange={(e) => setNewEvent({...newEvent, end: e })}
-                                dateFormat="MM/dd/yy h:mm aa">
+                                dateFormat="dd/MM/yy hh:mm aa">
                     </DatePicker>
-                </div>
+                </div></>
             )
         }
         else{
-            return(
-                <div style={{zIndex : 999 ,position :"relative"}}>
-                    <DatePicker placeholderText="Start Date" style={{marginRight: "10px"}}
+            return(<>
+                <div style={{zIndex : 1, position: "relative", width: "100%"}}>
+                    <DatePicker placeholderText="Start Date"
+                                style={{}}
                                 selected={newEvent.start} onChange={(e) => setNewEvent({...newEvent, start: e})}
                                 todayButton = "Today"
-                                dateFormat="MM/dd/yy">
+                                dateFormat="dd/MM/yy">
                     </DatePicker>
-                    <DatePicker placeholderText="End Date" style={{marginRight: "10px"}}
+                    <DatePicker placeholderText="End Date"
+                                style={{}}
                                 selected={newEvent.end} onChange={(e) => setNewEvent({...newEvent, end: e })}
                                 todayButton = "Today"
-                                dateFormat="MM/dd/yy">
+                                dateFormat="dd/MM/yy">
                     </DatePicker>
-                </div>
+                </div></>
             )
         }
     }
+
     function eventSelected(event){
         setSelectedEvent(event)
     }
+
     return (
-        <div className="calendarPage">  
+        <div className="CalendarPage">  
         <h1>Calendar</h1>
-        <div className="calendar">
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gridGap: 20 }}>
-            <div><BigCalendar localizer={localizer}
+        <div>
+            <div style={{ display: "flex"}}>
+            <div style={{width: "65%", height: "100%"}}><BigCalendar localizer={localizer}
                          events={allEvents}
                          startAccessor="start"
                          endAccessor="end"
@@ -119,11 +124,11 @@ const Calendar = () => {
                          showMultiDayTimes
                          onSelectEvent={eventSelected}
             /></div>
-            <div>
+            <div style={{width: "35%", minWidth: 359, maxWidth: 359, margin: "50px 50px 0 0", padding: "0px 10px 10px 10px", height: "100%",boxShadow: "0 0 20px rgba(0, 0, 0, 0.15)"}}>
                 <div>
-                <h2>Selected Event</h2>
                 {
                     selectedEvent !== "No event selected" ?
+                        <><h2>Selected Event</h2>
                         <div>
                             <h3>{selectedEvent.title}</h3>
                             {
@@ -137,7 +142,7 @@ const Calendar = () => {
                                     </div>
                             
                             }
-                        </div>
+                        </div></>
                         :
                         <div></div>                    
                 }
@@ -145,7 +150,7 @@ const Calendar = () => {
                 <div>
                 <h2>Add New Event</h2>
             <div>
-                <input type="text" placeholder="Add Title" style={{width: "20%", marginRight: "10px"}}
+                <input type="text" placeholder="Add Title" style={{width: "98%"}}
                        value={newEvent.title}
                        onChange={(e) => setNewEvent({...newEvent, title: e.target.value})}/>
 
@@ -154,10 +159,12 @@ const Calendar = () => {
                 {showingTime(!newEvent.allDay)}
 
 
+                <div style={{marginTop: "10px"}}>
                 <input type = "checkbox" name="All Day"  value="True" checked={newEvent.allDay}
                        onChange={()=>changeAllDay(!newEvent.allDay)}/>
                 All day
-                <button style={{marginTop: "10px"}} onClick={handleAddEvent}>Add Event</button>
+                <button style={{float: "right"}} onClick={handleAddEvent}>Add Event</button>
+                </div>
             </div>
                 </div>
             </div>
