@@ -5,5 +5,11 @@ const CreateButton = () => {
 
 
 
-    return
+    return (<>
+
+       <button>Add Animal</button>
+
+    </>)
 }
+
+export default CreateButton;

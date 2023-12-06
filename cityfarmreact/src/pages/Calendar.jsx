@@ -55,7 +55,6 @@ const Calendar = () => {
     const [allEvents,setAllEvents] = useState(events)
     const handleAddEvent = () => {
         setAllEvents([...allEvents, newEvent]); /*Adds the new event to the list of allEvents} */
-
     }
     const changeAllDay = (isAllDay) =>{
         setNewEvent({...newEvent,allDay: isAllDay});

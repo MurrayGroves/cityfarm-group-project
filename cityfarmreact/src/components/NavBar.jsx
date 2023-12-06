@@ -2,15 +2,17 @@ import React, {useState} from 'react'
 import './NavBar.css'
 import {Link} from "react-router-dom";
 
-const NavBar = () => {
-    const [open, setOpen] = useState(false); /*Navbar starts closed*/
+const NavBar = (props) => {
+    const [open, setOpen] = useState(true); /*Navbar starts closed*/
+
     const openNavbar = () => {
         open ? setOpen(false) : setOpen(true); /*switches the value of open between true and false*/
+        props.openNavbar(open)
     }
 
     if (open) {
         return(
-        <div id="sidebar" className="sidebar" style={{width: 250}}>
+        <div id="sidebar" className="sidebar" style={{width: "12%"}}>
             <a href="" onClick={() => openNavbar()}>×</a>
             <Link to="/"> Home </Link>
             <Link to="/calendar"> Calendar </Link>
@@ -25,4 +27,5 @@ const NavBar = () => {
         <button className="openbtn" onClick={() => openNavbar()}>☰</button>
     );
 }
+
 export default NavBar;
