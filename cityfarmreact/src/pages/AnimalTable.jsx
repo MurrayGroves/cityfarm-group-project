@@ -2,6 +2,7 @@ import React, {useEffect, useState} from "react";
 import axios from '../api/axiosConfig'
 import SearchBar from "../components/SearchBar";
 import "../components/AnimalTable.css";
+import CreateButton from "../components/CreateButton";
 
 const AnimalTable = () => {
     const [animalList, setAnimalList] = useState([]); /* The State for the list of animals. The initial state is [] */
@@ -43,11 +44,12 @@ const AnimalTable = () => {
 
     return(<>
         <h1>Livestock</h1>
+
         <SearchBar search={setSearchTerm} clearValue={clear} clearSearch={setClear}/>
         {/*<CreateButton/>*/}
         {animalList?.length > 0 ? (
             <div className="animal-table">
-                <table>
+                <table style={{width: "100%"}}>
                     <thead>
                     <tr>
                     <th>ID</th>
