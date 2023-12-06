@@ -1,4 +1,4 @@
-name: tests
+name: Unit Tests
 on: push
 jobs:
   run_tests:
@@ -17,4 +17,6 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
       - name: Run tests with Maven
-        run: mvn -B test --file cityfarm/pom.xml
+        run: mvn '-Dtest=!%regex[.*Integration.*]' -B test --file cityfarm/pom.xml
+
+
