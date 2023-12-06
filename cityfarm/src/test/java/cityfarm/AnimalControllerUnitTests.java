@@ -29,8 +29,8 @@ public class AnimalControllerUnitTests {
 
     @Before
     public void setUp() {
-        Cow alice = new Cow("abcd-1234", "Alice", null, null, null, null, true, true, null, true);
-        Cow alice2 = new Cow(null, "Alice", null, null, null, null, true, false, null, true);
+        Cow alice = new Cow("abcd-1234", "Alice", null, null, null, null, true, true, null, true, null);
+        Cow alice2 = new Cow(null, "AliCe", null, null, null, null, true, false, null, true, null);
         List<AnimalGeneric> aliceCows = List.of(alice, alice2);
         Mockito.when(animalRepository.findAnimalByName("Alice")).thenReturn(aliceCows);
         Mockito.when(animalRepository.findAnimalById("abcd-1234")).thenReturn(alice);

@@ -57,8 +57,13 @@ public abstract class AnimalGeneric {
      */
     @Nullable
     public ZonedDateTime dateOfBirth;
+    /**
+     * Free text for notes on an animal
+     */
+    @Nullable
+    public String notes;
 
-    public AnimalGeneric(@Nullable String name, @Nullable String mother, @Nullable String father,@Nullable String breed, @NonNull Boolean alive, @NonNull Boolean male, @Nullable ZonedDateTime dateOfBirth) {
+    public AnimalGeneric(@Nullable String name, @Nullable String mother, @Nullable String father,@Nullable String breed, @NonNull Boolean alive, @NonNull Boolean male, @Nullable ZonedDateTime dateOfBirth, @Nullable String notes) {
         this.name = name;
         this.mother = mother;
         this.father = father;
