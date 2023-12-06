@@ -7,7 +7,6 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 import React, {useState} from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import EventView from "./EventView";
 import clickRef from "react-big-calendar/dist/react-big-calendar";
 
 const locales = {
@@ -26,22 +25,28 @@ const localizer = dateFnsLocalizer({
 
 const events = [ /*These are example events.*/
     {
-        title : "Big Meeting",
-        allDay: true,
-        start: new  Date(2023,12,1),
-        end: new  Date(2023,12,14),
+        title : "Boss Meeting",
+        allDay: false,
+        start: new  Date(2023,11,1, 13),
+        end: new  Date(2023,11,1, 14),
     },
     {
-        title : "Vacation",
-        allDay: true,
-        start: new  Date(2023,11,25),
-        end: new  Date(2023,11,28)
+        title : "Bull in with cows",
+        allDay: false,
+        start: new  Date(2023,11,25, 8),
+        end: new  Date(2023,11,28, 16),
     },
     {
-        title : "Conference",
+        title : "School Visits",
+        allDay: true,
+        start: new  Date(2023,11,20),
+        end: new  Date(2023, 11, 21, 23, 59),
+    },
+    {
+        title : "Defra Inspection",
         allDay: true,
         start: new  Date(2023,11,29),
-        end: new  Date(2024,1,3,6,18,29)
+        end: new Date(2023, 11, 29),
     }
 ];
 
@@ -53,6 +58,7 @@ const Calendar = () => {
         end:  new Date(2023,11,6,18,29)
     })
     const [allEvents,setAllEvents] = useState(events)
+    const [selectedEvent,setSelectedEvent] = useState("No event selected")
     const handleAddEvent = () => {
         setAllEvents([...allEvents, newEvent]); /*Adds the new event to the list of allEvents} */
 
@@ -94,21 +100,51 @@ const Calendar = () => {
                                 todayButton = "Today"
                                 dateFormat="MM/dd/yy">
                     </DatePicker>
-                    deselect all day to see timing options
                 </div>
             )
         }
     }
     function eventSelected(event){
-        window.clearTimeout(clickRef?.current)
-        clickRef.current = window.setTimeout(() => {
-            window.alert(event.title +"\n"+event.start+"->"+event.end)
-        }, 250)
+        setSelectedEvent(event)
     }
     return (
+        <div className="calendarPage">  
+        <h1>Calendar</h1>
         <div className="calendar">
-            <h1>Calendar</h1>
-            <h2>Add New Event</h2>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gridGap: 20 }}>
+            <div><BigCalendar localizer={localizer}
+                         events={allEvents}
+                         startAccessor="start"
+                         endAccessor="end"
+                         style={{height: 500, margin:"50px"}}
+                         showMultiDayTimes
+                         onSelectEvent={eventSelected}
+            /></div>
+            <div>
+                <div>
+                <h2>Selected Event</h2>
+                {
+                    selectedEvent !== "No event selected" ?
+                        <div>
+                            <h3>{selectedEvent.title}</h3>
+                            {
+                                selectedEvent.allDay ?
+                                    <div>
+                                        <p>{selectedEvent.start.toLocaleDateString()} {selectedEvent.end == null ? <p></p>:selectedEvent.end.toLocaleDateString()===selectedEvent.start.toLocaleDateString() ? <p></p>: " - " + selectedEvent.end.toLocaleDateString()}</p>
+                                    </div>
+                                    :
+                                    <div>
+                                        <p>{selectedEvent.start.toLocaleString([], {year: '2-digit', month: '2-digit', day: '2-digit', hour: '2-digit', minute:'2-digit'})} - {selectedEvent.start.toLocaleDateString() === selectedEvent.end.toLocaleDateString() ? selectedEvent.end.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}): selectedEvent.end.toLocaleString([], {year: '2-digit', month: '2-digit', day: '2-digit', hour: '2-digit', minute:'2-digit'})}</p>
+                                    </div>
+                            
+                            }
+                        </div>
+                        :
+                        <div></div>                    
+                }
+                </div>
+                <div>
+                <h2>Add New Event</h2>
             <div>
                 <input type="text" placeholder="Add Title" style={{width: "20%", marginRight: "10px"}}
                        value={newEvent.title}
@@ -124,15 +160,11 @@ const Calendar = () => {
                 All day
                 <button style={{marginTop: "10px"}} onClick={handleAddEvent}>Add Event</button>
             </div>
-            <BigCalendar localizer={localizer}
-                         events={allEvents}
-                         startAccessor="start"
-                         endAccessor="end"
-                         style={{height: 500, margin:"50px"}}
-                         showMultiDayTimes
-                         onSelectEvent={eventSelected}
-            />
-        </div>);
-}
+                </div>
+            </div>
+            </div>
+        </div>
+        </div>
+    );}
 
 export default Calendar;
