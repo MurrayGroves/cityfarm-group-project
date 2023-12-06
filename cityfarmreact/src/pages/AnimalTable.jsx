@@ -52,7 +52,6 @@ const AnimalTable = () => {
         <h1>Livestock</h1>
 
         <SearchBar search={setSearchTerm} clearValue={clear} clearSearch={setClear}/>
-        {/*<CreateButton/>*/}
         {animalList?.length > 0 ? (
             <div className="animal-table">
                 <table style={{width: "100%"}}>

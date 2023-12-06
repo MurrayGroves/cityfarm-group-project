@@ -4,10 +4,13 @@ import axios from "../api/axiosConfig";
 const CreateButton = () => {
 
 
+    const animalForm = () => {
+
+    }
 
     return (<>
 
-       <button>Add Animal</button>
+       <button onClick={animalForm}>Add Animal</button>
 
     </>)
 }
