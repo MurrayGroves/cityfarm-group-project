@@ -29,9 +29,9 @@ public class Pig extends PigGeneric implements AnimalUnique{
 
     @JsonCreator
     @PersistenceCreator
-    public Pig(@JsonProperty("_id") @Nullable String id, @JsonProperty("name") @Nullable String name, @JsonProperty("mother") @Nullable String mother, @JsonProperty("father") @Nullable String father, @JsonProperty("breed") @NonNull String breed, @JsonProperty("created_at") @Nullable Long created_at, @JsonProperty("alive") @NonNull Boolean alive, @JsonProperty("male") @NonNull Boolean male, @JsonProperty("dateOfBirth") @NonNull ZonedDateTime dateOfBirth, @JsonProperty("origin") @NonNull String origin) {
+    public Pig(@JsonProperty("_id") @Nullable String id, @JsonProperty("name") @Nullable String name, @JsonProperty("mother") @Nullable String mother, @JsonProperty("father") @Nullable String father, @JsonProperty("breed") @NonNull String breed, @JsonProperty("created_at") @Nullable Long created_at, @JsonProperty("alive") @NonNull Boolean alive, @JsonProperty("male") @NonNull Boolean male, @JsonProperty("dateOfBirth") @NonNull ZonedDateTime dateOfBirth, @JsonProperty("origin") @NonNull String origin, @JsonProperty("notes") @Nullable String notes) {
         // Construct pigGeneric
-        super(name, mother, father, breed, alive, male, dateOfBirth, origin);
+        super(name, mother, father, breed, alive, male, dateOfBirth, origin, notes);
 
         // Generate `ID` and `created_at` if not present
         this.id = Objects.requireNonNullElseGet(id, () -> UUID.randomUUID().toString());
@@ -46,7 +46,7 @@ public class Pig extends PigGeneric implements AnimalUnique{
      */
     public Pig(@NonNull PigGeneric pig, @Nullable String id, @Nullable Long created_at) {
         // Construct pigGeneric with existing pig's properties
-        super(pig.name, pig.mother, pig.father, pig.breed, pig.alive, pig.male, pig.dateOfBirth, pig.origin);
+        super(pig.name, pig.mother, pig.father, pig.breed, pig.alive, pig.male, pig.dateOfBirth, pig.origin, pig.notes);
 
         // Generate `ID` and `created_at` if not present
         this.id = Objects.requireNonNullElseGet(id, () -> UUID.randomUUID().toString());

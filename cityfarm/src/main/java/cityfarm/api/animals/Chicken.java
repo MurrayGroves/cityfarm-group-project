@@ -23,9 +23,9 @@ public class Chicken extends ChickenGeneric {
 
     @JsonCreator
     @PersistenceCreator
-    public Chicken(@JsonProperty("_id") @Nullable String id, @JsonProperty("name") @Nullable String name, @JsonProperty("mother") @Nullable String mother, @JsonProperty("father") @Nullable String father, @JsonProperty("breed") @Nullable String breed, @JsonProperty("created_at") @Nullable Long created_at, @JsonProperty("alive") @NonNull Boolean alive, @JsonProperty("male") @NonNull Boolean male, @JsonProperty("dateOfBirth") @NonNull ZonedDateTime dateOfBirth) {
+    public Chicken(@JsonProperty("_id") @Nullable String id, @JsonProperty("name") @Nullable String name, @JsonProperty("mother") @Nullable String mother, @JsonProperty("father") @Nullable String father, @JsonProperty("breed") @Nullable String breed, @JsonProperty("created_at") @Nullable Long created_at, @JsonProperty("alive") @NonNull Boolean alive, @JsonProperty("male") @NonNull Boolean male, @JsonProperty("dateOfBirth") @NonNull ZonedDateTime dateOfBirth, @JsonProperty("notes") @Nullable String notes) {
         // Construct chickenGeneric
-        super(name, mother, father, breed, alive, male, dateOfBirth);
+        super(name, mother, father, breed, alive, male, dateOfBirth, notes);
 
         // Generate `ID` and `created_at` if not present
         this.id = Objects.requireNonNullElseGet(id, () -> UUID.randomUUID().toString());
@@ -40,7 +40,7 @@ public class Chicken extends ChickenGeneric {
      */
     public Chicken(@NonNull ChickenGeneric chicken, @Nullable String id, @Nullable Long created_at) {
         // Construct chickenGeneric with existing chicken's properties
-        super(chicken.name, chicken.mother, chicken.father, chicken.breed, chicken.alive, chicken.male, chicken.dateOfBirth);
+        super(chicken.name, chicken.mother, chicken.father, chicken.breed, chicken.alive, chicken.male, chicken.dateOfBirth, chicken.notes);
 
         // Generate `ID` and `created_at` if not present
         this.id = Objects.requireNonNullElseGet(id, () -> UUID.randomUUID().toString());

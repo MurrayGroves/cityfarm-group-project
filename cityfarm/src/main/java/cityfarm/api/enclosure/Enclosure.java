@@ -26,15 +26,15 @@ public class Enclosure extends EnclosureGeneric {
 
     @JsonCreator
     @PersistenceCreator
-    public Enclosure(@NonNull String name, @Nullable HashMap<String, Integer> capacities, @Nullable HashMap<String, Set<AnimalGeneric>> holding, @JsonProperty("_id") @Nullable String id) {
-        super(name, capacities, holding);
+    public Enclosure(@NonNull String name, @Nullable HashMap<String, Integer> capacities, @Nullable HashMap<String, Set<AnimalGeneric>> holding, @JsonProperty("_id") @Nullable String id, @JsonProperty("notes") @Nullable String notes) {
+        super(name, capacities, holding, notes);
 
         // Generate `ID` if not present
         this.id = Objects.requireNonNullElseGet(id, () -> UUID.randomUUID().toString());
     }
 
-    public Enclosure(@NonNull String name, @Nullable HashMap<String, Integer> capacities, @Nullable HashMap<String, Set<AnimalGeneric>> holding) {
-        super(name, capacities, holding);
+    public Enclosure(@NonNull String name, @Nullable HashMap<String, Integer> capacities, @Nullable HashMap<String, Set<AnimalGeneric>> holding, @JsonProperty("notes") @Nullable String notes) {
+        super(name, capacities, holding, notes);
 
         // Generate `ID`
         this.id = UUID.randomUUID().toString();
@@ -48,12 +48,12 @@ public class Enclosure extends EnclosureGeneric {
     }
 
     public Enclosure(@NonNull EnclosureGeneric enc, @Nullable String id) {
-        super(enc.name, enc.capacities, enc.holding);
+        super(enc.name, enc.capacities, enc.holding, enc.notes);
         this.id = Objects.requireNonNullElseGet(id, () -> UUID.randomUUID().toString());
     }
 
     public Enclosure(@NonNull EnclosureGeneric enc) {
-        super(enc.name, enc.capacities, enc.holding);
+        super(enc.name, enc.capacities, enc.holding, enc.notes);
         this.id = UUID.randomUUID().toString();
     }
 }
