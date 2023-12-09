@@ -1,11 +1,11 @@
 import React, {useState} from "react";
-import axios from "../api/axiosConfig";
 import "./SearchBar.css";
 import SearchIcon from "./search.png";
 import CreateButton from "./CreateButton.jsx";
 
 const SearchBar = (props) => {
     const [query, setQuery] = useState('');
+    const [mode, setMode] = useState("Name");
 
     return(
         <div className="search">
@@ -19,7 +19,10 @@ const SearchBar = (props) => {
                     alt="search" /*Alternative tag is useful for screen readers */
                     height="20"
                     width="20"
-                    onClick={() => {if(query !== "") props.search(query)}} /*calls the search function to find an animal / enclosure */
+                    onClick={() => {
+                        {mode === "Name" ?  props.setSearchMode("name") : props.setSearchMode("id")}
+                        if(query !== "") props.search(query)}} /*calls the search function to find an animal / enclosure */
+
             /></button>
             <button
                 height="20"
@@ -29,6 +32,10 @@ const SearchBar = (props) => {
                     props.clearValue ? props.clearSearch(0) : props.clearSearch(1);
                 }}>Clear
             </button>
+            <select value={mode} onChange={e=>setMode(e.target.value)}>
+                <option>Name</option>
+                <option>Id</option>
+            </select>
             <CreateButton/>
         </div>
     )
