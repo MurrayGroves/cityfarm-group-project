@@ -5,7 +5,7 @@ import CreateButton from "./CreateButton.jsx";
 
 const SearchBar = (props) => {
     const [query, setQuery] = useState('');
-    const [mode, setMode] = useState("Name");
+    const [mode, setMode] = useState("name");
 
     return(
         <div className="search">
@@ -17,16 +17,14 @@ const SearchBar = (props) => {
             <button className="searchButton">
             <img src={SearchIcon} /*TODO: Get an image of a magnifying glass for the searchBar*/
                     alt="search" /*Alternative tag is useful for screen readers */
-                    height="20"
-                    width="20"
+                    height="12"
+                    width="12"
                     onClick={() => {
-                        {mode === "Name" ?  props.setSearchMode("name") : props.setSearchMode("id")}
-                        if(query !== "") props.search(query)}} /*calls the search function to find an animal / enclosure */
+                        {mode === "name" ?  props.setSearchMode("name") : props.setSearchMode("id")}
+                        if (query !== "") props.search(query)}} /*calls the search function to find an animal / enclosure */
 
             /></button>
             <button
-                height="20"
-                width="20"
                 onClick={() => {if(query !== "")
                     setQuery('');
                     props.clearValue ? props.clearSearch(0) : props.clearSearch(1);
@@ -36,7 +34,6 @@ const SearchBar = (props) => {
                 <option>Name</option>
                 <option>Id</option>
             </select>
-            <CreateButton/>
         </div>
     )
 }

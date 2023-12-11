@@ -8,7 +8,7 @@
 }
 .animal-table thead tr {
     margin: 25px 0;
-    background-color: #1BE0BF;
+    background-color: rgb(32, 137, 222);
     text-align: left;
     font-weight: bold;
 }
@@ -22,7 +22,7 @@
     background-color: #f3f3f3;
 }
 .animal-table tbody tr:last-of-type{
-    border-bottom: 2px solid #1BE0BF;
+    border-bottom: 2px solid rgb(32, 137, 222);
 }
 
 .animal-table td, .animal-table th {

@@ -5,17 +5,16 @@ import "../components/AnimalTable.css";
 
 const AnimalTable = () => {
     const [animalList, setAnimalList] = useState([]); /* The State for the list of animals. The initial state is [] */
-    const [searchTerm, setSearchTerm] = useState(''); /* The term being search for in the searchbar */
+    const [searchTerm, setSearchTerm] = useState(''); /* The term being searched for in the searchbar */
+    const [searchMode, setSearchMode] = useState("name") /* The mode of search (by name or id) */
     const [clear, setClear] = useState(0); /* Clear will reset the table to display all animals once updated*/
     const [create, setCreate] = useState({name: '', type: '', father: '', mother: '', tb_inoculated: '', male: '', alive: ''})
-    const [searchMode, setSearchMode] = useState("name")
+    
     useEffect(displayAll,[])
     useEffect(displayAll,[clear])
+
     function displayAll() {
         (async () => {
-            if (searchTerm === '') {
-                return;
-            }
             try {
                 const response = await axios.get(`/animals`);
                 console.log(response.data);
@@ -25,6 +24,7 @@ const AnimalTable = () => {
             }
         })()
     }
+
     useEffect (() => {
         (async () => {
             if (searchTerm === '') {
@@ -131,10 +131,8 @@ const AnimalTable = () => {
                                   }))
                             }}></input>
                             <button
-                                height="20"
-                                width="20"
-                                onClick={() => {
-                                    axios.post(`/animals/${create.type}/create`, create, {crossdomain:true ,headers: {    "Access-Control-Allow-Origin": "*",
+                                onClick={async () => {
+                                    await axios.post(`/animals/${create.type}/create`, create, {crossdomain:true, headers: { "Access-Control-Allow-Origin": 'http://localhost:3000',
                                     "Access-Control-Allow-Credentials": true}});
                                     window.location.reload(false);
                                 }}>Add

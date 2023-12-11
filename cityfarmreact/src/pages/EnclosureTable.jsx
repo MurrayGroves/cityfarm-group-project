@@ -6,16 +6,14 @@ import "../components/AnimalTable.css";
 const EnclosureTable = () => {
     const [enclosureList, setEnclosureList] = useState([]); /* The State for the list of enclosures. The initial state is [] */
     const [searchTerm, setSearchTerm] = useState(''); /* The term being search for in the searchbar */
+    const [searchMode, setSearchMode] = useState("name") /* The mode of search (by name or id) */
     const [clear, setClear] = useState(0); /* Clear will reset the table to display all enclosures once updated*/
-    const [searchMode, setSearchMode] = useState("name")
+
     useEffect(displayAll,[])
-    useEffect (displayAll,[clear]);
+    useEffect(displayAll,[clear]);
 
     function displayAll() {
         (async () => {
-            if (searchTerm === '') {
-                return;
-            }
             try {
                 const response = await axios.get(`/enclosures`);
                 console.log(response.data);
@@ -30,7 +28,7 @@ const EnclosureTable = () => {
             if (searchTerm === '') {
                 return;
             }
-            if (searchMode === name) {
+            if (searchMode === "name") {
                 try {
                     const response = await axios.get(`/enclosures/by_name/${searchTerm}`);
                     console.log(response.data);
@@ -46,7 +44,8 @@ const EnclosureTable = () => {
                 setEnclosureList(response.data);
                 } catch (error) {
                     window.alert(error);
-            }}
+                }
+            }
         })()
     },[searchTerm])
 
