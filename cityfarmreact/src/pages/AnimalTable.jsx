@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from "react";
 import axios from '../api/axiosConfig'
 import SearchBar from "../components/SearchBar";
+import FarmTabs from "../components/FarmTabs";
 import "../components/AnimalTable.css";
 
 const AnimalTable = () => {
@@ -10,6 +11,8 @@ const AnimalTable = () => {
     const [clear, setClear] = useState(0); /* Clear will reset the table to display all animals once updated*/
     const [create, setCreate] = useState({name: '', type: '', father: '', mother: '', tb_inoculated: '', male: '', alive: ''})
     
+    const [farm, setFarm] = useState("");
+
     useEffect(displayAll,[])
     useEffect(displayAll,[clear])
 
@@ -52,6 +55,7 @@ const AnimalTable = () => {
     },[searchTerm])
 
     return(<>
+        <FarmTabs setFarm={setFarm}/>
         <h1>Livestock</h1>
 
         <SearchBar setSearchMode={setSearchMode} search={setSearchTerm} clearValue={clear} clearSearch={setClear}/>
