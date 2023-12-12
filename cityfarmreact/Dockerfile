@@ -7,6 +7,8 @@ COPY public/ /app/public
 COPY src/ /app/src
 COPY package.json /app/
 
+ENV BROWSER=none
+
 # Install dependencies
 RUN npm install
 
