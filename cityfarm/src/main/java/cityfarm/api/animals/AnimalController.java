@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:3000", methods = {RequestMethod.GET, RequestMethod.POST})
+@CrossOrigin(origins = {"http://localhost:3000", "https://bristolcityfarm.uksouth.azurecontainer.io"}, methods = {RequestMethod.GET, RequestMethod.POST})
 public class AnimalController {
     @Autowired
     AnimalRepository animalRepository;

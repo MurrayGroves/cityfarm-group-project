@@ -53,7 +53,7 @@ const AnimalTable = () => {
         <h1>Livestock</h1>
 
         <SearchBar search={setSearchTerm} clearValue={clear} clearSearch={setClear}/>
-        {animalList?.length > 0 ? (
+        {
             <div className="animal-table">
                 <table style={{width: "100%"}}>
                     <thead>
@@ -133,8 +133,8 @@ const AnimalTable = () => {
                                 width="20"
                                 onClick={() => {
                                     axios.post(`/animals/${create.type}/create`, create, {crossdomain:true ,headers: {    "Access-Control-Allow-Origin": "*",
-                                    "Access-Control-Allow-Credentials": true}});
-                                    window.location.reload(false);
+                                    "Access-Control-Allow-Credentials": true}}).then((response) => { window.location.reload(false);
+                                    });
                                 }}>Add
                             </button>
                             </td>
@@ -142,11 +142,7 @@ const AnimalTable = () => {
                 </tbody>
                 </table>
             </div>
-        ) : (
-            <div className="empty">
-                <h2>No Animals found</h2>
-            </div>
-        )}
+        }
     </>)
 }
 
