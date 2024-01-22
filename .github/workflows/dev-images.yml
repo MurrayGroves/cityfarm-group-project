@@ -62,3 +62,10 @@ jobs:
           push: true
           tags: ${{ steps.meta-spring.outputs.tags }}
           labels: ${{ steps.meta-spring.outputs.labels }}
+
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      
