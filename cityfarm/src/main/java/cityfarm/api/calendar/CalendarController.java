@@ -21,7 +21,7 @@ public class CalendarController {
     @Autowired
     EventsRepository eventsRepository;
 
-    private String host_url = "http://localhost:3000";
+    private final String host_url = "http://localhost:3000";
     HttpHeaders responseHeaders = new HttpHeaders();
 
 
@@ -42,6 +42,15 @@ public class CalendarController {
 
     @PostMapping("/api/events/create/once")
     public ResponseEntity<Event> create_event(@RequestBody EventOnce event) {
+        responseHeaders.set(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, host_url);
+
+        eventsRepository.save(event);
+
+        return ResponseEntity.ok().headers(responseHeaders).body(event);
+    }
+
+    @PostMapping("/api/events/create/recurring")
+    public ResponseEntity<Event> create_event(@RequestBody EventRecurring event) {
         responseHeaders.set(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, host_url);
 
         eventsRepository.save(event);

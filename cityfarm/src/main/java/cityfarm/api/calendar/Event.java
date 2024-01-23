@@ -33,6 +33,10 @@ public abstract class Event {
     public ZonedDateTime start;
     public ZonedDateTime end;
 
+    @Nullable private String id;
+
+    public abstract String get_id();
+
     public abstract List<EventInstance> nextOccurences(@NonNull ZonedDateTime from, @Nullable Integer num);
 
     public abstract List<EventInstance> occurencesBetween(@NonNull ZonedDateTime from, @NonNull ZonedDateTime to);
