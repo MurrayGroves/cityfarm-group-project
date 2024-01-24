@@ -1,0 +1,10 @@
+.tab-container {
+    display: flex;
+    justify-content: center;
+}
+
+.tab-container button {
+    margin: 0;
+    border-radius: 0 0 5px 5px;
+    border-color: black;
+}

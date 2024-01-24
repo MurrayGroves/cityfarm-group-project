@@ -2,19 +2,17 @@
     height: 100%;
     width: 0;
     position: fixed;
-    z-index: 1;
     top: 0;
     left: 0;
     background-color: rgba(0, 0, 40, 1);
     overflow-x: hidden;
-    transition: 0.5s;
-    padding-top: 30px;
+    padding-top: 20px;
 }
 
 .sidebar a {
-    padding: 8px 8px 8px 32px;
+    padding: 5px 5px 10px 20px;
     text-decoration: none;
-    font-size: 15px;
+    font-size: 18px;
     color: #818181;
     display: block;
     transition: 0.3s;
@@ -24,8 +22,9 @@
     color: #f1f1f1;
 }
 
-/* On smaller screens, where height is less than 450px, change the style of the sidenav (less padding and a smaller font size) */
-@media screen and (max-height: 450px) {
+/* // On smaller screens, where height is less than 450px, change the style of the sidenav (less padding and a smaller font size)
+@media screen and (min-height: 450px) {
     .sidebar {padding-top: 15px;}
-    .sidebar a {font-size: 18px;}
+    .sidebar a {font-size: 15px;}
 }
+*/

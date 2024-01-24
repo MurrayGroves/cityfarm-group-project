@@ -8,7 +8,7 @@ const Event =  (props) => {
         <div>
             <h3>{event.title}</h3>
             <a style={{
-                position: absolute,
+                position: "absolute",
                 top: 0,
                 right: 25,
                 marginLeft: 50

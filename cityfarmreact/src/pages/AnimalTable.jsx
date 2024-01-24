@@ -2,6 +2,7 @@ import React, {useEffect, useState} from "react";
 import axios from '../api/axiosConfig'
 import SearchBar from "../components/SearchBar";
 import "../components/AnimalTable.css";
+import FarmTabs from "../components/FarmTabs";
 
 const AnimalTable = () => {
     const [animalList, setAnimalList] = useState([]); /* The State for the list of animals. The initial state is [] */
@@ -10,6 +11,9 @@ const AnimalTable = () => {
     const [clear, setClear] = useState(0); /* Clear will reset the table to display all animals once updated*/
     const [create, setCreate] = useState({name: '', type: '', father: '', mother: '', tb_inoculated: '', male: '', alive: ''})
     
+    const [farm, setFarm] = useState("wh");
+    const [headerCol, setHeaderCol] = useState("blue");
+
     useEffect(displayAll,[])
     useEffect(displayAll,[clear])
 
@@ -51,15 +55,21 @@ const AnimalTable = () => {
         })()
     },[searchTerm])
 
+    useEffect (() => {
+        console.log(farm);
+        setHeaderCol('red');
+    },[farm])
+
     return(<>
+        <FarmTabs selectFarm={setFarm}/>
         <h1>Livestock</h1>
 
         <SearchBar setSearchMode={setSearchMode} search={setSearchTerm} clearValue={clear} clearSearch={setClear}/>
         {animalList?.length > 0 ? (
             <div className="animal-table">
-                <table style={{width: "100%"}}>
+                <table>
                     <thead>
-                    <tr>
+                    <tr style={{backgroundColor: {headerCol}}}>
                     <th>Name</th>
                     <th>Type</th>
                     <th>Father</th>
