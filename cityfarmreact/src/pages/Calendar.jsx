@@ -113,6 +113,7 @@ const Calendar = () => {
     }
 
     return (
+
         <div className="CalendarPage" style={{height: "75%"}}>  
         <h1>Calendar</h1>
         <div style={{height: "100%"}}>
@@ -127,9 +128,25 @@ const Calendar = () => {
             /></div>
             <div style={{width: "35%"}}>
                 { selectedEvent !== "No event selected" ?
-                    <Event setSelectedEvent={setSelectedEvent} selectedEvent={selectedEvent}/>
+                <div style={{width: 358.5, padding: "10px 10px 10px 10px", boxShadow: "0 0 20px rgba(0, 0, 0, 0.15)"}}>
+                        <h2 style={{margin: "0 0 10px 0"}}>Selected Event</h2>
+                        <div>
+                            <h3>{selectedEvent.title}</h3>
+                            {
+                                selectedEvent.allDay ?
+                                    <div>
+                                        <p>{selectedEvent.start.toLocaleDateString()} {selectedEvent.end == null ? <p></p>:selectedEvent.end.toLocaleDateString()===selectedEvent.start.toLocaleDateString() ? <p></p>: " - " + selectedEvent.end.toLocaleDateString()}</p>
+                                    </div>
+                                    :
+                                    <div>
+                                        <p>{selectedEvent.start.toLocaleString([], {year: '2-digit', month: '2-digit', day: '2-digit', hour: '2-digit', minute:'2-digit'})} - {selectedEvent.start.toLocaleDateString() === selectedEvent.end.toLocaleDateString() ? selectedEvent.end.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}): selectedEvent.end.toLocaleString([], {year: '2-digit', month: '2-digit', day: '2-digit', hour: '2-digit', minute:'2-digit'})}</p>
+                                    </div>
+                            
+                            }
+                        </div> 
+                </div>
                 :
-                    <div></div>
+                <div></div>
                 }
                 <div style={{width: "85%", margin: "50px 50px 0 0", padding: "10px 10px 10px 10px", boxShadow: "0 0 20px rgba(0, 0, 0, 0.15)"}}>
                 <h2 style={{margin: "0 0 10px 0"}}>Add New Event</h2>
@@ -156,3 +173,4 @@ const Calendar = () => {
     );}
 
 export default Calendar;
+
