@@ -18,6 +18,9 @@ public class AnimalController {
     AnimalRepository animalRepository;
 
     @Autowired
+    AnimalRepositoryCustom animalRepositoryCustom;
+
+    @Autowired
     MongoTemplate mongoTemplate;
 
     /**
@@ -50,7 +53,7 @@ public class AnimalController {
      */
     @GetMapping("/api/animals/by_name/{name}")
     public ResponseEntity<List<AnimalGeneric>> get_animals_by_name(@PathVariable String name) {
-        List<AnimalGeneric> animals = animalRepository.findAnimalByName(name);
+        List<AnimalGeneric> animals = animalRepositoryCustom.findAnimalByName(name);
 
         return ResponseEntity.ok().body(animals);
     }
