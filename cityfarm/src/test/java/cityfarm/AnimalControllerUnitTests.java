@@ -1,9 +1,6 @@
 package cityfarm;
 
-import cityfarm.api.animals.AnimalController;
-import cityfarm.api.animals.AnimalGeneric;
-import cityfarm.api.animals.AnimalRepository;
-import cityfarm.api.animals.Cow;
+import cityfarm.api.animals.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,15 +26,18 @@ public class AnimalControllerUnitTests {
 
     @Before
     public void setUp() {
-        Cow alice = new Cow("abcd-1234", "Alice", null, null, null, null, true, true, null, true, null);
+        Cow alice = new Cow(null, "Alice", null, null, null, null, true, true, null, true, null);
         Cow alice2 = new Cow(null, "AliCe", null, null, null, null, true, false, null, true, null);
         List<AnimalGeneric> aliceCows = List.of(alice, alice2);
-        Mockito.when(animalRepository.findAnimalByName("Alice")).thenReturn(aliceCows);
+        Mockito.when(animalRepositoryCustom.findAnimalByName("Alice")).thenReturn(aliceCows);
         Mockito.when(animalRepository.findAnimalById("abcd-1234")).thenReturn(alice);
     }
 
     @MockBean
     private AnimalRepository animalRepository;
+
+    @MockBean
+    private AnimalRepositoryCustom animalRepositoryCustom;
 
     @Test
     public void nonPresentNameEmptyList() {
