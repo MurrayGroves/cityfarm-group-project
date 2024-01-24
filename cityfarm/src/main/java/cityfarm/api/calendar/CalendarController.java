@@ -1,25 +1,22 @@
 package cityfarm.api.calendar;
 
-import cityfarm.CityFarmApplication;
-import cityfarm.api.animals.AnimalGeneric;
-import cityfarm.api.db.ZonedDateTimeReadConverter;
-import cityfarm.api.db.ZonedDateTimeWriteConverter;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.data.mongodb.core.convert.MongoCustomConversions;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @RestController
 public class CalendarController {
     @Autowired
-    EventsRepository eventsRepository;
+    EventRepository eventRepository;
+
+    @Autowired
+    EventRepositoryCustom eventRepositoryCustom;
 
     private final String host_url = "http://localhost:3000";
     HttpHeaders responseHeaders = new HttpHeaders();
@@ -29,7 +26,7 @@ public class CalendarController {
     public ResponseEntity<List<EventInstance>> get_events(@RequestParam ZonedDateTime from, @RequestParam ZonedDateTime to) {
         responseHeaders.set(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, host_url);
 
-        List<Event> events = eventsRepository.findAll();
+        List<Event> events = eventRepository.findAll();
 
         List<EventInstance> instances = new ArrayList<>();
 
@@ -40,11 +37,43 @@ public class CalendarController {
         return ResponseEntity.ok().headers(responseHeaders).body(instances);
     }
 
+    @GetMapping("/api/events/by_id/{id}")
+    public ResponseEntity<Event> get_event_by_id(@PathVariable String id) {
+        responseHeaders.set(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, host_url);
+
+        Event event = eventRepository.findEventById(id);
+
+        if (event == null) {
+            return ResponseEntity.status(404).build();
+        }
+
+        return ResponseEntity.ok().body(event);
+    }
+
+    @GetMapping("/api/events/by_title/{title}")
+    public ResponseEntity<List<Event>> get_events_by_title(@PathVariable String title) {
+        responseHeaders.set(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, host_url);
+
+        List<Event> events = eventRepositoryCustom.findEventByTitle(title);
+
+        return ResponseEntity.ok().body(events);
+    }
+
+    @DeleteMapping("/api/events/by_id/{id}")
+    public ResponseEntity<String> delete_event(@PathVariable String id) {
+        responseHeaders.set(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, host_url);
+
+        eventRepository.deleteById(id);
+
+        return ResponseEntity.ok(id);
+    }
+
+
     @PostMapping("/api/events/create/once")
     public ResponseEntity<Event> create_event(@RequestBody EventOnce event) {
         responseHeaders.set(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, host_url);
 
-        eventsRepository.save(event);
+        eventRepository.save(event);
 
         return ResponseEntity.ok().headers(responseHeaders).body(event);
     }
@@ -53,7 +82,7 @@ public class CalendarController {
     public ResponseEntity<Event> create_event(@RequestBody EventRecurring event) {
         responseHeaders.set(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, host_url);
 
-        eventsRepository.save(event);
+        eventRepository.save(event);
 
         return ResponseEntity.ok().headers(responseHeaders).body(event);
     }

@@ -9,7 +9,7 @@ import java.util.List;
 
 @Component
 @Document("events")
-public interface EventsRepository extends MongoRepository<Event, String> {
+public interface EventRepository extends MongoRepository<Event, String> {
     List<Event> findEventsByTitle(String title);
 
     @Query("{ '_id': ?0}")

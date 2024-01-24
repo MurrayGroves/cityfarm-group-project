@@ -65,7 +65,7 @@ public class EventRecurring extends Event {
     @PersistenceCreator
     public EventRecurring(@JsonProperty("first_start") @NonNull ZonedDateTime firstStart, @JsonProperty("first_end") @Nullable ZonedDateTime firstEnd, @JsonProperty("all_day") @NonNull Boolean all_day,
                           @JsonProperty("title") @NonNull String title, @JsonProperty("description") @Nullable String description,
-                          @JsonProperty("enclosures") @Nullable List<Enclosure> attachedEnclosures, @JsonProperty("animals") @Nullable List<AnimalUnique> attachedAnimals, @JsonProperty("people") @Nullable List<Person> attachedPeople,
+                          @JsonProperty("enclosures") @Nullable List<String> attachedEnclosures, @JsonProperty("animals") @Nullable List<String> attachedAnimals, @JsonProperty("people") @Nullable List<String> attachedPeople,
                           @JsonProperty("final_end") @Nullable ZonedDateTime finalEnd, @JsonProperty("delay") @NonNull Duration delay, @JsonProperty("_id") @Nullable String id) {
         if (end == null && !all_day) {
             throw new IllegalArgumentException("If end isn't present, the event must be marked as all day");
