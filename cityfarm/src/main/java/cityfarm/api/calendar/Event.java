@@ -18,20 +18,27 @@ import java.util.List;
 })
 @Document("events")
 public abstract class Event {
-    public List<Enclosure> attachedEnclosures;
+    // List of IDs of attached enclosures
+    public List<String> attachedEnclosures;
 
-    public List<AnimalUnique> attachedAnimals;
+    // List of IDs of attached animals
+    public List<String> attachedAnimals;
 
     public String title;
 
     public String description;
 
-    public List<Person> attachedPeople;
+    // List of IDs of attached people
+    public List<String> attachedPeople;
 
     public Boolean all_day;
 
     public ZonedDateTime start;
     public ZonedDateTime end;
+
+    @Nullable private String id;
+
+    public abstract String get_id();
 
     public abstract List<EventInstance> nextOccurences(@NonNull ZonedDateTime from, @Nullable Integer num);
 
