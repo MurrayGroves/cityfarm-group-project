@@ -1,0 +1,25 @@
+volumes:
+  mongodb-data:
+
+services:
+  mongodb:
+    container_name: cityfarm-mongodb
+    image: ghcr.io/spe-uob/2023-cityfarm/mongodb:latest
+    ports:
+      - 27017:27017
+    volumes:
+      - mongodb-data:/data/db:rw
+  
+  backend:
+    container_name: cityfarm-backend
+    image: ghcr.io/spe-uob/2023-cityfarm/backend:dev"
+    ports:
+      - 8918:8080
+
+  frontend:
+    container_name: cityfarm-frontend
+    image: ghcr.io/spe-uob/2023-cityfarm/frontend:dev
+    environment:
+      - REACT_APP_BASE_URL=https://cityfarm.murraygrov.es/api
+    ports:
+      - 8919:8080

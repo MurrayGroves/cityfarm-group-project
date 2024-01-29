@@ -1,0 +1,16 @@
+{
+	http_port 80
+	https_port 443
+	log {
+		level warn
+	}
+}
+
+bristolcityfarm.uksouth.azurecontainer.io:443 {
+	route /api/* {
+		reverse_proxy localhost:8080
+	}
+	route {
+		reverse_proxy localhost:3000
+	}
+}
