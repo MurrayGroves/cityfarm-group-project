@@ -9,6 +9,8 @@ COPY package.json /app/
 
 ENV BROWSER=none
 
+LABEL org.opencontainers.image.source https://github.com/spe-uob/2023-CityFarm
+
 # Install dependencies
 RUN npm install
 

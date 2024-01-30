@@ -7,7 +7,7 @@ import subprocess
 app = Flask(__name__)
 
 @app.route("/webhook", methods=["POST"])
-def respond():
+def update():
     output = subprocess.getoutput("git fetch --dry-run").strip()
     if output == "":
         print("No changes")
@@ -20,22 +20,20 @@ def respond():
         os.system("git pull")
 
         # Update and restart docker containers
-        os.system("docker-compose down")
-        os.system("docker-compose pull")
-        os.system("docker-compose up -d")
+        os.system("docker compose down")
+        os.system("docker compose up -d")
         return Response(status=200)
     
 @app.route("/force", methods=["POST"])
-def respond():
+def force_update():
     print("Force update")
     # Update local git log
     os.system("git fetch")
     os.system("git pull")
 
     # Update and restart docker containers
-    os.system("docker-compose down")
-    os.system("docker-compose pull")
-    os.system("docker-compose up -d")
+    os.system("docker compose down")
+    os.system("docker compose up -d")
     return Response(status=200)
     
 

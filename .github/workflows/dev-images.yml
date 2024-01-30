@@ -19,9 +19,13 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+      - uses: actions/setup-java@v3
+        with:
+          java-version: '21'
+          distribution: 'temurin'
       - name: Build jar
         working-directory: ./cityfarm
-        run: SPRING_DATA_MONGODB_HOST="mongodb://mongodb:27017" mvn clean package
+        run: mvn package spring-boot:repackage
       # Uses the `docker/login-action` action to log in to the Container registry registry using the account and password that will publish the packages. Once published, the packages are scoped to the account defined here.
       - name: Log in to the Container registry
         uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
@@ -34,7 +38,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
         with:
-          images: ghcr.io/spe-uob/2023-CityFarm/frontend:dev
+          images: ghcr.io/spe-uob/2023-cityfarm/frontend:dev
       # This step uses the `docker/build-push-action` action to build the image, based on your repository's `Dockerfile`. If the build succeeds, it pushes the image to GitHub Packages.
       # It uses the `context` parameter to define the build's context as the set of files located in the specified path. For more information, see "[Usage](https://github.com/docker/build-push-action#usage)" in the README of the `docker/build-push-action` repository.
       # It uses the `tags` and `labels` parameters to tag and label the image with the output from the "meta" step.
@@ -43,7 +47,7 @@ jobs:
         with:
           context: ./cityfarmreact
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: ghcr.io/spe-uob/2023-cityfarm/frontend:dev
           labels: ${{ steps.meta.outputs.labels }}
 
       # This step uses [docker/metadata-action](https://github.com/docker/metadata-action#about) to extract tags and labels that will be applied to the specified image. The `id` "meta" allows the output of this step to be referenced in a subsequent step. The `images` value provides the base name for the tags and labels.
@@ -51,7 +55,7 @@ jobs:
         id: meta-spring
         uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
         with:
-          images: ghcr.io/spe-uob/2023-CityFarm/backend:dev
+          images: ghcr.io/spe-uob/2023-cityfarm/backend:dev
       # This step uses the `docker/build-push-action` action to build the image, based on your repository's `Dockerfile`. If the build succeeds, it pushes the image to GitHub Packages.
       # It uses the `context` parameter to define the build's context as the set of files located in the specified path. For more information, see "[Usage](https://github.com/docker/build-push-action#usage)" in the README of the `docker/build-push-action` repository.
       # It uses the `tags` and `labels` parameters to tag and label the image with the output from the "meta" step.
@@ -60,13 +64,13 @@ jobs:
         with:
           context: ./cityfarm
           push: true
-          tags: ${{ steps.meta-spring.outputs.tags }}
+          tags:  ghcr.io/spe-uob/2023-cityfarm/backend:dev
           labels: ${{ steps.meta-spring.outputs.labels }}
 
       - name: Tell server to pull new images and restart
         uses: distributhor/workflow-webhook@v3
         with:
-          webhook_url: https://webhook.cityfarm.murraygrov.es/webhook
+          webhook_url: https://cityfarmhook.murraygrov.es/webhook
 
 
       
