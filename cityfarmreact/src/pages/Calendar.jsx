@@ -10,6 +10,7 @@ import clickRef from "react-big-calendar/dist/react-big-calendar";
 import "../components/Calendar.css";
 import Event from "../components/Event";
 import CreateEvent from "../components/CreateEvent";
+import Animal from "../components/Animal";
 
 const locales = {
     "en-GB" : require("date-fns/locale/en-GB")
@@ -31,24 +32,28 @@ const events = [ /*These are example events.*/
         allDay: false,
         start: new  Date(2023,11,1, 13),
         end: new  Date(2023,11,1, 14),
+        animals : [1]
     },
     {
         title : "Bull in with cows",
         allDay: false,
         start: new  Date(2023,11,25, 8),
         end: new  Date(2023,11,28, 16),
+        animals : [2]
     },
     {
         title : "School Visits",
         allDay: true,
         start: new  Date(2023,11,20),
         end: new  Date(2023, 11, 21, 23, 59),
+        animals : [2,1]
     },
     {
         title : "Defra Inspection",
         allDay: true,
         start: new  Date(2023,11,29),
         end: new Date(2023, 11, 29),
+        animals : []
     }
 ];
 
@@ -68,6 +73,7 @@ const Calendar = () => {
     function eventSelected(event){
         setSelectedEvent(event)
     }
+
 
     return (
 
@@ -100,7 +106,12 @@ const Calendar = () => {
                                     </div>
                             
                             }
-                        </div> 
+                        </div>
+
+                    {selectedEvent.animals.map((animalId) => (
+                        <Animal key={animalId} animalID={animalId} />
+                    ))}
+
                 </div>
                 :
                 <div></div>

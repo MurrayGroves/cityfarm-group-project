@@ -5,7 +5,7 @@ const Event =  (props) => {
     const [updating, setUpdating] = useState(false)
     return(
     <div style={{width: 358.5, padding: "10px 10px 10px 10px", boxShadow: "0 0 20px rgba(0, 0, 0, 0.15)"}}>
-        <h2 style={{margin: "0 0 10px 0"}}>Selected Event</h2>
+        <h2 style={{margin: "0 0 10px 0"}}>Selected Event </h2>
         <div>
             <h3>{event.title}</h3>
             <a style={{
