@@ -55,11 +55,10 @@ const AnimalTable = () => {
     },[searchTerm])
 
     return(<>
-        <FarmTabs setFarm={setFarm}/>
         <h1>Livestock</h1>
 
         <SearchBar setSearchMode={setSearchMode} search={setSearchTerm} clearValue={clear} clearSearch={setClear}/>
-        {animalList?.length > 0 ? (
+        <FarmTabs selectFarm={setFarm}/>
             <div className="animal-table">
                 <table style={{width: "100%"}}>
                     <thead>
@@ -146,11 +145,6 @@ const AnimalTable = () => {
                 </tbody>
                 </table>
             </div>
-        ) : (
-            <div className="empty">
-                <h2>No Animals found</h2>
-            </div>
-        )}
     </>)
 }
 

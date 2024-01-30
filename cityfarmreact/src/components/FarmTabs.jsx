@@ -1,19 +1,11 @@
 import { useEffect, useState } from "react";
 
 const FarmTabs = (props) => {
-    const [farm, setFarm] = useState("");
-
-    /*
-    useEffect(() => {
-        props.setFarm(farm);        
-    },[farm]);
-    */
-
     return (
-        <div>
-            <button></button>
-            <button></button>
-            <button></button>
+        <div className="tab-container">
+            <button style={{borderColor: "#FF0000"}} onClick={()=>{props.selectFarm("wh")}}>Windmill Hill</button>
+            <button style={{borderColor: "#6666FF"}} onClick={()=>{props.selectFarm("hc")}}>Hartecliff</button>
+            <button style={{borderColor: "#3312FF"}} onClick={()=>{props.selectFarm("sw")}}>St Werburghs</button>
         </div>
     );
 }
