@@ -1,61 +1,67 @@
 import React, {useEffect, useState} from "react";
 import axios from '../api/axiosConfig'
 import SearchBar from "../components/SearchBar";
+import FarmTabs from "../components/FarmTabs";
 import "../components/AnimalTable.css";
-import CreateButton from "../components/CreateButton";
+import Animal from "../components/Animal";
 
 const AnimalTable = () => {
     const [animalList, setAnimalList] = useState([]); /* The State for the list of animals. The initial state is [] */
-    const [searchTerm, setSearchTerm] = useState(''); /* The term being search for in the searchbar */
+    const [searchTerm, setSearchTerm] = useState(''); /* The term being searched for in the searchbar */
+    const [searchMode, setSearchMode] = useState("name") /* The mode of search (by name or id) */
     const [clear, setClear] = useState(0); /* Clear will reset the table to display all animals once updated*/
     const [create, setCreate] = useState({name: '', type: '', father: '', mother: '', tb_inoculated: '', male: '', alive: ''})
-    useEffect (() => {
+    
+    const [farm, setFarm] = useState("");
+
+    useEffect(displayAll,[])
+    useEffect(displayAll,[clear])
+
+    function displayAll() {
         (async () => {
             try {
                 const response = await axios.get(`/animals`);
                 console.log(response.data);
                 setAnimalList(response.data);
             } catch (error) {
-                window.alert(error);
+                //window.alert(error);
             }
         })()
-    },[]);
+    }
+
     useEffect (() => {
         (async () => {
             if (searchTerm === '') {
                 return;
             }
-            try {
-                const response = await axios.get(`/animals`);
-                console.log(response.data);
-                setAnimalList(response.data);
-            } catch (error) {
-                window.alert(error);
+            if (searchMode === "name") {
+                try {
+                    const response = await axios.get(`/animals/by_name/${searchTerm}`);
+                    console.log(response.data);
+                    setAnimalList(response.data);
+                } catch (error) {
+                    window.alert(error);
+                }
             }
-        })()
-    },[clear]);
-    useEffect (() => {
-        (async () => {
-            if (searchTerm === '') {
-                return;
-            }
-            try {
-                const response = await axios.get(`/animals/by_name/${searchTerm}`);
-                console.log(response.data);
-                setAnimalList(response.data);
-            } catch (error) {
-                window.alert(error);
+            else {
+                try {
+                    const response = await axios.get(`/animals/by_id/${searchTerm}`);
+                    console.log(response.data);
+                    setAnimalList(response.data);
+                } catch (error) {
+                    window.alert(error);
+                }
             }
         })()
     },[searchTerm])
 
     return(<>
         <h1>Livestock</h1>
-
-        <SearchBar search={setSearchTerm} clearValue={clear} clearSearch={setClear}/>
-        {
+        <SearchBar setSearchMode={setSearchMode} search={setSearchTerm} clearValue={clear} clearSearch={setClear}/>
+        {animalList?.length > 0 ? (<>
+        <FarmTabs selectFarm={setFarm}/>
             <div className="animal-table">
-                <table style={{width: "100%"}}>
+                <table>
                     <thead>
                     <tr>
                     <th>Name</th>
@@ -77,6 +83,7 @@ const AnimalTable = () => {
                                 <td>{animal.tb_inoculated ? 'True' : 'False'}</td>
                                 <td>{animal.male ? 'Male' : 'Female'}</td>
                                 <td>{animal.alive ? 'Yes' : 'No'}</td>
+
                             </tr>
                         ))}
                         <tr>
@@ -142,7 +149,14 @@ const AnimalTable = () => {
                 </tbody>
                 </table>
             </div>
-        }
+        </>) : (
+            <div className="empty">
+                <h2>No Animals found</h2>
+            </div>
+        )}
+            {/*<Animal animalID={2}/>*/}
+            {/*{"\n"}*/}
+            {/*<Animal animalID={1}/>*/}
     </>)
 }
 
