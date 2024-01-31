@@ -1,7 +1,6 @@
 package cityfarm.api.animals;
 
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.lang.NonNull;
@@ -9,17 +8,19 @@ import org.springframework.lang.Nullable;
 
 import java.time.ZonedDateTime;
 import java.util.Objects;
+import java.util.UUID;
 
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
-@JsonSubTypes({
-        @JsonSubTypes.Type(value = Cow.class, name = "cow"),
-        @JsonSubTypes.Type(value = Sheep.class, name = "sheep"),
-        @JsonSubTypes.Type(value = Chicken.class, name = "chicken"),
-        @JsonSubTypes.Type(value = Pig.class, name = "pig"),
-        @JsonSubTypes.Type(value = Goat.class, name = "goat")
-})
 @Document("animals")
-public abstract class AnimalGeneric {
+public class AnimalCustom implements AnimalUnique {
+    @NonNull
+    private AnimalSchema schema;
+
+    @Nullable
+    public JsonNode fields;
+
+    @Nullable
+    private String id;
+
     /**
      * Specific Animal's name, e.g. "Alice"
      */
@@ -64,10 +65,7 @@ public abstract class AnimalGeneric {
     @Nullable
     public String notes;
 
-    @Nullable
-    public JsonNode customFields;
-
-    public AnimalGeneric(@Nullable String name, @Nullable String mother, @Nullable String father,@Nullable String breed, @NonNull Boolean alive, @NonNull Boolean male, @Nullable ZonedDateTime dateOfBirth, @Nullable String notes) {
+    public AnimalCustom(@Nullable String id, @Nullable String name, @Nullable String mother, @Nullable String father,@Nullable String breed, @NonNull Boolean alive, @NonNull Boolean male, @Nullable ZonedDateTime dateOfBirth, @Nullable String notes) {
         this.name = name;
         this.mother = mother;
         this.father = father;
@@ -75,7 +73,12 @@ public abstract class AnimalGeneric {
         this.alive = Objects.requireNonNull(alive);
         this.male = male;
         this.dateOfBirth = dateOfBirth;
+        this.id = id;
     }
 
+    @Override
+    public String get_id() {
+        return this.id;
+    }
 }
 
