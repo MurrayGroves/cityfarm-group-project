@@ -137,11 +137,6 @@ const Calendar = () => {
         }
     }
 
-    function eventSelected(event){
-        setSelectedEvent(event)
-    }
-
-
     return (
 
         <div className="CalendarPage" style={{height: "75%"}}>  
@@ -155,7 +150,7 @@ const Calendar = () => {
                         endAccessor="end"
                         style={{height: "100%", margin:"20px 40px 0 0"}} 
                         showMultiDayTimes
-                        onSelectEvent={eventSelected}
+                        onSelectEvent={setSelectedEvent}
 
                          //Somehow change event colour to match the relevant farm
 
@@ -166,9 +161,13 @@ const Calendar = () => {
                         }}
                         */
             /></div>
+
             <div style={{width: "35%"}}>
+
+                {/*<Event selectedEvent={selectedEvent} setSelectedEvent={setSelectedEvent}/>*/}
+
                 { selectedEvent !== "No event selected" ?
-                <div style={{width: 358.5, padding: "10px 10px 10px 10px", boxShadow: "0 0 20px rgba(0, 0, 0, 0.15)"}}>
+                <div style={{width: "85%", padding: "10px 10px 10px 10px", boxShadow: "0 0 20px rgba(0, 0, 0, 0.15)"}}>
                     <h2 style={{margin: "0 0 10px 0"}}>Selected Event</h2>
                     <div>
                         <h3>{selectedEvent.title}</h3>
@@ -197,12 +196,15 @@ const Calendar = () => {
                 <></>
                 }
 
-                <div style={{width: "85%", width: 358.5, margin: "50px 50px 0 0", padding: "10px 10px 10px 10px", boxShadow: "0 0 20px rgba(0, 0, 0, 0.15)"}}>
+                {/*<CreateEvent setEvent={setNewEvent} handleAddEvent={handleAddEvent}/>*/}
+
+                <div style={{width: "85%", margin: "50px 50px 0 0", padding: "10px 10px 10px 10px", boxShadow: "0 0 20px rgba(0, 0, 0, 0.15)"}}>
                 <h2 style={{margin: "0 0 10px 0"}}>Add New Event</h2>
                 <div>
                 <input type="text" placeholder="Add Title" style={{width: "98%"}}
-                       value={newEvent.title}
-                       onChange={(e) => setNewEvent({...newEvent, title: e.target.value})}/>
+                    value={newEvent.title}
+                    onChange={(e) => setNewEvent({...newEvent, title: e.target.value})}
+                />
 
                 {showingTime(!newEvent.allDay)}
                 </div>
@@ -227,10 +229,9 @@ const Calendar = () => {
                 St Werberghs
                 </div>
                 </div>
-                {/*<CreateEvent handleAddEvent={handleAddEvent} setEvent={setNewEvent}/>*/}
             </div>
-            </div>
-            </div>
+        </div>
+        </div>
         </div>
     );}
 
