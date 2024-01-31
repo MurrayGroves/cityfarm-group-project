@@ -14,6 +14,13 @@ const locales = {
     "en-GB" : require("date-fns/locale/en-GB")
 }
 
+const colours = {
+    wh: "#FF0000",
+    hc: "#6666FF",
+    sw: "#3312FF",
+    default: "#000000"
+}
+
 const localizer = dateFnsLocalizer({
     format,
     parse,
@@ -131,13 +138,23 @@ const Calendar = () => {
         <h1>Calendar</h1>
         <div style={{height: "100%"}}>
             <div style={{ display: "flex", height: "100%"}}>
-            <div style={{width: "65%"}}><BigCalendar localizer={localizer}
+            <div style={{width: "65%"}}><BigCalendar
+                        localizer={localizer}
                          events={allEvents}
                          startAccessor="start"
                          endAccessor="end"
                          style={{height: "100%", margin:"20px 40px 0 0"}} 
                          showMultiDayTimes
                          onSelectEvent={eventSelected}
+
+                         //Somehow change event colour to match the relevant farm
+
+                         /*
+                         eventPropGetter={(events) => {
+                            const colour = events.wh ? colours.wh : (events.hc ? colours.hc : (events.sw ? colours.sw : colours.default))
+                            return {style: {backgroundColor: {colour}}};
+                        }}
+                        */
             /></div>
             <div style={{width: "35%"}}>
                 { selectedEvent !== "No event selected" ?
@@ -163,23 +180,23 @@ const Calendar = () => {
                         </div> 
                 </div>
                 :
-                <div></div>
+                <></>
                 }
                 <div style={{width: "85%", width: 358.5, margin: "50px 50px 0 0", padding: "10px 10px 10px 10px", boxShadow: "0 0 20px rgba(0, 0, 0, 0.15)"}}>
                 <h2 style={{margin: "0 0 10px 0"}}>Add New Event</h2>
-            <div>
+                <div>
                 <input type="text" placeholder="Add Title" style={{width: "98%"}}
                        value={newEvent.title}
                        onChange={(e) => setNewEvent({...newEvent, title: e.target.value})}/>
 
                 {showingTime(!newEvent.allDay)}
-
+                </div>
                 <div style={{marginTop: "10px"}}>
                 <input type = "checkbox" name="All Day"  value="True" checked={newEvent.allDay}
                        onChange={()=>changeAllDay(!newEvent.allDay)}/>
                 All day
                 <button style={{float: "right"}} onClick={handleAddEvent}>Add Event</button>
-
+                </div>
                 <div style={{marginTop: "10px"}}>
                 Relevant Farms<br/>
                 <input type="checkbox" name="Windmill Hill" value="False" checked={newEvent.wh}
@@ -199,8 +216,6 @@ const Calendar = () => {
             </div>
                 </div>
             </div>
-            </div>
-        </div>
         </div>
     );}
 
