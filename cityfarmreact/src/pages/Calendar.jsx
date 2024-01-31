@@ -85,6 +85,7 @@ const Calendar = () => {
         wh: false,
         hc: false,
         sw: false,
+        animals : []
     })
     const [allEvents,setAllEvents] = useState(events)
     const [selectedEvent,setSelectedEvent] = useState("No event selected")
@@ -149,12 +150,12 @@ const Calendar = () => {
             <div style={{ display: "flex", height: "100%"}}>
             <div style={{width: "65%"}}><BigCalendar
                         localizer={localizer}
-                         events={allEvents}
-                         startAccessor="start"
-                         endAccessor="end"
-                         style={{height: "100%", margin:"20px 40px 0 0"}} 
-                         showMultiDayTimes
-                         onSelectEvent={eventSelected}
+                        events={allEvents}
+                        startAccessor="start"
+                        endAccessor="end"
+                        style={{height: "100%", margin:"20px 40px 0 0"}} 
+                        showMultiDayTimes
+                        onSelectEvent={eventSelected}
 
                          //Somehow change event colour to match the relevant farm
 
@@ -188,7 +189,7 @@ const Calendar = () => {
                         {selectedEvent.sw ? <p>St Werberghs</p> : <></>}
                         <h3>Relevant Animals</h3>
                         {selectedEvent.animals.map((animalId) => (
-                        <Animal key={animalId} animalID={animalId} />
+                        <Animal key={animalId} animalID={animalId}/>
                         ))}
                     </div>
                 </div>
@@ -226,7 +227,7 @@ const Calendar = () => {
                 St Werberghs
                 </div>
                 </div>
-                <CreateEvent handleAddEvent={handleAddEvent} setEvent={setNewEvent}/>
+                {/*<CreateEvent handleAddEvent={handleAddEvent} setEvent={setNewEvent}/>*/}
             </div>
             </div>
             </div>
