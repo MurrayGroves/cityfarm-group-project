@@ -2,12 +2,15 @@ import React, {useEffect, useState} from "react";
 import axios from "../api/axiosConfig";
 import SearchBar from "../components/SearchBar";
 import "../components/AnimalTable.css";
+import FarmTabs from "../components/FarmTabs";
 
 const EnclosureTable = () => {
     const [enclosureList, setEnclosureList] = useState([]); /* The State for the list of enclosures. The initial state is [] */
     const [searchTerm, setSearchTerm] = useState(''); /* The term being search for in the searchbar */
     const [searchMode, setSearchMode] = useState("name") /* The mode of search (by name or id) */
     const [clear, setClear] = useState(0); /* Clear will reset the table to display all enclosures once updated*/
+
+    const [farm, setFarm] = useState("wh");
 
     useEffect(displayAll,[])
     useEffect(displayAll,[clear]);
@@ -50,6 +53,7 @@ const EnclosureTable = () => {
     },[searchTerm])
 
     return(<>
+        <FarmTabs selectFarm={setFarm}/>
         <h1>Enclosures</h1>
         <SearchBar setSearchMode={setSearchMode} search={setSearchTerm} clearValue={clear} clearSearch={setClear}/>
         {enclosureList?.length > 0 ? (

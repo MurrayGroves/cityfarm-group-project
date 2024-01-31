@@ -5,10 +5,12 @@ import startOfWeek from 'date-fns/startOfWeek';
 import getDay from 'date-fns/getDay';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import React, {useState} from 'react';
-import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import clickRef from "react-big-calendar/dist/react-big-calendar";
 import "../components/Calendar.css";
+import Event from "../components/Event";
+import CreateEvent from "../components/CreateEvent";
+import Animal from "../components/Animal";
 
 const locales = {
     "en-GB" : require("date-fns/locale/en-GB")
@@ -40,6 +42,7 @@ const events = [ /*These are example events.*/
         wh: false,
         hc: false,
         sw: false,
+        animals : [1]
     },
     {
         title : "Bull in with cows",
@@ -49,6 +52,7 @@ const events = [ /*These are example events.*/
         wh: true,
         hc: false,
         sw: false,
+        animals : [2]
     },
     {
         title : "School Visits",
@@ -58,6 +62,7 @@ const events = [ /*These are example events.*/
         wh: false,
         hc: true,
         sw: true,
+        animals : [2,1]
     },
     {
         title : "Defra Inspection",
@@ -67,6 +72,7 @@ const events = [ /*These are example events.*/
         wh: true,
         hc: true,
         sw: true,
+        animals : []
     }
 ];
 
@@ -85,6 +91,7 @@ const Calendar = () => {
     const handleAddEvent = () => {
         setAllEvents([...allEvents, newEvent]); /*Adds the new event to the list of allEvents} */
     }
+    
     const changeAllDay = (isAllDay) => {
         setNewEvent({...newEvent,allDay: isAllDay});
     }
@@ -133,7 +140,9 @@ const Calendar = () => {
         setSelectedEvent(event)
     }
 
+
     return (
+
         <div className="CalendarPage" style={{height: "75%"}}>  
         <h1>Calendar</h1>
         <div style={{height: "100%"}}>
@@ -177,11 +186,16 @@ const Calendar = () => {
                             {selectedEvent.wh ? <p>Windmill Hill</p> : <></>}
                             {selectedEvent.hc ? <p>Hartcliffe</p> : <></>}
                             {selectedEvent.sw ? <p>St Werberghs</p> : <></>}
-                        </div> 
+                        </div>
+
+                    {selectedEvent.animals.map((animalId) => (
+                        <Animal key={animalId} animalID={animalId} />
+                    ))}
                 </div>
                 :
                 <></>
                 }
+
                 <div style={{width: "85%", width: 358.5, margin: "50px 50px 0 0", padding: "10px 10px 10px 10px", boxShadow: "0 0 20px rgba(0, 0, 0, 0.15)"}}>
                 <h2 style={{margin: "0 0 10px 0"}}>Add New Event</h2>
                 <div>
@@ -211,12 +225,14 @@ const Calendar = () => {
                     onChange={()=>setNewEvent({...newEvent, sw: !newEvent.sw})}/>
                 St Werberghs
                 </div>
-
                 </div>
+                <CreateEvent handleAddEvent={handleAddEvent} setEvent={setNewEvent}/>
             </div>
-                </div>
+            </div>
             </div>
         </div>
     );}
 
 export default Calendar;
+
+

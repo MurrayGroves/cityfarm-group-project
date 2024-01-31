@@ -11,21 +11,3 @@
     min-width: 100px;
     border-radius: 5px 5px 0 0;
 }
-
-/*
-.tab-container button:hover {
-    animation-name: wiggle;
-    animation-duration: 200ms;
-    animation-iteration-count: infinite;
-    animation-timing-function: linear;
-}
-
-@keyframes wiggle {
-    from {
-        transform: rotate(-2deg);
-    }
-    to {
-        transform: rotate(2deg);
-    }
-}
-*/
