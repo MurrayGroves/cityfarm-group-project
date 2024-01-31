@@ -1,6 +1,8 @@
 import * as React from 'react';
 import Popover from '@mui/material/Popover';
 import Typography from '@mui/material/Typography';
+import {Link} from "react-router-dom";
+import './Animal.css'
 
 const aExamples =[
     {
@@ -60,7 +62,7 @@ export default function Animal(props) {
                 onMouseEnter={handlePopoverOpen}
                 onMouseLeave={handlePopoverClose}
             >
-                {chosenanimal.name}
+                <Link to="/animals"> {chosenanimal.name} </Link>
             </Typography>
             <Popover
                 id="mouse-over-popover"
