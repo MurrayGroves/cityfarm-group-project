@@ -53,10 +53,10 @@ const EnclosureTable = () => {
     },[searchTerm])
 
     return(<>
-        <FarmTabs selectFarm={setFarm}/>
         <h1>Enclosures</h1>
         <SearchBar setSearchMode={setSearchMode} search={setSearchTerm} clearValue={clear} clearSearch={setClear}/>
-        {enclosureList?.length > 0 ? (
+        {enclosureList?.length > 0 ? (<>
+            <FarmTabs selectFarm={setFarm}/>
             <div className="animal-table">
                 <table style={{width: '100%'}}>
                     <thead>
@@ -90,7 +90,7 @@ const EnclosureTable = () => {
                 </tbody>
                 </table>
             </div>
-        ) : (
+        </>) : (
             <div className="empty">
                 <h2>No enclosures found</h2>
             </div>
