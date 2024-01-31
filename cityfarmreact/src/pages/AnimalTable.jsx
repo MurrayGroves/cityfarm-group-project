@@ -57,11 +57,9 @@ const AnimalTable = () => {
 
     return(<>
         <h1>Livestock</h1>
-
         <SearchBar setSearchMode={setSearchMode} search={setSearchTerm} clearValue={clear} clearSearch={setClear}/>
         {animalList?.length > 0 ? (<>
         <FarmTabs selectFarm={setFarm}/>
-        
             <div className="animal-table">
                 <table>
                     <thead>
@@ -138,10 +136,12 @@ const AnimalTable = () => {
                                   }))
                             }}></input>
                             <button
-                                onClick={async () => {
-                                    await axios.post(`/animals/${create.type}/create`, create, {crossdomain:true, headers: { "Access-Control-Allow-Origin": 'http://localhost:3000',
-                                    "Access-Control-Allow-Credentials": true}});
-                                    window.location.reload(false);
+                                height="20"
+                                width="20"
+                                onClick={() => {
+                                    axios.post(`/animals/${create.type}/create`, create, {crossdomain:true ,headers: {    "Access-Control-Allow-Origin": "*",
+                                    "Access-Control-Allow-Credentials": true}}).then((response) => { window.location.reload(false);
+                                    });
                                 }}>Add
                             </button>
                             </td>
