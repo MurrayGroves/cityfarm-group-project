@@ -1,4 +1,5 @@
 import {useState} from 'react';
+import Animal from "./Animal";
 const Event =  (props) => {
     const [event, setEvent] = useState(props.selectedEvent);
     const [updating, setUpdating] = useState(false)
@@ -24,8 +25,12 @@ const Event =  (props) => {
                     <div>
                         <p>{event.start.toLocaleString([], {year: '2-digit', month: '2-digit', day: '2-digit', hour: '2-digit', minute:'2-digit'})} - {event.start.toLocaleDateString() === event.end.toLocaleDateString() ? event.end.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}): event.end.toLocaleString([], {year: '2-digit', month: '2-digit', day: '2-digit', hour: '2-digit', minute:'2-digit'})}</p>
                     </div>}
+
+
+
                     </>
             ):
+
                 <div>
                     {/*display of attributes to be modified (The changes made should alter event state) */}
                     <button onClick={() => props.setSelectedEvent(event)}>Update Event</button>

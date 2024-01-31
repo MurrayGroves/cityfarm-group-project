@@ -3,6 +3,7 @@ import axios from '../api/axiosConfig'
 import SearchBar from "../components/SearchBar";
 import "../components/AnimalTable.css";
 import FarmTabs from "../components/FarmTabs";
+import Animal from "../components/Animal";
 
 const AnimalTable = () => {
     const [animalList, setAnimalList] = useState([]); /* The State for the list of animals. The initial state is [] */
@@ -24,7 +25,7 @@ const AnimalTable = () => {
                 console.log(response.data);
                 setAnimalList(response.data);
             } catch (error) {
-                window.alert(error);
+                //window.alert(error);
             }
         })()
     }
@@ -89,6 +90,7 @@ const AnimalTable = () => {
                                 <td>{animal.tb_inoculated ? 'True' : 'False'}</td>
                                 <td>{animal.male ? 'Male' : 'Female'}</td>
                                 <td>{animal.alive ? 'Yes' : 'No'}</td>
+
                             </tr>
                         ))}
                         <tr>
@@ -157,7 +159,12 @@ const AnimalTable = () => {
                 <h2>No Animals found</h2>
             </div>
         )}
-    </>)
+            {/*<Animal animalID={2}/>*/}
+            {/*{"\n"}*/}
+            {/*<Animal animalID={1}/>*/}
+
+    </>
+)
 }
 
 export default AnimalTable;
