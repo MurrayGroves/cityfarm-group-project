@@ -10,7 +10,7 @@ const EnclosureTable = () => {
     const [searchMode, setSearchMode] = useState("name") /* The mode of search (by name or id) */
     const [clear, setClear] = useState(0); /* Clear will reset the table to display all enclosures once updated*/
 
-    const [farm, setFarm] = useState("wh");
+    const [farm, setFarm] = useState("");
 
     useEffect(displayAll,[])
     useEffect(displayAll,[clear]);

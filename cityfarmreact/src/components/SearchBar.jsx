@@ -1,6 +1,5 @@
 import React, {useState} from "react";
 import SearchIcon from "./search.png";
-import CreateButton from "./CreateButton.jsx";
 
 const SearchBar = (props) => {
     const [query, setQuery] = useState('');
@@ -19,7 +18,7 @@ const SearchBar = (props) => {
                     height="12"
                     width="12"
                     onClick={() => {
-                        {mode === "name" ?  props.setSearchMode("name") : props.setSearchMode("id")}
+                        mode === "name" ?  props.setSearchMode("name") : props.setSearchMode("id")
                         if (query !== "") props.search(query)}} /*calls the search function to find an animal / enclosure */
 
             /></button>
