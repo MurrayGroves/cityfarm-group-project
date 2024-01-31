@@ -5,8 +5,8 @@ import startOfWeek from 'date-fns/startOfWeek';
 import getDay from 'date-fns/getDay';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import React, {useState} from 'react';
+import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import clickRef from "react-big-calendar/dist/react-big-calendar";
 import "../components/Calendar.css";
 import Event from "../components/Event";
 import CreateEvent from "../components/CreateEvent";
@@ -168,29 +168,29 @@ const Calendar = () => {
             <div style={{width: "35%"}}>
                 { selectedEvent !== "No event selected" ?
                 <div style={{width: 358.5, padding: "10px 10px 10px 10px", boxShadow: "0 0 20px rgba(0, 0, 0, 0.15)"}}>
-                        <h2 style={{margin: "0 0 10px 0"}}>Selected Event</h2>
-                        <div>
-                            <h3>{selectedEvent.title}</h3>
-                            {
-                                selectedEvent.allDay ?
-                                    <div>
-                                        <p>{selectedEvent.start.toLocaleDateString()} {selectedEvent.end == null ? <p></p>:selectedEvent.end.toLocaleDateString()===selectedEvent.start.toLocaleDateString() ? <p></p>: " - " + selectedEvent.end.toLocaleDateString()}</p>
-                                    </div>
-                                    :
-                                    <div>
-                                        <p>{selectedEvent.start.toLocaleString([], {year: '2-digit', month: '2-digit', day: '2-digit', hour: '2-digit', minute:'2-digit'})} - {selectedEvent.start.toLocaleDateString() === selectedEvent.end.toLocaleDateString() ? selectedEvent.end.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}): selectedEvent.end.toLocaleString([], {year: '2-digit', month: '2-digit', day: '2-digit', hour: '2-digit', minute:'2-digit'})}</p>
-                                    </div>
-                            
-                            }
-                            <h3>Relevant Farms</h3>
-                            {selectedEvent.wh ? <p>Windmill Hill</p> : <></>}
-                            {selectedEvent.hc ? <p>Hartcliffe</p> : <></>}
-                            {selectedEvent.sw ? <p>St Werberghs</p> : <></>}
-                        </div>
-
-                    {selectedEvent.animals.map((animalId) => (
+                    <h2 style={{margin: "0 0 10px 0"}}>Selected Event</h2>
+                    <div>
+                        <h3>{selectedEvent.title}</h3>
+                        {
+                            selectedEvent.allDay ?
+                                <div>
+                                    <p>{selectedEvent.start.toLocaleDateString()} {selectedEvent.end == null ? <p></p>:selectedEvent.end.toLocaleDateString()===selectedEvent.start.toLocaleDateString() ? <p></p>: " - " + selectedEvent.end.toLocaleDateString()}</p>
+                                </div>
+                                :
+                                <div>
+                                    <p>{selectedEvent.start.toLocaleString([], {year: '2-digit', month: '2-digit', day: '2-digit', hour: '2-digit', minute:'2-digit'})} - {selectedEvent.start.toLocaleDateString() === selectedEvent.end.toLocaleDateString() ? selectedEvent.end.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}): selectedEvent.end.toLocaleString([], {year: '2-digit', month: '2-digit', day: '2-digit', hour: '2-digit', minute:'2-digit'})}</p>
+                                </div>
+                        
+                        }
+                        <h3>Relevant Farms</h3>
+                        {selectedEvent.wh ? <p>Windmill Hill</p> : <></>}
+                        {selectedEvent.hc ? <p>Hartcliffe</p> : <></>}
+                        {selectedEvent.sw ? <p>St Werberghs</p> : <></>}
+                        <h3>Relevant Animals</h3>
+                        {selectedEvent.animals.map((animalId) => (
                         <Animal key={animalId} animalID={animalId} />
-                    ))}
+                        ))}
+                    </div>
                 </div>
                 :
                 <></>

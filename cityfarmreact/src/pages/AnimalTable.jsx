@@ -3,7 +3,6 @@ import axios from '../api/axiosConfig'
 import SearchBar from "../components/SearchBar";
 import FarmTabs from "../components/FarmTabs";
 import "../components/AnimalTable.css";
-import FarmTabs from "../components/FarmTabs";
 import Animal from "../components/Animal";
 
 const AnimalTable = () => {
@@ -56,21 +55,17 @@ const AnimalTable = () => {
         })()
     },[searchTerm])
 
-    useEffect (() => {
-        console.log(farm);
-        setHeaderCol('red');
-    },[farm])
-
     return(<>
-        <FarmTabs selectFarm={setFarm}/>
         <h1>Livestock</h1>
 
         <SearchBar setSearchMode={setSearchMode} search={setSearchTerm} clearValue={clear} clearSearch={setClear}/>
+        {animalList?.length > 0 ? (<>
         <FarmTabs selectFarm={setFarm}/>
+        
             <div className="animal-table">
                 <table>
                     <thead>
-                    <tr style={{backgroundColor: {headerCol}}}>
+                    <tr>
                     <th>Name</th>
                     <th>Type</th>
                     <th>Father</th>
@@ -154,7 +149,7 @@ const AnimalTable = () => {
                 </tbody>
                 </table>
             </div>
-        ) : (
+        </>) : (
             <div className="empty">
                 <h2>No Animals found</h2>
             </div>
@@ -162,7 +157,6 @@ const AnimalTable = () => {
             {/*<Animal animalID={2}/>*/}
             {/*{"\n"}*/}
             {/*<Animal animalID={1}/>*/}
-
     </>)
 }
 
