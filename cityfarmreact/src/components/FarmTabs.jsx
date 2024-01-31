@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import "./FarmTabs.css";
 
 const FarmTabs = (props) => {
     return (

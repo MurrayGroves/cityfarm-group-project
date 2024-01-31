@@ -30,40 +30,55 @@ const events = [ /*These are example events.*/
         allDay: false,
         start: new  Date(2023,11,1, 13),
         end: new  Date(2023,11,1, 14),
+        wh: false,
+        hc: false,
+        sw: false,
     },
     {
         title : "Bull in with cows",
         allDay: false,
         start: new  Date(2023,11,25, 8),
         end: new  Date(2023,11,28, 16),
+        wh: true,
+        hc: false,
+        sw: false,
     },
     {
         title : "School Visits",
         allDay: true,
         start: new  Date(2023,11,20),
         end: new  Date(2023, 11, 21, 23, 59),
+        wh: false,
+        hc: true,
+        sw: true,
     },
     {
         title : "Defra Inspection",
         allDay: true,
         start: new  Date(2023,11,29),
         end: new Date(2023, 11, 29),
+        wh: true,
+        hc: true,
+        sw: true,
     }
 ];
 
 const Calendar = () => {
     const [newEvent,setNewEvent] = useState({
-        title : "",
+        title: "",
         allDay: true,
         start: new Date(2023,11,5,18,29),
-        end:  new Date(2023,11,6,18,29)
+        end:  new Date(2023,11,6,18,29),
+        wh: false,
+        hc: false,
+        sw: false,
     })
     const [allEvents,setAllEvents] = useState(events)
     const [selectedEvent,setSelectedEvent] = useState("No event selected")
     const handleAddEvent = () => {
         setAllEvents([...allEvents, newEvent]); /*Adds the new event to the list of allEvents} */
     }
-    const changeAllDay = (isAllDay) =>{
+    const changeAllDay = (isAllDay) => {
         setNewEvent({...newEvent,allDay: isAllDay});
     }
     function showingTime(isShown) {
@@ -141,6 +156,10 @@ const Calendar = () => {
                                     </div>
                             
                             }
+                            <h3>Relevant Farms</h3>
+                            {selectedEvent.wh ? <p>Windmill Hill</p> : <></>}
+                            {selectedEvent.hc ? <p>Hartcliffe</p> : <></>}
+                            {selectedEvent.sw ? <p>St Werberghs</p> : <></>}
                         </div> 
                 </div>
                 :
@@ -155,12 +174,27 @@ const Calendar = () => {
 
                 {showingTime(!newEvent.allDay)}
 
-
                 <div style={{marginTop: "10px"}}>
                 <input type = "checkbox" name="All Day"  value="True" checked={newEvent.allDay}
                        onChange={()=>changeAllDay(!newEvent.allDay)}/>
                 All day
                 <button style={{float: "right"}} onClick={handleAddEvent}>Add Event</button>
+
+                <div style={{marginTop: "10px"}}>
+                Relevant Farms<br/>
+                <input type="checkbox" name="Windmill Hill" value="False" checked={newEvent.wh}
+                    onChange={()=>setNewEvent({...newEvent, wh: !newEvent.wh})}/>
+                Windmill Hill<br/>
+
+                <input type="checkbox" name="Hartcliffe" value="False" checked={newEvent.hc}
+                    onChange={()=>setNewEvent({...newEvent, hc: !newEvent.hc})}/>
+                Hartcliffe<br/>
+
+                <input type="checkbox" name="St Werberghs" value="False" checked={newEvent.sw}
+                    onChange={()=>setNewEvent({...newEvent, sw: !newEvent.sw})}/>
+                St Werberghs
+                </div>
+
                 </div>
             </div>
                 </div>
