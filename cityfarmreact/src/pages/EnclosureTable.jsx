@@ -70,7 +70,6 @@ const EnclosureTable = () => {
                         {enclosureList.map((enclosure) => (
                             <tr>
                                 <td>{enclosure.name}</td>
-
                                 <td>{Object.keys(enclosure.holding).map((key) => {
                                     return(<>
                                         {key}: {Object.keys(enclosure.holding[key]).map((animal) => {

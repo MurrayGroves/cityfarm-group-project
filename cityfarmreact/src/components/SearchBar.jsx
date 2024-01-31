@@ -1,5 +1,4 @@
 import React, {useState} from "react";
-import "./SearchBar.css";
 import SearchIcon from "./search.png";
 import CreateButton from "./CreateButton.jsx";
 
@@ -8,7 +7,7 @@ const SearchBar = (props) => {
     const [mode, setMode] = useState("name");
 
     return(
-        <div className="search">
+        <div className="search" style={{marginBottom: "20px"}}>
             <input
                 placeholder="Search"
                 value= {query}
