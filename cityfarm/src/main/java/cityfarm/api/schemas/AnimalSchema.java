@@ -2,9 +2,12 @@ package cityfarm.api.schemas;
 
 import cityfarm.api.animals.AnimalCustom;
 import cityfarm.api.schemas.SchemaValue;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.PersistenceCreator;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
@@ -18,11 +21,14 @@ import java.util.Map;
 @Document("animal_schemas")
 public class AnimalSchema {
     @NonNull
+    @Id
     private final String name;
 
     @NonNull
     private final Map<String, SchemaValue> fields;
 
+    @JsonCreator
+    @PersistenceCreator
     public AnimalSchema(@NonNull String name, @NonNull Map<String, SchemaValue> fields) {
         this.name = name;
         this.fields = fields;

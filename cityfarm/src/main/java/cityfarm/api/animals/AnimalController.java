@@ -70,7 +70,7 @@ public class AnimalController {
 
         animalRepository.save(cow);
 
-        String location = String.format("/animals/by_id/%s", cow.get_id());
+        String location = String.format("/api/animals/by_id/%s", cow.get_id());
         return ResponseEntity.created(URI.create(location)).body(cow);
     }
 

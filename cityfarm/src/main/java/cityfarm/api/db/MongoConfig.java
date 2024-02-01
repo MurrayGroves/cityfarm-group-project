@@ -11,6 +11,8 @@ public class MongoConfig {
 
     @Bean
     public MongoCustomConversions customConversions() {
-        return new MongoCustomConversions(Arrays.asList(new ZonedDateTimeWriteConverter(), new ZonedDateTimeReadConverter()));
+        return new MongoCustomConversions(Arrays.asList(new ZonedDateTimeWriteConverter(), new ZonedDateTimeReadConverter(),
+                new ClassWriteConverter(), new ClassReadConverter()
+        ));
     }
 }
