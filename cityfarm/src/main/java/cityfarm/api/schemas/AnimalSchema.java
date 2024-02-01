@@ -1,5 +1,7 @@
-package cityfarm.api.animals;
+package cityfarm.api.schemas;
 
+import cityfarm.api.animals.AnimalCustom;
+import cityfarm.api.schemas.SchemaValue;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,7 +13,6 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 
 @Document("animal_schemas")

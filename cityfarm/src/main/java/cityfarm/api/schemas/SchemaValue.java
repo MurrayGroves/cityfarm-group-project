@@ -1,4 +1,4 @@
-package cityfarm.api.animals;
+package cityfarm.api.schemas;
 
 import org.springframework.lang.NonNull;
 

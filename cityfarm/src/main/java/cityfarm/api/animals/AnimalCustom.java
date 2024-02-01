@@ -1,6 +1,6 @@
 package cityfarm.api.animals;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
+import cityfarm.api.schemas.AnimalSchema;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.lang.NonNull;
@@ -8,7 +8,6 @@ import org.springframework.lang.Nullable;
 
 import java.time.ZonedDateTime;
 import java.util.Objects;
-import java.util.UUID;
 
 @Document("animals")
 public class AnimalCustom implements AnimalUnique {

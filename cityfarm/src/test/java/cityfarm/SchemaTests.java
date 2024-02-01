@@ -1,17 +1,13 @@
 package cityfarm;
 
-import cityfarm.api.animals.AnimalSchema;
-import cityfarm.api.animals.SchemaValue;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import cityfarm.api.schemas.AnimalSchema;
+import cityfarm.api.schemas.SchemaValue;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
-import org.springframework.http.ResponseEntity;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static junit.framework.TestCase.assertTrue;
