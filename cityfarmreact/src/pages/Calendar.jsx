@@ -62,7 +62,8 @@ const Calendar = () => {
         title : "",
         allDay: true,
         start: new Date(2023,11,5,18,29),
-        end:  new Date(2023,11,6,18,29)
+        end:  new Date(2023,11,6,18,29),
+        animals : []
     })
     const [allEvents,setAllEvents] = useState(events)
     const [selectedEvent,setSelectedEvent] = useState("No event selected")
