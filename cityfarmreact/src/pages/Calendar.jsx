@@ -11,6 +11,7 @@ import "../components/Calendar.css";
 import Event from "../components/Event";
 import CreateEvent from "../components/CreateEvent";
 import Animal from "../components/Animal";
+import CloseIcon from "../components/close-512.webp";
 
 const locales = {
     "en-GB" : require("date-fns/locale/en-GB")
@@ -39,9 +40,7 @@ const events = [ /*These are example events.*/
         allDay: false,
         start: new  Date(2023,11,1, 13),
         end: new  Date(2023,11,1, 14),
-        wh: false,
-        hc: false,
-        sw: false,
+        farms: [],
         animals : [1]
     },
     {
@@ -49,9 +48,7 @@ const events = [ /*These are example events.*/
         allDay: false,
         start: new  Date(2023,11,25, 8),
         end: new  Date(2023,11,28, 16),
-        wh: true,
-        hc: false,
-        sw: false,
+        farms: [0],
         animals : [2]
     },
     {
@@ -59,9 +56,7 @@ const events = [ /*These are example events.*/
         allDay: true,
         start: new  Date(2023,11,20),
         end: new  Date(2023, 11, 21, 23, 59),
-        wh: false,
-        hc: true,
-        sw: true,
+        farms: [1, 2],
         animals : [2,1]
     },
     {
@@ -69,9 +64,7 @@ const events = [ /*These are example events.*/
         allDay: true,
         start: new  Date(2023,11,29),
         end: new Date(2023, 11, 29),
-        wh: true,
-        hc: true,
-        sw: true,
+        farms: [0, 1, 2],
         animals : []
     }
 ];
@@ -82,10 +75,8 @@ const Calendar = () => {
         allDay: true,
         start: new Date(2023,11,5,18,29),
         end:  new Date(2023,11,6,18,29),
-        wh: false,
-        hc: false,
-        sw: false,
-        animals : []
+        farms: [],
+        animals: []
     })
     const [allEvents,setAllEvents] = useState(events)
     const [selectedEvent,setSelectedEvent] = useState("No event selected")
@@ -96,6 +87,7 @@ const Calendar = () => {
     const changeAllDay = (isAllDay) => {
         setNewEvent({...newEvent,allDay: isAllDay});
     }
+
     function showingTime(isShown) {
         if (isShown){
             return(<>
@@ -138,11 +130,10 @@ const Calendar = () => {
     }
 
     return (
-
         <div className="CalendarPage" style={{height: "75%"}}>  
         <h1>Calendar</h1>
         <div style={{height: "100%"}}>
-            <div style={{ display: "flex", height: "100%"}}>
+            <div style={{ display: "flex", justifyContent: "center", height: "100%"}}>
             <div style={{width: "65%"}}><BigCalendar
                         localizer={localizer}
                         events={allEvents}
@@ -163,12 +154,21 @@ const Calendar = () => {
             /></div>
 
             <div style={{width: "35%"}}>
+                <div className='componentBox'>
+                    <h2 className='boxTitle'>Selected Farms</h2>
+                    <input type="checkbox"/><span style={{marginRight: "10px"}}>Windmill Hill</span>
+                    <input type="checkbox"/><span style={{marginRight: "10px"}}>Hartcliffe</span>
+                    <input type="checkbox"/><span style={{marginRight: "10px"}}>St Werburghs</span>
+                </div>
 
                 {/*<Event selectedEvent={selectedEvent} setSelectedEvent={setSelectedEvent}/>*/}
 
                 { selectedEvent !== "No event selected" ?
-                <div style={{width: "85%", padding: "10px 10px 10px 10px", boxShadow: "0 0 20px rgba(0, 0, 0, 0.15)"}}>
-                    <h2 style={{margin: "0 0 10px 0"}}>Selected Event</h2>
+                <div className='componentBox'>
+                    <div style={{display: "flex", justifyContent: "space-between"}}>
+                    <h2 className='boxTitle'>Selected Event</h2>
+                    <button className='closeButton' onClick={() => setSelectedEvent("No event selected")}><img src={CloseIcon}/></button>
+                    </div>
                     <div>
                         <h3>{selectedEvent.title}</h3>
                         {
@@ -182,10 +182,11 @@ const Calendar = () => {
                                 </div>
                         
                         }
-                        <h3>Relevant Farms</h3>
-                        {selectedEvent.wh ? <p>Windmill Hill</p> : <></>}
-                        {selectedEvent.hc ? <p>Hartcliffe</p> : <></>}
-                        {selectedEvent.sw ? <p>St Werberghs</p> : <></>}
+                        {selectedEvent.farms.length !== 0 ?
+                        <h3>Relevant Farms</h3> : <></>}
+                        {selectedEvent.farms.includes(0) ? <p>Windmill Hill</p> : <></>}
+                        {selectedEvent.farms.includes(1) ? <p>Hartcliffe</p> : <></>}
+                        {selectedEvent.farms.includes(2) ? <p>St Werberghs</p> : <></>}
                         <h3>Relevant Animals</h3>
                         {selectedEvent.animals.map((animalId) => (
                         <Animal key={animalId} animalID={animalId}/>
@@ -198,8 +199,8 @@ const Calendar = () => {
 
                 {/*<CreateEvent setEvent={setNewEvent} handleAddEvent={handleAddEvent}/>*/}
 
-                <div style={{width: "85%", margin: "50px 50px 0 0", padding: "10px 10px 10px 10px", boxShadow: "0 0 20px rgba(0, 0, 0, 0.15)"}}>
-                <h2 style={{margin: "0 0 10px 0"}}>Add New Event</h2>
+                <div className='componentBox'>
+                <h2 className='boxTitle'>Add New Event</h2>
                 <div>
                 <input type="text" placeholder="Add Title" style={{width: "98%"}}
                     value={newEvent.title}
