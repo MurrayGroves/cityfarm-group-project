@@ -65,7 +65,7 @@ public class AnimalCustom implements AnimalUnique {
     @Nullable
     public String notes;
 
-    public AnimalCustom(@Nullable String id, @Nullable String name, @Nullable String mother, @Nullable String father,@Nullable String breed, @NonNull Boolean alive, @NonNull Boolean male, @Nullable ZonedDateTime dateOfBirth, @Nullable String notes) {
+    public AnimalCustom(@Nullable String id, @Nullable JsonNode fields, @Nullable String name, @Nullable String mother, @Nullable String father,@Nullable String breed, @NonNull Boolean alive, @NonNull Boolean male, @Nullable ZonedDateTime dateOfBirth, @Nullable String notes) {
         this.name = name;
         this.mother = mother;
         this.father = father;
@@ -74,6 +74,7 @@ public class AnimalCustom implements AnimalUnique {
         this.male = male;
         this.dateOfBirth = dateOfBirth;
         this.id = id;
+        this.fields = fields;
     }
 
     @Override

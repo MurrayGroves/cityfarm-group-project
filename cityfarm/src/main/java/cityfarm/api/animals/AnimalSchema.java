@@ -36,15 +36,13 @@ public class AnimalSchema {
     }
 
     public AnimalCustom new_animal(@Nullable JsonNode fields, @Nullable String id, @Nullable String name, @Nullable String mother, @Nullable String father, @Nullable String breed, @NonNull Boolean alive, @NonNull Boolean male, @Nullable ZonedDateTime dateOfBirth, @Nullable String notes) {
-        boolean is_valid = true;
-        // TODO - Logic to validate `fields` against the schema
         ObjectMapper mapper = new ObjectMapper();
         List<String> keys = new ArrayList<>();
         fields.fields().forEachRemaining((field) -> {
             String field_name = field.getKey();
             keys.add(field_name);
             if (this.fields.get(field_name) == null) {
-                throw new IllegalArgumentException("`fields` contains a key that is not in the schema");
+                throw new IllegalArgumentException(String.format("`fields` contains a key `%s` that is not in the schema", field_name));
             }
 
             try {
@@ -60,10 +58,6 @@ public class AnimalSchema {
             }
         });
 
-        if (!is_valid) {
-            throw new IllegalArgumentException("`fields` does not match the schema");
-        }
-
-        return new AnimalCustom(id, name, mother, father, breed, alive, male, dateOfBirth, notes);
+        return new AnimalCustom(id, fields, name, mother, father, breed, alive, male, dateOfBirth, notes);
     }
 }

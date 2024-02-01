@@ -2,6 +2,8 @@ package cityfarm;
 
 import cityfarm.api.animals.AnimalSchema;
 import cityfarm.api.animals.SchemaValue;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,7 +14,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static junit.framework.TestCase.assertTrue;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.Assert.assertThrows;
 
 public class SchemaTests {
     @Test
@@ -24,6 +28,56 @@ public class SchemaTests {
         ObjectMapper mapper = new ObjectMapper();
 
         JsonNode input = mapper.readTree("{\"name\": \"bob\", \"age\": 18}");
-        schema.new_animal(input, null, null, null, null, null, true, true, null, null);
+        Exception exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> schema.new_animal(input, null, null, null, null, null, true, true, null, null)
+        );
+
+        assertTrue(
+                exception.getMessage().contains("not in the schema")
+        );
+    }
+
+    @Test
+    public void reject_invalid_type() throws JsonProcessingException {
+        class Vehicle {
+            public int wheels;
+            public String name;
+        }
+        Map<String, SchemaValue> map = new HashMap<>();
+        map.put("vehicle", new SchemaValue(false, Vehicle.class));
+        AnimalSchema schema = new AnimalSchema("test", map);
+
+        ObjectMapper mapper = new ObjectMapper();
+
+        JsonNode input = mapper.readTree("{\"vehicle\": 13}");
+        Exception exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> schema.new_animal(input, null, null, null, null, null, true, true, null, null)
+        );
+
+        assertTrue(
+                exception.getMessage().contains("not of type")
+        );
+    }
+
+    @Test
+    public void required_field_missing() throws JsonProcessingException {
+        Map<String, SchemaValue> map = new HashMap<>();
+        map.put("vehicle", new SchemaValue(false, Vehicle.class));
+        map.put("license", new SchemaValue(true, String.class));
+        AnimalSchema schema = new AnimalSchema("test", map);
+
+        ObjectMapper mapper = new ObjectMapper();
+
+        JsonNode input = mapper.readTree("{\"vehicle\": {\"wheels\": 4, \"name\": \"toyota\"}}");
+        Exception exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> schema.new_animal(input, null, null, null, null, null, true, true, null, null)
+        );
+
+        assertTrue(
+                exception.getMessage().contains("missing required field")
+        );
     }
 }

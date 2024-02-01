@@ -57,9 +57,4 @@ public class Cow extends CowGeneric implements AnimalUnique {
     public String get_id() {
         return id;
     }
-
-    @Override
-    public Long get_created_at() {
-        return created_at;
-    }
 }
