@@ -30,7 +30,7 @@ const SearchBar = (props) => {
             </button>
             <select value={mode} onChange={e=>setMode(e.target.value)}>
                 <option>Name</option>
-                <option>Id</option>
+                <option>ID</option>
             </select>
         </div>
     )

@@ -17,11 +17,13 @@ const locales = {
     "en-GB" : require("date-fns/locale/en-GB")
 }
 
+const WH = 0, HC = 1, SW = 2; 
+
 const colours = {
-    wh: "#FF0000",
-    hc: "#6666FF",
-    sw: "#3312FF",
-    default: "#000000"
+    WH: "#FF0000",
+    HC: "#6666FF",
+    SW: "#3312FF",
+    default: "#00FF00"
 }
 
 const localizer = dateFnsLocalizer({
@@ -41,31 +43,31 @@ const events = [ /*These are example events.*/
         start: new  Date(2023,11,1, 13),
         end: new  Date(2023,11,1, 14),
         farms: [],
-        animals : [1]
+        animals: [1]
     },
     {
         title : "Bull in with cows",
         allDay: false,
         start: new  Date(2023,11,25, 8),
         end: new  Date(2023,11,28, 16),
-        farms: [0],
-        animals : [2]
+        farms: [WH],
+        animals: [2]
     },
     {
         title : "School Visits",
         allDay: true,
         start: new  Date(2023,11,20),
         end: new  Date(2023, 11, 21, 23, 59),
-        farms: [1, 2],
-        animals : [2,1]
+        farms: [HC, SW],
+        animals: [2,1]
     },
     {
         title : "Defra Inspection",
         allDay: true,
         start: new  Date(2023,11,29),
         end: new Date(2023, 11, 29),
-        farms: [0, 1, 2],
-        animals : []
+        farms: [WH, HC, SW],
+        animals: []
     }
 ];
 
@@ -85,7 +87,24 @@ const Calendar = () => {
     }
     
     const changeAllDay = (isAllDay) => {
-        setNewEvent({...newEvent,allDay: isAllDay});
+        setNewEvent({...newEvent, allDay: isAllDay});
+    }
+
+    const eventStyleGetter = function(event, start, end, isSelected) {
+        var backgroundColor = event.farms.includes(WH) ? colours.WH : (event.farms.includes(HC) ? colours.HC : (event.farms.includes(SW) ? colours.SW : colours.default))
+        var style = {
+            backgroundColor: backgroundColor,
+            borderRadius: '5px',
+            color: 'black',
+            border: 'none',
+        };
+        return {
+            style: style
+        };
+    }
+
+    const filterEvents = function(farm) {
+        //setAllEvents(allEvents.filter((event) => event.farms.includes(farm)))
     }
 
     function showingTime(isShown) {
@@ -134,31 +153,24 @@ const Calendar = () => {
         <h1>Calendar</h1>
         <div style={{height: "100%"}}>
             <div style={{ display: "flex", justifyContent: "center", height: "100%"}}>
-            <div style={{width: "65%"}}><BigCalendar
-                        localizer={localizer}
-                        events={allEvents}
-                        startAccessor="start"
-                        endAccessor="end"
-                        style={{height: "100%", margin:"20px 40px 0 0"}} 
-                        showMultiDayTimes
-                        onSelectEvent={setSelectedEvent}
-
-                         //Somehow change event colour to match the relevant farm
-
-                         /*
-                         eventPropGetter={(events) => {
-                            const colour = events.wh ? colours.wh : (events.hc ? colours.hc : (events.sw ? colours.sw : colours.default))
-                            return {style: {backgroundColor: {colour}}};
-                        }}
-                        */
-            /></div>
-
-            <div style={{width: "35%"}}>
+            <div style={{width: "calc(100% - 440px"}}>
+                <BigCalendar
+                    localizer={localizer}
+                    events={allEvents}
+                    startAccessor="start"
+                    endAccessor="end"
+                    style={{height: "100%", margin:"20px 40px 0 0"}}
+                    showMultiDayTimes
+                    onSelectEvent={setSelectedEvent}
+                    eventPropGetter={eventStyleGetter}
+                />
+            </div>
+            <div style={{width: "440px"}}>
                 <div className='componentBox'>
                     <h2 className='boxTitle'>Selected Farms</h2>
-                    <input type="checkbox"/><span style={{marginRight: "10px"}}>Windmill Hill</span>
-                    <input type="checkbox"/><span style={{marginRight: "10px"}}>Hartcliffe</span>
-                    <input type="checkbox"/><span style={{marginRight: "10px"}}>St Werburghs</span>
+                    <input type="checkbox" defaultChecked='true' onChange={filterEvents(WH)}/><span style={{marginRight: "10px"}}>Windmill Hill</span>
+                    <input type="checkbox" defaultChecked='true'/><span style={{marginRight: "10px"}}>Hartcliffe</span>
+                    <input type="checkbox" defaultChecked='true'/><span style={{marginRight: "10px"}}>St Werburghs</span>
                 </div>
 
                 {/*<Event selectedEvent={selectedEvent} setSelectedEvent={setSelectedEvent}/>*/}
