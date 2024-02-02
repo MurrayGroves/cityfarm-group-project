@@ -10,8 +10,10 @@ const aExamples =[
     name:"bob",
     type:"cow",
     sex:"F",
-    father : "undefined",
+    father : "alice",
+    fid : 2,
     mother	:"undefined",
+    mid : null,
     tBInoculated : true,
     live : true
 
@@ -22,7 +24,9 @@ const aExamples =[
         type:"sheep",
         sex:"M",
         father : "undefined",
+        fid : null,
         mother	:"undefined",
+        mid : null,
         tBInoculated : true,
         live : true
 
@@ -33,7 +37,7 @@ export default function Animal(props) {
 
 
     const [anchorEl, setAnchorEl] = React.useState(null);
-    const [chosenanimal, setChosenAnimal] = React.useState(aExamples[0]);
+    const [chosenAnimal, setChosenAnimal] = React.useState(aExamples[0]);
 
     const handlePopoverOpen = (event) => {
         setAnchorEl(event.currentTarget);
@@ -46,7 +50,7 @@ export default function Animal(props) {
     const open = Boolean(anchorEl);
 
     React.useEffect(() => {
-        // Update chosenanimal when animalID prop changes
+        // Update chosenAnimal when animalID prop changes
         for (let i = 0; i < aExamples.length; i++) {
             if (props.animalID === aExamples[i].id) {
                 setChosenAnimal(aExamples[i]);
@@ -62,7 +66,7 @@ export default function Animal(props) {
                 onMouseEnter={handlePopoverOpen}
                 onMouseLeave={handlePopoverClose}
             >
-                <Link to={`/SingleAnimal/${chosenanimal.id}`}>{chosenanimal.name}</Link>
+                <Link to={`/SingleAnimal/${chosenAnimal.id}`}>{chosenAnimal.name}</Link>
             </Typography>
             <Popover
                 id="mouse-over-popover"
@@ -83,10 +87,10 @@ export default function Animal(props) {
                 disableRestoreFocus
             >
                 <Typography sx={{ p: 1,whiteSpace: 'pre-line' }}>
-                {chosenanimal.sex}{'\n'}
-                {chosenanimal.type}{'\n'}
-                {chosenanimal.father}{'\n'}
-                {chosenanimal.mother}{'\n'}
+                {chosenAnimal.sex}{'\n'}
+                {chosenAnimal.type}{'\n'}
+                {chosenAnimal.father}{'\n'}
+                {chosenAnimal.mother}{'\n'}
                 </Typography>
             </Popover>
         </div>
