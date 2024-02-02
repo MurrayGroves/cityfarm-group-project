@@ -12,4 +12,6 @@ import java.util.List;
 @Repository
 public interface SchemaRepository extends MongoRepository<AnimalSchema, String> {
     AnimalSchema findSchemaByName(String name);
+
+    String deleteByName(String name);
 }

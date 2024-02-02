@@ -38,4 +38,11 @@ public class SchemaController {
 
         return ResponseEntity.ok().body(schema);
     }
+
+    @DeleteMapping("/api/schemas/delete/{name}")
+    public ResponseEntity<String> delete(@PathVariable String name) {
+        schemaRepository.deleteByName(name);
+
+        return ResponseEntity.ok(name);
+    }
 }

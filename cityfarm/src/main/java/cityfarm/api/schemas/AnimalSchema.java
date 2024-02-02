@@ -1,5 +1,6 @@
 package cityfarm.api.schemas;
 
+import cityfarm.api.animals.AnimalCreateRequest;
 import cityfarm.api.animals.AnimalCustom;
 import cityfarm.api.schemas.SchemaValue;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -42,10 +43,10 @@ public class AnimalSchema {
         return this.fields;
     }
 
-    public AnimalCustom new_animal(@Nullable JsonNode fields, @Nullable String id, @Nullable String name, @Nullable String mother, @Nullable String father, @Nullable String breed, @NonNull Boolean alive, @NonNull Boolean male, @Nullable ZonedDateTime dateOfBirth, @Nullable String notes) {
+    public AnimalCustom new_animal(@NonNull AnimalCreateRequest animalReq) {
         ObjectMapper mapper = new ObjectMapper();
         List<String> keys = new ArrayList<>();
-        fields.fields().forEachRemaining((field) -> {
+        animalReq.fields.fields().forEachRemaining((field) -> {
             String field_name = field.getKey();
             keys.add(field_name);
             if (this.fields.get(field_name) == null) {
@@ -65,6 +66,6 @@ public class AnimalSchema {
             }
         });
 
-        return new AnimalCustom(id, fields, name, mother, father, breed, alive, male, dateOfBirth, notes);
+        return new AnimalCustom(animalReq);
     }
 }

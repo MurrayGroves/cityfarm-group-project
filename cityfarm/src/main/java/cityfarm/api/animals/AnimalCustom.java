@@ -8,6 +8,7 @@ import org.springframework.lang.Nullable;
 
 import java.time.ZonedDateTime;
 import java.util.Objects;
+import java.util.UUID;
 
 @Document("animals")
 public class AnimalCustom implements AnimalUnique {
@@ -18,7 +19,7 @@ public class AnimalCustom implements AnimalUnique {
     public JsonNode fields;
 
     @Nullable
-    private String id;
+    private final String id;
 
     /**
      * Specific Animal's name, e.g. "Alice"
@@ -74,6 +75,18 @@ public class AnimalCustom implements AnimalUnique {
         this.dateOfBirth = dateOfBirth;
         this.id = id;
         this.fields = fields;
+    }
+
+    public AnimalCustom(@NonNull AnimalCreateRequest animalReq) {
+        this.id = UUID.randomUUID().toString();
+        this.fields = animalReq.fields;
+        this.name = animalReq.name;
+        this.mother = animalReq.mother;
+        this.father = animalReq.father;
+        this.breed = animalReq.father;
+        this.alive = animalReq.alive;
+        this.male = animalReq.male;
+        this.dateOfBirth = animalReq.dateOfBirth;
     }
 
     @Override

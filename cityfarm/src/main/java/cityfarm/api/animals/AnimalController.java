@@ -1,5 +1,7 @@
 package cityfarm.api.animals;
 
+import cityfarm.api.schemas.AnimalSchema;
+import cityfarm.api.schemas.SchemaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.autoconfigure.observation.ObservationProperties;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -19,6 +21,9 @@ public class AnimalController {
 
     @Autowired
     AnimalRepositoryCustom animalRepositoryCustom;
+
+    @Autowired
+    SchemaRepository schemaRepository;
 
     @Autowired
     MongoTemplate mongoTemplate;
@@ -64,53 +69,20 @@ public class AnimalController {
      * @param cowReq request JSON must be in the format of a {@link CowGeneric CowGeneric} ({@link Cow Cow} but without ID and created timestamp)
      * @return the created `Cow` object
      */
-    @PostMapping("/api/animals/cow/create")
-    public ResponseEntity<Cow> create_animal(@RequestBody CowGeneric cowReq) {
-        Cow cow = new Cow(cowReq, null, null);
+    @PostMapping("/api/animals/{schemaName}/create")
+    public ResponseEntity<String> create_animal(@RequestBody AnimalCreateRequest animalReq, @PathVariable String schemaName) {
+        AnimalSchema schema = schemaRepository.findSchemaByName(schemaName);
 
-        animalRepository.save(cow);
+        AnimalCustom animal;
+        try {
+            animal = schema.new_animal(animalReq);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
 
-        String location = String.format("/api/animals/by_id/%s", cow.get_id());
-        return ResponseEntity.created(URI.create(location)).body(cow);
-    }
+        animalRepository.save(animal);
 
-    @PostMapping("/api/animals/sheep/create")
-    public ResponseEntity<Sheep> create_animal(@RequestBody SheepGeneric sheepReq) {
-        Sheep sheep = new Sheep(sheepReq, UUID.randomUUID().toString(), System.currentTimeMillis() / 1000L);
-
-        animalRepository.save(sheep);
-
-        String location = String.format("/animals/by_id/%s", sheep.get_id());
-        return ResponseEntity.created(URI.create(location)).body(sheep);
-    }
-
-    @PostMapping("/api/animals/chicken/create")
-    public ResponseEntity<Chicken> create_animal(@RequestBody ChickenGeneric chickenReq) {
-        Chicken chicken = new Chicken(chickenReq, UUID.randomUUID().toString(), System.currentTimeMillis() / 1000L);
-
-        animalRepository.save(chicken);
-
-        String location = String.format("/animals/by_id/%s", chicken.get_id());
-        return ResponseEntity.created(URI.create(location)).body(chicken);
-    }
-
-    @PostMapping("/api/animals/pig/create")
-    public ResponseEntity<Pig> create_animal(@RequestBody PigGeneric pigReq) {
-        Pig pig = new Pig(pigReq, UUID.randomUUID().toString(), System.currentTimeMillis() / 1000L);
-
-        animalRepository.save(pig);
-
-        String location = String.format("/animals/by_id/%s", pig.get_id());
-        return ResponseEntity.created(URI.create(location)).body(pig);
-    }
-
-    @PostMapping("/api/animals/goat/create")
-    public ResponseEntity<Goat> create_animal(@RequestBody GoatGeneric goatReq) {
-        Goat goat = new Goat(goatReq, UUID.randomUUID().toString(), System.currentTimeMillis() / 1000L);
-
-        animalRepository.save(goat);
-
-        String location = String.format("/animals/by_id/%s", goat.get_id());
-        return ResponseEntity.created(URI.create(location)).body(goat);
+        String location = String.format("/api/animals/by_id/%s", animal.get_id());
+        return ResponseEntity.created(URI.create(location)).build();
     }
 }
