@@ -87,6 +87,7 @@ const Calendar = () => {
 
     const handleAddEvent = () => {
         setAllEvents([...allEvents, newEvent]); /*Adds the new event to the list of allEvents} */
+        console.log(allEvents, newEvent);
     }
     
     const changeAllDay = (isAllDay) => {
@@ -94,15 +95,18 @@ const Calendar = () => {
     }
 
     const updateVisibleFarms = (selected) => {
-        visibleFarms.includes(selected) ? setVisibleFarms(visibleFarms.filter(farm => farm !== selected)) : setVisibleFarms(visibleFarms.concat(selected));
+        visibleFarms.includes(selected) ? setVisibleFarms(visibleFarms.filter(farm => farm !== selected)) : setVisibleFarms([...visibleFarms, selected]);
     }
 
     const eventStyleGetter = (event) => {
         var colour = event.farms.includes(WH) ? colours.WH : (event.farms.includes(HC) ? colours.HC : (event.farms.includes(SW) ? colours.SW : colours.default));
-        var visible = false;
-        for (let i = 0; i < event.farms.length; i++) {
-            let v = visibleFarms.includes(event.farms[i]);
-            if(v){visible = true};
+        var visible = true;
+        if (event.farms.length > 0) {
+            visible = false;
+            for (let i = 0; i < event.farms.length; i++) {
+                let v = visibleFarms.includes(event.farms[i]);
+                if(v){visible = true};
+            }
         }
         var style = {
             display: visible ? 'block' : 'none',
@@ -169,7 +173,7 @@ const Calendar = () => {
             <div style={{width: "calc(100% - 440px"}}>
                 <BigCalendar
                     localizer={localizer}
-                    events={events}
+                    events={allEvents}
                     startAccessor="start"
                     endAccessor="end"
                     style={{height: "100%", margin:"20px 40px 0 0"}}
@@ -242,29 +246,25 @@ const Calendar = () => {
                 <input type = "checkbox" name="All Day"  value="True" checked={newEvent.allDay}
                        onChange={()=>changeAllDay(!newEvent.allDay)}/>
                 All day
-                <button style={{float: "right"}} onClick={() => handleAddEvent}>Add Event</button>
+                <button style={{float: "right"}} onClick={()=>handleAddEvent()}>Add Event</button>
                 </div>
                 <div style={{marginTop: "10px"}}>
                 Relevant Farms<br/>
-                <input type="checkbox" name="Windmill Hill" value="False" checked={newEvent.wh}
-                    onChange={()=>setNewEvent({...newEvent, farms: newEvent.farms.includes(WH) ? newEvent.farms.filter((farm) => farm !== WH) : newEvent.farms.concat(WH)})}/>
+                <input type="checkbox" name="Windmill Hill" value="False" onChange={()=>setNewEvent({...newEvent, farms: newEvent.farms.includes(WH) ? newEvent.farms.filter((farm) => farm !== WH) : newEvent.farms.concat(WH)})}/>
                 Windmill Hill<br/>
 
-                <input type="checkbox" name="Hartcliffe" value="False" checked={newEvent.hc}
-                    onChange={()=>setNewEvent({...newEvent, farms: newEvent.farms.includes(HC) ? newEvent.farms.filter((farm) => farm !== HC) : newEvent.farms.concat(HC)})}/>
+                <input type="checkbox" name="Hartcliffe" value="False" onChange={()=>setNewEvent({...newEvent, farms: newEvent.farms.includes(HC) ? newEvent.farms.filter((farm) => farm !== HC) : newEvent.farms.concat(HC)})}/>
                 Hartcliffe<br/>
 
-                <input type="checkbox" name="St Werberghs" value="False" checked={newEvent.sw}
-                    onChange={()=>setNewEvent({...newEvent, farms: newEvent.farms.includes(SW) ? newEvent.farms.filter((farm) => farm !== SW) : newEvent.farms.concat(SW)})}/>
+                <input type="checkbox" name="St Werberghs" value="False" onChange={()=>setNewEvent({...newEvent, farms: newEvent.farms.includes(SW) ? newEvent.farms.filter((farm) => farm !== SW) : newEvent.farms.concat(SW)})}/>
                 St Werberghs
                 </div>
-                </div>
+            </div>
+            </div>
             </div>
         </div>
         </div>
-        </div>
-    );}
+    );
+}
 
 export default Calendar;
-
-
