@@ -4,7 +4,7 @@ import parse from 'date-fns/parse';
 import startOfWeek from 'date-fns/startOfWeek';
 import getDay from 'date-fns/getDay';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
-import React, {useState, useEffect, useMemo} from 'react';
+import React, {useState, useEffect, useMem, useCallback} from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import "../components/Calendar.css";
@@ -12,7 +12,6 @@ import Event from "../components/Event";
 import CreateEvent from "../components/CreateEvent";
 import Animal from "../components/Animal";
 import CloseIcon from "../components/close-512.webp";
-
 const locales = {
     "en-GB" : require("date-fns/locale/en-GB")
 }
@@ -70,7 +69,6 @@ const events = [ /*These are example events.*/
         animals: []
     }
 ];
-
 const Calendar = () => {
     const [newEvent,setNewEvent] = useState({
         title: "",
@@ -164,7 +162,44 @@ const Calendar = () => {
             )
         }
     }
+    const onRangeChange = useCallback(async (range) => {
+        if (range.start !== undefined){ //month or agenda case start and end are the times displayed on the calendar
+            try {
+                const start = new Date(range.start)
+                const end = new Date(range.end)
+                const response = await axios.get(`/events`, start, end);
+                console.log(response.data);
+                setAllEvents(response.data);
+            } catch (error) {
+                window.alert(error);
 
+            }
+        } else {
+            if (range[1] !== undefined){ //week case has an array of 7 times
+                try {
+                    const start = new Date(range[0])
+                    const end = new Date(range[range.length - 1])
+                    const response = await axios.get(`/events`, start, end);
+                    console.log(response.data);
+                    setAllEvents(response.data);
+                } catch (error){
+                    window.alert(error);
+                }
+            }
+            else{ // day case has a single element of the start time
+                try {
+                const start = new Date(range[0])
+                const end = new Date(start)
+                end.setDate(start.getDate() + 1)
+                    const response = await axios.get(`/events`, start, end);
+                    console.log(response.data);
+                    setAllEvents(response.data);
+                } catch (error) {
+                    window.alert(error)
+                }
+            }
+        }
+      }, [])
     return (
         <div className="CalendarPage" style={{height: "75%"}}>  
         <h1>Calendar</h1>
@@ -180,6 +215,7 @@ const Calendar = () => {
                     showMultiDayTimes
                     onSelectEvent={setSelectedEvent}
                     eventPropGetter={eventStyleGetter}
+                    onRangeChange={onRangeChange}
                 />
             </div>
             <div style={{width: "440px"}}>
@@ -268,3 +304,4 @@ const Calendar = () => {
 }
 
 export default Calendar;
+
