@@ -69,6 +69,24 @@ public class CalendarController {
         return ResponseEntity.ok().body(events);
     }
 
+    @GetMapping("/api/events/by_animal/{animal_id}")
+    public ResponseEntity<List<Event>> get_events_by_animal(@PathVariable String animal_id) {
+        responseHeaders.set(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, host_url);
+
+        List<Event> events = eventRepository.findEventByAnimal(animal_id);
+
+        return ResponseEntity.ok().body(events);
+    }
+
+    @GetMapping("/api/events/by_enclosure/{enclosure_id}")
+    public ResponseEntity<List<Event>> get_events_by_enclosure(@PathVariable String enclosure_id) {
+        responseHeaders.set(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, host_url);
+
+        List<Event> events = eventRepository.findEventByEnclosure(enclosure_id);
+
+        return ResponseEntity.ok().body(events);
+    }
+
     @DeleteMapping("/api/events/by_id/{id}")
     public ResponseEntity<String> delete_event(@PathVariable String id) {
         responseHeaders.set(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, host_url);
