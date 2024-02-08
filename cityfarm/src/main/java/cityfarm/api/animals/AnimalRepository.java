@@ -10,9 +10,9 @@ import java.util.List;
 
 @Document("animals")
 @Repository
-public interface AnimalRepository extends MongoRepository<AnimalGeneric, String> {
-    List<AnimalGeneric> findAnimalByName(String name);
+public interface AnimalRepository extends MongoRepository<AnimalCustom, String> {
+    List<AnimalCustom> findAnimalByName(String name);
 
     @Query("{ '_id': ?0}")
-    AnimalGeneric findAnimalById(String id);
+    AnimalCustom findAnimalById(String id);
 }

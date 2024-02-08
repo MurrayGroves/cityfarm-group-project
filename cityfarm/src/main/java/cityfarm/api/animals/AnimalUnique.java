@@ -5,5 +5,4 @@ package cityfarm.api.animals;
  */
 public interface AnimalUnique {
     String get_id();
-    Long get_created_at();
 }
