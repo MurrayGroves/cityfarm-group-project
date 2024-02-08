@@ -1,7 +1,5 @@
 package cityfarm.api.schemas;
 
-import cityfarm.api.animals.AnimalGeneric;
-import cityfarm.api.animals.AnimalRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

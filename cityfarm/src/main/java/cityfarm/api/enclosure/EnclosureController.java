@@ -1,6 +1,6 @@
 package cityfarm.api.enclosure;
 
-import cityfarm.api.animals.AnimalGeneric;
+import cityfarm.api.animals.AnimalCustom;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpHeaders;
@@ -61,7 +61,7 @@ public class EnclosureController {
     }
 
     @PatchMapping("/api/enclosures/by_id/{id}/holding")
-    public ResponseEntity<String> set_enclosure_holding(@PathVariable String id, @RequestBody HashMap<String, Set<AnimalGeneric>> holding) {
+    public ResponseEntity<String> set_enclosure_holding(@PathVariable String id, @RequestBody HashMap<String, Set<AnimalCustom>> holding) {
         Enclosure enc = enclosureRepository.findEnclosureById(id);
 
         for (String type : holding.keySet()) {
@@ -88,7 +88,7 @@ public class EnclosureController {
         Enclosure enc = enclosureRepository.findEnclosureById(id);
 
         for (String type : capacities.keySet()) {
-            Set<AnimalGeneric> holds = Objects.requireNonNullElse(enc.holding.get(type), new HashSet<>());
+            Set<AnimalCustom> holds = Objects.requireNonNullElse(enc.holding.get(type), new HashSet<>());
             if (holds.size() > capacities.get(type)) {
                 return ResponseEntity.badRequest().body("Capacity too low for current inhabitants");
             }
