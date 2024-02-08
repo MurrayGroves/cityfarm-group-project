@@ -32,7 +32,7 @@ public class AnimalController {
      * @return a list of all animals in the DB
      */
     @GetMapping("/api/animals")
-    public ResponseEntity<List<AnimalGeneric>> get_animals() {
+    public ResponseEntity<List<AnimalCustom>> get_animals() {
         return ResponseEntity.ok().body(animalRepository.findAll());
     }
 
@@ -41,8 +41,8 @@ public class AnimalController {
      * @return object of the specified animal
      */
     @GetMapping("/api/animals/by_id/{id}")
-    public ResponseEntity<AnimalGeneric> get_animal_by_id(@PathVariable String id) {
-        AnimalGeneric animal = animalRepository.findAnimalById(id);
+    public ResponseEntity<AnimalCustom> get_animal_by_id(@PathVariable String id) {
+        AnimalCustom animal = animalRepository.findAnimalById(id);
 
         if (animal == null) {
             return ResponseEntity.status(404).build();
@@ -57,8 +57,8 @@ public class AnimalController {
      * @return list of all animals with that name
      */
     @GetMapping("/api/animals/by_name/{name}")
-    public ResponseEntity<List<AnimalGeneric>> get_animals_by_name(@PathVariable String name) {
-        List<AnimalGeneric> animals = animalRepositoryCustom.findAnimalByName(name);
+    public ResponseEntity<List<AnimalCustom>> get_animals_by_name(@PathVariable String name) {
+        List<AnimalCustom> animals = animalRepositoryCustom.findAnimalByName(name);
 
         return ResponseEntity.ok().body(animals);
     }
@@ -66,12 +66,16 @@ public class AnimalController {
 
     /**
      * Create new animal in app
-     * @param cowReq request JSON must be in the format of a {@link CowGeneric CowGeneric} ({@link Cow Cow} but without ID and created timestamp)
-     * @return the created `Cow` object
+     * @param animalReq request JSON must be in the format of a {@link AnimalCreateRequest AnimalCreateRequest}
+     * @return the created `AnimalCustom` object
      */
-    @PostMapping("/api/animals/{schemaName}/create")
-    public ResponseEntity<String> create_animal(@RequestBody AnimalCreateRequest animalReq, @PathVariable String schemaName) {
-        AnimalSchema schema = schemaRepository.findSchemaByName(schemaName);
+    @PostMapping("/api/animals/create")
+    public ResponseEntity<String> create_animal(@RequestBody AnimalCreateRequest animalReq) {
+        AnimalSchema schema = schemaRepository.findSchemaByName(animalReq.type);
+
+        if (schema == null) {
+            return ResponseEntity.badRequest().body(String.format("No schema found for specified type: %s", animalReq.type));
+        }
 
         AnimalCustom animal;
         try {

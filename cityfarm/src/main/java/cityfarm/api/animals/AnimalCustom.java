@@ -1,24 +1,33 @@
 package cityfarm.api.animals;
 
 import cityfarm.api.schemas.AnimalSchema;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.databind.JsonNode;
-import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.PersistenceCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import org.springframework.data.annotation.ReadOnlyProperty;
+import org.springframework.data.mongodb.core.mapping.*;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
-
 import java.time.ZonedDateTime;
 import java.util.Objects;
 import java.util.UUID;
 
 @Document("animals")
 public class AnimalCustom implements AnimalUnique {
-    @NonNull
+    @ReadOnlyProperty
+    @DocumentReference(lookup="{'_id':?#{#self.type} }", collection = "animal_schemas")
     private AnimalSchema schema;
+
+    @JsonProperty("type")
+    private String type;
 
     @Nullable
     public JsonNode fields;
 
     @Nullable
+    @Id
     private final String id;
 
     /**
@@ -65,7 +74,11 @@ public class AnimalCustom implements AnimalUnique {
     @Nullable
     public String notes;
 
-    public AnimalCustom(@Nullable String id, @Nullable JsonNode fields, @Nullable String name, @Nullable String mother, @Nullable String father,@Nullable String breed, @NonNull Boolean alive, @NonNull Boolean male, @Nullable ZonedDateTime dateOfBirth, @Nullable String notes) {
+    @PersistenceCreator
+    @JsonCreator
+    public AnimalCustom(@JsonProperty("type") @NonNull AnimalSchema schema, @Nullable String id, @Nullable JsonNode fields, @JsonProperty("name") @Nullable String name, @Nullable String mother, @Nullable String father,@Nullable String breed, @NonNull Boolean alive, @NonNull Boolean male, @Nullable ZonedDateTime dateOfBirth, @Nullable String notes) {
+        this.schema = schema;
+        this.type = schema.get_name();
         this.name = name;
         this.mother = mother;
         this.father = father;
@@ -77,7 +90,9 @@ public class AnimalCustom implements AnimalUnique {
         this.fields = fields;
     }
 
-    public AnimalCustom(@NonNull AnimalCreateRequest animalReq) {
+    public AnimalCustom(@NonNull AnimalSchema schema, @NonNull AnimalCreateRequest animalReq) {
+        this.schema = schema;
+        this.type = schema.get_name();
         this.id = UUID.randomUUID().toString();
         this.fields = animalReq.fields;
         this.name = animalReq.name;

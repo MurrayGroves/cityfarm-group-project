@@ -8,7 +8,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Document("schemas")
 @Repository
 public interface SchemaRepository extends MongoRepository<AnimalSchema, String> {
     AnimalSchema findSchemaByName(String name);

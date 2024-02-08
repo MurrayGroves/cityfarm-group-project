@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.time.ZonedDateTime;
 
 public class AnimalCreateRequest {
+    public String type;
     public JsonNode fields;
 
     public String name;

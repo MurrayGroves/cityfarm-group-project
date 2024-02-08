@@ -66,6 +66,6 @@ public class AnimalSchema {
             }
         });
 
-        return new AnimalCustom(animalReq);
+        return new AnimalCustom(this, animalReq);
     }
 }
