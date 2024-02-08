@@ -1,6 +1,6 @@
 package cityfarm.api.enclosure;
 
-import cityfarm.api.animals.AnimalGeneric;
+import cityfarm.api.animals.AnimalCustom;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -19,11 +19,11 @@ public class EnclosureRepositoryCustom {
         this.mongoOperations = mongoOperations;
     }
 
-    public long updateHolding(String id, HashMap<String, Set<AnimalGeneric>> holding) {
+    public long updateHolding(String id, HashMap<String, Set<AnimalCustom>> holding) {
         Query query = new Query(Criteria.where("_id").is(id));
         Update update = new Update().set("holding", holding);
         return mongoOperations.updateFirst(query, update, Enclosure.class).getModifiedCount();
-    }
+    } 
 
     public long updateCapacities(String id, HashMap<String, Integer> capacities) {
         Query query = new Query(Criteria.where("_id").is(id));

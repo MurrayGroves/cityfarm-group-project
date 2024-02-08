@@ -16,10 +16,8 @@ public class AnimalRepositoryCustom {
         this.mongoOperations = mongoOperations;
     }
 
-    public List<AnimalGeneric> findAnimalByName(String name){
+    public List<AnimalCustom> findAnimalByName(String name){
         Criteria regex = Criteria.where("name").regex(name, "i");
-        return mongoOperations.find(new Query().addCriteria(regex), AnimalGeneric.class);
+        return mongoOperations.find(new Query().addCriteria(regex), AnimalCustom.class);
     }
-
-
 }
