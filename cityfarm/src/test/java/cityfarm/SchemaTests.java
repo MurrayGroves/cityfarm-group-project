@@ -1,5 +1,6 @@
 package cityfarm;
 
+import cityfarm.api.animals.AnimalCreateRequest;
 import cityfarm.api.schemas.AnimalSchema;
 import cityfarm.api.schemas.SchemaValue;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -24,9 +25,12 @@ public class SchemaTests {
         ObjectMapper mapper = new ObjectMapper();
 
         JsonNode input = mapper.readTree("{\"name\": \"bob\", \"age\": 18}");
+        AnimalCreateRequest animalReq = new AnimalCreateRequest();
+        animalReq.name = "bob";
+        animalReq.fields = input;
         Exception exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> schema.new_animal(input, null, null, null, null, null, true, true, null, null)
+                () -> schema.new_animal(animalReq)
         );
 
         assertTrue(
@@ -47,9 +51,11 @@ public class SchemaTests {
         ObjectMapper mapper = new ObjectMapper();
 
         JsonNode input = mapper.readTree("{\"vehicle\": 13}");
+        AnimalCreateRequest animalReq = new AnimalCreateRequest();
+        animalReq.fields = input;
         Exception exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> schema.new_animal(input, null, null, null, null, null, true, true, null, null)
+                () -> schema.new_animal(animalReq)
         );
 
         assertTrue(
@@ -67,9 +73,11 @@ public class SchemaTests {
         ObjectMapper mapper = new ObjectMapper();
 
         JsonNode input = mapper.readTree("{\"vehicle\": {\"wheels\": 4, \"name\": \"toyota\"}}");
+        AnimalCreateRequest animalReq = new AnimalCreateRequest();
+        animalReq.fields = input;
         Exception exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> schema.new_animal(input, null, null, null, null, null, true, true, null, null)
+                () -> schema.new_animal(animalReq)
         );
 
         assertTrue(

@@ -3,6 +3,7 @@ package cityfarm.api.animals;
 import cityfarm.api.schemas.AnimalSchema;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.PersistenceCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -83,23 +84,23 @@ public class AnimalCustom implements AnimalUnique {
         this.mother = mother;
         this.father = father;
         this.breed = breed;
-        this.alive = Objects.requireNonNull(alive);
+        this.alive = Objects.requireNonNullElse(alive, true);
         this.male = male;
         this.dateOfBirth = dateOfBirth;
         this.id = id;
-        this.fields = fields;
+        this.fields = Objects.requireNonNullElse(fields, JsonNodeFactory.instance.objectNode());
     }
 
     public AnimalCustom(@NonNull AnimalSchema schema, @NonNull AnimalCreateRequest animalReq) {
         this.schema = schema;
         this.type = schema.get_name();
         this.id = UUID.randomUUID().toString();
-        this.fields = animalReq.fields;
+        this.fields = Objects.requireNonNullElse(animalReq.fields, JsonNodeFactory.instance.objectNode());
         this.name = animalReq.name;
         this.mother = animalReq.mother;
         this.father = animalReq.father;
         this.breed = animalReq.father;
-        this.alive = animalReq.alive;
+        this.alive = Objects.requireNonNullElse(animalReq.alive, true);
         this.male = animalReq.male;
         this.dateOfBirth = animalReq.dateOfBirth;
     }

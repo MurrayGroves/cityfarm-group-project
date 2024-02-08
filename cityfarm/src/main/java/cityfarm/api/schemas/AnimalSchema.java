@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.PersistenceCreator;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -17,6 +18,7 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 
 @Document("animal_schemas")
@@ -46,6 +48,7 @@ public class AnimalSchema {
     public AnimalCustom new_animal(@NonNull AnimalCreateRequest animalReq) {
         ObjectMapper mapper = new ObjectMapper();
         List<String> keys = new ArrayList<>();
+        animalReq.fields = Objects.requireNonNullElse(animalReq.fields, JsonNodeFactory.instance.objectNode());
         animalReq.fields.fields().forEachRemaining((field) -> {
             String field_name = field.getKey();
             keys.add(field_name);
