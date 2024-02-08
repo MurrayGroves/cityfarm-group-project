@@ -12,6 +12,14 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 
+const classToReadable = {
+    "java.lang.Boolean": "Yes/No",
+    "java.lang.String": "Text",
+    "java.lang.Integer": "Whole Number",
+    "java.lang.Double": "Decimal Number",
+    "java.time.ZonedDateTime": "Date & Time",
+}
+
 const Schemas = () => {
     const [schemaList, setSchemaList] = useState([]); /* The State for the list of enclosures. The initial state is [] */
     const [searchTerm, setSearchTerm] = useState(''); /* The term being search for in the searchbar */
@@ -85,7 +93,7 @@ const Schemas = () => {
                                     <TableCell component="th" scope="row">
                                         {name}
                                     </TableCell>
-                                    <TableCell align="left">{properties._type}</TableCell>
+                                    <TableCell align="left">{classToReadable[properties._type]}</TableCell>
                                     <TableCell align="left">{properties._required ? "Yes" : "No"}</TableCell>
                                     </TableRow>
                                 ))}
