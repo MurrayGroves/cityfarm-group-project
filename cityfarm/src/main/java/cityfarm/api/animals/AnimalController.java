@@ -87,6 +87,6 @@ public class AnimalController {
         animalRepository.save(animal);
 
         String location = String.format("/api/animals/by_id/%s", animal.get_id());
-        return ResponseEntity.created(URI.create(location)).build();
+        return ResponseEntity.created(URI.create(location)).body(animal.get_id());
     }
 }
