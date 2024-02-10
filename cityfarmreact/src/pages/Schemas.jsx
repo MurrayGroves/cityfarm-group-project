@@ -10,7 +10,14 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
+import TableFooter from '@mui/material/TableFooter';
 import Paper from '@mui/material/Paper';
+import { Menu, Select } from "@mui/material";
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Button from '@mui/material/Button';
+import AddIcon from '@mui/icons-material/Add';
+import TextField from '@mui/material/TextField';
 
 const classToReadable = {
     "java.lang.Boolean": "Yes/No",
@@ -25,7 +32,7 @@ const Schemas = () => {
     const [searchTerm, setSearchTerm] = useState(''); /* The term being search for in the searchbar */
     const [searchMode, setSearchMode] = useState("name") /* The mode of search (by name or id) */
     const [clear, setClear] = useState(0); /* Clear will reset the table to display all enclosures once updated*/
-    const [newFields, setNewFields] = useState([])
+    const [newFields, setNewFields] = useState([{"name": "", "type": "", "required": ""}])
 
 
     useEffect(displayAll,[])
@@ -77,25 +84,75 @@ const Schemas = () => {
                 <Table sx={{ minWidth: 650 }} aria-label="fields table">
                     <TableHead>
                     <TableRow>
-                        <TableCell>Fields</TableCell>
+                        <TableCell>Field Name</TableCell>
                         <TableCell align="left">Type</TableCell>
                         <TableCell align="left">Required</TableCell>
                     </TableRow>
                     </TableHead>
                     <TableBody>
-                    {Object.entries(newFields).map(([name, properties]) => (
+                    {newFields.map((field, index) => (
                         <TableRow
-                        key={name}
+                        key={index}
                         sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                         >
                         <TableCell component="th" scope="row">
-                            {name}
+                            <TextField placeholder="field name" id="field name" variant="outlined" size="small" value={field["name"]} onChange={(e) => {
+                                setNewFields(newFields.map((elem, changeIndex) => {
+                                    if (changeIndex == index) {
+                                        elem["name"] = e.target.value;
+                                        return elem;
+                                    } else {
+                                        return elem;
+                                    }
+                                }))
+                            }}/>
                         </TableCell>
-                        <TableCell align="left">{classToReadable[properties._type]}</TableCell>
-                        <TableCell align="left">{properties._required ? "Yes" : "No"}</TableCell>
+                        <TableCell align="left">
+                            <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
+                                <Select height="10px" value={classToReadable[field["type"]]} onChange={(e) => {
+                                    setNewFields(newFields.map((elem, changeIndex) => {
+                                        if (changeIndex == index) {
+                                            elem["type"] = e.target.value;
+                                            return elem;
+                                        } else {
+                                            return elem;
+                                        }
+                                    }))
+                                }}>
+                                    {Object.entries(classToReadable).map(([javaName, className]) => 
+                                        <MenuItem value={javaName}>{className}</MenuItem>
+                                    )}
+                                </Select>
+                            </FormControl>
+                        </TableCell>
+                        <TableCell align="left">
+                            <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
+                                <Select height="10px" value={field["required"]} onChange={(e) => {
+                                    setNewFields(newFields.map((elem, changeIndex) => {
+                                        if (changeIndex == index) {
+                                            elem["required"] = e.target.value;
+                                            return elem;
+                                        } else {
+                                            return elem;
+                                        }
+                                    }))
+                                }}>
+                                    <MenuItem value={true}>Yes</MenuItem>
+                                    <MenuItem value={false}>No</MenuItem>
+                                </Select>
+                            </FormControl>
+                        </TableCell>
                         </TableRow>
                     ))}
                     </TableBody>
+                    <TableFooter>
+                        <div style={{padding: "2.5%", paddingTop: "0%"}}>
+                            <Button variant="contained" aria-label="add" endIcon={<AddIcon />} onClick={() => {}}>
+                                Create
+                            </Button>   
+                        </div>
+                        
+                    </TableFooter>
                 </Table>
                 </TableContainer>
         </div>
@@ -114,7 +171,7 @@ const Schemas = () => {
                             <Table sx={{ minWidth: 650 }} aria-label="fields table">
                                 <TableHead>
                                 <TableRow>
-                                    <TableCell>Fields</TableCell>
+                                    <TableCell>Field Name</TableCell>
                                     <TableCell align="left">Type</TableCell>
                                     <TableCell align="left">Required</TableCell>
                                 </TableRow>
