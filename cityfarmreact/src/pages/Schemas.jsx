@@ -25,6 +25,7 @@ const Schemas = () => {
     const [searchTerm, setSearchTerm] = useState(''); /* The term being search for in the searchbar */
     const [searchMode, setSearchMode] = useState("name") /* The mode of search (by name or id) */
     const [clear, setClear] = useState(0); /* Clear will reset the table to display all enclosures once updated*/
+    const [newFields, setNewFields] = useState([])
 
 
     useEffect(displayAll,[])
@@ -69,7 +70,41 @@ const Schemas = () => {
 
     return(<>
         <h1>Schemas</h1>
-        <SearchBar setSearchMode={setSearchMode} search={setSearchTerm} clearValue={clear} clearSearch={setClear}/>
+
+        <h2>Create New Schema</h2>
+        <div style = {{width: "90%"}}>
+            <TableContainer component={Paper}>
+                <Table sx={{ minWidth: 650 }} aria-label="fields table">
+                    <TableHead>
+                    <TableRow>
+                        <TableCell>Fields</TableCell>
+                        <TableCell align="left">Type</TableCell>
+                        <TableCell align="left">Required</TableCell>
+                    </TableRow>
+                    </TableHead>
+                    <TableBody>
+                    {Object.entries(newFields).map(([name, properties]) => (
+                        <TableRow
+                        key={name}
+                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                        >
+                        <TableCell component="th" scope="row">
+                            {name}
+                        </TableCell>
+                        <TableCell align="left">{classToReadable[properties._type]}</TableCell>
+                        <TableCell align="left">{properties._required ? "Yes" : "No"}</TableCell>
+                        </TableRow>
+                    ))}
+                    </TableBody>
+                </Table>
+                </TableContainer>
+        </div>
+
+        <h2>Existing Schemas</h2>
+
+        <input placeholder="Search" value={searchTerm} onChange={(e) => {
+            setSearchTerm(e.target.value);
+        }}/>
         <Grid container spacing={2}>
             {schemaList.map((schema) => (
                 <Grid item xs={5} key={schema._name}>

@@ -164,7 +164,7 @@ const AnimalTable = () => {
                             style={{float: "right"}}
                             onClick={async () => {
                                 console.log(create);
-                                await axios.post(`/animals/${create.type}/create`, create, {crossdomain:true, headers: { "Access-Control-Allow-Origin": 'http://localhost:3000',
+                                await axios.post(`/animals/create`, create, {crossdomain:true, headers: { "Access-Control-Allow-Origin": 'http://localhost:3000',
                                 "Access-Control-Allow-Credentials": true}});
                                 window.location.reload(false);
                             }}>Add

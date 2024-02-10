@@ -28,6 +28,11 @@ public class AnimalController {
     @Autowired
     MongoTemplate mongoTemplate;
 
+    private final String host_url = "http://localhost:3000";
+
+    HttpHeaders responseHeaders = new HttpHeaders();
+
+
     /**
      * @return a list of all animals in the DB
      */
@@ -71,6 +76,7 @@ public class AnimalController {
      */
     @PostMapping("/api/animals/create")
     public ResponseEntity<String> create_animal(@RequestBody AnimalCreateRequest animalReq) {
+        responseHeaders.set(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, host_url);
         AnimalSchema schema = schemaRepository.findSchemaByName(animalReq.type);
 
         if (schema == null) {
@@ -87,6 +93,6 @@ public class AnimalController {
         animalRepository.save(animal);
 
         String location = String.format("/api/animals/by_id/%s", animal.get_id());
-        return ResponseEntity.created(URI.create(location)).body(animal.get_id());
+        return ResponseEntity.created(URI.create(location)).headers(responseHeaders).body(animal.get_id());
     }
 }
