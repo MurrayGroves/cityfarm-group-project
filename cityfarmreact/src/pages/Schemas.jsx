@@ -52,9 +52,15 @@ const Schemas = () => {
     useEffect (() => {
         (async () => {
             if (searchTerm === '') {
-                return;
+                try {
+                    const response = await axios.get(`/schemas`);
+                    console.log(response.data);
+                    setSchemaList(response.data);
+                } catch (error) {
+                    window.alert(error);
+                }
             }
-            if (searchMode === "name") {
+            else if (searchMode === "name") {
                 try {
                     const response = await axios.get(`/schemas/by_name/${searchTerm}`);
                     console.log(response.data);
@@ -159,7 +165,7 @@ const Schemas = () => {
 
         <h2>Existing Schemas</h2>
 
-        <input placeholder="Search" value={searchTerm} onChange={(e) => {
+        <TextField placeholder="Search" value={searchTerm} size="small" onChange={(e) => {
             setSearchTerm(e.target.value);
         }}/>
         <Grid container spacing={2}>
