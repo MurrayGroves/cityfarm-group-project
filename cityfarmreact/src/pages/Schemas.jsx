@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from "react";
 import axios from "../api/axiosConfig";
-import SearchBar from "../components/SearchBar";
 import "../components/AnimalTable.css";
 
 import Grid from "@mui/material/Grid";
@@ -12,11 +11,12 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import TableFooter from '@mui/material/TableFooter';
 import Paper from '@mui/material/Paper';
-import { Menu, Select } from "@mui/material";
+import {IconButton, Select } from "@mui/material";
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Button from '@mui/material/Button';
 import AddIcon from '@mui/icons-material/Add';
+import DeleteIcon from '@mui/icons-material/Delete'
 import TextField from '@mui/material/TextField';
 
 const classToReadable = {
@@ -30,13 +30,24 @@ const classToReadable = {
 const Schemas = () => {
     const [schemaList, setSchemaList] = useState([]); /* The State for the list of enclosures. The initial state is [] */
     const [searchTerm, setSearchTerm] = useState(''); /* The term being search for in the searchbar */
-    const [searchMode, setSearchMode] = useState("name") /* The mode of search (by name or id) */
-    const [clear, setClear] = useState(0); /* Clear will reset the table to display all enclosures once updated*/
     const [newFields, setNewFields] = useState([{"name": "", "type": "", "required": ""}])
 
-
     useEffect(displayAll,[])
-    useEffect(displayAll,[clear]);
+
+    function checkIfNewRowNeeded() {
+        let changed = false;
+        Object.values(newFields[newFields.length-1]).map((value) => {
+            if (value !== "") {
+                changed = true;
+            }
+
+            return null;
+        })
+
+        if (changed) {
+            setNewFields([...newFields, {"name": "", "type": "", "required": ""}])
+        }
+    }
 
     function displayAll() {
         (async () => {
@@ -49,6 +60,17 @@ const Schemas = () => {
             }
         })()
     }
+
+    function deleteRow(index) {
+        setNewFields(newFields.filter((value, thisIndex) => {
+            if (thisIndex === index) {
+                return false;
+            }
+
+            return true;
+        }));
+    }
+
     useEffect (() => {
         (async () => {
             if (searchTerm === '') {
@@ -59,17 +81,7 @@ const Schemas = () => {
                 } catch (error) {
                     window.alert(error);
                 }
-            }
-            else if (searchMode === "name") {
-                try {
-                    const response = await axios.get(`/schemas/by_name/${searchTerm}`);
-                    console.log(response.data);
-                    setSchemaList(response.data);
-                } catch (error) {
-                    window.alert(error);
-                }
-            }
-            else {
+            } else {
                 try {
                 const response = await axios.get(`/schemas/by_id/${searchTerm}`);
                 console.log(response.data);
@@ -93,6 +105,7 @@ const Schemas = () => {
                         <TableCell>Field Name</TableCell>
                         <TableCell align="left">Type</TableCell>
                         <TableCell align="left">Required</TableCell>
+                        <TableCell/>
                     </TableRow>
                     </TableHead>
                     <TableBody>
@@ -104,26 +117,28 @@ const Schemas = () => {
                         <TableCell component="th" scope="row">
                             <TextField placeholder="field name" id="field name" variant="outlined" size="small" value={field["name"]} onChange={(e) => {
                                 setNewFields(newFields.map((elem, changeIndex) => {
-                                    if (changeIndex == index) {
+                                    if (changeIndex === index) {
                                         elem["name"] = e.target.value;
                                         return elem;
                                     } else {
                                         return elem;
                                     }
                                 }))
+                                checkIfNewRowNeeded();
                             }}/>
                         </TableCell>
                         <TableCell align="left">
                             <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
                                 <Select height="10px" value={classToReadable[field["type"]]} onChange={(e) => {
                                     setNewFields(newFields.map((elem, changeIndex) => {
-                                        if (changeIndex == index) {
+                                        if (changeIndex === index) {
                                             elem["type"] = e.target.value;
                                             return elem;
                                         } else {
                                             return elem;
                                         }
                                     }))
+                                    checkIfNewRowNeeded();
                                 }}>
                                     {Object.entries(classToReadable).map(([javaName, className]) => 
                                         <MenuItem value={javaName}>{className}</MenuItem>
@@ -135,18 +150,28 @@ const Schemas = () => {
                             <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
                                 <Select height="10px" value={field["required"]} onChange={(e) => {
                                     setNewFields(newFields.map((elem, changeIndex) => {
-                                        if (changeIndex == index) {
+                                        if (changeIndex === index) {
                                             elem["required"] = e.target.value;
                                             return elem;
                                         } else {
                                             return elem;
                                         }
                                     }))
+                                    checkIfNewRowNeeded();
                                 }}>
                                     <MenuItem value={true}>Yes</MenuItem>
                                     <MenuItem value={false}>No</MenuItem>
                                 </Select>
                             </FormControl>
+                        </TableCell>
+                        <TableCell align="right">
+                            {
+                                (index !== newFields.length-1) ? 
+                                    <IconButton onClick={() => deleteRow(index)}>
+                                        <DeleteIcon/> 
+                                    </IconButton>
+                                 : ""
+                            }
                         </TableCell>
                         </TableRow>
                     ))}
