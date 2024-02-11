@@ -6,6 +6,7 @@ import Calendar from "./pages/Calendar";
 import EnclosureTable from "./pages/EnclosureTable";
 import Error from "./pages/Error.jsx";
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import SingleAnimal from "./pages/SingleAnimal";
 
 
 const App = () => {
@@ -20,6 +21,7 @@ const App = () => {
                     <Route path="calendar" element={<Calendar/>}/>
                     <Route path="animals" element={<AnimalTable/>}/> {/*There won't be pathing issues since all api paths start /api*/}
                     <Route path="enclosures" element={<EnclosureTable/>}/>
+                    <Route path="/SingleAnimal/:animalID" element={<SingleAnimal />} />
                     <Route path="*" element={<Error/>}/>
                 </Route>
             </Routes>
