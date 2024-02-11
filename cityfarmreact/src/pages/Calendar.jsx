@@ -99,7 +99,9 @@ const Calendar = () => {
     }
 
     const eventStyleGetter = (event) => {
-        var colour = event.farms.includes(WH) ? colours.WH : (event.farms.includes(HC) ? colours.HC : (event.farms.includes(SW) ? colours.SW : colours.default));
+        var colour1 = event.farms.includes(WH) ? colours.WH : (event.farms.includes(HC) ? colours.HC : colours.SW);
+        var colour2 = event.farms.includes(HC) ? (event.farms.includes(WH) ? colours.HC : (event.farms.includes(SW) ? colours.SW : colours.SW)) : colours.SW;
+        const offset = 2;
         var visible = true;
         if (event.farms.length > 0) {
             visible = false;
@@ -110,10 +112,9 @@ const Calendar = () => {
         }
         var style = {
             display: visible ? 'block' : 'none',
-            backgroundColor: colour,
-            borderRadius: '5px',
+            backgroundColor: colours.default,
+            backgroundImage: `linear-gradient(-45deg, ${colour1}, ${colour1} ${100/event.farms.length - offset}%, ${colour2} ${100/event.farms.length + offset}%, ${colour2} ${200/event.farms.length - offset}%, ${colours.SW} ${200/event.farms.length + offset}%, ${colours.SW})`,
             color: 'white',
-            border: 'none',
         };
         return {
             style: style
