@@ -4,6 +4,7 @@ import SearchBar from "../components/SearchBar";
 import FarmTabs from "../components/FarmTabs";
 import "../components/AnimalTable.css";
 import Animal from "../components/Animal";
+import {Link} from "react-router-dom";
 
 const AnimalTable = () => {
     const [animalList, setAnimalList] = useState([]); /* The State for the list of animals. The initial state is [] */
@@ -76,7 +77,7 @@ const AnimalTable = () => {
                 <tbody>
                     {animalList.map((animal) => (
                         <tr>
-                            <td>{animal.name}</td>
+                            <td>{<Link to={`/SingleAnimal/${animal._id}`}>{animal.name}</Link>}</td>
                             <td>{animal.type.toUpperCase()}</td>
                             <td>{animal.father != null ? animal.father : 'Unregistered'}</td>
                             <td>{animal.mother != null ? animal.mother : 'Unregistered'}</td>

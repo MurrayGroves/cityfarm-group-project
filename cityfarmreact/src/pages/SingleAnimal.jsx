@@ -20,34 +20,39 @@ const aExamples =[
         live : true
 
     }]
+const WH = 0, HC = 1, SW = 2;
 const events = [ /*These are example events.*/
     {
         title : "Boss Meeting",
         allDay: false,
-        start: new  Date(2023,11,1, 13),
-        end: new  Date(2023,11,1, 14),
-        animals : ["64ca1356-e519-4f88-a5e9-593157dec235"]
+        start: new  Date(2024,1,1, 13),
+        end: new  Date(2024,1,1, 14),
+        farms: [],
+        animals: ["64ca1356-e519-4f88-a5e9-593157dec235"]
     },
     {
         title : "Bull in with cows",
         allDay: false,
-        start: new  Date(2023,11,25, 8),
-        end: new  Date(2023,11,28, 16),
-        animals : ["64ca1356-e519-4f88-a5e9-593157dec235"]
+        start: new  Date(2024,1,5, 8),
+        end: new  Date(2024,1,8, 16),
+        farms: [WH],
+        animals: ["64ca1356-e519-4f88-a5e9-593157dec234"]
     },
     {
         title : "School Visits",
         allDay: true,
-        start: new  Date(2023,11,20),
-        end: new  Date(2023, 11, 21, 23, 59),
-        animals : ["64ca1356-e519-4f88-a5e9-593157dec235","64ca1356-e519-4f88-a5e9-593157dec234"]
+        start: new  Date(2024,1,9, 8),
+        end: new  Date(2024,1,9, 23, 59),
+        farms: [HC, SW],
+        animals: ["64ca1356-e519-4f88-a5e9-593157dec234","64ca1356-e519-4f88-a5e9-593157dec235"]
     },
     {
         title : "Defra Inspection",
         allDay: true,
-        start: new  Date(2023,11,29),
-        end: new Date(2023, 11, 29),
-        animals : []
+        start: new  Date(2024,1,20  ),
+        end: new Date(2024,1,20),
+        farms: [WH, HC, SW],
+        animals: []
     }
 ];
 
@@ -97,6 +102,7 @@ const SingleAnimal = () => {
                 : (chosenAnimal.father? chosenAnimal.father : 'Unregistered father')}{'\n'}
                 mother : {chosenAnimal.mid ? (<Link to={`/SingleAnimal/${chosenAnimal.mid}`}>{chosenAnimal.mother}</Link>)
                 : (chosenAnimal.mother? chosenAnimal.mother : 'Unregistered mother')}{'\n'}
+                farm : to be completed when database supports different farms
             </Typography>
 
         <div>
@@ -113,6 +119,11 @@ const SingleAnimal = () => {
                         <div>
                             <p>{event.start.toLocaleString([], {year: '2-digit', month: '2-digit', day: '2-digit', hour: '2-digit', minute:'2-digit'})} - {event.start.toLocaleDateString() === event.end.toLocaleDateString() ? event.end.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}): event.end.toLocaleString([], {year: '2-digit', month: '2-digit', day: '2-digit', hour: '2-digit', minute:'2-digit'})}</p>
                         </div>}
+                    {event.farms.length !== 0 ?
+                        <b>Relevant Farms : </b> : <></>}
+                    {event.farms.includes(WH) ? <>Windmill Hill </> : <></>}
+                    {event.farms.includes(HC) ? <>Hartcliffe </> : <></>}
+                    {event.farms.includes(SW) ? <>St Werberghs</> : <></>}
                 </div>))}
         </div>
         </>
