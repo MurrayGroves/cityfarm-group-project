@@ -113,7 +113,7 @@ const Calendar = () => {
         var style = {
             display: visible ? 'block' : 'none',
             backgroundColor: colours.default,
-            backgroundImage: `linear-gradient(-45deg, ${colour1}, ${colour1} ${100/event.farms.length - offset}%, ${colour2} ${100/event.farms.length + offset}%, ${colour2} ${200/event.farms.length - offset}%, ${colours.SW} ${200/event.farms.length + offset}%, ${colours.SW})`,
+            backgroundImage: `linear-gradient(135deg, ${colour1}, ${colour1} ${100/event.farms.length - offset}%, ${colour2} ${100/event.farms.length + offset}%, ${colour2} ${200/event.farms.length - offset}%, ${colours.SW} ${200/event.farms.length + offset}%, ${colours.SW})`,
             color: 'white',
         };
         return {
