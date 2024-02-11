@@ -3,6 +3,7 @@ import axios from '../api/axiosConfig'
 import SearchBar from "../components/SearchBar";
 import "../components/AnimalTable.css";
 import FarmTabs from "../components/FarmTabs";
+import {Link} from "react-router-dom";
 
 
 const AnimalTable = () => {
@@ -83,7 +84,7 @@ const AnimalTable = () => {
                     <tbody>
                         {animalList.map((animal) => (
                             <tr>
-                                <td>{animal.name}</td>
+                                <td>{<Link to={`/SingleAnimal/${animal._id}`}>{animal.name}</Link>}</td>
                                 <td>{animal.type.toUpperCase()}</td>
                                 <td>{animal.father != null ? animal.father : 'Unregistered'}</td>
                                 <td>{animal.mother != null ? animal.mother : 'Unregistered'}</td>

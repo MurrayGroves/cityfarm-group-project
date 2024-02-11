@@ -56,7 +56,7 @@ export default function Animal(props) {
                 onMouseEnter={handlePopoverOpen}
                 onMouseLeave={handlePopoverClose}
             >
-                <Link to={`/SingleAnimal/${chosenAnimal.id}`}>{chosenAnimal.name}</Link>
+                <Link to={`/SingleAnimal/${chosenAnimal._id}`}>{chosenAnimal.name}</Link>
             </Typography>
             <Popover
                 id="mouse-over-popover"

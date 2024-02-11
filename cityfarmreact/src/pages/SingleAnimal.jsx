@@ -9,12 +9,12 @@ import axios from "../api/axiosConfig";
 const aExamples =[
     {
         id : 1,
-        name:"bob",
-        type:"cow",
-        sex:"F",
+        name:"ERROR",
+        type:"you've fucked it",
+        male:"kill yourself virgin",
         father : "alice",
         fid : 2,
-        mother	:"undefined",
+        mother	:"kill yourself virgin",
         mid : null,
         tBInoculated : true,
         live : true
@@ -60,7 +60,9 @@ const SingleAnimal = () => {
     React.useEffect(() => {
         (async () => {
             try {
+                console.log(animalID);
                 const response = await axios.get(`/animals/by_id/${animalID}`);
+
                 console.log(response.data);
                 setChosenAnimal(response.data);
             } catch (error) {
@@ -68,23 +70,19 @@ const SingleAnimal = () => {
             }
         })();
     }, []);
-    React.useEffect(()=>{
-
-    for (let i = 0; i < events.length; i++) {
-
-        for (let j =0; j<events[i].animals.length; j++){
-
-            if (animalID === events[i].animals[j]) {
-                console.log("animal:",animalID,"\n events:",events[i].animals[j])
-                setRelEvents([...relEvents,events[i]])
-                console.log(relEvents)
-                break;
+    React.useEffect(() => {
+        let matchingEvents = []; // Temporary array to collect matching events
+        for (let i = 0; i < events.length; i++) {
+            for (let j = 0; j < events[i].animals.length; j++) {
+                if (animalID === events[i].animals[j]) {
+                    console.log("animal:", animalID, "\n events:", events[i].animals[j]);
+                    matchingEvents.push(events[i]);
+                    break; // Found a matching event, no need to check further animals in this event
+                }
             }
-    }
-
-
-    }},[]
-)
+        }
+        setRelEvents(matchingEvents); // Update the state once with all matching events
+    }, [animalID]);
 
 
 
