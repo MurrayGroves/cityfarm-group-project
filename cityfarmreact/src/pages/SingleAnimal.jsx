@@ -1,4 +1,3 @@
-
 import * as React from "react";
 //import aExamples from "./../components/Animal";
 //import events from "./Calendar";
@@ -79,14 +78,14 @@ const SingleAnimal = () => {
         }
     }
 
-    let relevantEvents =[]
+    let relevantEvents = []
     for (let i = 0; i < events.length; i++) {
         for (let j =0; j<events[i].animals.length; j++){
             if (parseInt(animalID) === events[i].animals[j]) {
                 relevantEvents.push(events[i])
                 break;
             }
-    }
+        }
     }
 
     relEvents=relevantEvents;
@@ -101,7 +100,6 @@ const SingleAnimal = () => {
                 father : {chosenAnimal.fid ? (<Link to={`/SingleAnimal/${chosenAnimal.fid}`}>{chosenAnimal.father}</Link>) : chosenAnimal.father}{'\n'}
                 mother : {chosenAnimal.mid ? (<Link to={`/SingleAnimal/${chosenAnimal.mid}`}>{chosenAnimal.mother}</Link>) : chosenAnimal.mother}{'\n'}
             </Typography>
-
         <div>
 
             {relEvents.map((event, index) => (
