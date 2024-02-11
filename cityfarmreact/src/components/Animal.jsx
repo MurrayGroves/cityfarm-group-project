@@ -20,6 +20,7 @@ const aExamples =[
 
 }]
 
+
 const Animal = (props) => {
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [chosenAnimal, setChosenAnimal] = React.useState(aExamples[0]);
@@ -42,7 +43,6 @@ const Animal = (props) => {
             setChosenAnimal(response.data);
         } catch (error) {
             window.alert(error);}})()
-
     }, [props.animalID]);
 
     return (

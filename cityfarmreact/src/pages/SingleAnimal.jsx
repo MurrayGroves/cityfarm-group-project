@@ -10,16 +10,12 @@ const aExamples =[
     {
         id : 1,
         name:"ERROR",
-        type:"you've fucked it",
-        male:"kill yourself virgin",
-        father : "alice",
+        type:"",
+        male:"",
+        father : "",
         fid : 2,
-        mother	:"kill yourself virgin",
-        mid : null,
-        tBInoculated : true,
-        live : true
-
-    }]
+        mother	:"",
+}]
 const WH = 0, HC = 1, SW = 2;
 const events = [ /*These are example events.*/
     {

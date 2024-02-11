@@ -15,7 +15,6 @@ const AnimalTable = () => {
     
     const [farm, setFarm] = useState("");
 
-    useEffect(displayAll,[])
     useEffect(displayAll,[clear])
 
     function displayAll() {
