@@ -32,28 +32,28 @@ const events = [ /*These are example events.*/
         allDay: false,
         start: new  Date(2023,11,1, 13),
         end: new  Date(2023,11,1, 14),
-        animals : [1]
+        animals : ["64ca1356-e519-4f88-a5e9-593157dec234"]
     },
     {
         title : "Bull in with cows",
         allDay: false,
         start: new  Date(2023,11,25, 8),
         end: new  Date(2023,11,28, 16),
-        animals : [2]
+        animals : ["64ca1356-e519-4f88-a5e9-593157dec235"]
     },
     {
         title : "School Visits",
         allDay: true,
         start: new  Date(2023,11,20),
         end: new  Date(2023, 11, 21, 23, 59),
-        animals : [2,1]
+        animals : ["64ca1356-e519-4f88-a5e9-593157dec235","64ca1356-e519-4f88-a5e9-593157dec234"]
     },
     {
         title : "Defra Inspection",
         allDay: true,
         start: new  Date(2023,11,29),
         end: new Date(2023, 11, 29),
-        animals : []
+        animals : ['65b66edefa270f06fe9a533d']
     }
 ];
 
@@ -61,8 +61,8 @@ const Calendar = () => {
     const [newEvent,setNewEvent] = useState({
         title : "",
         allDay: true,
-        start: new Date(2023,11,5,18,29),
-        end:  new Date(2023,11,6,18,29),
+        start: new Date(2024,2,5,18,29),
+        end:  new Date(2024,2,6,18,29),
         animals : []
     })
     const [allEvents,setAllEvents] = useState(events)
@@ -73,6 +73,7 @@ const Calendar = () => {
 
     function eventSelected(event){
         setSelectedEvent(event)
+
     }
 
 

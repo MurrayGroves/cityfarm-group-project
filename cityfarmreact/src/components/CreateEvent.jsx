@@ -5,8 +5,8 @@ const CreateEvent = (props) => {
     const [newEvent,setNewEvent] = useState({
         title : "",
         allDay: true,
-        start: new Date(2023,11,5,18,29),
-        end:  new Date(2023,11,6,18,29)
+        start: new Date(2024,2,5,18,29),
+        end:  new Date(2024,2,6,18,29)
     })
     const changeAllDay = (isAllDay) =>{
         setNewEvent({...newEvent,allDay: isAllDay});

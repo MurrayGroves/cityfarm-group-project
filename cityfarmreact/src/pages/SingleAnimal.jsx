@@ -4,8 +4,8 @@ import * as React from "react";
 //import events from "./Calendar";
 import {Link, useParams} from "react-router-dom";
 import Typography from "@mui/material/Typography";
+import axios from "../api/axiosConfig";
 
-//make these a database search! PLEASEEEE
 const aExamples =[
     {
         id : 1,
@@ -19,42 +19,28 @@ const aExamples =[
         tBInoculated : true,
         live : true
 
-    },
-    {
-        id : 2,
-        name:"alice",
-        type:"sheep",
-        sex:"M",
-        father : "undefined",
-        fid : null,
-        mother	:"undefined",
-        mid : null,
-        tBInoculated : true,
-        live : true
-
     }]
-
 const events = [ /*These are example events.*/
     {
         title : "Boss Meeting",
         allDay: false,
         start: new  Date(2023,11,1, 13),
         end: new  Date(2023,11,1, 14),
-        animals : [1]
+        animals : ["64ca1356-e519-4f88-a5e9-593157dec235"]
     },
     {
         title : "Bull in with cows",
         allDay: false,
         start: new  Date(2023,11,25, 8),
         end: new  Date(2023,11,28, 16),
-        animals : [2]
+        animals : ["64ca1356-e519-4f88-a5e9-593157dec235"]
     },
     {
         title : "School Visits",
         allDay: true,
         start: new  Date(2023,11,20),
         end: new  Date(2023, 11, 21, 23, 59),
-        animals : [2,1]
+        animals : ["64ca1356-e519-4f88-a5e9-593157dec235","64ca1356-e519-4f88-a5e9-593157dec234"]
     },
     {
         title : "Defra Inspection",
@@ -67,39 +53,52 @@ const events = [ /*These are example events.*/
 
 const SingleAnimal = () => {
     const { animalID } = useParams();
-    let relEvents
-    let chosenAnimal;
+    const [relEvents,setRelEvents] =React.useState([])
+    const [chosenAnimal, setChosenAnimal] = React.useState(aExamples[0]);
 
 
-    for (let i = 0; i < aExamples.length; i++) {
+    React.useEffect(() => {
+        (async () => {
+            try {
+                const response = await axios.get(`/animals/by_id/${animalID}`);
+                console.log(response.data);
+                setChosenAnimal(response.data);
+            } catch (error) {
+                window.alert(error);
+            }
+        })();
+    }, []);
+    React.useEffect(()=>{
 
-        if (parseInt(animalID) === aExamples[i].id) {
-            chosenAnimal =aExamples[i];
-
-        }
-    }
-
-    let relevantEvents =[]
     for (let i = 0; i < events.length; i++) {
+
         for (let j =0; j<events[i].animals.length; j++){
-            if (parseInt(animalID) === events[i].animals[j]) {
-                relevantEvents.push(events[i])
+
+            if (animalID === events[i].animals[j]) {
+                console.log("animal:",animalID,"\n events:",events[i].animals[j])
+                setRelEvents([...relEvents,events[i]])
+                console.log(relEvents)
                 break;
             }
     }
-    }
 
-    relEvents=relevantEvents;
+
+    }},[]
+)
+
+
 
     return(<>
         <h1>
             {chosenAnimal.name}
         </h1>
             <Typography sx={{ p: 1,whiteSpace: 'pre-line' }}>
-                sex : {chosenAnimal.sex}{'\n'}
+                sex : {chosenAnimal.male ? 'Male' : 'Female'}{'\n'}
                 species : {chosenAnimal.type}{'\n'}
-                father : {chosenAnimal.fid ? (<Link to={`/SingleAnimal/${chosenAnimal.fid}`}>{chosenAnimal.father}</Link>) : chosenAnimal.father}{'\n'}
-                mother : {chosenAnimal.mid ? (<Link to={`/SingleAnimal/${chosenAnimal.mid}`}>{chosenAnimal.mother}</Link>) : chosenAnimal.mother}{'\n'}
+                father : {chosenAnimal.fid ? (<Link to={`/SingleAnimal/${chosenAnimal.fid}`}>{chosenAnimal.father}</Link>)
+                : (chosenAnimal.father? chosenAnimal.father : 'Unregistered father')}{'\n'}
+                mother : {chosenAnimal.mid ? (<Link to={`/SingleAnimal/${chosenAnimal.mid}`}>{chosenAnimal.mother}</Link>)
+                : (chosenAnimal.mother? chosenAnimal.mother : 'Unregistered mother')}{'\n'}
             </Typography>
 
         <div>

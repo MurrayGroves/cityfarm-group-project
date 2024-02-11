@@ -3,6 +3,7 @@ import Popover from '@mui/material/Popover';
 import Typography from '@mui/material/Typography';
 import {Link} from "react-router-dom";
 import './Animal.css'
+import axios from "../api/axiosConfig";
 
 const aExamples =[
     {
@@ -17,20 +18,7 @@ const aExamples =[
     tBInoculated : true,
     live : true
 
-},
-    {
-        id : 2,
-        name:"alice",
-        type:"sheep",
-        sex:"M",
-        father : "undefined",
-        fid : null,
-        mother	:"undefined",
-        mid : null,
-        tBInoculated : true,
-        live : true
-
-    }]
+}]
 
 export default function Animal(props) {
 
@@ -50,12 +38,14 @@ export default function Animal(props) {
     const open = Boolean(anchorEl);
 
     React.useEffect(() => {
-        // Update chosenAnimal when animalID prop changes
-        for (let i = 0; i < aExamples.length; i++) {
-            if (props.animalID === aExamples[i].id) {
-                setChosenAnimal(aExamples[i]);
-            }
-        }
+        (async () => {
+        try {
+            const response = await axios.get(`/animals/by_id/${props.animalID}`);
+            console.log(response.data);
+            setChosenAnimal(response.data);
+        } catch (error) {
+            window.alert(error);}})()
+
     }, [props.animalID]);
 
     return (
@@ -87,10 +77,12 @@ export default function Animal(props) {
                 disableRestoreFocus
             >
                 <Typography sx={{ p: 1,whiteSpace: 'pre-line' }}>
-                {chosenAnimal.sex}{'\n'}
-                {chosenAnimal.type}{'\n'}
-                {chosenAnimal.father}{'\n'}
-                {chosenAnimal.mother}{'\n'}
+                    {chosenAnimal.type}{'\n'}
+                    {chosenAnimal.father != null ? chosenAnimal.father : 'Unregistered father'}{'\n'}
+                    {chosenAnimal.mother != null ? chosenAnimal.mother : 'Unregistered mother'}{'\n'}
+                    {chosenAnimal.tb_inoculated ? 'Inoculated : True' : 'Inoculated : False'}{'\n'}
+                    {chosenAnimal.male ? 'Male' : 'Female'}{'\n'}
+                    {chosenAnimal.alive ? 'Alive : Yes' : 'Alive : No'}{'\n'}
                 </Typography>
             </Popover>
         </div>
