@@ -1,0 +1,8 @@
+[Unit]
+Description=Start webhook listener for cityfarm app
+
+[Service]
+ExecStart=/home/mediaserver/configs/cityfarm/2023-CityFarm/continuous-development/webhook_listener.py
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,187 @@
+
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "githubUsername": {
+            "type": "string",
+            "metadata": {
+                "description": "GitHub username"
+            }
+        },
+        "githubPassword": {
+            "type": "securestring",
+            "metadata": {
+                "description": "GitHub password"
+            }
+        },
+        "storageAccountKey": {
+            "type": "securestring",
+            "metadata": {
+                "description": "Storage account key"
+            }
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.ContainerInstance/containerGroups",
+            "apiVersion": "2022-10-01-preview",
+            "name": "caddy-webserver",
+            "location": "uksouth",
+            "properties": {
+                "osType": "Linux",
+                "containers": [
+                    {
+                        "name": "frontend",
+                        "properties": {
+                            "image": "ghcr.io/spe-uob/2023-cityfarm/frontend:dev",
+                            "resources": {
+                                "requests": {
+                                    "cpu": 0.5,
+                                    "memoryInGB": 1
+                                }
+                            },
+                            "environmentVariables": [
+                                {
+                                    "name": "REACT_APP_BASE_URL",
+                                    "value": "https://bristolcityfarm.uksouth.azurecontainer.io/api"
+                                }
+                            ],
+                            "ports": [
+                                {
+                                    "protocol": "TCP",
+                                    "port": 3000
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "backend",
+                        "properties": {
+                            "image": "ghcr.io/spe-uob/2023-cityfarm/backend:dev",
+                            "resources": {
+                                "requests": {
+                                    "cpu": 0.5,
+                                    "memoryInGB": 1
+                                }
+                            },
+                            "ports": [
+                                {
+                                    "protocol": "TCP",
+                                    "port": 8080
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "mongodb",
+                        "properties": {
+                            "command": [
+                                "/bin/sh", "/data/startup.sh"
+                            ],
+                            "image": "ghcr.io/spe-uob/2023-cityfarm/mongodb:latest",
+                            "resources": {
+                                "requests": {
+                                    "cpu": 0.5,
+                                    "memoryInGB": 1
+                                }
+                            },
+                            "ports": [
+                                {
+                                    "protocol": "TCP",
+                                    "port": 27017
+                                }
+                            ],
+                            "volumeMounts": [
+                                {
+                                    "name": "mongodb-volume",
+                                    "mountPath": "/data/"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "caddy",
+                        "properties": {
+                            "image": "caddy",
+                            "resources": {
+                                "requests": {
+                                    "cpu": 0.5,
+                                    "memoryInGB": 1
+                                }
+                            },
+                            "ports": [
+                                {
+                                    "protocol": "TCP",
+                                    "port": 80
+                                },
+                                {
+                                    "protocol": "TCP",
+                                    "port": 443
+                                }
+                            ],
+                            "volumeMounts": [
+                                {
+                                    "name": "caddydata",
+                                    "mountPath": "/data"
+                                },
+                                {
+                                    "name": "caddyconfig",
+                                    "mountPath": "/etc/caddy"
+                                }
+                            ]
+                        }
+                    }
+                ],
+                "imageRegistryCredentials": [
+                {
+                    "server": "ghcr.io",
+                    "username": "[parameters('githubUsername')]",
+                    "password": "[parameters('githubPassword')]"
+                  }],
+                "restartPolicy": "Always",
+                "ipAddress": {
+                    "type": "Public",
+                    "dnsNameLabel": "bristolcityfarm",
+                    "ports": [
+                        {
+                            "protocol": "TCP",
+                            "port": 80
+                        },
+                        {
+                            "protocol": "TCP",
+                            "port": 443
+                        }
+                    ]
+                },
+                "volumes": [
+                    {
+                      "name": "caddydata",
+                      "azureFile": {
+                          "shareName": "caddyshare",
+                          "storageAccountName": "cityfarmstorage",
+                          "storageAccountKey": "[parameters('storageAccountKey')]"
+                      }
+                    },
+                    {
+                        "name": "caddyconfig",
+                        "azureFile": {
+                            "shareName": "caddyshare",
+                            "storageAccountName": "cityfarmstorage",
+                            "storageAccountKey": "[parameters('storageAccountKey')]"
+                        }
+                      },
+                    {
+                        "name": "mongodb-volume",
+                        "azureFile": {
+                            "shareName": "mongodbshare",
+                            "storageAccountName": "cityfarmstorage",
+                            "storageAccountKey": "[parameters('storageAccountKey')]"
+                        }
+                    }
+                  ]
+            }
+        }
+    ]
+}

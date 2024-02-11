@@ -5,13 +5,11 @@ import NavBar from "./components/NavBar";
 import Calendar from "./pages/Calendar";
 import EnclosureTable from "./pages/EnclosureTable";
 import Error from "./pages/Error.jsx";
-import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import SingleAnimal from "./pages/SingleAnimal";
 
 
 const App = () => {
-    const [openNav, setOpenNav] = useState(false);
 
     return (
         <Router>

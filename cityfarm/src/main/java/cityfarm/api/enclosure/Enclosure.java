@@ -1,6 +1,6 @@
 package cityfarm.api.enclosure;
 
-import cityfarm.api.animals.AnimalGeneric;
+import cityfarm.api.animals.AnimalCustom;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.data.annotation.Id;
@@ -26,14 +26,14 @@ public class Enclosure extends EnclosureGeneric {
 
     @JsonCreator
     @PersistenceCreator
-    public Enclosure(@NonNull String name, @Nullable HashMap<String, Integer> capacities, @Nullable HashMap<String, Set<AnimalGeneric>> holding, @JsonProperty("_id") @Nullable String id, @JsonProperty("notes") @Nullable String notes) {
+    public Enclosure(@NonNull String name, @Nullable HashMap<String, Integer> capacities, @Nullable HashMap<String, Set<AnimalCustom>> holding, @JsonProperty("_id") @Nullable String id, @JsonProperty("notes") @Nullable String notes) {
         super(name, capacities, holding, notes);
 
         // Generate `ID` if not present
         this.id = Objects.requireNonNullElseGet(id, () -> UUID.randomUUID().toString());
     }
 
-    public Enclosure(@NonNull String name, @Nullable HashMap<String, Integer> capacities, @Nullable HashMap<String, Set<AnimalGeneric>> holding, @JsonProperty("notes") @Nullable String notes) {
+    public Enclosure(@NonNull String name, @Nullable HashMap<String, Integer> capacities, @Nullable HashMap<String, Set<AnimalCustom>> holding, @JsonProperty("notes") @Nullable String notes) {
         super(name, capacities, holding, notes);
 
         // Generate `ID`

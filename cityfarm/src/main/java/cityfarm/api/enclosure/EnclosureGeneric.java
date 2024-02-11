@@ -1,6 +1,6 @@
 package cityfarm.api.enclosure;
 
-import cityfarm.api.animals.AnimalGeneric;
+import cityfarm.api.animals.AnimalCustom;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
@@ -22,7 +22,7 @@ public class EnclosureGeneric {
      *  A mapping of animal types to lists of animals that the enclosure is holding
      */
     @NonNull
-    public HashMap<String, Set<AnimalGeneric>> holding;
+    public HashMap<String, Set<AnimalCustom>> holding;
     /**
      * String for the name of the enclosure
      */
@@ -47,7 +47,7 @@ public class EnclosureGeneric {
      * @param capacities sets the {@link EnclosureGeneric#capacities capacities} field
      * @param holding sets the {@link EnclosureGeneric#holding holding} field, initialising it as empty if null
      */
-    public EnclosureGeneric(@NonNull String name, @Nullable HashMap<String, Integer> capacities, @Nullable HashMap<String, Set<AnimalGeneric>> holding, @Nullable String notes) {
+    public EnclosureGeneric(@NonNull String name, @Nullable HashMap<String, Integer> capacities, @Nullable HashMap<String, Set<AnimalCustom>> holding, @Nullable String notes) {
         this.capacities = capacities;
         this.holding = Objects.requireNonNullElse(holding, new HashMap<>());
         this.name = name;

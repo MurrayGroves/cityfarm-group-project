@@ -1,14 +1,12 @@
 import React, {useState} from "react";
-import "./SearchBar.css";
 import SearchIcon from "./search.png";
-import CreateButton from "./CreateButton.jsx";
 
 const SearchBar = (props) => {
     const [query, setQuery] = useState('');
     const [mode, setMode] = useState("name");
 
     return(
-        <div className="search">
+        <div className="search" style={{marginBottom: "20px"}}>
             <input
                 placeholder="Search"
                 value= {query}
@@ -20,7 +18,7 @@ const SearchBar = (props) => {
                     height="12"
                     width="12"
                     onClick={() => {
-                        {mode === "name" ?  props.setSearchMode("name") : props.setSearchMode("id")}
+                        mode === "name" ?  props.setSearchMode("name") : props.setSearchMode("id")
                         if (query !== "") props.search(query)}} /*calls the search function to find an animal / enclosure */
 
             /></button>
@@ -32,7 +30,7 @@ const SearchBar = (props) => {
             </button>
             <select value={mode} onChange={e=>setMode(e.target.value)}>
                 <option>Name</option>
-                <option>Id</option>
+                <option>ID</option>
             </select>
         </div>
     )

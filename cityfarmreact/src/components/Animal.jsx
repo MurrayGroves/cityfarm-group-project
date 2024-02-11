@@ -32,10 +32,7 @@ const aExamples =[
 
     }]
 
-export default function Animal(props) {
-
-
-
+const Animal = (props) => {
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [chosenAnimal, setChosenAnimal] = React.useState(aExamples[0]);
 
@@ -96,3 +93,5 @@ export default function Animal(props) {
         </div>
     );
 }
+
+export default Animal;
