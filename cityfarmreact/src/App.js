@@ -1,11 +1,17 @@
 // Filename - App.js
 import './App.css';
+import '@fontsource/roboto/300.css';
+import '@fontsource/roboto/400.css';
+import '@fontsource/roboto/500.css';
+import '@fontsource/roboto/700.css';
 import AnimalTable from "./pages/AnimalTable";
 import NavBar from "./components/NavBar";
 import Calendar from "./pages/Calendar";
 import EnclosureTable from "./pages/EnclosureTable";
+import Schemas from "./pages/Schemas";
 import Error from "./pages/Error.jsx";
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import SingleAnimal from "./pages/SingleAnimal";
 
 
 const App = () => {
@@ -20,6 +26,8 @@ const App = () => {
                     <Route path="calendar" element={<Calendar/>}/>
                     <Route path="animals" element={<AnimalTable/>}/> {/*There won't be pathing issues since all api paths start /api*/}
                     <Route path="enclosures" element={<EnclosureTable/>}/>
+                    <Route path="schemas" element={<Schemas/>}/>
+                    <Route path="single-animal/:animalID" element={<SingleAnimal/>} />
                     <Route path="*" element={<Error/>}/>
                 </Route>
             </Routes>

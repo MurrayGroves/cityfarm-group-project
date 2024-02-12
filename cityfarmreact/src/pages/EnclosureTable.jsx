@@ -3,6 +3,14 @@ import axios from "../api/axiosConfig";
 import SearchBar from "../components/SearchBar";
 import "../components/AnimalTable.css";
 import FarmTabs from "../components/FarmTabs";
+import { DataGrid } from "@mui/x-data-grid";
+
+const colours = {
+    WH: "#333388",
+    HC: "#FF0000",
+    SW: "#3312FF",
+    default: "#888888"
+}
 
 const EnclosureTable = () => {
     const [enclosureList, setEnclosureList] = useState([]); /* The State for the list of enclosures. The initial state is [] */
@@ -12,7 +20,6 @@ const EnclosureTable = () => {
 
     const [farm, setFarm] = useState("");
 
-    useEffect(displayAll,[])
     useEffect(displayAll,[clear]);
 
     function displayAll() {
@@ -26,6 +33,7 @@ const EnclosureTable = () => {
             }
         })()
     }
+
     useEffect (() => {
         (async () => {
             if (searchTerm === '') {
@@ -52,49 +60,34 @@ const EnclosureTable = () => {
         })()
     },[searchTerm])
 
+    const cols =  [
+        { field: 'id', headerName: 'ID',  headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
+        { field: 'name', headerName: 'Name', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
+        { field: 'holding', headerName: 'Holding', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
+        { field: 'capacities', headerName: 'Capacities', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
+    ]
+
+    const rows = enclosureList.map((enclosure) => ({
+        id: enclosure._id,
+        name: enclosure.name,
+        holding: Object.keys(enclosure.holding).map((key) => {
+            return (` ${key}:
+            ${Object.keys(enclosure.holding[key]).map((animal) => {
+                return enclosure.holding[key][animal].name
+            })}`)
+        }),
+        capacities: Object.keys(enclosure.capacities).map((key) => {
+            return (` ${key}: ${enclosure.capacities[key]}`)
+        })
+    }))
+
     return(<>
         <h1>Enclosures</h1>
         <SearchBar setSearchMode={setSearchMode} search={setSearchTerm} clearValue={clear} clearSearch={setClear}/>
-        {enclosureList?.length > 0 ? (<>
-            <FarmTabs selectFarm={setFarm}/>
-            <div className="animal-table">
-                <table style={{width: '100%'}}>
-                    <thead>
-                    <tr>
-                    <th>Name</th>
-                    <th>Holding</th>
-                    <th>Capacities</th>
-                    </tr>   
-                    </thead>
-                    <tbody>
-                        {enclosureList.map((enclosure) => (
-                            <tr>
-                                <td>{enclosure.name}</td>
-                                <td>{Object.keys(enclosure.holding).map((key) => {
-                                    return(<>
-                                        {key}: {Object.keys(enclosure.holding[key]).map((animal) => {
-                                            return(<>
-                                                {enclosure.holding[key][animal].name},
-                                            </>)
-                                        })} <br></br>
-                                    </>)
-                                })}</td>
-
-                                <td>{Object.keys(enclosure.capacities).map((key) => {
-                                    return(<>
-                                        {key}: {enclosure.capacities[key]} <br></br>
-                                    </>)
-                                })}</td>
-                            </tr>
-                        ))}
-                </tbody>
-                </table>
-            </div>
-        </>) : (
-            <div className="empty">
-                <h2>No enclosures found</h2>
-            </div>
-        )}
+        <FarmTabs selectFarm={setFarm} colours={colours}/>
+        <div className="animal-table">
+            <DataGrid rows={rows} columns={cols}/>
+        </div>
     </>)
 }
 

@@ -28,6 +28,11 @@ public class AnimalController {
     @Autowired
     MongoTemplate mongoTemplate;
 
+    private final String host_url = "http://localhost:3000";
+
+    HttpHeaders responseHeaders = new HttpHeaders();
+
+
     /**
      * @return a list of all animals in the DB
      */
@@ -87,6 +92,7 @@ public class AnimalController {
         animalRepository.save(animal);
 
         String location = String.format("/api/animals/by_id/%s", animal.get_id());
+
         return ResponseEntity.created(URI.create(location)).body(animal.get_id());
     }
 }
