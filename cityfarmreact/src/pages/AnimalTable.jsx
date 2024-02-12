@@ -5,6 +5,7 @@ import FarmTabs from "../components/FarmTabs";
 import "../components/AnimalTable.css";
 import Animal from "../components/Animal";
 import { DataGrid } from '@mui/x-data-grid';
+import { Link } from "react-router-dom";
 
 const colours = {
     WH: "#333388",
@@ -64,7 +65,7 @@ const AnimalTable = () => {
 
     const rows = animalList.map((animal) => ({
         id: animal._id,
-        name: animal.name,
+        name: animal,
         type: animal.type,
         father: animal.father != null ? animal.father : 'Unregistered',
         mother: animal.mother != null ? animal.mother : 'Unregistered',
@@ -73,7 +74,7 @@ const AnimalTable = () => {
 
     const cols = [
         { field: 'id', headerName: 'ID', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
-        { field: 'name', headerName: 'Name', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
+        { field: 'name', headerName: 'Name', headerClassName: 'grid-header', headerAlign: 'left', flex: 1, renderCell: (animal) => {return <Link to={`/SingleAnimal/${animal.value._id}`}>{animal.value.name}</Link>} },
         { field: 'type', headerName: 'Type', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
         { field: 'father', headerName: 'Father', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
         { field: 'mother', headerName: 'Mother', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
