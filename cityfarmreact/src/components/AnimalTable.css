@@ -10,3 +10,16 @@
     font-size: large;
     /*background-color: lightgrey;*/
 }
+
+.animal-table a {
+    display: inline;
+    width: 100%;
+    vertical-align: middle;
+    text-decoration: none;
+    transition: 0.3s;
+    color: black;
+}
+
+.animal-table a:hover {
+    color: grey;
+}

@@ -3,6 +3,8 @@ import * as React from "react";
 //import events from "./Calendar";
 import {Link, useParams} from "react-router-dom";
 import Typography from "@mui/material/Typography";
+import axios from '../api/axiosConfig';
+import { useState, useEffect } from 'react';
 
 //make these a database search! PLEASEEEE
 const aExamples =[
@@ -64,44 +66,50 @@ const events = [ /*These are example events.*/
     }
 ];
 
-const SingleAnimal = () => {
+const SingleAnimal = () => { 
     const { animalID } = useParams();
-    let relEvents
-    let chosenAnimal;
+    const [animal, setAnimal] = useState({});
+    useEffect(getAnimal,[]);
+    function getAnimal() {
+        (async () => {
+            try {
+                const response = await axios.get(`/animals/by_id/${animalID}`);
+                setAnimal(response.data);
+            } catch (error) {
+                window.alert(error);
+            }
+        })()
+    }
 
-
+    /*
     for (let i = 0; i < aExamples.length; i++) {
 
         if (parseInt(animalID) === aExamples[i].id) {
-            chosenAnimal =aExamples[i];
+            chosenAnimal = aExamples[i];
 
         }
     }
+    */
 
-    let relevantEvents = []
+    let relEvents = []
     for (let i = 0; i < events.length; i++) {
-        for (let j =0; j<events[i].animals.length; j++){
+        for (let j =0; j < events[i].animals.length; j++){
             if (parseInt(animalID) === events[i].animals[j]) {
-                relevantEvents.push(events[i])
+                relEvents.push(events[i])
                 break;
             }
         }
     }
 
-    relEvents=relevantEvents;
-
     return(<>
-        <h1>
-            {chosenAnimal.name}
-        </h1>
+        <h1>{animal.name}</h1>
             <Typography sx={{ p: 1,whiteSpace: 'pre-line' }}>
-                sex : {chosenAnimal.sex}{'\n'}
-                species : {chosenAnimal.type}{'\n'}
-                father : {chosenAnimal.fid ? (<Link to={`/SingleAnimal/${chosenAnimal.fid}`}>{chosenAnimal.father}</Link>) : chosenAnimal.father}{'\n'}
-                mother : {chosenAnimal.mid ? (<Link to={`/SingleAnimal/${chosenAnimal.mid}`}>{chosenAnimal.mother}</Link>) : chosenAnimal.mother}{'\n'}
+                Sex: {animal.sex}<br/>
+                Species: {animal.type}<br/>
+                Father: {animal.fid ? (<Link to={`/SingleAnimal/${animal.fid}`}>{animal.father}</Link>) : animal.father}<br/>
+                Mother: {animal.mid ? (<Link to={`/SingleAnimal/${animal.mid}`}>{animal.mother}</Link>) : animal.mother}
             </Typography>
         <div>
-
             {relEvents.map((event, index) => (
                 <div key={index}>
                     {/* Display relevant event information very similar to event view*/}
@@ -114,11 +122,10 @@ const SingleAnimal = () => {
                         <div>
                             <p>{event.start.toLocaleString([], {year: '2-digit', month: '2-digit', day: '2-digit', hour: '2-digit', minute:'2-digit'})} - {event.start.toLocaleDateString() === event.end.toLocaleDateString() ? event.end.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}): event.end.toLocaleString([], {year: '2-digit', month: '2-digit', day: '2-digit', hour: '2-digit', minute:'2-digit'})}</p>
                         </div>}
-                </div>))}
-        </div>
-        </>
+                </div>
+            ))}
+        </div></>
     );
-
 }
 
 export default SingleAnimal

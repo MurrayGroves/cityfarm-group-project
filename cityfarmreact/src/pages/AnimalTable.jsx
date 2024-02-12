@@ -29,7 +29,6 @@ const AnimalTable = () => {
         (async () => {
             try {
                 const response = await axios.get(`/animals`);
-                console.log(response.data);
                 setAnimalList(response.data);
             } catch (error) {
                 window.alert(error);
@@ -45,7 +44,6 @@ const AnimalTable = () => {
             if (searchMode === "name") {
                 try {
                     const response = await axios.get(`/animals/by_name/${searchTerm}`);
-                    console.log(response.data);
                     setAnimalList(response.data);
                 } catch (error) {
                     window.alert(error);
@@ -54,7 +52,6 @@ const AnimalTable = () => {
             else {
                 try {
                     const response = await axios.get(`/animals/by_id/${searchTerm}`);
-                    console.log(response.data);
                     setAnimalList(response.data);
                 } catch (error) {
                     window.alert(error);
@@ -74,7 +71,8 @@ const AnimalTable = () => {
 
     const cols = [
         { field: 'id', headerName: 'ID', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
-        { field: 'name', headerName: 'Name', headerClassName: 'grid-header', headerAlign: 'left', flex: 1, renderCell: (animal) => {return <Link to={`/SingleAnimal/${animal.value._id}`}>{animal.value.name}</Link>} },
+        { field: 'name', headerName: 'Name', headerClassName: 'grid-header', headerAlign: 'left', flex: 1,
+            renderCell: (animal) => {return <Link to={`/SingleAnimal/${animal.value._id}`}>{animal.value.name}</Link>} },
         { field: 'type', headerName: 'Type', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
         { field: 'father', headerName: 'Father', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
         { field: 'mother', headerName: 'Mother', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
