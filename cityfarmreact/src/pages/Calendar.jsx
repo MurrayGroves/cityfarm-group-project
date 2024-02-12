@@ -80,18 +80,27 @@ const Calendar = () => {
         farms: [],
         animals: []
     })
+    const [modifiedEvent,setModifiedEvent] = useState({
+        title: "",
+        allDay: true,
+        start: new Date(),
+        end: new Date(),
+        farms: [],
+        animals: []
+    })
 
     const [allEvents,setAllEvents] = useState(events);
     const [selectedEvent,setSelectedEvent] = useState("No event selected");
     const [visibleFarms, setVisibleFarms] = useState([WH, HC, SW]);
+    const [modifyEvent, setModifyEvent] = useState(false);
 
     const handleAddEvent = () => {
         setAllEvents([...allEvents, newEvent]); /*Adds the new event to the list of allEvents} */
         console.log(allEvents, newEvent);
     }
     
-    const changeAllDay = (isAllDay) => {
-        setNewEvent({...newEvent, allDay: isAllDay});
+    const changeAllDay = (isAllDay, type) => {
+        {type == "add" ? setNewEvent({...newEvent, allDay: isAllDay}) : setModifiedEvent({...modifiedEvent, allDay: isAllDay})}
     }
 
     const updateVisibleFarms = (selected) => {
@@ -121,7 +130,8 @@ const Calendar = () => {
         };
     }
 
-    function showingTime(isShown) {
+    function showingTime(isShown, type) {
+        if (type == "add"){
         if (isShown){
             return(<>
                 <div style={{zIndex : 1, position: "relative", width: "100%"}}>
@@ -165,6 +175,51 @@ const Calendar = () => {
             )
         }
     }
+    else {
+        if (isShown){
+            return(<>
+                <div style={{zIndex : 1, position: "relative", width: "100%"}}>
+                    <DatePicker placeholderText="Start Date"
+                                style={{}}
+                                showTimeSelect
+                                todayButton = "Today"
+                                selected={modifiedEvent.start} onChange={(e) => setModifiedEvent({...modifiedEvent, start: e})}
+                                dateFormat="dd/MM/yy hh:mm aa"
+                                startDate={selectedEvent.start}>
+                    </DatePicker>
+                    <DatePicker placeholderText="End Date"
+                                style={{}}
+                                showTimeSelect
+                                todayButton = "Today"
+                                selected={modifiedEvent.end} onChange={(e) => setModifiedEvent({...modifiedEvent, end: e })}
+                                dateFormat="dd/MM/yy hh:mm aa"
+                                startDate={selectedEvent.end}>
+                    </DatePicker>
+                </div></>
+            )
+        }
+        else{
+            return(<>
+                <div style={{zIndex : 1, position: "relative", width: "100%"}}>
+                    <DatePicker placeholderText="Start Date"
+                                style={{}}
+                                selected={modifiedEvent.start} onChange={(e) => setModifiedEvent({...modifiedEvent, start: e})}
+                                todayButton = "Today"
+                                dateFormat="dd/MM/yy"
+                                startDate={selectedEvent.start}>
+                    </DatePicker>
+                    <DatePicker placeholderText="End Date"
+                                style={{}}
+                                selected={modifiedEvent.end} onChange={(e) => setModifiedEvent({...modifiedEvent, end: e })}
+                                todayButton = "Today"
+                                dateFormat="dd/MM/yy"
+                                startDate={selectedEvent.end}>
+                    </DatePicker>
+                </div></>
+            )
+        }
+    }
+    }
 
     return (
         <div className="CalendarPage" style={{height: "75%"}}>
@@ -199,6 +254,7 @@ const Calendar = () => {
                     <h2 className='boxTitle'>Selected Event</h2>
                     <button className='closeButton' onClick={() => setSelectedEvent("No event selected")}><img src={CloseIcon}/></button>
                     </div>
+                    {!modifyEvent ?  
                     <div>
                         <h3>{selectedEvent.title}</h3>
                         {
@@ -220,7 +276,31 @@ const Calendar = () => {
                         {selectedEvent.animals.map((animalID) => (
                             <p><Animal key={animalID} animalID={animalID} /></p>
                         ))}
+                        <button className='modifyButton' onClick={() => {setModifyEvent(true)}}>Modify Event</button>
                     </div>
+                    : <div className='modifyEvent'>
+                        <input type="text" placeholder={selectedEvent.title} value={modifiedEvent.title} onChange={(e) => {setModifiedEvent({...modifiedEvent, title: e.target.value})}}/>
+                        {showingTime(!modifiedEvent.allDay,"modify")}
+                        <div style={{marginTop: "10px"}}>
+                        <input type = "checkbox" name="All Day"  value="True" checked={modifiedEvent.allDay}
+                        onChange={(e) => {changeAllDay(!modifiedEvent.allDay, "modify")}}/>
+                        All day
+                        </div>
+                        <button style={{float: "right"}} onClick={() => {}}>Update Event</button> {/*  UpdateEvent function call for api changes. Maybe a delete and an add with the updated event*/}
+                        <button style={{float: "right"}} onClick={() => {setModifyEvent(false)}}>Discard Changes</button>
+                        <div style={{marginTop: "10px"}}>
+                        Relevant Farms<br/>
+                        <input type="checkbox" name="Windmill Hill" value="False" onChange={()=>setModifiedEvent({...modifiedEvent, farms: modifiedEvent.farms.includes(WH) ? modifiedEvent.farms.filter((farm) => farm !== WH) : modifiedEvent.farms.concat(WH)})}/>
+                        Windmill Hill<br/>
+
+                        <input type="checkbox" name="Hartcliffe" value="False" onChange={()=>setModifiedEvent({...modifiedEvent, farms: modifiedEvent.farms.includes(HC) ? modifiedEvent.farms.filter((farm) => farm !== HC) : modifiedEvent.farms.concat(HC)})}/>
+                        Hartcliffe<br/>
+
+                        <input type="checkbox" name="St Werberghs" value="False" onChange={()=>setModifiedEvent({...modifiedEvent, farms: modifiedEvent.farms.includes(SW) ? modifiedEvent.farms.filter((farm) => farm !== SW) : modifiedEvent.farms.concat(SW)})}/>
+                        St Werberghs
+                        </div>
+                    </div>
+                    }
                 </div>
                 :
                 <></>}
@@ -238,12 +318,12 @@ const Calendar = () => {
                     onChange={(e)=>setNewEvent({...newEvent, title: e.target.value})}
                 />
 
-                {showingTime(!newEvent.allDay)}
+                {showingTime(!newEvent.allDay,"add")}
                 </div>
 
                 <div style={{marginTop: "10px"}}>
                 <input type = "checkbox" name="All Day"  value="True" checked={newEvent.allDay}
-                       onChange={()=>changeAllDay(!newEvent.allDay)}/>
+                       onChange={()=>changeAllDay(!newEvent.allDay,"add")}/>
                 All day
                 <button style={{float: "right"}} onClick={()=>handleAddEvent()}>Add Event</button>
                 </div>
@@ -266,5 +346,8 @@ const Calendar = () => {
         </div>
     );
 }
+
+export default Calendar;
+
 
 export default Calendar;
