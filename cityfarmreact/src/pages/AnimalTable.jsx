@@ -21,7 +21,7 @@ const AnimalTable = () => {
     const [clear, setClear] = useState(0); /* Clear will reset the table to display all animals once updated*/
     const [create, setCreate] = useState({name: '', type: 'chicken', father: 'Unregistered', mother: 'Unregistered', male: 'true', alive: 'true'})
     
-    const [farm, setFarm] = useState("");
+    const [farm, setFarm] = useState(0);
 
     useEffect(displayAll,[clear])
 
@@ -72,7 +72,7 @@ const AnimalTable = () => {
     const cols = [
         { field: 'id', headerName: 'ID', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
         { field: 'name', headerName: 'Name', headerClassName: 'grid-header', headerAlign: 'left', flex: 1,
-            renderCell: (animal) => {return <Link to={`/SingleAnimal/${animal.value._id}`}>{animal.value.name}</Link>} },
+            renderCell: (animal) => {return <Link to={`/single-animal/${animal.value._id}`}>{animal.value.name}</Link>} },
         { field: 'type', headerName: 'Type', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
         { field: 'father', headerName: 'Father', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
         { field: 'mother', headerName: 'Mother', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },

@@ -21,3 +21,11 @@
     width: 24px;
     height: 24px;
 }
+
+h3 {
+    margin-bottom: 0;
+}
+
+p {
+    margin: 5px 0 5px 0;
+}
