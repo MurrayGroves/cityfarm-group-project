@@ -4,8 +4,9 @@ import Typography from '@mui/material/Typography';
 import {Link} from "react-router-dom";
 import './Animal.css'
 import axios from "../api/axiosConfig";
+import { useState, useEffect } from 'react';
 
-const aExamples =[
+const aExamples = [
     {
     id : 1,
     name:"bob",
@@ -15,18 +16,17 @@ const aExamples =[
     fid : 2,
     mother	:"undefined",
     mid : null,
-    tBInoculated : true,
+    tb_inoculated : true,
     live : true
-
 }]
 
 
 const Animal = (props) => {
-    const [anchorEl, setAnchorEl] = React.useState(null);
-    const [chosenAnimal, setChosenAnimal] = React.useState(aExamples[0]);
+    const [anchorEl, setAnchorEl] = useState(null);
+    const [chosenAnimal, setChosenAnimal] = useState(aExamples[0]);
 
-    const handlePopoverOpen = (event) => {
-        setAnchorEl(event.currentTarget);
+    const handlePopoverOpen = (e) => {
+        setAnchorEl(e.currentTarget);
     };
 
     const handlePopoverClose = () => {
@@ -35,14 +35,15 @@ const Animal = (props) => {
 
     const open = Boolean(anchorEl);
 
-    React.useEffect(() => {
+    useEffect(() => {
         (async () => {
         try {
             const response = await axios.get(`/animals/by_id/${props.animalID}`);
             console.log(response.data);
             setChosenAnimal(response.data);
         } catch (error) {
-            window.alert(error);}})()
+            window.alert(error);
+        }})()
     }, [props.animalID]);
 
     return (
@@ -53,13 +54,11 @@ const Animal = (props) => {
                 onMouseEnter={handlePopoverOpen}
                 onMouseLeave={handlePopoverClose}
             >
-                <Link to={`/SingleAnimal/${chosenAnimal._id}`}>{chosenAnimal.name}</Link>
+                <Link to={`/single-animal/${chosenAnimal._id}`}>{chosenAnimal.name}</Link>
             </Typography>
             <Popover
                 id="mouse-over-popover"
-                sx={{
-                    pointerEvents: 'none',
-                }}
+                sx={{pointerEvents: 'none'}}
                 open={open}
                 anchorEl={anchorEl}
                 anchorOrigin={{
@@ -73,13 +72,13 @@ const Animal = (props) => {
                 onClose={handlePopoverClose}
                 disableRestoreFocus
             >
-                <Typography sx={{ p: 1,whiteSpace: 'pre-line' }}>
-                    {chosenAnimal.type}{'\n'}
-                    {chosenAnimal.father != null ? chosenAnimal.father : 'Unregistered father'}{'\n'}
-                    {chosenAnimal.mother != null ? chosenAnimal.mother : 'Unregistered mother'}{'\n'}
-                    {chosenAnimal.tb_inoculated ? 'Inoculated : True' : 'Inoculated : False'}{'\n'}
-                    {chosenAnimal.male ? 'Male' : 'Female'}{'\n'}
-                    {chosenAnimal.alive ? 'Alive : Yes' : 'Alive : No'}{'\n'}
+                <Typography sx={{ p: 1, whiteSpace: 'pre-line' }}>
+                    {`Type: ${chosenAnimal.type}`}<br/>
+                    {chosenAnimal.father != null ? `Father: ${chosenAnimal.father}` : 'Father: Unregistered'}<br/>
+                    {chosenAnimal.mother != null ? `Mother: ${chosenAnimal.mother}` : 'Mother: Unregistered'}<br/>
+                    {chosenAnimal.tb_inoculated ? 'Inoculated: True' : 'Inoculated: False'}<br/>
+                    {chosenAnimal.male ? 'Sex: Male' : 'Sex: Female'}<br/>
+                    {chosenAnimal.alive ? 'Live: Yes' : 'Live: No'}<br/>
                 </Typography>
             </Popover>
         </div>

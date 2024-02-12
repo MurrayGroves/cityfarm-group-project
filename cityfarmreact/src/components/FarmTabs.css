@@ -6,8 +6,7 @@
 }
 
 .tab-container button {
-    margin: 0 5px 0 0 ;
-    border-style: line;
+    margin: 0 5px 0 0;
     min-width: 100px;
     border-radius: 5px 5px 0 0;
 }

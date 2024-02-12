@@ -17,12 +17,12 @@ const locales = {
     "en-GB" : require("date-fns/locale/en-GB")
 }
 
-const WH = 0, HC = 1, SW = 2; 
+const WH = 0, HC = 1, SW = 2;
 
 const colours = {
-    WH: "#333388",
-    HC: "#FF0000",
-    SW: "#3312FF",
+    WH: "#035afc",
+    HC: "#FF0012",
+    SW: "#E3D026",
     default: "#888888"
 }
 
@@ -43,7 +43,7 @@ const events = [ /*These are example events.*/
         start: new  Date(2024,1,1, 13),
         end: new  Date(2024,1,1, 14),
         farms: [],
-        animals: ["64ca1356-e519-4f88-a5e9-593157dec235"]
+        animals: ["174447d3-bedb-4311-a16c-1771aa82d173"]
     },
     {
         title : "Bull in with cows",
@@ -51,7 +51,7 @@ const events = [ /*These are example events.*/
         start: new  Date(2024,1,5, 8),
         end: new  Date(2024,1,8, 16),
         farms: [WH],
-        animals: ["64ca1356-e519-4f88-a5e9-593157dec234"]
+        animals: ["05eea36a-1098-4392-913b-25e6508df54c"]
     },
     {
         title : "School Visits",
@@ -59,7 +59,7 @@ const events = [ /*These are example events.*/
         start: new  Date(2024,1,9, 8),
         end: new  Date(2024,1,9, 23, 59),
         farms: [HC, SW],
-        animals: ["64ca1356-e519-4f88-a5e9-593157dec234","64ca1356-e519-4f88-a5e9-593157dec235"]
+        animals: ["05eea36a-1098-4392-913b-25e6508df54c","4735ad94-8a16-4845-870d-513d9947b262"]
     },
     {
         title : "Defra Inspection",
@@ -167,7 +167,7 @@ const Calendar = () => {
     }
 
     return (
-        <div className="CalendarPage" style={{height: "75%"}}>  
+        <div className="CalendarPage" style={{height: "75%"}}>
         <h1>Calendar</h1>
         <div style={{height: "100%"}}>
             <div style={{ display: "flex", justifyContent: "center", height: "100%"}}>
@@ -212,20 +212,18 @@ const Calendar = () => {
                                 </div>
                         
                         }
-                        {selectedEvent.farms.length !== 0 ?
-                        <h3>Relevant Farms</h3> : <></>}
+                        {selectedEvent.farms.length !== 0 ? <h3>Relevant Farms</h3> : <></>}
                         {selectedEvent.farms.includes(WH) ? <p>Windmill Hill</p> : <></>}
                         {selectedEvent.farms.includes(HC) ? <p>Hartcliffe</p> : <></>}
                         {selectedEvent.farms.includes(SW) ? <p>St Werberghs</p> : <></>}
-                        <h3>Relevant Animals</h3>
-                        {selectedEvent.animals.map((animalId) => (
-                        <Animal key={animalId} animalID={animalId}/>
+                        {selectedEvent.animals.length !== 0 ? <h3>Relevant Animals</h3> : <></>}
+                        {selectedEvent.animals.map((animalID) => (
+                            <p><Animal key={animalID} animalID={animalID} /></p>
                         ))}
                     </div>
                 </div>
                 :
-                <></>
-                }
+                <></>}
 
                 {/*<CreateEvent setEvent={setNewEvent} handleAddEvent={handleAddEvent}/>*/}
 
@@ -241,14 +239,15 @@ const Calendar = () => {
                 />
 
                 {showingTime(!newEvent.allDay)}
-
                 </div>
+
                 <div style={{marginTop: "10px"}}>
                 <input type = "checkbox" name="All Day"  value="True" checked={newEvent.allDay}
                        onChange={()=>changeAllDay(!newEvent.allDay)}/>
                 All day
                 <button style={{float: "right"}} onClick={()=>handleAddEvent()}>Add Event</button>
                 </div>
+
                 <div style={{marginTop: "10px"}}>
                 Relevant Farms<br/>
                 <input type="checkbox" name="Windmill Hill" value="False" onChange={()=>setNewEvent({...newEvent, farms: newEvent.farms.includes(WH) ? newEvent.farms.filter((farm) => farm !== WH) : newEvent.farms.concat(WH)})}/>
