@@ -1,6 +1,7 @@
 package cityfarm;
 
 import cityfarm.api.animals.*;
+import cityfarm.api.schemas.AnimalSchema;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -12,6 +13,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
@@ -26,9 +28,13 @@ public class AnimalControllerUnitTests {
 
     @Before
     public void setUp() {
-        Cow alice = new Cow(null, "Alice", null, null, null, null, true, true, null, true, null);
-        Cow alice2 = new Cow(null, "AliCe", null, null, null, null, true, false, null, true, null);
-        List<AnimalGeneric> aliceCows = List.of(alice, alice2);
+        AnimalSchema cowSchema = new AnimalSchema("cow", new HashMap<>());
+        AnimalCreateRequest animalReq = new AnimalCreateRequest();
+        animalReq.alive = true;
+        animalReq.name = "Alice";
+        AnimalCustom alice = cowSchema.new_animal(animalReq);
+        AnimalCustom alice2 = cowSchema.new_animal(animalReq);
+        List<AnimalCustom> aliceCows = List.of(alice, alice2);
         Mockito.when(animalRepositoryCustom.findAnimalByName("Alice")).thenReturn(aliceCows);
         Mockito.when(animalRepository.findAnimalById("abcd-1234")).thenReturn(alice);
     }
@@ -41,7 +47,7 @@ public class AnimalControllerUnitTests {
 
     @Test
     public void nonPresentNameEmptyList() {
-        ResponseEntity<List<AnimalGeneric>> animals = animalController.get_animals_by_name("nonName");
+        ResponseEntity<List<AnimalCustom>> animals = animalController.get_animals_by_name("nonName");
 
         assertThat(animals.getStatusCode().value()).isEqualTo(200);
         assertThat(animals.getBody().size()).isEqualTo(0);
@@ -49,7 +55,7 @@ public class AnimalControllerUnitTests {
 
     @Test
     public void getAnimalsByNameRightSize() {
-        ResponseEntity<List<AnimalGeneric>> animals = animalController.get_animals_by_name("Alice");
+        ResponseEntity<List<AnimalCustom>> animals = animalController.get_animals_by_name("Alice");
 
         assertThat(animals.getBody().size()).isEqualTo(2);
     }
@@ -57,15 +63,15 @@ public class AnimalControllerUnitTests {
 
     @Test
     public void findByIdFailsIfFakeID() {
-        ResponseEntity<AnimalGeneric> animal = animalController.get_animal_by_id("1234");
+        ResponseEntity<AnimalCustom> animal = animalController.get_animal_by_id("1234");
         assertThat(animal.getStatusCode().value()).isEqualTo(404);
     }
 
     @Test
     public void findByIdCorrectAnimal() {
-        ResponseEntity<AnimalGeneric> animal = animalController.get_animal_by_id("abcd-1234");
+        ResponseEntity<AnimalCustom> animal = animalController.get_animal_by_id("abcd-1234");
         assertThat(animal.getStatusCode().value()).isEqualTo(200);
-        AnimalGeneric cow = Objects.requireNonNull(animal.getBody());
+        AnimalCustom cow = Objects.requireNonNull(animal.getBody());
         assertThat(cow.name).isEqualTo("Alice");
     }
 }
