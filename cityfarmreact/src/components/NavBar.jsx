@@ -4,7 +4,7 @@ import {Link} from "react-router-dom";
 
 const NavBar = () => {
     return(
-        <div className="sidebar" style={{width: "12%"}}>
+        <div className="sidebar">
             <Link to="/"> Home </Link>
             <Link to="/calendar"> Calendar </Link>
             <Link to="/animals"> Livestock </Link>

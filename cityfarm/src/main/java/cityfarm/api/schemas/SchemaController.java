@@ -16,11 +16,7 @@ public class SchemaController {
 
     @Autowired
     SchemaRepositoryCustom schemaRepositoryCustom;
-
-    private final String host_url = "http://localhost:3000";
-    HttpHeaders responseHeaders = new HttpHeaders();
-
-
+  
     @PostMapping("/api/schemas/create")
     public ResponseEntity<AnimalSchema> create_schema(@RequestBody AnimalSchema schema) {
         schemaRepository.save(schema);
@@ -41,10 +37,11 @@ public class SchemaController {
         return ResponseEntity.ok().body(schema);
     }
 
-    @DeleteMapping("/api/schemas/by_name/{name}")
+
+    @DeleteMapping("/api/schemas/delete/{name}")
     public ResponseEntity<String> delete(@PathVariable String name) {
         schemaRepository.deleteByName(name);
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(name);
     }
 }
