@@ -21,7 +21,7 @@ const App = () => {
                     <Route path="calendar" element={<Calendar/>}/>
                     <Route path="animals" element={<AnimalTable/>}/> {/*There won't be pathing issues since all api paths start /api*/}
                     <Route path="enclosures" element={<EnclosureTable/>}/>
-                    <Route path="/SingleAnimal/:animalID" element={<SingleAnimal/>} />
+                    <Route path="/SingleAnimal/:animalID" element={<SingleAnimal />} />
                     <Route path="*" element={<Error/>}/>
                 </Route>
             </Routes>
