@@ -218,7 +218,7 @@ const Calendar = () => {
                         {selectedEvent.farms.includes(SW) ? <p>St Werberghs</p> : <></>}
                         {selectedEvent.animals.length !== 0 ? <h3>Relevant Animals</h3> : <></>}
                         {selectedEvent.animals.map((animalID) => (
-                            <p><Animal key={animalID} animalID={animalID}/></p>
+                            <p><Animal key={animalID} animalID={animalID} /></p>
                         ))}
                     </div>
                 </div>

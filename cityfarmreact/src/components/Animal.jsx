@@ -25,8 +25,8 @@ const Animal = (props) => {
     const [anchorEl, setAnchorEl] = useState(null);
     const [chosenAnimal, setChosenAnimal] = useState(aExamples[0]);
 
-    const handlePopoverOpen = (event) => {
-        setAnchorEl(event.currentTarget);
+    const handlePopoverOpen = (e) => {
+        setAnchorEl(e.currentTarget);
     };
 
     const handlePopoverClose = () => {
