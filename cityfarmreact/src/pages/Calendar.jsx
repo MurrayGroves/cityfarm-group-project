@@ -93,7 +93,17 @@ const Calendar = () => {
     const [selectedEvent,setSelectedEvent] = useState("No event selected");
     const [visibleFarms, setVisibleFarms] = useState([WH, HC, SW]);
     const [modifyEvent, setModifyEvent] = useState(false);
+    useEffect(() =>{
+        setModifiedEvent({title: selectedEvent.title, animals: selectedEvent.animals, allDay: selectedEvent.allDay, start: selectedEvent.start, end: selectedEvent.end, farms: selectedEvent.farms})
+    },[selectedEvent]);
+    const removeAnimal = (animalID, type) => {
+        if (type == "add"){
 
+        }
+        else {
+
+            setModifiedEvent({...modifiedEvent, animals: modifiedEvent.animals.filter((animal) => animal !== animalID)})}
+        }
     const handleAddEvent = () => {
         setAllEvents([...allEvents, newEvent]); /*Adds the new event to the list of allEvents} */
         console.log(allEvents, newEvent);
@@ -286,10 +296,15 @@ const Calendar = () => {
                         onChange={(e) => {changeAllDay(!modifiedEvent.allDay, "modify")}}/>
                         All day
                         </div>
+                        
                         <button style={{float: "right"}} onClick={() => {}}>Update Event</button> {/*  UpdateEvent function call for api changes. Maybe a delete and an add with the updated event*/}
                         <button style={{float: "right"}} onClick={() => {setModifyEvent(false)}}>Discard Changes</button>
+                        <h3>Relevant Animals</h3>
+                        {modifiedEvent.animals.map((animalID) => (
+                            <p><Animal key={animalID} animalID={animalID} /></p>
+                        ))}
                         <div style={{marginTop: "10px"}}>
-                        Relevant Farms<br/>
+                        <h3>Relevant Farms</h3><br/>
                         <input type="checkbox" name="Windmill Hill" value="False" onChange={()=>setModifiedEvent({...modifiedEvent, farms: modifiedEvent.farms.includes(WH) ? modifiedEvent.farms.filter((farm) => farm !== WH) : modifiedEvent.farms.concat(WH)})}/>
                         Windmill Hill<br/>
 
@@ -299,6 +314,7 @@ const Calendar = () => {
                         <input type="checkbox" name="St Werberghs" value="False" onChange={()=>setModifiedEvent({...modifiedEvent, farms: modifiedEvent.farms.includes(SW) ? modifiedEvent.farms.filter((farm) => farm !== SW) : modifiedEvent.farms.concat(SW)})}/>
                         St Werberghs
                         </div>
+                        
                     </div>
                     }
                 </div>
@@ -329,7 +345,7 @@ const Calendar = () => {
                 </div>
 
                 <div style={{marginTop: "10px"}}>
-                Relevant Farms<br/>
+                <h3>Relevant Farms</h3><br/>
                 <input type="checkbox" name="Windmill Hill" value="False" onChange={()=>setNewEvent({...newEvent, farms: newEvent.farms.includes(WH) ? newEvent.farms.filter((farm) => farm !== WH) : newEvent.farms.concat(WH)})}/>
                 Windmill Hill<br/>
 
@@ -346,8 +362,5 @@ const Calendar = () => {
         </div>
     );
 }
-
-export default Calendar;
-
 
 export default Calendar;
