@@ -55,7 +55,7 @@ const Schemas = () => {
             try {
                 const response = await axios.get(`/schemas`);
                 console.log(response.data);
-                setSchemaList(response.data);
+                setSchemaList(response.data.reverse());
             } catch (error) {
                 window.alert(error);
             }
@@ -231,6 +231,14 @@ const Schemas = () => {
                                     <TableCell>Field Name</TableCell>
                                     <TableCell align="left">Type</TableCell>
                                     <TableCell align="left">Required</TableCell>
+                                    <TableCell align="right">
+                                        <IconButton onClick={async () => {
+                                            await axios.delete(`/schemas/by_name/${schema._name}`);
+                                            window.location.reload(false);
+                                        }}>
+                                            <DeleteIcon/>
+                                        </IconButton>
+                                    </TableCell>
                                 </TableRow>
                                 </TableHead>
                                 <TableBody>
