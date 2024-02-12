@@ -31,6 +31,7 @@ const Schemas = () => {
     const [schemaList, setSchemaList] = useState([]); /* The State for the list of enclosures. The initial state is [] */
     const [searchTerm, setSearchTerm] = useState(''); /* The term being search for in the searchbar */
     const [newFields, setNewFields] = useState([{"name": "", "type": "", "required": ""}])
+    const [newSchemaName, setNewSchemaName] = useState("");
 
     useEffect(displayAll,[])
 
@@ -77,15 +78,15 @@ const Schemas = () => {
                 try {
                     const response = await axios.get(`/schemas`);
                     console.log(response.data);
-                    setSchemaList(response.data);
+                    setSchemaList(response.data.reverse());
                 } catch (error) {
                     window.alert(error);
                 }
             } else {
                 try {
-                const response = await axios.get(`/schemas/by_id/${searchTerm}`);
+                const response = await axios.get(`/schemas/by_name/${searchTerm}`);
                 console.log(response.data);
-                setSchemaList(response.data);
+                setSchemaList(response.data.reverse());
                 } catch (error) {
                     window.alert(error);
                 }
@@ -99,6 +100,9 @@ const Schemas = () => {
         <h2>Create New Schema</h2>
         <div style = {{width: "90%"}}>
             <TableContainer component={Paper}>
+            <TextField style={{paddingTop: "1%", paddingLeft: "1.25%"}} placeholder="Schema Name" value={newSchemaName} size="small" onChange={(e) => {
+            setNewSchemaName(e.target.value);
+        }}/>
                 <Table sx={{ minWidth: 650 }} aria-label="fields table">
                     <TableHead>
                     <TableRow>
@@ -178,7 +182,29 @@ const Schemas = () => {
                     </TableBody>
                     <TableFooter>
                         <div style={{padding: "2.5%", paddingTop: "0%"}}>
-                            <Button variant="contained" aria-label="add" endIcon={<AddIcon />} onClick={() => {}}>
+                            <Button variant="contained" aria-label="add" endIcon={<AddIcon />} onClick={async () => {
+                                newFields.pop();
+                                let fieldsObj = {};
+                                newFields.map((field) => {
+                                    fieldsObj = {...fieldsObj,
+                                        [field.name]: {
+                                            type: field.type,
+                                            required: field.required,
+                                        }
+                                    }
+                                    
+                                    return null;
+                                });
+
+                                let request = {
+                                    name: newSchemaName,
+                                    fields: fieldsObj,
+                                }
+
+                                await axios.post(`/schemas/create`, request, {crossdomain:true, headers: { "Access-Control-Allow-Origin": 'http://localhost:3000',
+                                "Access-Control-Allow-Credentials": true}});
+                                window.location.reload(false);
+                            }}>
                                 Create
                             </Button>   
                         </div>
