@@ -82,7 +82,7 @@ const AnimalTable = () => {
 
     return(<>
         <h1>Livestock</h1>
-        <SearchBar setSearchMode={setSearchMode} search={setSearchTerm} clearValue={clear} clearSearch={setClear}/>
+        <SearchBar setSearchMode={setSearchMode} search={setSearchTerm}/> {/*clearValue={clear} clearSearch={setClear}/>*/}
         <FarmTabs selectFarm={setFarm} colours={colours}/>
         <div className="animal-table">
         <DataGrid columns={cols} rows={rows}/>

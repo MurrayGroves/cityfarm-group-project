@@ -20,13 +20,12 @@ const EnclosureTable = () => {
 
     const [farm, setFarm] = useState("");
 
-    useEffect(displayAll,[clear]);
+    //useEffect(displayAll,[clear]);
 
     function displayAll() {
         (async () => {
             try {
                 const response = await axios.get(`/enclosures`);
-                console.log(response.data);
                 setEnclosureList(response.data);
             } catch (error) {
                 window.alert(error);
@@ -37,12 +36,12 @@ const EnclosureTable = () => {
     useEffect (() => {
         (async () => {
             if (searchTerm === '') {
+                displayAll();
                 return;
             }
             if (searchMode === "name") {
                 try {
                     const response = await axios.get(`/enclosures/by_name/${searchTerm}`);
-                    console.log(response.data);
                     setEnclosureList(response.data);
                 } catch (error) {
                     window.alert(error);
@@ -50,9 +49,8 @@ const EnclosureTable = () => {
             }
             else {
                 try {
-                const response = await axios.get(`/enclosures/by_id/${searchTerm}`);
-                console.log(response.data);
-                setEnclosureList(response.data);
+                    const response = await axios.get(`/enclosures/by_id/${searchTerm}`);
+                    setEnclosureList(response.data);
                 } catch (error) {
                     window.alert(error);
                 }
@@ -82,7 +80,7 @@ const EnclosureTable = () => {
 
     return(<>
         <h1>Enclosures</h1>
-        <SearchBar setSearchMode={setSearchMode} search={setSearchTerm} clearValue={clear} clearSearch={setClear}/>
+        <SearchBar setSearchMode={setSearchMode} search={setSearchTerm}/> {/*clearValue={clear} clearSearch={setClear}/>*/}
         <FarmTabs selectFarm={setFarm} colours={colours}/>
         <div className="animal-table">
             <DataGrid rows={rows} columns={cols}/>
