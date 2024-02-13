@@ -2,7 +2,8 @@ import React, {useEffect, useState} from "react";
 import axios from '../api/axiosConfig'
 import SearchBar from "../components/SearchBar";
 import FarmTabs from "../components/FarmTabs";
-import "../components/AnimalTable.css";
+import "./AnimalTable.css";
+import AnimalCreator from "../components/AnimalCreator";
 import Animal from "../components/Animal";
 import { DataGrid } from '@mui/x-data-grid';
 import { Link } from "react-router-dom";
@@ -23,7 +24,7 @@ const AnimalTable = () => {
     
     const [farm, setFarm] = useState(0);
 
-    useEffect(displayAll,[clear])
+    //useEffect(displayAll,[clear])
 
     function displayAll() {
         (async () => {
@@ -39,6 +40,7 @@ const AnimalTable = () => {
     useEffect (() => {
         (async () => {
             if (searchTerm === '') {
+                displayAll();
                 return;
             }
             if (searchMode === "name") {
@@ -86,6 +88,7 @@ const AnimalTable = () => {
         <div className="animal-table">
         <DataGrid columns={cols} rows={rows}/>
         </div>
+        <AnimalCreator/>
     </>)
 }
 

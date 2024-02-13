@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import axios from "../api/axiosConfig";
 import SearchBar from "../components/SearchBar";
-import "../components/AnimalTable.css";
+import "./AnimalTable.css";
 import FarmTabs from "../components/FarmTabs";
 import { DataGrid } from "@mui/x-data-grid";
 

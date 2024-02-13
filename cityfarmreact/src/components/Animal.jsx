@@ -20,7 +20,7 @@ const aExamples = [
     live : true
 }]
 
-
+    
 const Animal = (props) => {
     const [anchorEl, setAnchorEl] = useState(null);
     const [chosenAnimal, setChosenAnimal] = useState(aExamples[0]);

@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import axios from "../api/axiosConfig";
-import "../components/AnimalTable.css";
+import "./AnimalTable.css";
 
 import Grid from "@mui/material/Grid";
 import Table from '@mui/material/Table';
@@ -11,7 +11,7 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import TableFooter from '@mui/material/TableFooter';
 import Paper from '@mui/material/Paper';
-import {IconButton, Select } from "@mui/material";
+import { IconButton, Select } from "@mui/material";
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Button from '@mui/material/Button';
