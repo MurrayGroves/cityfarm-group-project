@@ -2,7 +2,7 @@
 import * as React from "react";
 //import aExamples from "./../components/Animal";
 //import events from "./Calendar";
-import {Link, useParams} from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import Typography from "@mui/material/Typography";
 import axios from '../api/axiosConfig';
 import { useState, useEffect } from 'react';
