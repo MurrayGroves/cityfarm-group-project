@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import './AnimalTable.css';
+import '../pages/AnimalTable.css';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';

@@ -5,6 +5,7 @@ import "./AnimalTable.css";
 import FarmTabs from "../components/FarmTabs";
 import TableContainer from '@mui/material/TableContainer';
 import Paper from '@mui/material/Paper';
+import TextField from '@mui/material/TextField';
 import { DataGrid } from "@mui/x-data-grid";
 
 const colours = {
@@ -82,8 +83,15 @@ const EnclosureTable = () => {
 
     return(<>
         <h1>Enclosures</h1>
-        <SearchBar setSearchMode={setSearchMode} search={setSearchTerm}/> {/*clearValue={clear} clearSearch={setClear}/>*/}
-        <FarmTabs selectFarm={setFarm} colours={colours}/>
+        <span style={{display: 'flex', justifyContent: 'space-between', height: '60px'}}>
+            <TextField
+                size='small'
+                placeholder='Search'
+                style={{margin: '0 20px 20px 0'}}
+                onChange={(e) => setSearchTerm(e.target.value)}
+            ></TextField>
+            <FarmTabs selectFarm={setFarm} colours={colours}/>
+        </span>
         <TableContainer component={Paper} style={{marginBottom: '20px'}}>
             <DataGrid rows={rows} columns={cols}/>
         </TableContainer>
