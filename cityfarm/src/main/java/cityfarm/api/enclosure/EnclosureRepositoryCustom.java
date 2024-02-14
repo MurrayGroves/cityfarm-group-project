@@ -8,6 +8,7 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 
 @Component
@@ -29,5 +30,10 @@ public class EnclosureRepositoryCustom {
         Query query = new Query(Criteria.where("_id").is(id));
         Update update = new Update().set("capacities", capacities);
         return mongoOperations.updateFirst(query, update, Enclosure.class).getModifiedCount();
+    }
+
+     public List<Enclosure> findEnclosureByName(String name){
+        Criteria regex = Criteria.where("name").regex(name, "i");
+        return mongoOperations.find(new Query().addCriteria(regex), Enclosure.class);
     }
 }
