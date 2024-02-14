@@ -1,5 +1,6 @@
 import {Calendar as BigCalendar, dateFnsLocalizer} from 'react-big-calendar';
 import format from 'date-fns/format';
+import axios from '../api/axiosConfig';
 import parse from 'date-fns/parse';
 import startOfWeek from 'date-fns/startOfWeek';
 import getDay from 'date-fns/getDay';
@@ -69,6 +70,7 @@ const events = [ /*These are example events.*/
         animals: []
     }
 ];
+
 const Calendar = () => {
     const [newEvent,setNewEvent] = useState({
         title: "",
@@ -162,12 +164,15 @@ const Calendar = () => {
             )
         }
     }
+
     const onRangeChange = useCallback(async (range) => {
         if (range.start !== undefined){ //month or agenda case start and end are the times displayed on the calendar
             try {
                 const start = new Date(range.start)
                 const end = new Date(range.end)
-                const response = await axios.get(`/events`, start, end);
+                window.alert(start);
+                window.alert(end);
+                const response = await axios.get(`/events`, {params: {from: start.toJSON(), to: end.toJSON()}});
                 console.log(response.data);
                 setAllEvents(response.data);
             } catch (error) {

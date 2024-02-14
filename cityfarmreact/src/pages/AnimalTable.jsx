@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import axios from '../api/axiosConfig'
+import axios from '../api/axiosConfig';
 import SearchBar from "../components/SearchBar";
 import FarmTabs from "../components/FarmTabs";
 import "../components/AnimalTable.css";
