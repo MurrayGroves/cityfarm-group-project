@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import axios from "../api/axiosConfig";
 import SearchBar from "../components/SearchBar";
-import "../components/AnimalTable.css";
+import "./AnimalTable.css";
 import FarmTabs from "../components/FarmTabs";
 import TableContainer from '@mui/material/TableContainer';
 import Paper from '@mui/material/Paper';
@@ -22,13 +22,12 @@ const EnclosureTable = () => {
 
     const [farm, setFarm] = useState("");
 
-    useEffect(displayAll,[clear]);
+    //useEffect(displayAll,[clear]);
 
     function displayAll() {
         (async () => {
             try {
                 const response = await axios.get(`/enclosures`);
-                console.log(response.data);
                 setEnclosureList(response.data);
             } catch (error) {
                 window.alert(error);
@@ -39,12 +38,12 @@ const EnclosureTable = () => {
     useEffect (() => {
         (async () => {
             if (searchTerm === '') {
+                displayAll();
                 return;
             }
             if (searchMode === "name") {
                 try {
                     const response = await axios.get(`/enclosures/by_name/${searchTerm}`);
-                    console.log(response.data);
                     setEnclosureList(response.data);
                 } catch (error) {
                     window.alert(error);
@@ -52,9 +51,8 @@ const EnclosureTable = () => {
             }
             else {
                 try {
-                const response = await axios.get(`/enclosures/by_id/${searchTerm}`);
-                console.log(response.data);
-                setEnclosureList(response.data);
+                    const response = await axios.get(`/enclosures/by_id/${searchTerm}`);
+                    setEnclosureList(response.data);
                 } catch (error) {
                     window.alert(error);
                 }
@@ -63,7 +61,6 @@ const EnclosureTable = () => {
     },[searchTerm])
 
     const cols =  [
-        { field: 'id', headerName: 'ID',  headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
         { field: 'name', headerName: 'Name', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
         { field: 'holding', headerName: 'Holding', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
         { field: 'capacities', headerName: 'Capacities', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
@@ -85,7 +82,7 @@ const EnclosureTable = () => {
 
     return(<>
         <h1>Enclosures</h1>
-        <SearchBar setSearchMode={setSearchMode} search={setSearchTerm} clearValue={clear} clearSearch={setClear}/>
+        <SearchBar setSearchMode={setSearchMode} search={setSearchTerm}/> {/*clearValue={clear} clearSearch={setClear}/>*/}
         <FarmTabs selectFarm={setFarm} colours={colours}/>
         <TableContainer component={Paper} style={{marginBottom: '20px'}}>
             <DataGrid rows={rows} columns={cols}/>

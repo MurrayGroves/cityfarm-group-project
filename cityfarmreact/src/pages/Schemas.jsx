@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import axios from "../api/axiosConfig";
-import "../components/AnimalTable.css";
+import "./AnimalTable.css";
 
 import Grid from "@mui/material/Grid";
 import Table from '@mui/material/Table';

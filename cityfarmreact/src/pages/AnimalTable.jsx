@@ -2,7 +2,8 @@ import React, {useEffect, useState} from "react";
 import axios from '../api/axiosConfig'
 import SearchBar from "../components/SearchBar";
 import FarmTabs from "../components/FarmTabs";
-import "../components/AnimalTable.css";
+import "./AnimalTable.css";
+import AnimalCreator from "../components/AnimalCreator";
 import Animal from "../components/Animal";
 import { DataGrid } from '@mui/x-data-grid';
 import TableContainer from '@mui/material/TableContainer';
@@ -24,7 +25,7 @@ const AnimalTable = () => {
     
     const [farm, setFarm] = useState(0);
 
-    useEffect(displayAll,[clear])
+    //useEffect(displayAll,[clear])
 
     function displayAll() {
         (async () => {
@@ -40,6 +41,7 @@ const AnimalTable = () => {
     useEffect (() => {
         (async () => {
             if (searchTerm === '') {
+                displayAll();
                 return;
             }
             if (searchMode === "name") {
@@ -71,7 +73,6 @@ const AnimalTable = () => {
     }));
 
     const cols = [
-        { field: 'id', headerName: 'ID', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
         { field: 'name', headerName: 'Name', headerClassName: 'grid-header', headerAlign: 'left', flex: 1,
             renderCell: (animal) => {return <Animal animalID={animal.value._id}/>} },
         { field: 'type', headerName: 'Type', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
@@ -82,7 +83,7 @@ const AnimalTable = () => {
 
     return(<>
         <h1>Livestock</h1>
-        <SearchBar setSearchMode={setSearchMode} search={setSearchTerm} clearValue={clear} clearSearch={setClear}/>
+        <SearchBar setSearchMode={setSearchMode} search={setSearchTerm}/> {/*clearValue={clear} clearSearch={setClear}/>*/}
         <FarmTabs selectFarm={setFarm} colours={colours}/>
         <TableContainer component={Paper} style={{marginBottom: '20px'}}>
             <DataGrid columns={cols} rows={rows}/>

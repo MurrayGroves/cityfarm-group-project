@@ -7,7 +7,7 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 import React, {useState, useEffect, useMemo} from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import "../components/Calendar.css";
+import "./Calendar.css";
 import Event from "../components/Event";
 import CreateEvent from "../components/CreateEvent";
 import Animal from "../components/Animal";
@@ -75,8 +75,8 @@ const Calendar = () => {
     const [newEvent,setNewEvent] = useState({
         title: "",
         allDay: true,
-        start: new Date(2023,11,5,18,29),
-        end: new Date(2023,11,6,18,29),
+        start: new Date(),
+        end: new Date(),
         farms: [],
         animals: []
     })
@@ -131,7 +131,7 @@ const Calendar = () => {
                                 todayButton = "Today"
                                 selected={newEvent.start} onChange={(e) => setNewEvent({...newEvent, start: e})}
                                 dateFormat="dd/MM/yy hh:mm aa"
-                                startDate={Date.now}>
+                                >
                     </DatePicker>
                     <DatePicker placeholderText="End Date"
                                 style={{}}
@@ -139,7 +139,7 @@ const Calendar = () => {
                                 todayButton = "Today"
                                 selected={newEvent.end} onChange={(e) => setNewEvent({...newEvent, end: e })}
                                 dateFormat="dd/MM/yy hh:mm aa"
-                                startDate={Date.now}>
+                                >
                     </DatePicker>
                 </div></>
             )
