@@ -55,7 +55,7 @@ public class EnclosureController {
     @GetMapping("/api/enclosures/by_name/{name}")
     public ResponseEntity<List<Enclosure>> get_enclosure_by_name(@PathVariable String name) {
         responseHeaders.set(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "http://localhost:3000");
-        List<Enclosure> enclosure = enclosureRepository.findEnclosureByName(name);
+        List<Enclosure> enclosure = enclosureRepositoryCustom.findEnclosureByName(name);
 
         return ResponseEntity.ok().headers(responseHeaders).body(enclosure);
     }

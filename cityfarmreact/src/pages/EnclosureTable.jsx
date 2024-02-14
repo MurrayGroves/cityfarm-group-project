@@ -1,9 +1,12 @@
 import React, {useEffect, useState} from "react";
 import axios from "../api/axiosConfig";
 import SearchBar from "../components/SearchBar";
+import TextField from '@mui/material/TextField';
 import "../components/AnimalTable.css";
 import FarmTabs from "../components/FarmTabs";
 import { DataGrid } from "@mui/x-data-grid";
+import Paper from '@mui/material/Paper';
+import TableContainer from '@mui/material/TableContainer';
 
 const colours = {
     WH: "#333388",
@@ -20,7 +23,7 @@ const EnclosureTable = () => {
 
     const [farm, setFarm] = useState("");
 
-    useEffect(displayAll,[clear]);
+    //useEffect(displayAll,[clear]);
 
     function displayAll() {
         (async () => {
@@ -37,6 +40,7 @@ const EnclosureTable = () => {
     useEffect (() => {
         (async () => {
             if (searchTerm === '') {
+                displayAll();
                 return;
             }
             if (searchMode === "name") {
@@ -61,7 +65,6 @@ const EnclosureTable = () => {
     },[searchTerm])
 
     const cols =  [
-        { field: 'id', headerName: 'ID',  headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
         { field: 'name', headerName: 'Name', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
         { field: 'holding', headerName: 'Holding', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
         { field: 'capacities', headerName: 'Capacities', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
@@ -83,11 +86,18 @@ const EnclosureTable = () => {
 
     return(<>
         <h1>Enclosures</h1>
-        <SearchBar setSearchMode={setSearchMode} search={setSearchTerm} clearValue={clear} clearSearch={setClear}/>
-        <FarmTabs selectFarm={setFarm} colours={colours}/>
-        <div className="animal-table">
+        <span style={{display: 'flex', justifyContent: 'space-between', height: '60px'}}>
+            <TextField
+                size='small'
+                placeholder='Search'
+                style={{margin: '0 20px 20px 0'}}
+                onChange={(e) => setSearchTerm(e.target.value)}
+            ></TextField>
+            <FarmTabs selectFarm={setFarm} colours={colours}/>
+        </span>
+        <TableContainer component={Paper} style={{marginBottom: '20px'}}>
             <DataGrid rows={rows} columns={cols}/>
-        </div>
+        </TableContainer>
     </>)
 }
 
