@@ -3,6 +3,8 @@ import axios from "../api/axiosConfig";
 import SearchBar from "../components/SearchBar";
 import "./AnimalTable.css";
 import FarmTabs from "../components/FarmTabs";
+import TableContainer from '@mui/material/TableContainer';
+import Paper from '@mui/material/Paper';
 import { DataGrid } from "@mui/x-data-grid";
 
 const colours = {
@@ -82,9 +84,9 @@ const EnclosureTable = () => {
         <h1>Enclosures</h1>
         <SearchBar setSearchMode={setSearchMode} search={setSearchTerm}/> {/*clearValue={clear} clearSearch={setClear}/>*/}
         <FarmTabs selectFarm={setFarm} colours={colours}/>
-        <div className="animal-table">
+        <TableContainer component={Paper} style={{marginBottom: '20px'}}>
             <DataGrid rows={rows} columns={cols}/>
-        </div>
+        </TableContainer>
     </>)
 }
 
