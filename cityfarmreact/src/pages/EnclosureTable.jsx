@@ -1,8 +1,11 @@
 import React, {useEffect, useState} from "react";
 import axios from "../api/axiosConfig";
 import SearchBar from "../components/SearchBar";
-import "../components/AnimalTable.css";
+import "./AnimalTable.css";
 import FarmTabs from "../components/FarmTabs";
+import TableContainer from '@mui/material/TableContainer';
+import Paper from '@mui/material/Paper';
+import TextField from '@mui/material/TextField';
 import { DataGrid } from "@mui/x-data-grid";
 
 const colours = {
@@ -20,13 +23,12 @@ const EnclosureTable = () => {
 
     const [farm, setFarm] = useState("");
 
-    useEffect(displayAll,[clear]);
+    //useEffect(displayAll,[clear]);
 
     function displayAll() {
         (async () => {
             try {
                 const response = await axios.get(`/enclosures`);
-                console.log(response.data);
                 setEnclosureList(response.data);
             } catch (error) {
                 window.alert(error);
@@ -37,12 +39,12 @@ const EnclosureTable = () => {
     useEffect (() => {
         (async () => {
             if (searchTerm === '') {
+                displayAll();
                 return;
             }
             if (searchMode === "name") {
                 try {
                     const response = await axios.get(`/enclosures/by_name/${searchTerm}`);
-                    console.log(response.data);
                     setEnclosureList(response.data);
                 } catch (error) {
                     window.alert(error);
@@ -50,9 +52,8 @@ const EnclosureTable = () => {
             }
             else {
                 try {
-                const response = await axios.get(`/enclosures/by_id/${searchTerm}`);
-                console.log(response.data);
-                setEnclosureList(response.data);
+                    const response = await axios.get(`/enclosures/by_id/${searchTerm}`);
+                    setEnclosureList(response.data);
                 } catch (error) {
                     window.alert(error);
                 }
@@ -82,11 +83,18 @@ const EnclosureTable = () => {
 
     return(<>
         <h1>Enclosures</h1>
-        <SearchBar setSearchMode={setSearchMode} search={setSearchTerm} clearValue={clear} clearSearch={setClear}/>
-        <FarmTabs selectFarm={setFarm} colours={colours}/>
-        <div className="animal-table">
+        <span style={{display: 'flex', justifyContent: 'space-between', height: '60px'}}>
+            <TextField
+                size='small'
+                placeholder='Search'
+                style={{margin: '0 20px 20px 0'}}
+                onChange={(e) => setSearchTerm(e.target.value)}
+            ></TextField>
+            <FarmTabs selectFarm={setFarm} colours={colours}/>
+        </span>
+        <TableContainer component={Paper} style={{marginBottom: '20px'}}>
             <DataGrid rows={rows} columns={cols}/>
-        </div>
+        </TableContainer>
     </>)
 }
 

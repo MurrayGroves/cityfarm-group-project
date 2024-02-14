@@ -7,11 +7,13 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 import React, {useState, useEffect, useMemo} from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import "../components/Calendar.css";
+import "./Calendar.css";
 import Event from "../components/Event";
 import CreateEvent from "../components/CreateEvent";
 import Animal from "../components/Animal";
 import CloseIcon from "../components/close-512.webp";
+import Paper from '@mui/material/Paper';
+import TextField from '@mui/material/TextField';
 import { Button } from '@mui/material';
 
 const locales = {
@@ -133,7 +135,7 @@ const Calendar = () => {
     const eventStyleGetter = (event) => {
         var colour1 = event.farms.includes(WH) ? colours.WH : (event.farms.includes(HC) ? colours.HC : colours.SW);
         var colour2 = event.farms.includes(HC) ? (event.farms.includes(WH) ? colours.HC : (event.farms.includes(SW) ? colours.SW : colours.SW)) : colours.SW;
-        const offset = 2;
+        const offset = 0;
         var visible = true;
         if (event.farms.length > 0) {
             visible = false;
@@ -245,41 +247,41 @@ const Calendar = () => {
     }
 
     return (
-        <div className="CalendarPage" style={{height: "75%"}}>
+        <div className="CalendarPage" style={{height: "85%"}}>
         <h1>Calendar</h1>
         <div style={{height: "100%"}}>
-            <div style={{ display: "flex", justifyContent: "center", height: "100%"}}>
-            <div style={{width: "calc(100% - 440px"}}>
+            <div style={{ display: "flex", justifyContent: "left", height: "100%"}}>
+            <div style={{width: "calc(100% - 400px"}}>
                 <BigCalendar
                     localizer={localizer}
                     events={allEvents}
                     startAccessor="start"
                     endAccessor="end"
-                    style={{height: "100%", margin:"20px 40px 0 0"}}
+                    style={{height: "100%", margin:"20px 20px 0 0"}}
                     showMultiDayTimes
                     onSelectEvent={setSelectedEvent}
                     eventPropGetter={eventStyleGetter}
                 />
             </div>
-            <div style={{width: "440px"}}>
-                <div className='componentBox'>
+            <div style={{width: "400px"}}>
+                <Paper elevation='3' style={{width: '400px', margin: '0 0 20px 0', padding: '10px'}}>
                     <h2 className='boxTitle'>Selected Farms</h2>
                     <input type="checkbox" defaultChecked='true' onChange={() => updateVisibleFarms(WH)}/><span style={{marginRight: "10px"}}>Windmill Hill</span>
                     <input type="checkbox" defaultChecked='true' onChange={() => updateVisibleFarms(HC)}/><span style={{marginRight: "10px"}}>Hartcliffe</span>
                     <input type="checkbox" defaultChecked='true' onChange={() => updateVisibleFarms(SW)}/><span style={{marginRight: "10px"}}>St Werburghs</span>
-                </div>
+                </Paper>
 
                 {/*<Event selectedEvent={selectedEvent} setSelectedEvent={setSelectedEvent}/>*/}
 
                 { selectedEvent !== "No event selected" ?
-                <div className='componentBox'>
+                <Paper elevation='3' style={{width: '400px', margin: '0 0 20px 0', padding: '10px'}}>
                     <div style={{display: "flex", justifyContent: "space-between"}}>
-                    <h2 className='boxTitle'>Selected Event</h2>
-                    <button className='closeButton' onClick={() => setSelectedEvent("No event selected")}><img src={CloseIcon}/></button>
+                        <h2 style={{margin: '0'}}>Selected Event</h2>
+                        <button className='closeButton' onClick={() => setSelectedEvent("No event selected")}><img src={CloseIcon}/></button>
                     </div>
                     {!modifyEvent ?  
                     <div>
-                        <h3>{selectedEvent.title}</h3>
+                        <h2>{selectedEvent.title}</h2>
                         {
                             selectedEvent.allDay ?
                                 <div>
@@ -297,7 +299,7 @@ const Calendar = () => {
                         {selectedEvent.farms.includes(SW) ? <p>St Werberghs</p> : <></>}
                         {selectedEvent.animals.length !== 0 ? <h3>Relevant Animals</h3> : <></>}
                         {selectedEvent.animals.map((animalID) => (
-                            <p><Animal key={animalID} animalID={animalID} /></p>
+                            <Animal key={animalID} animalID={animalID}/>
                         ))}
                         {selectedEvent.enclosures.length !== 0 ? <div>
                             <h3>Relevant Enclosures</h3>
@@ -353,19 +355,19 @@ const Calendar = () => {
                         
                     </div>
                     }
-                </div>
+                </Paper>
                 :
                 <></>}
 
                 {/*<CreateEvent setEvent={setNewEvent} handleAddEvent={handleAddEvent}/>*/}
 
-                <div className='componentBox'>
+                <Paper elevation='3' style={{width: '400px', margin: '0 0 20px 0', padding: '10px'}}>
                 <h2 className='boxTitle'>Add New Event</h2>
-                <div style={{marginRight: '10px'}}>
-                <input
+                <div>
+                <TextField
                     style={{width: '100%'}}
-                    type="text"
                     placeholder="Add Title"
+                    size='small'
                     value={newEvent.title}
                     onChange={(e)=>setNewEvent({...newEvent, title: e.target.value})}
                 />
@@ -409,7 +411,7 @@ const Calendar = () => {
                     <span>Description:</span>
                     <textarea style={{minHeight: "52px", minWidth: "386px"}} type="text" placeholder="enter description here:" value={newEvent.description} onChange={(e) => {setNewEvent({...newEvent, description: e.target.value})}}></textarea>
                 </div>
-            </div>
+            </Paper>
             </div>
             </div>
         </div>

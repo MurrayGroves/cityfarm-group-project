@@ -12,14 +12,28 @@ import Schemas from "./pages/Schemas";
 import Error from "./pages/Error.jsx";
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import SingleAnimal from "./pages/SingleAnimal";
+import React, { useState } from 'react';
 
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
 
 const App = () => {
 
+    const darkTheme = createTheme({
+        palette: {
+            mode: 'dark',
+        },
+    });
+
+    const defaultTheme = createTheme();
+    
+    const [dark, setDark] = useState(false);
+
     return (
+        <ThemeProvider theme={dark ? darkTheme : defaultTheme}>
+        <CssBaseline/>
         <Router>
-        <div className="App">
-            <NavBar/> {/* Navbar available in all pages for navigation*/}
+            <NavBar setDark={setDark}/> {/* Navbar available in all pages for navigation*/}
             <div className="Content">
             <Routes>
                 <Route exact path="/"> {/*This is just for testing. Will probably navigate to a home page */}
@@ -32,8 +46,8 @@ const App = () => {
                 </Route>
             </Routes>
             </div>
-        </div>
         </Router>
+        </ThemeProvider>
     )
 }
 
