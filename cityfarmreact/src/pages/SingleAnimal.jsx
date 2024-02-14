@@ -8,16 +8,7 @@ import axios from '../api/axiosConfig';
 import { useState, useEffect } from 'react';
 import Animal from "../components/Animal";
 
-const aExamples =[
-    {
-        id: 1,
-        name: "ERROR",
-        type: "",
-        male: "",
-        father: "",
-        fid: 2,
-        mother: "",
-}]
+
 
 const WH = 0, HC = 1, SW = 2;
 const events = [ /*These are example events.*/
@@ -94,7 +85,8 @@ const SingleAnimal = () => {
             <Typography sx={{ p: 1,whiteSpace: 'pre-line' }}>
                 Sex: {chosenAnimal.male ? 'Male' : 'Female'}<br/>
                 Species: {chosenAnimal.type}<br/>
-                <span style={{display:'flex', justifyContent:'start'}}>Father: {<> </>}{chosenAnimal.father ? <Animal key={chosenAnimal.father} animalID={chosenAnimal.father}/>
+                <span style={{display:'flex', justifyContent:'start'}}>Father:
+                    {<> </>}{chosenAnimal.father ? <Animal key={chosenAnimal.father} animalID={chosenAnimal.father}/>
                 : 'Unregistered'}</span>
                 Mother: {chosenAnimal.mother ? <Animal key={chosenAnimal.mother} animalID={chosenAnimal.mother}/>
                 : 'Unregistered'}<br/>

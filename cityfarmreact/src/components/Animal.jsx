@@ -8,22 +8,17 @@ import { useState, useEffect } from 'react';
 
 const aExamples = [
     {
-    id : 1,
+
     name:"error",
-    type:"cow",
-    sex:"F",
-    father : "alice",
-    fid : 2,
-    mother	:"undefined",
-    mid : null,
-    tb_inoculated : true,
-    live : true
+
 }]
 
 
 const Animal = (props) => {
     const [anchorEl, setAnchorEl] = useState(null);
     const [chosenAnimal, setChosenAnimal] = useState(aExamples[0]);
+    const [animalMother, setMother] = useState("Unregistered")
+    const [animalFather, setFather] = useState("Unregistered")
 
     const handlePopoverOpen = (e) => {
         setAnchorEl(e.currentTarget);
@@ -45,6 +40,28 @@ const Animal = (props) => {
             window.alert(error);
         }})()
     }, [props.animalID]);
+
+    useEffect(()=>{
+        if(chosenAnimal.mother !== undefined && chosenAnimal.mother !== null){
+            console.log("hello");
+            (async ()=>{
+            try{
+                const mother = await axios.get(`/animals/by_id/${chosenAnimal.mother}`);
+                setMother(mother.data.name);
+            }catch(error){
+                //window.alert(`mother issue \n ${error}`)
+            }})()}
+        if (chosenAnimal.father !== undefined && chosenAnimal.father !== null){
+            (async ()=>{
+            try{
+                const father = await axios.get(`/animals/by_id/${chosenAnimal.father}`);
+                setFather(father.data.name);
+            }catch(error){
+                //window.alert(`father issue \n ${error}`)
+            }})()
+        }
+
+    },[chosenAnimal])
 
     return (
         <div>
@@ -74,8 +91,8 @@ const Animal = (props) => {
             >
                 <Typography sx={{ p: 1, whiteSpace: 'pre-line' }}>
                     {`Type: ${chosenAnimal.type}`}<br/>
-                    {chosenAnimal.father != null ? `Father: ${chosenAnimal.father}` : 'Father: Unregistered'}<br/>
-                    {chosenAnimal.mother != null ? `Mother: ${chosenAnimal.mother}` : 'Mother: Unregistered'}<br/>
+                    {`Father : ${animalFather}`}<br/>
+                    {`Mother : ${animalMother}`}<br/>
                     {chosenAnimal.tb_inoculated ? 'Inoculated: True' : 'Inoculated: False'}<br/>
                     {chosenAnimal.male ? 'Sex: Male' : 'Sex: Female'}<br/>
                     {chosenAnimal.alive ? 'Live: Yes' : 'Live: No'}
