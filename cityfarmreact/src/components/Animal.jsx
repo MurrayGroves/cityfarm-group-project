@@ -9,7 +9,7 @@ import { useState, useEffect } from 'react';
 const aExamples = [
     {
     id : 1,
-    name:"bob",
+    name:"error",
     type:"cow",
     sex:"F",
     father : "alice",
@@ -78,7 +78,7 @@ const Animal = (props) => {
                     {chosenAnimal.mother != null ? `Mother: ${chosenAnimal.mother}` : 'Mother: Unregistered'}<br/>
                     {chosenAnimal.tb_inoculated ? 'Inoculated: True' : 'Inoculated: False'}<br/>
                     {chosenAnimal.male ? 'Sex: Male' : 'Sex: Female'}<br/>
-                    {chosenAnimal.alive ? 'Live: Yes' : 'Live: No'}<br/>
+                    {chosenAnimal.alive ? 'Live: Yes' : 'Live: No'}
                 </Typography>
             </Popover>
         </div>
