@@ -186,7 +186,7 @@ const Calendar = () => {
                 />
             </div>
             <div style={{width: "400px"}}>
-                <Paper style={{width: '400px', margin: '0 0 20px 0', padding: '10px'}}>
+                <Paper elevation='3' style={{width: '400px', margin: '0 0 20px 0', padding: '10px'}}>
                     <h2 className='boxTitle'>Selected Farms</h2>
                     <input type="checkbox" defaultChecked='true' onChange={() => updateVisibleFarms(WH)}/><span style={{marginRight: "10px"}}>Windmill Hill</span>
                     <input type="checkbox" defaultChecked='true' onChange={() => updateVisibleFarms(HC)}/><span style={{marginRight: "10px"}}>Hartcliffe</span>
@@ -196,7 +196,7 @@ const Calendar = () => {
                 {/*<Event selectedEvent={selectedEvent} setSelectedEvent={setSelectedEvent}/>*/}
 
                 { selectedEvent !== "No event selected" ?
-                <Paper style={{width: '400px', margin: '0 0 20px 0', padding: '10px'}}>
+                <Paper elevation='3' style={{width: '400px', margin: '0 0 20px 0', padding: '10px'}}>
                     <div style={{display: "flex", justifyContent: "space-between"}}>
                         <h2 style={{margin: '0'}}>Selected Event</h2>
                         <button className='closeButton' onClick={() => setSelectedEvent("No event selected")}><img src={CloseIcon}/></button>
@@ -229,7 +229,7 @@ const Calendar = () => {
 
                 {/*<CreateEvent setEvent={setNewEvent} handleAddEvent={handleAddEvent}/>*/}
 
-                <Paper style={{width: '400px', margin: '0 0 20px 0', padding: '10px'}}>
+                <Paper elevation='3' style={{width: '400px', margin: '0 0 20px 0', padding: '10px'}}>
                 <h2 className='boxTitle'>Add New Event</h2>
                 <div>
                 <TextField
