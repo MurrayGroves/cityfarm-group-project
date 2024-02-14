@@ -5,7 +5,9 @@ import FarmTabs from "../components/FarmTabs";
 import "../components/AnimalTable.css";
 import Animal from "../components/Animal";
 import { DataGrid } from '@mui/x-data-grid';
-import { Link } from "react-router-dom";
+import TableContainer from '@mui/material/TableContainer';
+import Paper from '@mui/material/Paper';
+import AnimalCreator from "../components/AnimalCreator";
 
 const colours = {
     WH: "#333388",
@@ -19,7 +21,6 @@ const AnimalTable = () => {
     const [searchTerm, setSearchTerm] = useState(''); /* The term being searched for in the searchbar */
     const [searchMode, setSearchMode] = useState("name") /* The mode of search (by name or id) */
     const [clear, setClear] = useState(0); /* Clear will reset the table to display all animals once updated*/
-    const [create, setCreate] = useState({name: '', type: 'chicken', father: 'Unregistered', mother: 'Unregistered', male: 'true', alive: 'true'})
     
     const [farm, setFarm] = useState(0);
 
@@ -83,9 +84,10 @@ const AnimalTable = () => {
         <h1>Livestock</h1>
         <SearchBar setSearchMode={setSearchMode} search={setSearchTerm} clearValue={clear} clearSearch={setClear}/>
         <FarmTabs selectFarm={setFarm} colours={colours}/>
-        <div className="animal-table">
-        <DataGrid columns={cols} rows={rows}/>
-        </div>
+        <TableContainer component={Paper} style={{marginBottom: '20px'}}>
+            <DataGrid columns={cols} rows={rows}/>
+        </TableContainer>
+        <AnimalCreator/>
     </>)
 }
 

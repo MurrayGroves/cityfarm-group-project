@@ -171,19 +171,19 @@ const Calendar = () => {
         <h1>Calendar</h1>
         <div style={{height: "100%"}}>
             <div style={{ display: "flex", justifyContent: "center", height: "100%"}}>
-            <div style={{width: "calc(100% - 440px"}}>
+            <div style={{width: "calc(100% - 400px"}}>
                 <BigCalendar
                     localizer={localizer}
                     events={allEvents}
                     startAccessor="start"
                     endAccessor="end"
-                    style={{height: "100%", margin:"20px 40px 0 0"}}
+                    style={{height: "100%", margin:"20px 20px 0 0"}}
                     showMultiDayTimes
                     onSelectEvent={setSelectedEvent}
                     eventPropGetter={eventStyleGetter}
                 />
             </div>
-            <div style={{width: "440px"}}>
+            <div style={{width: "400px"}}>
                 <div className='componentBox'>
                     <h2 className='boxTitle'>Selected Farms</h2>
                     <input type="checkbox" defaultChecked='true' onChange={() => updateVisibleFarms(WH)}/><span style={{marginRight: "10px"}}>Windmill Hill</span>
