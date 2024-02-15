@@ -1,12 +1,12 @@
 
 import * as React from "react";
-//import aExamples from "./../components/Animal";
-//import events from "./Calendar";
+import "../components/SingleAnimal.css"
 import {Link, useParams} from "react-router-dom";
 import Typography from "@mui/material/Typography";
 import axios from '../api/axiosConfig';
 import { useState, useEffect } from 'react';
 import Animal from "../components/Animal";
+import CloseIcon from "../components/close-512.webp";
 
 
 
@@ -51,6 +51,7 @@ const SingleAnimal = () => {
     const { animalID } = useParams();
     const [relEvents,setRelEvents] = useState([])
     const [chosenAnimal, setChosenAnimal] = useState({});
+    const [selectedEvent,setSelectedEvent] = useState("No event selected");
 
     useEffect(() => {
         (async () => {
@@ -80,7 +81,11 @@ const SingleAnimal = () => {
         setRelEvents(matchingEvents); // Update the state once with all matching events
     }, [animalID]);
 
-    return(<>
+    const handleEventClick=(event)=>{
+        setSelectedEvent(event)
+    }
+
+    return<>
         <h1>{chosenAnimal.name}</h1>
             <Typography sx={{ p: 1,whiteSpace: 'pre-line' }}>
                 Sex: {chosenAnimal.male ? 'Male' : 'Female'}<br/>
@@ -95,11 +100,10 @@ const SingleAnimal = () => {
 
         <div>
             {relEvents.length !== 0 ? <h2>Linked Events</h2> : <></>}
-            {relEvents.map((event, index) => (
-                <div key={index}>
+            {relEvents.map((event, index) => <div key={index}>
                     {/* Display relevant event information very similar to event view*/}
-                    {event.title} {"\n"}
-                    {event.allDay ?(
+                <h4 onClick={() => handleEventClick(event)}>{event.title}</h4>
+                {event.allDay ?(
                             <div>
                                 <p>{event.start.toLocaleDateString()} {event.end == null ? <p></p>:event.end.toLocaleDateString()===event.start.toLocaleDateString() ? <p></p>: " - " + event.end.toLocaleDateString()}</p>
                             </div>
@@ -111,10 +115,40 @@ const SingleAnimal = () => {
                     {event.farms.includes(WH) ? <p>Windmill Hill </p> : <></>}
                     {event.farms.includes(HC) ? <p>Hartcliffe </p> : <></>}
                     {event.farms.includes(SW) ? <p>St Werberghs</p> : <></>}
-                </div>))}
+                </div>)}
         </div>
-        </>
-    );
+        { selectedEvent !== "No event selected" ?
+            <div className='componentBox'>
+                <div style={{display: "flex", justifyContent: "space-between"}}>
+                    <h2 className='boxTitle'>Selected Event</h2>
+                    <button className='closeButton' onClick={() => setSelectedEvent("No event selected")}><img src={CloseIcon}/></button>
+                </div>
+                <div>
+                    <h3>{selectedEvent.title}</h3>
+                    {
+                        selectedEvent.allDay ?
+                            <div>
+                                <p>{selectedEvent.start.toLocaleDateString()} {selectedEvent.end == null ? <p></p>:selectedEvent.end.toLocaleDateString()===selectedEvent.start.toLocaleDateString() ? <p></p>: " - " + selectedEvent.end.toLocaleDateString()}</p>
+                            </div>
+                            :
+                            <div>
+                                <p>{selectedEvent.start.toLocaleString([], {year: '2-digit', month: '2-digit', day: '2-digit', hour: '2-digit', minute:'2-digit'})} - {selectedEvent.start.toLocaleDateString() === selectedEvent.end.toLocaleDateString() ? selectedEvent.end.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}): selectedEvent.end.toLocaleString([], {year: '2-digit', month: '2-digit', day: '2-digit', hour: '2-digit', minute:'2-digit'})}</p>
+                            </div>
+
+                    }
+                    {selectedEvent.farms.length !== 0 ? <h3>Relevant Farms</h3> : <></>}
+                    {selectedEvent.farms.includes(WH) ? <p>Windmill Hill</p> : <></>}
+                    {selectedEvent.farms.includes(HC) ? <p>Hartcliffe</p> : <></>}
+                    {selectedEvent.farms.includes(SW) ? <p>St Werberghs</p> : <></>}
+                    {selectedEvent.animals.length !== 0 ? <h3>Relevant Animals</h3> : <></>}
+                    {selectedEvent.animals.map((animalID) => (
+                        <p><Animal key={animalID} animalID={animalID} /></p>
+                    ))}
+                </div>
+            </div>
+            :
+            <></>}
+        </>;
 }
 
 export default SingleAnimal
