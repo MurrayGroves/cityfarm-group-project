@@ -1,0 +1,13 @@
+.tab-container {
+    display: flex;
+    justify-content: left;
+    padding-left: 0px;
+    margin-top: 20px;
+}
+
+.tab-container button {
+    margin: 0 5px 0 0;
+    min-width: 150px;
+    max-height: 40px;
+    border-radius: 5px 5px 0 0;
+}
