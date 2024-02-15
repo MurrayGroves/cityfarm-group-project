@@ -103,4 +103,17 @@ public class EnclosureController {
 
         return ResponseEntity.ok().build();
     }
+
+    @PatchMapping("/api/enclosures/by_id/{id}/name")
+    public ResponseEntity<String> set_enclosure_name(@PathVariable String id, @RequestBody String name) {
+
+        long res = enclosureRepositoryCustom.updateName(id, name);
+
+        // If no documents updated
+        if (res == 0) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok().build();
+    }
 }

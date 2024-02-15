@@ -32,6 +32,12 @@ public class EnclosureRepositoryCustom {
         return mongoOperations.updateFirst(query, update, Enclosure.class).getModifiedCount();
     }
 
+    public long updateName(String id, String name) {
+        Query query = new Query(Criteria.where("_id").is(id));
+        Update update = new Update().set("name", name);
+        return mongoOperations.updateFirst(query, update, Enclosure.class).getModifiedCount();
+    }
+
      public List<Enclosure> findEnclosureByName(String name){
         Criteria regex = Criteria.where("name").regex(name, "i");
         return mongoOperations.find(new Query().addCriteria(regex), Enclosure.class);
