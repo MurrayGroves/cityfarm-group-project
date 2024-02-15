@@ -67,8 +67,8 @@ const AnimalTable = () => {
         id: animal._id,
         name: animal,
         type: animal.type,
-        father: animal.father != null ? animal.father : 'Unregistered',
-        mother: animal.mother != null ? animal.mother : 'Unregistered',
+        father: animal.father !== '' && animal.father !== null ? animal.father : 'Unregistered',
+        mother: animal.mother !== '' && animal.mother !== null ? animal.mother : 'Unregistered',
         sex: animal.male ? 'Male' : 'Female',
     }));
 
@@ -95,7 +95,9 @@ const AnimalTable = () => {
         <TableContainer component={Paper} style={{marginBottom: '20px'}}>
             <DataGrid columns={cols} rows={rows}/>
         </TableContainer>
-        <AnimalCreator/>
+        <TableContainer component={Paper} style={{marginBottom: '20px'}}>
+            <AnimalCreator animalList={animalList}/>
+        </TableContainer>
     </>)
 }
 
