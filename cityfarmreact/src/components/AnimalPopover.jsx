@@ -2,7 +2,7 @@ import * as React from 'react';
 import Popover from '@mui/material/Popover';
 import Typography from '@mui/material/Typography';
 import {Link} from "react-router-dom";
-import './Animal.css'
+import './AnimalPopover.css'
 import axios from "../api/axiosConfig";
 import { useState, useEffect } from 'react';
 
@@ -14,7 +14,7 @@ const aExamples = [
 }]
 
 
-const Animal = (props) => {
+const AnimalPopover = (props) => {
     const [anchorEl, setAnchorEl] = useState(null);
     const [chosenAnimal, setChosenAnimal] = useState(aExamples[0]);
     const [animalMother, setMother] = useState("Unregistered")
@@ -102,4 +102,4 @@ const Animal = (props) => {
     );
 }
 
-export default Animal;
+export default AnimalPopover;

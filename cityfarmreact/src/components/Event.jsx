@@ -1,5 +1,5 @@
 import {useState} from 'react';
-import Animal from "./Animal";
+import AnimalPopover from "./AnimalPopover";
 const Event =  (props) => {
     const [event, setEvent] = useState(props.selectedEvent);
     const [updating, setUpdating] = useState(false)

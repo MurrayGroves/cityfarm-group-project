@@ -10,7 +10,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import "../components/Calendar.css";
 import Event from "../components/Event";
 import CreateEvent from "../components/CreateEvent";
-import Animal from "../components/Animal";
+import AnimalPopover from "../components/AnimalPopover";
 import CloseIcon from "../components/close-512.webp";
 
 const locales = {
@@ -210,7 +210,7 @@ const Calendar = () => {
                                 <div>
                                     <p>{selectedEvent.start.toLocaleString([], {year: '2-digit', month: '2-digit', day: '2-digit', hour: '2-digit', minute:'2-digit'})} - {selectedEvent.start.toLocaleDateString() === selectedEvent.end.toLocaleDateString() ? selectedEvent.end.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}): selectedEvent.end.toLocaleString([], {year: '2-digit', month: '2-digit', day: '2-digit', hour: '2-digit', minute:'2-digit'})}</p>
                                 </div>
-                        
+
                         }
                         {selectedEvent.farms.length !== 0 ? <h3>Relevant Farms</h3> : <></>}
                         {selectedEvent.farms.includes(WH) ? <p>Windmill Hill</p> : <></>}
@@ -218,7 +218,7 @@ const Calendar = () => {
                         {selectedEvent.farms.includes(SW) ? <p>St Werberghs</p> : <></>}
                         {selectedEvent.animals.length !== 0 ? <h3>Relevant Animals</h3> : <></>}
                         {selectedEvent.animals.map((animalID) => (
-                            <p><Animal key={animalID} animalID={animalID} /></p>
+                            <p><AnimalPopover key={animalID} animalID={animalID} /></p>
                         ))}
                     </div>
                 </div>

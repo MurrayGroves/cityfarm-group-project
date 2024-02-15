@@ -14,7 +14,9 @@
     cursor: pointer;
     width: 24px;
     height: 24px;
-
+    position: absolute;
+    right: 26%;
+    top: 26%;
 
 }
 .closeButton img {

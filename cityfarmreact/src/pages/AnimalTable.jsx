@@ -3,7 +3,7 @@ import axios from '../api/axiosConfig'
 import SearchBar from "../components/SearchBar";
 import FarmTabs from "../components/FarmTabs";
 import "../components/AnimalTable.css";
-import Animal from "../components/Animal";
+import AnimalPopover from "../components/AnimalPopover";
 import { DataGrid } from '@mui/x-data-grid';
 import { Link } from "react-router-dom";
 
@@ -72,14 +72,14 @@ const AnimalTable = () => {
     const cols = [
         { field: 'id', headerName: 'ID', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
         { field: 'name', headerName: 'Name', headerClassName: 'grid-header', headerAlign: 'left', flex: 1,
-            renderCell: (animal) => {return <Animal animalID={animal.value._id}/>} },
+            renderCell: (animal) => {return <AnimalPopover animalID={animal.value._id}/>} },
         { field: 'type', headerName: 'Type', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
         { field: 'father', headerName: 'Father', headerClassName: 'grid-header', headerAlign: 'left', flex: 1,
         renderCell:(animal)=>{return animal.value.father?
-             <Animal key={animal.value.father} animalID={animal.value.father}/> : "Unregistered"}},
+             <AnimalPopover key={animal.value.father} animalID={animal.value.father}/> : "Unregistered"}},
         { field: 'mother', headerName: 'Mother', headerClassName: 'grid-header', headerAlign: 'left', flex: 1,
             renderCell:(animal)=>{return animal.value.mother?
-                <Animal key={animal.value.mother} animalID={animal.value.mother}/> : "Unregistered"}},
+                <AnimalPopover key={animal.value.mother} animalID={animal.value.mother}/> : "Unregistered"}},
         { field: 'sex', headerName: 'Sex', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
     ];
 
