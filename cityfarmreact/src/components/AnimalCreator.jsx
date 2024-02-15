@@ -77,7 +77,8 @@ const AnimalCreator = (props) => {
         console.log(newAnimal);
     },[newAnimal]);
 
-    return (
+    return (<>
+    <TableContainer component={Paper} style={{marginBottom: '20px'}}>
         <Table>
             <TableHead>
                 <TableRow>
@@ -160,43 +161,55 @@ const AnimalCreator = (props) => {
                     </TableCell>
                 </TableRow>
             </TableBody>
-            {schema ? 
-            <TableFooter>
+        </Table>
+    </TableContainer>
+    {schema ?
+    <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '20px'}}>
+    <TableContainer component={Paper} style={{marginRight: '20px'}}>
+        <Table>
+            <TableHead> {/*style={{borderTop: '2px dashed rgba(196, 196, 196, 1)'}}*/}
                 <TableRow>
-                    <TableCell style={{borderBottom: '0', borderRight: '1px solid rgba(224, 224, 224, 1)'}} variant='head'>Field Name</TableCell>
+                    <TableCell style={{borderRight: '1px solid rgba(224, 224, 224, 1)', width: `${100/(Object.keys(schema._fields).length + 1)}%`}}>Field Name</TableCell>
                     {Object.keys(schema._fields).map((field) => {
                         return (
-                        <TableCell variant='head'>{field.charAt(0).toUpperCase() + field.slice(1)}</TableCell>
+                        <TableCell style={{width: `${100/(Object.keys(schema._fields).length + 1)}%`}}>{field.charAt(0).toUpperCase() + field.slice(1)}</TableCell>
                         );
                     })}
                 </TableRow>
+            </TableHead>
+            <TableBody>
                 <TableRow>
-                    <TableCell style={{borderBottom: '0', borderRight: '1px solid rgba(224, 224, 224, 1)'}} variant='head'>Field Value</TableCell>
+                    <TableCell style={{borderRight: '1px solid rgba(224, 224, 224, 1)'}} variant='head'>Field Value</TableCell>
                     {Object.keys(schema._fields).map((field) => {
                         return (
                         <TableCell variant='head'>{fieldTypeSwitch(field)}</TableCell>
                         );
                     })}
-                    <TableCell>
-                        <Button
-                        style={{float: 'right'}}
-                        variant="contained"
-                        aria-label="add"
-                        endIcon={<AddIcon/>}
-                        onClick={async() => {
-                            await axios.post(`/animals/create`, newAnimal,
-                            {crossdomain: true, headers: {
-                                "Access-Control-Allow-Origin": 'http://localhost:3000',
-                                "Access-Control-Allow-Credentials": true
-                            }})
-                            window.location.reload(false);
-                        }}>Create</Button>
-                    </TableCell>
-                </TableRow>                  
-            </TableFooter>
-            : <></>}
+                </TableRow>
+            </TableBody>
         </Table>
-    )
+    </TableContainer>
+    <Button
+    style={{maxWidth: '40px', writingMode: 'vertical-rl'}}
+    variant="contained"
+    aria-label="add"
+    endIcon={<AddIcon/>}
+    onClick={async() => {
+        try{
+            await axios.post(`/animals/create`, newAnimal,
+            {crossdomain: true, headers: {
+                "Access-Control-Allow-Origin": 'http://localhost:3000',
+                "Access-Control-Allow-Credentials": true
+            }})
+        } catch(error) {
+            window.alert(error);
+        }
+        window.location.reload(false);
+    }}
+    >Create</Button>
+    </div>
+    : <></>}
+    </>)
 }
 
 export default AnimalCreator;

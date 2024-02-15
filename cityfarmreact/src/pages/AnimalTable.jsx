@@ -89,9 +89,7 @@ const AnimalTable = () => {
         <TableContainer component={Paper} style={{marginBottom: '20px'}}>
             <DataGrid columns={cols} rows={rows}/>
         </TableContainer>
-        <TableContainer component={Paper} style={{marginBottom: '20px'}}>
-            <AnimalCreator animalList={animalList}/>
-        </TableContainer>
+        <AnimalCreator animalList={animalList}/>
     </>)
 }
 

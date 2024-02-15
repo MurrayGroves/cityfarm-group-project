@@ -9,6 +9,7 @@
   left: 0;
   width: calc(100% - 150px);
   height: 100%;
+  /*overflow: hidden;*/
   margin-left: 150px;
   padding: 0 20px;
 }
