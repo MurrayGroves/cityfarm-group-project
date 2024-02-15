@@ -121,7 +121,7 @@ const SingleAnimal = () => {
         {selectedEvent !== "No event selected" && (
             <>
                 <SelectedEvent event={selectedEvent} />
-                <button className='closeButton' onClick={() => setSelectedEvent("No event selected")}><img src={CloseIcon} alt="Close"/></button>
+                <button className='closeCross' onClick={() => setSelectedEvent("No event selected")}><img src={CloseIcon} alt="Close"/></button>
             </>
         )}
         </>;

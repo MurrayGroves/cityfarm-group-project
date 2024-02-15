@@ -1,4 +1,4 @@
-.componentBox {
+.selectedBox {
     width: 400px;
     margin: 0 0 20px 0;
     padding: 10px 10px 10px 10px;
@@ -7,7 +7,7 @@
     right: 25%;
     top: 25%;
 }
-.closeButton {
+.closeCross {
     display: inline-flex;
     border: none;
     background-color: white;
@@ -19,7 +19,7 @@
     top: 26%;
 
 }
-.closeButton img {
+.closeCross img {
     width: 24px;
     height: 24px;
 }

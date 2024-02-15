@@ -11,7 +11,7 @@ const SelectedEvent = ({ event}) => {
   }
 
   return (
-      <div className='componentBox'>
+      <div className='selectedBox'>
         <div style={{display: "flex", justifyContent: "space-between"}}>
           <h2 className='boxTitle'>Selected Event</h2>
         </div>
