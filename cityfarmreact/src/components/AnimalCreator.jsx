@@ -28,7 +28,7 @@ const AnimalCreator = (props) => {
     const [schema, setSchema] = useState()
 
     const fieldTypeSwitch = (field) => {
-        newAnimal.fields[field] = '';
+        newAnimal.fields[field] = '' ;
         switch(schema._fields[field]._type) {
             case "java.lang.Boolean":
                 return (
@@ -41,11 +41,11 @@ const AnimalCreator = (props) => {
                 </Select>
                 );
             case "java.lang.String":
-                return <TextField></TextField>
+                return <TextField/>
             case "java.lang.Integer":
-                return <TextField></TextField>
+                return <TextField/>
             case "java.lang.Double":
-                return <TextField></TextField>
+                return <TextField/>
             case "java.time.ZonedDateTime":
                 return (
                 <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -90,13 +90,23 @@ const AnimalCreator = (props) => {
             </TableHead>
             <TableBody>
                 <TableRow>
-                    <TableCell><TextField style={{width: '100%'}} onChange={(e)=>{setNewAnimal({...newAnimal, name: e.target.value})}} label='Name'></TextField></TableCell>
+                    <TableCell><TextField style={{width: '100%'}} onChange={(e)=>{setNewAnimal({...newAnimal, name: e.target.value})}} label='Name'/></TableCell>
                     <TableCell>
-                        <Select style={{width: '100%'}} value={newAnimal.type} onChange={(e) => {setNewAnimal({...newAnimal, type: e.target.value})}}>
-                        {schemaList.map((schema) => {
-                            return <MenuItem value={schema._name}>{(schema._name.charAt(0).toUpperCase()) + schema._name.slice(1)}</MenuItem>;
-                        })}
-                        </Select>
+                        <Autocomplete
+                            style={{width: '100%'}}
+                            size='medium'
+                            renderOption={(props, option) => {
+                                return (
+                                    <li {...props} key={option._name}>
+                                        {option._name.charAt(0).toUpperCase() + option._name.slice(1)}
+                                    </li>
+                                );
+                            }}
+                            renderInput={(params) => <TextField {...params} label="Type"/>}
+                            getOptionLabel={option => option._name.charAt(0).toUpperCase() + option._name.slice(1)}
+                            options={schemaList}
+                            onChange={(e, v) => {v ? setNewAnimal({...newAnimal, type: v._name}) : setNewAnimal({...newAnimal, type: ''})}}
+                        />
                     </TableCell>
                     <TableCell>
                         <Autocomplete
@@ -181,7 +191,6 @@ const AnimalCreator = (props) => {
                             }})
                             window.location.reload(false);
                         }}>Create</Button>
-                        
                     </TableCell>
                 </TableRow>                  
             </TableFooter>
