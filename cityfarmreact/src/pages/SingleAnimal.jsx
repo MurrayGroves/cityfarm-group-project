@@ -26,7 +26,7 @@ const events = [ /*These are example events.*/
         start: new  Date(2024,1,1, 13),
         end: new  Date(2024,1,1, 14),
         farms: [],
-        animals: ["64ca1356-e519-4f88-a5e9-593157dec235"]
+        animals: ["174447d3-bedb-4311-a16c-1771aa82d173"]
     },
     {
         title : "Bull in with cows",
@@ -42,7 +42,7 @@ const events = [ /*These are example events.*/
         start: new  Date(2024,1,9, 8),
         end: new  Date(2024,1,9, 23, 59),
         farms: [HC, SW],
-        animals: ["05eea36a-1098-4392-913b-25e6508df54c","64ca1356-e519-4f88-a5e9-593157dec235"]
+        animals: ["05eea36a-1098-4392-913b-25e6508df54c","ae7ee5e6-0d26-4b52-b94e-b3da9b434b2e"]
     },
     {
         title : "Defra Inspection",
@@ -50,7 +50,7 @@ const events = [ /*These are example events.*/
         start: new  Date(2024,1,20  ),
         end: new Date(2024,1,20),
         farms: [WH, HC, SW],
-        animals: []
+        animals: ["a157482d-21aa-4461-968b-f3f873605057"]
     }
 ];
 

@@ -49,7 +49,7 @@ const AnimalCreator = (props) => {
             case "java.time.ZonedDateTime":
                 return (
                 <LocalizationProvider dateAdapter={AdapterDateFns}>
-                    <DatePicker/>
+                    <DatePicker slotProps={{textField: {fullWidth: true}}}/>
                 </LocalizationProvider>
                 )
             default:
@@ -190,14 +190,14 @@ const AnimalCreator = (props) => {
         </Table>
     </TableContainer>
     <Button
-    style={{maxWidth: '40px', writingMode: 'vertical-rl'}}
+    style={{}}
     variant="contained"
     aria-label="add"
     endIcon={<AddIcon/>}
     onClick={async() => {
         try{
             await axios.post(`/animals/create`, newAnimal,
-            {crossdomain: true, headers: {
+            { crossdomain: true, headers: {
                 "Access-Control-Allow-Origin": 'http://localhost:3000',
                 "Access-Control-Allow-Credentials": true
             }})

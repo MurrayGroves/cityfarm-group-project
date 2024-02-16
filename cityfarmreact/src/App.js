@@ -10,27 +10,64 @@ import Calendar from "./pages/Calendar";
 import EnclosureTable from "./pages/EnclosureTable";
 import Schemas from "./pages/Schemas";
 import Error from "./pages/Error.jsx";
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import SingleAnimal from "./pages/SingleAnimal";
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import React, { useState } from 'react';
 
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
+
+import dayjs from 'dayjs';
+import 'dayjs/locale/en-gb';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 
 const App = () => {
 
     const darkTheme = createTheme({
         palette: {
             mode: 'dark',
+            WH: {
+                main: "#035afc"
+            },
+            HC: {
+                main: "#FF0012"
+            },
+            SW: {
+                main: "#E3D026"
+            },
+            default: {
+                main: "#888888"
+            }
         },
     });
 
-    const defaultTheme = createTheme();
+    const defaultTheme = createTheme({
+        palette: {
+            mode: 'light',
+            WH: {
+                main: "#035afc"
+            },
+            HC: {
+                main: "#FF0012"
+            },
+            SW: {
+                main: "#E3D026"
+            },
+            default: {
+                main: "#888888"
+            },
+            sidebar: {
+                main: '#008523'
+            }
+        }
+    });
     
     const [dark, setDark] = useState(false);
 
     return (
         <ThemeProvider theme={dark ? darkTheme : defaultTheme}>
+        <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={'en-gb'}>
         <CssBaseline/>
         <Router>
             <NavBar setDark={setDark}/> {/* Navbar available in all pages for navigation*/}
@@ -47,6 +84,7 @@ const App = () => {
             </Routes>
             </div>
         </Router>
+        </LocalizationProvider>
         </ThemeProvider>
     )
 }

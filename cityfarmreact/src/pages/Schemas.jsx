@@ -233,10 +233,13 @@ const Schemas = () => {
                                     <TableCell align="left">Required</TableCell>
                                     <TableCell align="right">
                                         <IconButton onClick={async () => {
+                                            try{
                                             await axios.delete(`/schemas/by_name/${schema._name}`);
                                             window.location.reload(false);
-                                        }}>
-                                            <DeleteIcon/>
+                                            } catch(error) {
+                                                window.alert(error);
+                                            }
+                                        }}><DeleteIcon/>
                                         </IconButton>
                                     </TableCell>
                                 </TableRow>
