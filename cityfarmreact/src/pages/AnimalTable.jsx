@@ -23,7 +23,7 @@ const AnimalTable = () => {
     const [animalList, setAnimalList] = useState([]); /* The State for the list of animals. The initial state is [] */
     const [searchTerm, setSearchTerm] = useState(''); /* The term being searched for in the searchbar */
     
-    const [farm, setFarm] = useState();
+    const [farm, setFarm] = useState(0);
 
     //useEffect(displayAll,[clear])
 
@@ -54,7 +54,7 @@ const AnimalTable = () => {
     },[searchTerm])
 
     useEffect(() => {
-        setAnimalList(animalList.filter((animal)=>{animal.farms.includes(farm)}))
+        {/*setAnimalList(animalList.filter((animal)=>{animal.farms.includes(farm)}))*/}
     },[farm])
 
     const rows = animalList.map((animal) => ({
@@ -84,7 +84,7 @@ const AnimalTable = () => {
                 style={{margin: '0 20px 20px 0'}}
                 onChange={(e) => setSearchTerm(e.target.value)}
             ></TextField>
-            <FarmTabs selectFarm={setFarm} colours={colours}/>
+            <FarmTabs selectedFarm={farm} setSelectedFarm={setFarm}/>
         </span>
         <TableContainer component={Paper} style={{marginBottom: '20px'}}>
             <DataGrid columns={cols} rows={rows}/>
