@@ -76,8 +76,6 @@ public class AnimalController {
      */
     @PostMapping("/api/animals/create")
     public ResponseEntity<String> create_animal(@RequestBody AnimalCreateRequest animalReq) {
-        responseHeaders.set(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, host_url);
-
         AnimalSchema schema = schemaRepository.findSchemaByName(animalReq.type);
 
         if (schema == null) {

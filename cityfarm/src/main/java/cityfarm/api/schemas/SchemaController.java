@@ -14,6 +14,7 @@ public class SchemaController {
     @Autowired
     SchemaRepository schemaRepository;
 
+
     @Autowired
     SchemaRepositoryCustom schemaRepositoryCustom;
   
@@ -31,12 +32,12 @@ public class SchemaController {
     }
 
     @GetMapping("/api/schemas/by_name/{name}")
+
     public ResponseEntity<List<AnimalSchema>> by_name(@PathVariable String name) {
         List<AnimalSchema> schema = schemaRepositoryCustom.findSchemaByName(name);
 
         return ResponseEntity.ok().body(schema);
     }
-
 
     @DeleteMapping("/api/schemas/delete/{name}")
     public ResponseEntity<String> delete(@PathVariable String name) {
