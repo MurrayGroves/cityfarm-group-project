@@ -54,11 +54,11 @@ const App = () => {
             SW: {
                 main: "#E3D026"
             },
-            default: {
+            grey: {
                 main: "#888888"
             },
-            sidebar: {
-                main: '#008523'
+            tertiary: {
+                main: '#0085FA'
             }
         }
     });

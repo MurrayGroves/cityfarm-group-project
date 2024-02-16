@@ -10,7 +10,7 @@ import Animal from "../components/Animal";
 import CloseIcon from "../components/close-512.webp";
 import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
-import { Button, Checkbox, FormControlLabel, FormGroup } from '@mui/material';
+import { Button, ButtonGroup, Checkbox, FormControlLabel, FormGroup } from '@mui/material';
 
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
@@ -92,19 +92,33 @@ const Calendar = () => {
     const [selectedEvent,setSelectedEvent] = useState("No event selected");
     const [visibleFarms, setVisibleFarms] = useState([WH, HC, SW]);
     const [modifyEvent, setModifyEvent] = useState(false);
+
     useEffect(() =>{
-        setModifiedEvent({title: selectedEvent.title, animals: selectedEvent.animals, allDay: selectedEvent.allDay, start: selectedEvent.start, end: selectedEvent.end, farms: selectedEvent.farms, description: selectedEvent.description, enclosures: selectedEvent.enclosures})
+        setModifiedEvent(selectedEvent);
     },[selectedEvent]);
+
     const removeAnimal = (animalID, type) => {
         if (type == "add"){
 
         }
         else {
 
-            setModifiedEvent({...modifiedEvent, animals: modifiedEvent.animals.filter((animal) => animal !== animalID)})}
+            setModifiedEvent({...modifiedEvent, animals: modifiedEvent.animals.filter((animal) => animal !== animalID)})
         }
+    }
+
     const handleAddEvent = () => {
         setAllEvents([...allEvents, newEvent]); /*Adds the new event to the list of allEvents} */
+        setNewEvent({
+            title: "",
+            allDay: true,
+            start: new Date(),
+            end: new Date(),
+            farms: [],
+            animals: [],
+            description: "",
+            enclosures: []
+        });
         console.log(allEvents, newEvent);
     }
     
@@ -141,30 +155,31 @@ const Calendar = () => {
     }
 
     function showingTime(isShown, type) {
-        if (type == "add"){
-        if (isShown){
-            return(<>
-                <DateTimePicker slotProps={{textField: {fullWidth: true}}}/>
-            </>)
+        if (type == "add") {
+            if (isShown){
+                return(<>
+                    <DateTimePicker value={dayjs(newEvent.start)} onChange={(e) => {setNewEvent({...newEvent, start: e.$d})}} slotProps={{textField: {fullWidth: true}}}/>
+                    <DateTimePicker value={dayjs(newEvent.end)} onChange={(e) => {setNewEvent({...newEvent, end: e.$d})}} slotProps={{textField: {fullWidth: true}}}/>
+                </>)
+            } else {
+                return(<>
+                    <DatePicker value={dayjs(newEvent.start)} onChange={(e) => {setNewEvent({...newEvent, start: e.$d})}} slotProps={{textField: {fullWidth: true}}}/>
+                    <DatePicker value={dayjs(newEvent.end)} onChange={(e) => {setNewEvent({...newEvent, end: e.$d})}} slotProps={{textField: {fullWidth: true}}}/>
+                </>)
+            }
+        } else {
+            if (isShown) {
+                return(<>
+                    <DateTimePicker value={dayjs(modifiedEvent.start)} placeholder={selectedEvent.start} onChange={(e) => {setModifiedEvent({...modifiedEvent, start: e.$d})}} slotProps={{textField: {fullWidth: true}}}/>
+                    <DateTimePicker value={dayjs(modifiedEvent.end)} placeholder={selectedEvent.end} onChange={(e) => {setModifiedEvent({...modifiedEvent, end: e.$d})}} slotProps={{textField: {fullWidth: true}}}/>
+                </>)
+            } else {
+                return(<>
+                    <DatePicker value={dayjs(modifiedEvent.start)} placeholder={selectedEvent.start} onChange={(e) => {setModifiedEvent({...modifiedEvent, start: e.$d})}} slotProps={{textField: {fullWidth: true}}}/>
+                    <DatePicker value={dayjs(modifiedEvent.end)} placeholder={selectedEvent.end} onChange={(e) => {setModifiedEvent({...modifiedEvent, end: e.$d})}} slotProps={{textField: {fullWidth: true}}}/>
+                </>)
+            }
         }
-        else{
-            return(<>
-                <DatePicker slotProps={{textField: {fullWidth: true}}}/>
-            </>)
-        }
-    }
-    else {
-        if (isShown){
-            return(<>
-                <DateTimePicker slotProps={{textField: {fullWidth: true}}}/>
-            </>)
-        }
-        else{
-            return(<>
-                <DatePicker slotProps={{textField: {fullWidth: true}}}/>
-            </>)
-        }
-    }
     }
 
     return (
@@ -198,18 +213,19 @@ const Calendar = () => {
                 {/*<Event selectedEvent={selectedEvent} setSelectedEvent={setSelectedEvent}/>*/}
 
                 { selectedEvent !== "No event selected" ?
-                <Paper elevation={3} style={{width: '400px', margin: '0 0 20px 0', padding: '10px'}}>
+                <Paper elevation={3} style={{position: 'relative', width: '400px', margin: '0 0 20px 0', padding: '10px'}}>
                     <div style={{display: "flex", justifyContent: "space-between"}}>
-                        <h2 style={{margin: '0'}}>Selected Event</h2>
-                        <button className='closeButton' onClick={() => setSelectedEvent("No event selected")}><img src={CloseIcon}/></button>
+                        <h2 className='boxTitle'>Selected Event</h2>
+                        <button className='closeButton' onClick={() => {setModifyEvent(false); setSelectedEvent("No event selected")}}><img src={CloseIcon}/></button>
                     </div>
                     {!modifyEvent ?  
                     <div>
                         <h2>{selectedEvent.title}</h2>
+                        <Button style={{float: 'right', position: 'relative', bottom: '36px'}} color='tertiary' variant='outlined' onClick={()=>{setModifyEvent(true)}}>Edit</Button>
                         {
                             selectedEvent.allDay ?
                                 <div>
-                                    <p>{selectedEvent.start.toLocaleDateString()} {selectedEvent.end == null ? <p></p>:selectedEvent.end.toLocaleDateString()===selectedEvent.start.toLocaleDateString() ? <p></p>: " - " + selectedEvent.end.toLocaleDateString()}</p>
+                                    <p>{selectedEvent.start.toLocaleDateString()} {selectedEvent.end == null ? <></> : selectedEvent.end.toLocaleDateString() === selectedEvent.start.toLocaleDateString() ? <></> : " - " + selectedEvent.end.toLocaleDateString()}</p>
                                 </div>
                                 :
                                 <div>
@@ -217,16 +233,16 @@ const Calendar = () => {
                                 </div>
                         
                         }
-                        {selectedEvent.farms.length !== 0 ? <h3>Relevant Farms</h3> : <></>}
+                        {selectedEvent.farms.length !== 0 ? <h3>Farms</h3> : <></>}
                         {selectedEvent.farms.includes(WH) ? <p>Windmill Hill</p> : <></>}
                         {selectedEvent.farms.includes(HC) ? <p>Hartcliffe</p> : <></>}
                         {selectedEvent.farms.includes(SW) ? <p>St Werberghs</p> : <></>}
-                        {selectedEvent.animals.length !== 0 ? <h3>Relevant Animals</h3> : <></>}
+                        {selectedEvent.animals.length !== 0 ? <h3>Animals</h3> : <></>}
                         {selectedEvent.animals.map((animalID) => (
                             <Animal key={animalID} animalID={animalID}/>
                         ))}
                         {selectedEvent.enclosures.length !== 0 ? <div>
-                            <h3>Relevant Enclosures</h3>
+                            <h3>Enclosures</h3>
                             {selectedEvent.enclosures.map((enclosureName) => (
                                 <p>{enclosureName}</p>
                             ))}
@@ -236,7 +252,6 @@ const Calendar = () => {
                             <h3>Description</h3>
                             {selectedEvent.description}
                         </div> : <></>}
-                        <button className='modifyButton' onClick={() => {setModifyEvent(true)}}>Modify Event</button>
                     </div>
                     : <div className='modifyEvent'>
                         <TextField
@@ -249,30 +264,31 @@ const Calendar = () => {
                         />
                         {showingTime(!modifiedEvent.allDay,"modify")}
                         <div style={{marginTop: "10px"}}>
-                            <FormControlLabel control={<Checkbox defaultChecked color='sidebar' size='small'/>} label="All Day" onChange={(e) => {changeAllDay(!modifiedEvent.allDay, "modify")}}/>
+                            <FormControlLabel control={<Checkbox defaultChecked={selectedEvent.allDay} color='tertiary' size='small'/>} label="All Day" onChange={(e) => {changeAllDay(!modifiedEvent.allDay, "modify")}}/>
+                            <ButtonGroup style={{float: 'right'}}>
+                                <Button variant='contained' color='warning' onClick={()=>{setModifyEvent(false)}}>Discard</Button>
+                                <Button variant='contained' color='success' onClick={()=>{}}>Update</Button>
+                            </ButtonGroup>
                         </div>
-                        
-                        <button style={{float: "right"}} onClick={() => {}}>Update Event</button> {/*  UpdateEvent function call for api changes. Maybe a delete and an add with the updated event*/}
-                        <button style={{float: "right"}} onClick={() => {setModifyEvent(false)}}>Discard Changes</button>
-                        <div style={{marginTop: "10px"}}>
-                        <h3>Relevant Farms</h3>
+                        <div>
+                        <h3>Farms</h3>
                         <FormGroup>
-                            <FormControlLabel control={<Checkbox color='WH' size='small'/>} label="Windmill Hill" onChange={() => setModifiedEvent({...modifiedEvent, farms: modifiedEvent.farms.includes(WH) ? modifiedEvent.farms.filter((farm) => farm !== WH) : modifiedEvent.farms.concat(WH)})}/>
-                            <FormControlLabel control={<Checkbox color='HC' size='small'/>} label="Hartcliffe" onChange={()=>setModifiedEvent({...modifiedEvent, farms: modifiedEvent.farms.includes(HC) ? modifiedEvent.farms.filter((farm) => farm !== HC) : modifiedEvent.farms.concat(HC)})}/>
-                            <FormControlLabel control={<Checkbox color='SW' size='small'/>} label="St Werburghs" onChange={()=>setModifiedEvent({...modifiedEvent, farms: modifiedEvent.farms.includes(SW) ? modifiedEvent.farms.filter((farm) => farm !== SW) : modifiedEvent.farms.concat(SW)})}/>
+                            <FormControlLabel control={<Checkbox defaultChecked={selectedEvent.farms.includes(WH)} color='WH' size='small'/>} label="Windmill Hill" onChange={() => setModifiedEvent({...modifiedEvent, farms: modifiedEvent.farms.includes(WH) ? modifiedEvent.farms.filter((farm) => farm !== WH) : modifiedEvent.farms.concat(WH)})}/>
+                            <FormControlLabel control={<Checkbox defaultChecked={selectedEvent.farms.includes(HC)} color='HC' size='small'/>} label="Hartcliffe" onChange={()=>setModifiedEvent({...modifiedEvent, farms: modifiedEvent.farms.includes(HC) ? modifiedEvent.farms.filter((farm) => farm !== HC) : modifiedEvent.farms.concat(HC)})}/>
+                            <FormControlLabel control={<Checkbox defaultChecked={selectedEvent.farms.includes(SW)} color='SW' size='small'/>} label="St Werburghs" onChange={()=>setModifiedEvent({...modifiedEvent, farms: modifiedEvent.farms.includes(SW) ? modifiedEvent.farms.filter((farm) => farm !== SW) : modifiedEvent.farms.concat(SW)})}/>
                         </FormGroup>
                         </div>
-                        <h3>Relevant Animals</h3>
+                        <h3>Animals</h3>
                         {modifiedEvent.animals.map((animalID) => (
                             <p><Animal key={animalID} animalID={animalID} /></p> 
                         ))}{/*Add a way to remove animals from events */}
-                        <button>Add Animal</button> {/* Apply changes to do with associating animals here */}
+                        <Button variant='outlined' color='tertiary'>Add Animal</Button> {/* Apply changes to do with associating animals here */}
                         <div>
-                            <h3>Relevant Enclosures</h3>
+                            <h3>Enclosures</h3>
                             {modifiedEvent.enclosures.map((enclosureName) => (
                                 <p>{enclosureName}</p>
                             ))}{/*Add a way to remove enclosures from events */}
-                            <button>Add Enclosure</button> {/* idea: make this open the enlcosure  page with a new column of checkboxes. Click on an associate enlcosure(s) button would then pass a list of enclosure names to the calendar to be placed in a field*/}
+                            <Button variant='outlined' color='tertiary'>Add Enclosure</Button> {/* idea: make this open the enlcosure  page with a new column of checkboxes. Click on an associate enlcosure(s) button would then pass a list of enclosure names to the calendar to be placed in a field*/}
                         </div>
                         <div>
                             <span>Description:</span>
@@ -302,12 +318,12 @@ const Calendar = () => {
                 </div>
 
                 <div style={{marginTop: "10px"}}>
-                <FormControlLabel control={<Checkbox defaultChecked color='sidebar' size='small'/>} label="All Day" onChange={() => changeAllDay(!newEvent.allDay, "add")}/>
-                <button style={{float: "right"}} onClick={()=>handleAddEvent()}>Add Event</button>
+                <FormControlLabel control={<Checkbox defaultChecked color='tertiary' size='small'/>} label="All Day" onChange={() => changeAllDay(!newEvent.allDay, "add")}/>
+                <Button variant='outlined' color='tertiary' style={{float: "right"}} onClick={()=>handleAddEvent()}>Add Event</Button>
                 </div>
 
                 <div style={{marginTop: "10px"}}>
-                <h3>Relevant Farms</h3>
+                <h3>Farms</h3>
                 <FormGroup>
                     <FormControlLabel control={<Checkbox color='WH' size='small'/>} label="Windmill Hill" onChange={() => setNewEvent({...newEvent, farms: newEvent.farms.includes(WH) ? newEvent.farms.filter((farm) => farm !== WH) : newEvent.farms.concat(WH)})}/>
                     <FormControlLabel control={<Checkbox color='HC' size='small'/>} label="Hartcliffe" onChange={()=>setNewEvent({...newEvent, farms: newEvent.farms.includes(HC) ? newEvent.farms.filter((farm) => farm !== HC) : newEvent.farms.concat(HC)})}/>
@@ -315,18 +331,18 @@ const Calendar = () => {
                 </FormGroup>
                 </div>
                 <div>
-                    <h3>Relevant Animals</h3>
+                    <h3>Animals</h3>
                     {newEvent.animals.map((animalID) => (
                         <p><Animal key={animalID} animalID={animalID} /></p>
                     ))}
-                    <button>Add Animal</button> {/* idea: make this open the animal table page with a new column of checkboxes. Click on an associate animal(s) button would then pass a list of animal id to the calendar to the new event state. This could be re used in the modification of events.  */}
+                    <Button variant='outlined' color='tertiary'>Add Animal</Button> {/* idea: make this open the animal table page with a new column of checkboxes. Click on an associate animal(s) button would then pass a list of animal id to the calendar to the new event state. This could be re used in the modification of events.  */}
                 </div>
                 <div>
-                    <h3>Relevant Enclosures</h3>
+                    <h3>Enclosures</h3>
                     {newEvent.enclosures.map((enclosureName) => (
                         <p>{enclosureName}</p>
                     ))}{/*Add a way to remove enclosures from events */}
-                    <button>Add Enclosure</button> {/* idea: make this open the enlcosure  page with a new column of checkboxes. Click on an associate enlcosure(s) button would then pass a list of enclosure names to the calendar to be placed in a field*/}
+                    <Button variant='outlined' color='tertiary'>Add Enclosure</Button> {/* idea: make this open the enlcosure  page with a new column of checkboxes. Click on an associate enlcosure(s) button would then pass a list of enclosure names to the calendar to be placed in a field*/}
                 </div>
                 <div>
                     <h3>Description</h3>
