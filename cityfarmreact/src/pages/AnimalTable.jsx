@@ -4,8 +4,13 @@ import SearchBar from "../components/SearchBar";
 import FarmTabs from "../components/FarmTabs";
 import "../components/AnimalTable.css";
 import AnimalPopover from "../components/AnimalPopover";
+import "./AnimalTable.css";
+import Animal from "../components/Animal";
 import { DataGrid } from '@mui/x-data-grid';
-import { Link } from "react-router-dom";
+import TableContainer from '@mui/material/TableContainer';
+import Paper from '@mui/material/Paper';
+import TextField from '@mui/material/TextField';
+import AnimalCreator from "../components/AnimalCreator";
 
 const colours = {
     WH: "#333388",
@@ -19,11 +24,10 @@ const AnimalTable = () => {
     const [searchTerm, setSearchTerm] = useState(''); /* The term being searched for in the searchbar */
     const [searchMode, setSearchMode] = useState("name") /* The mode of search (by name or id) */
     const [clear, setClear] = useState(0); /* Clear will reset the table to display all animals once updated*/
-    const [create, setCreate] = useState({name: '', type: 'chicken', father: 'Unregistered', mother: 'Unregistered', male: 'true', alive: 'true'})
     
     const [farm, setFarm] = useState(0);
 
-    useEffect(displayAll,[clear])
+    //useEffect(displayAll,[clear])
 
     function displayAll() {
         (async () => {
@@ -39,6 +43,7 @@ const AnimalTable = () => {
     useEffect (() => {
         (async () => {
             if (searchTerm === '') {
+                displayAll();
                 return;
             }
             if (searchMode === "name") {
@@ -70,7 +75,6 @@ const AnimalTable = () => {
     }));
 
     const cols = [
-        { field: 'id', headerName: 'ID', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
         { field: 'name', headerName: 'Name', headerClassName: 'grid-header', headerAlign: 'left', flex: 1,
             renderCell: (animal) => {return <AnimalPopover animalID={animal.value._id}/>} },
         { field: 'type', headerName: 'Type', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
@@ -85,11 +89,19 @@ const AnimalTable = () => {
 
     return(<>
         <h1>Livestock</h1>
-        <SearchBar setSearchMode={setSearchMode} search={setSearchTerm} clearValue={clear} clearSearch={setClear}/>
-        <FarmTabs selectFarm={setFarm} colours={colours}/>
-        <div className="animal-table">
-        <DataGrid columns={cols} rows={rows}/>
-        </div>
+        <span style={{display: 'flex', justifyContent: 'space-between', height: '60px'}}>
+            <TextField
+                size='small'
+                placeholder='Search'
+                style={{margin: '0 20px 20px 0'}}
+                onChange={(e) => setSearchTerm(e.target.value)}
+            ></TextField>
+            <FarmTabs selectFarm={setFarm} colours={colours}/>
+        </span>
+        <TableContainer component={Paper} style={{marginBottom: '20px'}}>
+            <DataGrid columns={cols} rows={rows}/>
+        </TableContainer>
+        <AnimalCreator/>
     </>)
 }
 

@@ -3,6 +3,7 @@
 from flask import Flask, request, Response
 import os
 import subprocess
+from subprocess import Popen
 
 app = Flask(__name__)
 
@@ -21,7 +22,7 @@ def update():
 
         # Update and restart docker containers
         os.system("docker compose down")
-        os.system("docker compose up -d")
+        Popen(["docker", "compose", "up", "-d"])
         return Response(status=200)
     
 @app.route("/force", methods=["POST"])
@@ -33,7 +34,7 @@ def force_update():
 
     # Update and restart docker containers
     os.system("docker compose down")
-    os.system("docker compose up -d")
+    Popen(["docker", "compose", "up", "-d"])
     return Response(status=200)
     
 

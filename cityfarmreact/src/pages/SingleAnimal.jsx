@@ -1,7 +1,7 @@
 
 import * as React from "react";
 import "../components/SingleAnimal.css"
-import { useParams} from "react-router-dom";
+import {  useParams } from "react-router-dom";
 import Typography from "@mui/material/Typography";
 import axios from '../api/axiosConfig';
 import { useState, useEffect } from 'react';
@@ -48,7 +48,7 @@ const events = [ /*These are example events.*/
 ];
 
 
-const SingleAnimal = () => { 
+const SingleAnimal = () => {
     const { animalID } = useParams();
     const [relEvents,setRelEvents] = useState([])
     const [chosenAnimal, setChosenAnimal] = useState({});

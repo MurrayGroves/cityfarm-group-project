@@ -15,4 +15,5 @@ public interface EnclosureRepository extends MongoRepository<Enclosure, String> 
 
     @Query("{ '_id': ?0}")
     Enclosure findEnclosureById(String id);
+
 }
