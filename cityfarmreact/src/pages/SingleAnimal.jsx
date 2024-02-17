@@ -12,40 +12,40 @@ import SelectedEvent from "../components/SelectedEvent";
 
 
 const WH = 0, HC = 1, SW = 2;
-const events = [ /*These are example events.*/
-    {
-        title : "Boss Meeting",
-        allDay: false,
-        start: new  Date(2024,1,1, 13),
-        end: new  Date(2024,1,1, 14),
-        farms: [],
-        animals: ["174447d3-bedb-4311-a16c-1771aa82d173"]
-    },
-    {
-        title : "Bull in with cows",
-        allDay: false,
-        start: new  Date(2024,1,5, 8),
-        end: new  Date(2024,1,8, 16),
-        farms: [WH],
-        animals: ["05eea36a-1098-4392-913b-25e6508df54c"]
-    },
-    {
-        title : "School Visits",
-        allDay: true,
-        start: new  Date(2024,1,9, 8),
-        end: new  Date(2024,1,9, 23, 59),
-        farms: [HC, SW],
-        animals: ["05eea36a-1098-4392-913b-25e6508df54c","4735ad94-8a16-4845-870d-513d9947b262"]
-    },
-    {
-        title : "Defra Inspection",
-        allDay: true,
-        start: new  Date(2024,1,20  ),
-        end: new Date(2024,1,20),
-        farms: [WH, HC, SW],
-        animals: []
-    }
-];
+// const events = [ /*These are example events.*/
+//     {
+//         title : "Boss Meeting",
+//         allDay: false,
+//         start: new  Date(2024,1,1, 13),
+//         end: new  Date(2024,1,1, 14),
+//         farms: [],
+//         animals: ["174447d3-bedb-4311-a16c-1771aa82d173"]
+//     },
+//     {
+//         title : "Bull in with cows",
+//         allDay: false,
+//         start: new  Date(2024,1,5, 8),
+//         end: new  Date(2024,1,8, 16),
+//         farms: [WH],
+//         animals: ["05eea36a-1098-4392-913b-25e6508df54c"]
+//     },
+//     {
+//         title : "School Visits",
+//         allDay: true,
+//         start: new  Date(2024,1,9, 8),
+//         end: new  Date(2024,1,9, 23, 59),
+//         farms: [HC, SW],
+//         animals: ["05eea36a-1098-4392-913b-25e6508df54c","4735ad94-8a16-4845-870d-513d9947b262"]
+//     },
+//     {
+//         title : "Defra Inspection",
+//         allDay: true,
+//         start: new  Date(2024,1,20  ),
+//         end: new Date(2024,1,20),
+//         farms: [WH, HC, SW],
+//         animals: []
+//     }
+// ];
 
 
 const SingleAnimal = () => {
@@ -69,18 +69,38 @@ const SingleAnimal = () => {
     }, [animalID]);
     
     useEffect(() => {
-        let matchingEvents = []; // Temporary array to collect matching events
-        for (let i = 0; i < events.length; i++) {
-            for (let j = 0; j < events[i].animals.length; j++) {
-                if (animalID === events[i].animals[j]) {
-                    console.log("animal:", animalID, "\n events:", events[i].animals[j]);
-                    matchingEvents.push(events[i]);
-                    break; // Found a matching event, no need to check further animals in this event
-                }
+        (async ()=>{
+            try{
+                console.log(animalID)
+                const events = await axios.get(`/events/by_animal/${animalID}`)
+                console.log(events.data)
+                setRelEvents(eventsConversion(events.data))
+                console.log(relEvents)
+            } catch(error){
+                window.alert(error)
             }
-        }
-        setRelEvents(matchingEvents); // Update the state once with all matching events
+        })();
     }, [animalID]);
+
+    const eventsConversion=(events)=>{
+        let changed=[]
+        for (let i=0;i<events.length;i++){
+            console.log('here')
+            changed.push(
+                {
+                    title : events[i].title,
+                    allDay: events[i].allDay,
+                    start: new  Date(events[i].start),
+                    end: new  Date(events[i].end),
+                    // farms: events[i].farms,
+                    animals: events[i].animals,
+                    description: events[i].description,
+                    enclosures: events[i].enclosures
+                }
+            )
+        }
+        return changed
+    }
 
     const handleEventClick=(event)=>{
         setSelectedEvent(event)
@@ -91,8 +111,7 @@ const SingleAnimal = () => {
             <Typography sx={{ p: 1,whiteSpace: 'pre-line' }}>
                 Sex: {chosenAnimal.male ? 'Male' : 'Female'}<br/>
                 Species: {chosenAnimal.type}<br/>
-                <span style={{display:'flex', justifyContent:'start'}}>Father:
-                    {chosenAnimal.father ? <AnimalPopover key={chosenAnimal.father} animalID={chosenAnimal.father}/>
+                <span style={{display:'flex', justifyContent:'start'}}>Father:  {chosenAnimal.father ? <AnimalPopover key={chosenAnimal.father} animalID={chosenAnimal.father}/>
                 : 'Unregistered'}</span>
                 Mother:  {chosenAnimal.mother ? <AnimalPopover key={chosenAnimal.mother} animalID={chosenAnimal.mother}/>
                 : 'Unregistered'}<br/>
@@ -100,6 +119,7 @@ const SingleAnimal = () => {
             </Typography>
 
         <div>
+            {console.log(relEvents)}
             {relEvents.length !== 0 ? <h2>Linked Events</h2> : <></>}
             {relEvents.map((event, index) => <div key={index}>
                     {/* Display relevant event information very similar to event view*/}
@@ -112,10 +132,10 @@ const SingleAnimal = () => {
                         <div>
                             <p>{event.start.toLocaleString([], {year: '2-digit', month: '2-digit', day: '2-digit', hour: '2-digit', minute:'2-digit'})} - {event.start.toLocaleDateString() === event.end.toLocaleDateString() ? event.end.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}): event.end.toLocaleString([], {year: '2-digit', month: '2-digit', day: '2-digit', hour: '2-digit', minute:'2-digit'})}</p>
                         </div>}
-                    {event.farms.length !== 0 ? <h4>Farms: </h4> : <></>}
-                    {event.farms.includes(WH) ? <p>Windmill Hill </p> : <></>}
-                    {event.farms.includes(HC) ? <p>Hartcliffe </p> : <></>}
-                    {event.farms.includes(SW) ? <p>St Werberghs</p> : <></>}
+                    {/*{event.farms.length !== 0 ? <h4>Farms: </h4> : <></>}*/}
+                    {/*{event.farms.includes(WH) ? <p>Windmill Hill </p> : <></>}*/}
+                    {/*{event.farms.includes(HC) ? <p>Hartcliffe </p> : <></>}*/}
+                    {/*{event.farms.includes(SW) ? <p>St Werberghs</p> : <></>}*/}
                 </div>)}
         </div>
         {selectedEvent !== "No event selected" && (

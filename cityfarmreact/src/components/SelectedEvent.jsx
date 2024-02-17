@@ -27,13 +27,13 @@ const SelectedEvent = ({ event}) => {
                   <p>{event.start.toLocaleString([], {year: '2-digit', month: '2-digit', day: '2-digit', hour: '2-digit', minute:'2-digit'})} - {event.start.toLocaleDateString() === event.end.toLocaleDateString() ? event.end.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : event.end.toLocaleString([], {year: '2-digit', month: '2-digit', day: '2-digit', hour: '2-digit', minute:'2-digit'})}</p>
                 </div>
           }
-          {event.farms.length !== 0 && <h3>Relevant Farms</h3>}
-          {event.farms.includes(WH) && <p>Windmill Hill</p>}
-          {event.farms.includes(HC) && <p>Hartcliffe</p>}
-          {event.farms.includes(SW) && <p>St Werberghs</p>}
+          {/*{event.farms.length !== 0 && <h3>Relevant Farms</h3>}*/}
+          {/*{event.farms.includes(WH) && <p>Windmill Hill</p>}*/}
+          {/*{event.farms.includes(HC) && <p>Hartcliffe</p>}*/}
+          {/*{event.farms.includes(SW) && <p>St Werberghs</p>}*/}
           {event.animals.length !== 0 && <h3>Relevant Animals</h3>}
-          {event.animals.map((animalID) => (
-              <p key={animalID}><AnimalPopover animalID={animalID} /></p>
+          {event.animals.map((animal) => (
+              <p key={animal._id}><AnimalPopover animalID={animal._id} /></p>
           ))}
         </div>
       </div>
