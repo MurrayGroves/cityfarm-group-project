@@ -107,13 +107,22 @@ const EnclosureTable = () => {
             //     setEditMode(!editMode);
             // }}
             processRowUpdate = {(newVal, oldVal) => {
+                console.log("it gets here")
                 const result = diff(oldVal, newVal);
                 console.log(result);
                 const newName = newVal.name;
+                console.log(newName);
                 const _id = oldVal.id;
-                axios.patch(`/enclosures/by_id/${_id}/name`, newName)
-                .then(response => console.log(response.data))
-                .catch(error => console.error(error));
+                console.log(_id);
+                (async() =>{
+                    try{
+                        const response = await axios.patch(`/enclosures/by_id/${_id}/name/${newName}`, )
+                        console.log(response);
+                        window.location.reload(false);
+                    }catch (error){
+                        window.alert(error);
+                    }
+                })();
                 return newVal;
             }}/>
         </TableContainer>
