@@ -338,7 +338,7 @@ const Calendar = () => {
                         </div>
                         <h3>Relevant Animals</h3>
                         {modifiedEvent.animals.map((animalID) => (
-                            <p><Animal key={animalID} animalID={animalID} /></p>
+                            <p><AnimalPopover key={animalID} animalID={animalID} /></p>
                         ))}{/*Add a way to remove animals from events */}
                         <button>Add Animal</button> {/* Apply changes to do with associating animals here */}
                         <div>

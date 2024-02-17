@@ -1,6 +1,6 @@
 
 import * as React from "react";
-import "../components/SingleAnimal.css"
+import "./SingleAnimal.css"
 import {  useParams } from "react-router-dom";
 import Typography from "@mui/material/Typography";
 import axios from '../api/axiosConfig';
@@ -66,7 +66,7 @@ const SingleAnimal = () => {
                 window.alert(error);
             }
         })();
-    }, []);
+    }, [animalID]);
     
     useEffect(() => {
         let matchingEvents = []; // Temporary array to collect matching events
@@ -92,9 +92,9 @@ const SingleAnimal = () => {
                 Sex: {chosenAnimal.male ? 'Male' : 'Female'}<br/>
                 Species: {chosenAnimal.type}<br/>
                 <span style={{display:'flex', justifyContent:'start'}}>Father:
-                    {<> </>}{chosenAnimal.father ? <AnimalPopover key={chosenAnimal.father} animalID={chosenAnimal.father}/>
+                    {chosenAnimal.father ? <AnimalPopover key={chosenAnimal.father} animalID={chosenAnimal.father}/>
                 : 'Unregistered'}</span>
-                Mother: {chosenAnimal.mother ? <AnimalPopover key={chosenAnimal.mother} animalID={chosenAnimal.mother}/>
+                Mother:  {chosenAnimal.mother ? <AnimalPopover key={chosenAnimal.mother} animalID={chosenAnimal.mother}/>
                 : 'Unregistered'}<br/>
                 Farm: to be completed when database supports different farms
             </Typography>

@@ -2,10 +2,8 @@ import React, {useEffect, useState} from "react";
 import axios from '../api/axiosConfig'
 import SearchBar from "../components/SearchBar";
 import FarmTabs from "../components/FarmTabs";
-import "../components/AnimalTable.css";
 import AnimalPopover from "../components/AnimalPopover";
 import "./AnimalTable.css";
-import Animal from "../components/Animal";
 import { DataGrid } from '@mui/x-data-grid';
 import TableContainer from '@mui/material/TableContainer';
 import Paper from '@mui/material/Paper';
