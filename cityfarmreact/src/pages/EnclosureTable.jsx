@@ -116,18 +116,22 @@ const EnclosureTable = () => {
                 console.log(_id);
                 (async() =>{
                     try{
-                        const response = await axios.patch(`/enclosures/by_id/${_id}/name/${newName}`, )
+                        const response = await axios.patch(`/enclosures/by_id/${_id}/name/${newName}`)
                         console.log(response);
                         window.location.reload(false);
                     }catch (error){
                         window.alert(error);
                     }
                 })();
+                setEditMode(false);
                 return newVal;
             }}/>
         </TableContainer>
-        <IconButton aria-label="edit" onClick={() => setEditMode(!editMode)}>
-        <EditIcon />
+        <IconButton aria-label="edit" onClick={() => setEditMode(true)} size="small">
+        <EditIcon fontSize = "small"/>
+        <div>
+            Edit
+        </div>
         </IconButton>
     </>)
 }
