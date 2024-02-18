@@ -20,7 +20,7 @@ const aExamples = [
     live : true
 }]
 
-
+    
 const Animal = (props) => {
     const [anchorEl, setAnchorEl] = useState(null);
     const [chosenAnimal, setChosenAnimal] = useState(aExamples[0]);
@@ -53,6 +53,7 @@ const Animal = (props) => {
                 aria-haspopup="true"
                 onMouseEnter={handlePopoverOpen}
                 onMouseLeave={handlePopoverClose}
+                style={{margin: '5px 0'}}
             >
                 <Link to={`/single-animal/${chosenAnimal._id}`}>{chosenAnimal.name}</Link>
             </Typography>

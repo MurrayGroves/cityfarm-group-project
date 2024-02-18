@@ -4,6 +4,9 @@ import SearchBar from "../components/SearchBar";
 import TextField from '@mui/material/TextField';
 import "../components/AnimalTable.css";
 import FarmTabs from "../components/FarmTabs";
+import TableContainer from '@mui/material/TableContainer';
+import Paper from '@mui/material/Paper';
+import TextField from '@mui/material/TextField';
 import { DataGrid } from "@mui/x-data-grid";
 import Paper from '@mui/material/Paper';
 import TableContainer from '@mui/material/TableContainer';
@@ -33,7 +36,6 @@ const EnclosureTable = () => {
         (async () => {
             try {
                 const response = await axios.get(`/enclosures`);
-                console.log(response.data);
                 setEnclosureList(response.data);
             } catch (error) {
                 window.alert(error);
@@ -50,7 +52,6 @@ const EnclosureTable = () => {
             if (searchMode === "name") {
                 try {
                     const response = await axios.get(`/enclosures/by_name/${searchTerm}`);
-                    console.log(response.data);
                     setEnclosureList(response.data);
                 } catch (error) {
                     window.alert(error);
@@ -58,9 +59,8 @@ const EnclosureTable = () => {
             }
             else {
                 try {
-                const response = await axios.get(`/enclosures/by_id/${searchTerm}`);
-                console.log(response.data);
-                setEnclosureList(response.data);
+                    const response = await axios.get(`/enclosures/by_id/${searchTerm}`);
+                    setEnclosureList(response.data);
                 } catch (error) {
                     window.alert(error);
                 }

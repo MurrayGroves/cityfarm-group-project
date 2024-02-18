@@ -14,4 +14,10 @@ public interface EventRepository extends MongoRepository<Event, String> {
 
     @Query("{ '_id': ?0}")
     Event findEventById(String id);
+
+    @Query("{ 'animals': {$in:  [?0]}}")
+    List<Event> findEventByAnimal(String id);
+
+    @Query("{ 'enclosures':  {$in:  [?0]}}")
+    List<Event> findEventByEnclosure(String id);
 }
