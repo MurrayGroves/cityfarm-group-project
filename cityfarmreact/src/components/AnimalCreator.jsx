@@ -28,8 +28,32 @@ const AnimalCreator = (props) => {
     const [schema, setSchema] = useState();
     const [create, setCreate] = useState(false);
 
-    const changeField = (fieldName, value) => {
-        setNewAnimal(...newAnimal, {...newAnimal.fields[fieldName], })
+    const fieldTypeSwitch = (field) => {
+        newAnimal.fields[field] = '' ;
+        switch(schema._fields[field]._type) {
+            case "java.lang.Boolean":
+                return (
+                <Select
+                    style={{width: '100%'}}
+                    value={newAnimal.fields[field]}
+                    onChange={(e)=>{let tempNewAnimal = newAnimal; tempNewAnimal.fields[field] = e.target.value; setNewAnimal(tempNewAnimal);}}>
+                    <MenuItem value={true}>Yes</MenuItem>
+                    <MenuItem value={false}>No</MenuItem>
+                </Select>
+                );
+            case "java.lang.String":
+                return <TextField/>
+            case "java.lang.Integer":
+                return <TextField/>
+            case "java.lang.Double":
+                return <TextField/>
+            case "java.time.ZonedDateTime":
+                return (
+                <DatePicker slotProps={{textField: {fullWidth: true}}}/>
+                )
+            default:
+                return <></>;
+        };
     }
 
     useEffect(() => {
@@ -161,10 +185,9 @@ const AnimalCreator = (props) => {
                             <TableCell style={{borderRight: '1px solid rgba(224, 224, 224, 1)'}} variant='head'>Field Value</TableCell>
                             {Object.keys(schema._fields).map((field) => {
                                 return (
-                                    <FieldSelector newAnimal={newAnimal} setNewAnimal={setNewAnimal} schema={schema} fieldName={field} fieldType={schema._fields[field]._type}/>
+                                <TableCell variant='head'>{fieldTypeSwitch(field)}</TableCell>
                                 );
                             })}
-                            
                         </TableRow>
                     </TableBody>
                 </Table>
