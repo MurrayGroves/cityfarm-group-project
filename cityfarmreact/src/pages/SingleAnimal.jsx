@@ -12,41 +12,6 @@ import SelectedEvent from "../components/SelectedEvent";
 
 
 const WH = 0, HC = 1, SW = 2;
-// const events = [ /*These are example events.*/
-//     {
-//         title : "Boss Meeting",
-//         allDay: false,
-//         start: new  Date(2024,1,1, 13),
-//         end: new  Date(2024,1,1, 14),
-//         farms: [],
-//         animals: ["174447d3-bedb-4311-a16c-1771aa82d173"]
-//     },
-//     {
-//         title : "Bull in with cows",
-//         allDay: false,
-//         start: new  Date(2024,1,5, 8),
-//         end: new  Date(2024,1,8, 16),
-//         farms: [WH],
-//         animals: ["05eea36a-1098-4392-913b-25e6508df54c"]
-//     },
-//     {
-//         title : "School Visits",
-//         allDay: true,
-//         start: new  Date(2024,1,9, 8),
-//         end: new  Date(2024,1,9, 23, 59),
-//         farms: [HC, SW],
-//         animals: ["05eea36a-1098-4392-913b-25e6508df54c","4735ad94-8a16-4845-870d-513d9947b262"]
-//     },
-//     {
-//         title : "Defra Inspection",
-//         allDay: true,
-//         start: new  Date(2024,1,20  ),
-//         end: new Date(2024,1,20),
-//         farms: [WH, HC, SW],
-//         animals: []
-//     }
-// ];
-
 
 const SingleAnimal = () => {
     const { animalID } = useParams();
