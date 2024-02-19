@@ -30,6 +30,8 @@ public abstract class Event {
 
     public String title;
 
+
+
     public String description;
 
     // List of IDs of attached people

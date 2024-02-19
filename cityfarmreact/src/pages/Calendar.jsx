@@ -10,7 +10,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import "./Calendar.css";
 import Event from "../components/Event";
 import CreateEvent from "../components/CreateEvent";
-import Animal from "../components/Animal";
+import AnimalPopover from "../components/AnimalPopover";
 import CloseIcon from "../components/close-512.webp";
 import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
@@ -279,7 +279,7 @@ const Calendar = () => {
                         <h2 style={{margin: '0'}}>Selected Event</h2>
                         <button className='closeButton' onClick={() => setSelectedEvent("No event selected")}><img src={CloseIcon}/></button>
                     </div>
-                    {!modifyEvent ?  
+                    {!modifyEvent ?
                     <div>
                         <h2>{selectedEvent.title}</h2>
                         {
@@ -299,7 +299,7 @@ const Calendar = () => {
                         {selectedEvent.farms.includes(SW) ? <p>St Werberghs</p> : <></>}
                         {selectedEvent.animals.length !== 0 ? <h3>Relevant Animals</h3> : <></>}
                         {selectedEvent.animals.map((animalID) => (
-                            <Animal key={animalID} animalID={animalID}/>
+                            <AnimalPopover key={animalID} animalID={animalID}/>
                         ))}
                         {selectedEvent.enclosures.length !== 0 ? <div>
                             <h3>Relevant Enclosures</h3>
@@ -307,7 +307,7 @@ const Calendar = () => {
                                 <p>{enclosureName}</p>
                             ))}
                         </div> : <></>}
-                        {selectedEvent.description !== "" ? 
+                        {selectedEvent.description !== "" ?
                         <div>
                             <h3>Description</h3>
                             {selectedEvent.description}
@@ -322,7 +322,7 @@ const Calendar = () => {
                         onChange={(e) => {changeAllDay(!modifiedEvent.allDay, "modify")}}/>
                         All day
                         </div>
-                        
+
                         <button style={{float: "right"}} onClick={() => {}}>Update Event</button> {/*  UpdateEvent function call for api changes. Maybe a delete and an add with the updated event*/}
                         <button style={{float: "right"}} onClick={() => {setModifyEvent(false)}}>Discard Changes</button>
                         <div style={{marginTop: "10px"}}>
@@ -338,7 +338,7 @@ const Calendar = () => {
                         </div>
                         <h3>Relevant Animals</h3>
                         {modifiedEvent.animals.map((animalID) => (
-                            <p><Animal key={animalID} animalID={animalID} /></p> 
+                            <p><AnimalPopover key={animalID} animalID={animalID} /></p>
                         ))}{/*Add a way to remove animals from events */}
                         <button>Add Animal</button> {/* Apply changes to do with associating animals here */}
                         <div>
@@ -352,7 +352,7 @@ const Calendar = () => {
                             <span>Description:</span>
                             <textarea style={{minHeight: "52px", minWidth: "386px"}} type="text" placeholder="enter description here:" value={modifiedEvent.description} onChange={(e) => {setModifiedEvent({...modifiedEvent, description: e.target.value})}}></textarea>
                         </div>
-                        
+
                     </div>
                     }
                 </Paper>
@@ -396,7 +396,7 @@ const Calendar = () => {
                 <div>
                     <h3>Relevant Animals</h3>
                     {newEvent.animals.map((animalID) => (
-                        <p><Animal key={animalID} animalID={animalID} /></p>
+                        <p><AnimalPopover key={animalID} animalID={animalID} /></p>
                     ))}
                     <button>Add Animal</button> {/* idea: make this open the animal table page with a new column of checkboxes. Click on an associate animal(s) button would then pass a list of animal id to the calendar to the new event state. This could be re used in the modification of events.  */}
                 </div>

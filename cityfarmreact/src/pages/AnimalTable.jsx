@@ -2,8 +2,8 @@ import React, {useEffect, useState} from "react";
 import axios from '../api/axiosConfig'
 import SearchBar from "../components/SearchBar";
 import FarmTabs from "../components/FarmTabs";
+import AnimalPopover from "../components/AnimalPopover";
 import "./AnimalTable.css";
-import Animal from "../components/Animal";
 import { DataGrid } from '@mui/x-data-grid';
 import TableContainer from '@mui/material/TableContainer';
 import Paper from '@mui/material/Paper';
@@ -67,17 +67,21 @@ const AnimalTable = () => {
         id: animal._id,
         name: animal,
         type: animal.type,
-        father: animal.father != null ? animal.father : 'Unregistered',
-        mother: animal.mother != null ? animal.mother : 'Unregistered',
+        father: animal.father !== null ? animal : 'Unregistered',
+        mother: animal.mother !== null ? animal : 'Unregistered',
         sex: animal.male ? 'Male' : 'Female',
     }));
 
     const cols = [
         { field: 'name', headerName: 'Name', headerClassName: 'grid-header', headerAlign: 'left', flex: 1,
-            renderCell: (animal) => {return <Animal animalID={animal.value._id}/>} },
+            renderCell: (animal) => {return <AnimalPopover animalID={animal.value._id}/>} },
         { field: 'type', headerName: 'Type', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
-        { field: 'father', headerName: 'Father', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
-        { field: 'mother', headerName: 'Mother', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
+        { field: 'father', headerName: 'Father', headerClassName: 'grid-header', headerAlign: 'left', flex: 1,
+        renderCell:(animal)=>{return animal.value.father?
+             <AnimalPopover key={animal.value.father} animalID={animal.value.father}/> : "Unregistered"}},
+        { field: 'mother', headerName: 'Mother', headerClassName: 'grid-header', headerAlign: 'left', flex: 1,
+            renderCell:(animal)=>{return animal.value.mother?
+                <AnimalPopover key={animal.value.mother} animalID={animal.value.mother}/> : "Unregistered"}},
         { field: 'sex', headerName: 'Sex', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
     ];
 
