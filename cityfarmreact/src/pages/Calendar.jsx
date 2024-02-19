@@ -7,7 +7,7 @@ import "./Calendar.css";
 import Event from "../components/Event";
 import CreateEvent from "../components/CreateEvent";
 import Animal from "../components/Animal";
-import CloseIcon from "../components/close-512.webp";
+import CloseIcon from "../assets/close-512.webp";
 import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
 import { Button, ButtonGroup, Checkbox, FormControlLabel, FormGroup } from '@mui/material';
@@ -304,7 +304,7 @@ const Calendar = () => {
                 {/*<CreateEvent setEvent={setNewEvent} handleAddEvent={handleAddEvent}/>*/}
 
                 <Paper elevation={3} style={{width: '400px', margin: '0 0 20px 0', padding: '10px'}}>
-                <h2 className='boxTitle'>Add New Event</h2>
+                <h2 className='boxTitle'>Create New Event</h2>
                 <div>
                 <TextField
                     style={{width: '100%'}}
@@ -319,7 +319,7 @@ const Calendar = () => {
 
                 <div style={{marginTop: "10px"}}>
                 <FormControlLabel control={<Checkbox defaultChecked color='tertiary' size='small'/>} label="All Day" onChange={() => changeAllDay(!newEvent.allDay, "add")}/>
-                <Button variant='outlined' color='tertiary' style={{float: "right"}} onClick={()=>handleAddEvent()}>Add Event</Button>
+                <Button variant='outlined' color='tertiary' style={{float: "right"}} onClick={()=>handleAddEvent()}>Create</Button>
                 </div>
 
                 <div style={{marginTop: "10px"}}>

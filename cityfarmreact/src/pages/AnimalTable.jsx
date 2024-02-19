@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from "react";
 import axios from '../api/axiosConfig'
-import SearchBar from "../components/SearchBar";
 import FarmTabs from "../components/FarmTabs";
 import "./AnimalTable.css";
 import Animal from "../components/Animal";
@@ -86,9 +85,9 @@ const AnimalTable = () => {
             ></TextField>
             <FarmTabs selectedFarm={farm} setSelectedFarm={setFarm}/>
         </span>
-        <TableContainer component={Paper} style={{marginBottom: '20px'}}>
-            <DataGrid columns={cols} rows={rows}/>
-        </TableContainer>
+        <Paper style={{height: 'calc(100% - 502px)', marginBottom: '20px'}}>
+            <DataGrid checkboxSelection columns={cols} rows={rows}/>
+        </Paper>
         <AnimalCreator animalList={animalList}/>
     </>)
 }

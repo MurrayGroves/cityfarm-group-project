@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from "react";
 import axios from "../api/axiosConfig";
-import SearchBar from "../components/SearchBar";
 import "./AnimalTable.css";
 import FarmTabs from "../components/FarmTabs";
 import TableContainer from '@mui/material/TableContainer';
@@ -21,7 +20,7 @@ const EnclosureTable = () => {
     const [searchMode, setSearchMode] = useState("name") /* The mode of search (by name or id) */
     const [clear, setClear] = useState(0); /* Clear will reset the table to display all enclosures once updated*/
 
-    const [farm, setFarm] = useState("");
+    const [farm, setFarm] = useState(0);
 
     //useEffect(displayAll,[clear]);
 
@@ -90,7 +89,7 @@ const EnclosureTable = () => {
                 style={{margin: '0 20px 20px 0'}}
                 onChange={(e) => setSearchTerm(e.target.value)}
             ></TextField>
-            <FarmTabs selectFarm={setFarm} colours={colours}/>
+            <FarmTabs selectedFarm={farm} setSelectedFarm={setFarm}/>
         </span>
         <TableContainer component={Paper} style={{marginBottom: '20px'}}>
             <DataGrid rows={rows} columns={cols}/>

@@ -17,7 +17,6 @@ import React, { useState } from 'react';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 
-import dayjs from 'dayjs';
 import 'dayjs/locale/en-gb';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -36,8 +35,11 @@ const App = () => {
             SW: {
                 main: "#E3D026"
             },
-            default: {
+            grey: {
                 main: "#888888"
+            },
+            tertiary: {
+                main: '#0085FA'
             }
         },
     });
