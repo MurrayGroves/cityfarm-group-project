@@ -6,7 +6,7 @@ import Typography from "@mui/material/Typography";
 import axios from '../api/axiosConfig';
 import { useState, useEffect } from 'react';
 import AnimalPopover from "../components/AnimalPopover";
-import CloseIcon from "../components/close-512.webp";
+import CloseIcon from "../assets/close-512.webp";
 import SelectedEvent from "../components/SelectedEvent";
 
 
@@ -78,8 +78,8 @@ const SingleAnimal = () => {
                 Species: {chosenAnimal.type}<br/>
                 <span style={{display:'flex', justifyContent:'start'}}>Father:  {chosenAnimal.father ? <AnimalPopover key={chosenAnimal.father} animalID={chosenAnimal.father}/>
                 : 'Unregistered'}</span>
-                Mother:  {chosenAnimal.mother ? <AnimalPopover key={chosenAnimal.mother} animalID={chosenAnimal.mother}/>
-                : 'Unregistered'}<br/>
+                <span style={{display:'flex', justifyContent:'start'}}>Mother:  {chosenAnimal.mother ? <AnimalPopover key={chosenAnimal.mother} animalID={chosenAnimal.mother}/>
+                : 'Unregistered'}</span>
                 Farm: to be completed when database supports different farms
             </Typography>
 
@@ -91,7 +91,7 @@ const SingleAnimal = () => {
                 <h3 onClick={() => handleEventClick(event)}>{event.title}</h3>
                 {event.allDay ?(
                             <div>
-                                <p>{event.start.toLocaleDateString()} {event.end == null ? <p></p>:event.end.toLocaleDateString()===event.start.toLocaleDateString() ? <p></p>: " - " + event.end.toLocaleDateString()}</p>
+                                <p>{event.start.toLocaleDateString()} {event.end == null ? <></> : event.end.toLocaleDateString()===event.start.toLocaleDateString() ? <p></p>: " - " + event.end.toLocaleDateString()}</p>
                             </div>
                         ):
                         <div>

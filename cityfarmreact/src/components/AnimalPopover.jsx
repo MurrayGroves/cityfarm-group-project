@@ -34,7 +34,6 @@ const AnimalPopover = (props) => {
         (async () => {
         try {
             const response = await axios.get(`/animals/by_id/${props.animalID}`);
-            console.log(response.data);
             setChosenAnimal(response.data);
         } catch (error) {
             window.alert(error);
