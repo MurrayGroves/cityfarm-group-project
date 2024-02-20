@@ -10,13 +10,6 @@ import EditIcon from '@mui/icons-material/Edit';
 import IconButton from '@mui/material/IconButton';
 import { diff } from "deep-object-diff";
 
-const colours = {
-    WH: "#333388",
-    HC: "#FF0000",
-    SW: "#3312FF",
-    default: "#888888"
-}
-
 const EnclosureTable = () => {
     const [enclosureList, setEnclosureList] = useState([]); /* The State for the list of enclosures. The initial state is [] */
     const [searchTerm, setSearchTerm] = useState(''); /* The term being search for in the searchbar */

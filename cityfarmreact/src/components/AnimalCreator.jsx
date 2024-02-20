@@ -8,7 +8,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import { IconButton, Select } from "@mui/material";
+import { FormHelperText, IconButton, Select } from "@mui/material";
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Button from '@mui/material/Button';
@@ -25,43 +25,88 @@ const AnimalCreator = (props) => {
     const [fieldList, setFieldList] = useState([]);
     const [create, setCreate] = useState(false);
 
-    let i = -1;
-
-    const fieldTypeSwitch = (field) => {
-        console.log('switching');
-        newAnimal.fields[field] = '';
-        switch(schema._fields[field]._type) {
+    const fieldTypeSwitch = (key) => {
+        let field = fieldList[key];
+        if(newAnimal.fields[field] === undefined) {newAnimal.fields[field] = ''}; {/* initialise field values to enpty strings */}
+        switch(schema._fields[field]._type) { /* check the type of the field and display appropriate input method */
             case "java.lang.Boolean":
                 return (
-                <Select
-                    style={{width: '100%'}}
-                    value={newAnimal.fields[field]}
-                    onChange={(e)=>{
-                        let tempNewAnimal = newAnimal;
-                        tempNewAnimal.fields[field] = e.target.value;
-                        setNewAnimal(tempNewAnimal);
-                    }}
-                >
-                    <MenuItem value={true}>Yes</MenuItem>
-                    <MenuItem value={false}>No</MenuItem>
-                </Select>
+                    <FormControl required={schema._fields[field]._required} sx={{width: '100%'}}>
+                    <FormHelperText style={{marginLeft: '5px'}}>{schema._fields[field]._required ? 'Required' : 'Not Required'}</FormHelperText>
+                    <Select
+                        value={newAnimal.fields[field] !== undefined ? newAnimal.fields[field] : ''}
+                        onChange={(e) => {
+                            let newFields = newAnimal.fields;
+                            newFields[field] = e.target.value;
+                            setNewAnimal({...newAnimal, fields: newFields});
+                        }}
+                    >
+                        <MenuItem value={''}><em>Empty</em></MenuItem>
+                        <MenuItem value={true}>Yes</MenuItem>
+                        <MenuItem value={false}>No</MenuItem>
+                    </Select>
+                    </FormControl>
                 );
             case "java.lang.String":
-                return <TextField/>
+                return (
+                    <FormControl required={schema._fields[field]._required} sx={{width: '100%'}}>
+                    <FormHelperText style={{marginLeft: '5px'}}>{schema._fields[field]._required ? 'Required' : 'Not Required'}</FormHelperText>
+                    <TextField
+                        fullWidth
+                        placeholder={field[0].toUpperCase() + field.slice(1)}
+                        onChange={(e) => {
+                            let newFields = newAnimal.fields;
+                            newFields[field] = e.target.value;
+                            setNewAnimal({...newAnimal, field: newFields});
+                        }}
+                    />
+                    </FormControl>
+                );
             case "java.lang.Integer":
-                return <TextField/>
+                return (
+                    <FormControl required={schema._fields[field]._required} sx={{width: '100%'}}>
+                    <FormHelperText style={{marginLeft: '5px'}}>{schema._fields[field]._required ? 'Required' : 'Not Required'}</FormHelperText>
+                    <TextField
+                        type='number'
+                        fullWidth
+                        placeholder={field[0].toUpperCase() + field.slice(1)}
+                        onChange={(e) => {
+                            let newFields = newAnimal.fields;
+                            newFields[field] = e.target.value;
+                            setNewAnimal({...newAnimal, field: newFields});
+                        }}
+                    />
+                    </FormControl>
+                );
             case "java.lang.Double":
-                return <TextField/>
+                return (
+                    <FormControl required={schema._fields[field]._required} sx={{width: '100%'}}>
+                    <FormHelperText style={{marginLeft: '5px'}}>{schema._fields[field]._required ? 'Required' : 'Not Required'}</FormHelperText>
+                    <TextField
+                        type='number'
+                        fullWidth
+                        placeholder={field[0].toUpperCase() + field.slice(1)}
+                        onChange={(e) => {
+                            let newFields = newAnimal.fields;
+                            newFields[field] = e.target.value;
+                            setNewAnimal({...newAnimal, field: newFields});
+                        }}
+                    />
+                    </FormControl>
+                );
             case "java.time.ZonedDateTime":
                 return (
-                <DatePicker
-                    onClick={(e) => {
-                        let tempNewAnimal = newAnimal;
-                        tempNewAnimal.fields[field] = e.$d;
-                        setNewAnimal(tempNewAnimal);
-                    }}
-                    slotProps={{textField: {fullWidth: true}}}
-                />
+                    <FormControl required={schema._fields[field]._required} sx={{width: '100%'}}>
+                    <FormHelperText style={{marginLeft: '5px'}}>{schema._fields[field]._required ? 'Required' : 'Not Required'}</FormHelperText>
+                    <DatePicker
+                        onChange={(e) => {
+                            let newFields = newAnimal.fields;
+                            newFields[field] = e.$d;
+                            setNewAnimal({...newAnimal, fields: newFields});
+                        }}
+                        slotProps={{textField: {fullWidth: true}}}
+                    />
+                    </FormControl>
                 )
             default:
                 return <></>;
@@ -80,8 +125,8 @@ const AnimalCreator = (props) => {
     },[]);
 
     useEffect(() => {
-
-    },[schema])
+        console.log(newAnimal);
+    },[newAnimal])
 
     return (<>
         {create ? <>
@@ -99,7 +144,7 @@ const AnimalCreator = (props) => {
                     </TableHead>
                     <TableBody>
                         <TableRow>
-                            <TableCell><TextField style={{width: '100%'}} onChange={(e)=>{setNewAnimal({...newAnimal, name: e.target.value})}} label='Name'/></TableCell>
+                            <TableCell><TextField fullWidth onChange={(e)=>{setNewAnimal({...newAnimal, name: e.target.value})}} label='Name'/></TableCell>
                             <TableCell>
                                 <Autocomplete
                                     style={{width: '100%'}}
@@ -111,6 +156,7 @@ const AnimalCreator = (props) => {
                                             </li>
                                         );
                                     }}
+                                    isOptionEqualToValue={(option, value) => option._name === value._name}
                                     renderInput={(params) => <TextField {...params} label="Type"/>}
                                     getOptionLabel={option => option._name.charAt(0).toUpperCase() + option._name.slice(1)}
                                     options={schemaList}
@@ -119,8 +165,7 @@ const AnimalCreator = (props) => {
                                             setNewAnimal({...newAnimal, type: v._name, fields: {}});
                                             let tempSchema = schemaList.filter((schema) => schema._name === v._name).pop();
                                             setSchema(tempSchema);
-                                            setFieldList(Object.keys[tempSchema._fields]);
-                                            console.log(newAnimal, schema, fieldList);
+                                            setFieldList(Object.keys(tempSchema._fields));
                                         } else {
                                             setNewAnimal({...newAnimal, type: '', fields: {}});
                                             setSchema();
@@ -188,7 +233,7 @@ const AnimalCreator = (props) => {
             <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '20px'}}>
             <TableContainer component={Paper} style={{marginRight: '20px'}}>
                 <Table>
-                    <TableHead> {/*style={{borderTop: '2px dashed rgba(196, 196, 196, 1)'}}*/}
+                    <TableHead>
                         <TableRow>
                             <TableCell style={{borderRight: '1px solid rgba(224, 224, 224, 1)', width: `${100/(Object.keys(schema._fields).length + 1)}%`}}>Property Name</TableCell>
                             {Object.keys(schema._fields).map((field, index) => {
@@ -202,10 +247,8 @@ const AnimalCreator = (props) => {
                         <TableRow>
                             <TableCell style={{borderRight: '1px solid rgba(224, 224, 224, 1)'}} variant='head'>Property Value</TableCell>
                             {Object.keys(schema._fields).map((_, index) => {
-                                i++;
-                                
                                 return (
-                                    <TableCell key={index}>{fieldList && fieldTypeSwitch(fieldList[i])}</TableCell>
+                                    <TableCell key={index}>{fieldList ? fieldTypeSwitch(index) : <p>Loading...</p>}</TableCell>
                                 );
                             })}
                         </TableRow>

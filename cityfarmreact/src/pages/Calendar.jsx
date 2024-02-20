@@ -1,8 +1,7 @@
-import {Calendar as BigCalendar, dateFnsLocalizer, dayjsLocalizer} from 'react-big-calendar';
+import {Calendar as BigCalendar, dayjsLocalizer} from 'react-big-calendar';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
-import React, {useState, useEffect, useMemo} from 'react';
+import React, {useState, useEffect } from 'react';
 import dayjs from 'dayjs';
-import timezone from 'dayjs/plugin/timezone';
 import "./Calendar.css";
 import Event from "../components/Event";
 import CreateEvent from "../components/CreateEvent";
@@ -10,19 +9,11 @@ import AnimalPopover from "../components/AnimalPopover";
 import CloseIcon from "../assets/close-512.webp";
 import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
-import { Button, ButtonGroup, Checkbox, FormControlLabel, FormGroup } from '@mui/material';
-
+import { Button, ButtonGroup, Checkbox, FormControlLabel, FormGroup, useTheme } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 
 const WH = 0, HC = 1, SW = 2;
-const colours = {
-    WH: "#035afc",
-    HC: "#FF0012",
-    SW: "#E3D026",
-    default: "#888888"
-}
-
 const events = [ /*These are example events.*/
     {
         title : "Boss Meeting",
@@ -67,6 +58,9 @@ const events = [ /*These are example events.*/
 ];
 
 const Calendar = () => {
+
+    const theme = useTheme().palette;
+
     const [newEvent,setNewEvent] = useState({
         title: "",
         allDay: true,
@@ -98,11 +92,10 @@ const Calendar = () => {
     },[selectedEvent]);
 
     const removeAnimal = (animalID, type) => {
-        if (type == "add"){
+        if (type === "add"){
 
         }
         else {
-
             setModifiedEvent({...modifiedEvent, animals: modifiedEvent.animals.filter((animal) => animal !== animalID)})
         }
     }
@@ -123,7 +116,7 @@ const Calendar = () => {
     }
     
     const changeAllDay = (isAllDay, type) => {
-        {type == "add" ? setNewEvent({...newEvent, allDay: isAllDay}) : setModifiedEvent({...modifiedEvent, allDay: isAllDay})}
+        type === "add" ? setNewEvent({...newEvent, allDay: isAllDay}) : setModifiedEvent({...modifiedEvent, allDay: isAllDay})
     }
 
     const updateVisibleFarms = (selected) => {
@@ -131,8 +124,8 @@ const Calendar = () => {
     }
 
     const eventStyleGetter = (event) => {
-        var colour1 = event.farms.includes(WH) ? colours.WH : (event.farms.includes(HC) ? colours.HC : colours.SW);
-        var colour2 = event.farms.includes(HC) ? (event.farms.includes(WH) ? colours.HC : (event.farms.includes(SW) ? colours.SW : colours.SW)) : colours.SW;
+        var colour1 = event.farms.includes(WH) ? theme.WH.main : (event.farms.includes(HC) ? theme.HC.main : theme.SW.main);
+        var colour2 = event.farms.includes(HC) ? (event.farms.includes(WH) ? theme.HC.main : (event.farms.includes(SW) ? theme.SW.main : theme.SW.main)) : theme.SW.main;
         const offset = 0;
         var visible = true;
         if (event.farms.length > 0) {
@@ -144,8 +137,8 @@ const Calendar = () => {
         }
         var style = {
             display: visible ? 'block' : 'none',
-            backgroundColor: colours.default,
-            backgroundImage: `linear-gradient(135deg, ${colour1}, ${colour1} ${100/event.farms.length - offset}%, ${colour2} ${100/event.farms.length + offset}%, ${colour2} ${200/event.farms.length - offset}%, ${colours.SW} ${200/event.farms.length + offset}%, ${colours.SW})`,
+            backgroundColor: theme.grey.main,
+            backgroundImage: `linear-gradient(135deg, ${colour1}, ${colour1} ${100/event.farms.length - offset}%, ${colour2} ${100/event.farms.length + offset}%, ${colour2} ${200/event.farms.length - offset}%, ${theme.SW.main} ${200/event.farms.length + offset}%, ${theme.SW.main})`,
             color: 'white',
             borderRadius: '5px'
         };
@@ -155,7 +148,7 @@ const Calendar = () => {
     }
 
     function showingTime(isShown, type) {
-        if (type == "add") {
+        if (type === "add") {
             if (isShown){
                 return(<>
                     <DateTimePicker value={dayjs(newEvent.start)} onChange={(e) => {setNewEvent({...newEvent, start: e.$d})}} slotProps={{textField: {fullWidth: true}}}/>
@@ -216,7 +209,7 @@ const Calendar = () => {
                 <Paper elevation={3} style={{position: 'relative', width: '400px', margin: '0 0 20px 0', padding: '10px'}}>
                     <div style={{display: "flex", justifyContent: "space-between"}}>
                         <h2 className='boxTitle'>Selected Event</h2>
-                        <button className='closeButton' onClick={() => {setModifyEvent(false); setSelectedEvent("No event selected")}}><img src={CloseIcon}/></button>
+                        <button className='closeButton' onClick={() => {setModifyEvent(false); setSelectedEvent("No event selected")}}><img src={CloseIcon} alt='close button'/></button>
                     </div>
                     {!modifyEvent ?
                     <div>
@@ -241,12 +234,13 @@ const Calendar = () => {
                         {selectedEvent.animals.map((animalID) => (
                             <AnimalPopover key={animalID} animalID={animalID}/>
                         ))}
-                        {selectedEvent.enclosures.length !== 0 ? <div>
+                        {selectedEvent.enclosures.length !== 0 &&
+                        <div>
                             <h3>Enclosures</h3>
-                            {selectedEvent.enclosures.map((enclosureName) => (
-                                <p>{enclosureName}</p>
+                            {selectedEvent.enclosures.map((enclosureName, index) => (
+                                <p key={index}>{enclosureName}</p>
                             ))}
-                        </div> : <></>}
+                        </div>}
                         {selectedEvent.description !== "" ?
                         <div>
                             <h3>Description</h3>
@@ -255,7 +249,7 @@ const Calendar = () => {
                     </div>
                     : <div className='modifyEvent'>
                         <TextField
-                            style={{width: '100%'}}
+                            fullWidth
                             placeholder={selectedEvent.title}
                             label='Title'
                             size='small'
@@ -285,8 +279,8 @@ const Calendar = () => {
                         <Button variant='outlined' color='tertiary'>Add Animal</Button> {/* Apply changes to do with associating animals here */}
                         <div>
                             <h3>Enclosures</h3>
-                            {modifiedEvent.enclosures.map((enclosureName) => (
-                                <p>{enclosureName}</p>
+                            {modifiedEvent.enclosures.map((enclosureName, index) => (
+                                <p key={index}>{enclosureName}</p>
                             ))}{/*Add a way to remove enclosures from events */}
                             <Button variant='outlined' color='tertiary'>Add Enclosure</Button> {/* idea: make this open the enlcosure  page with a new column of checkboxes. Click on an associate enlcosure(s) button would then pass a list of enclosure names to the calendar to be placed in a field*/}
                         </div>
@@ -307,7 +301,7 @@ const Calendar = () => {
                 <h2 className='boxTitle'>Create New Event</h2>
                 <div>
                 <TextField
-                    style={{width: '100%'}}
+                    fullWidth
                     placeholder="Add Title"
                     label='Title'
                     size='small'
@@ -339,8 +333,8 @@ const Calendar = () => {
                 </div>
                 <div>
                     <h3>Enclosures</h3>
-                    {newEvent.enclosures.map((enclosureName) => (
-                        <p>{enclosureName}</p>
+                    {newEvent.enclosures.map((enclosureName, index) => (
+                        <p key={index}>{enclosureName}</p>
                     ))}{/*Add a way to remove enclosures from events */}
                     <Button variant='outlined' color='tertiary'>Add Enclosure</Button> {/* idea: make this open the enlcosure  page with a new column of checkboxes. Click on an associate enlcosure(s) button would then pass a list of enclosure names to the calendar to be placed in a field*/}
                 </div>
