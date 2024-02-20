@@ -67,23 +67,31 @@ const App = () => {
     });
     
     const [dark, setDark] = useState(false);
+    const [msal, setMsal] = useState(null);
 
     return (
         <ThemeProvider theme={dark ? darkTheme : defaultTheme}>
         <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={'en-gb'}>
         <CssBaseline/>
         <Router>
-            <NavBar setDark={setDark}/> {/* Navbar available in all pages for navigation*/}
             <div className="Content">
             <Routes>
-                <Route exact path="/"> {/*This is just for testing. Will probably navigate to a home page */}
+                <Route path="login" element={<Login msal={msal} setMsal={setMsal} />}/>
+                <Route exact path="*" element={
+                    <div>
+                    <NavBar setDark={setDark} msal={msal}/>
+                    <Routes>
                     <Route path="calendar" element={<Calendar/>}/>
-                    <Route path="animals" element={<AnimalTable/>}/> {/*There won't be pathing issues since all api paths start /api*/}
+                    <Route path="animals" element={<AnimalTable/>}/>
                     <Route path="enclosures" element={<EnclosureTable/>}/>
                     <Route path="schemas" element={<Schemas/>}/>
                     <Route path="single-animal/:animalID" element={<SingleAnimal/>} />
+                    <Route path="/" element={"Homepage"}/>
                     <Route path="*" element={<Error/>}/>
-                    <Route path="login" element={<Login/>}/>
+                    </Routes>
+                    </div>
+                    }>
+
                 </Route>
             </Routes>
             </div>

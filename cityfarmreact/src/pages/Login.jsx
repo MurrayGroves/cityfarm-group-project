@@ -4,13 +4,13 @@ import { useNavigate } from "react-router-dom";
 import { Alert } from "@mui/material";
 
 import "./anims.css";
-import { set } from "date-fns";
 
-export default (props) => {
+export default ({msal, setMsal}) => {
   const [isLoginFailed, setIsLoginFailed] = useState(false);
 
   const authHandler = (err, data, msal) => {
     console.log(err, data);
+    console.log(setMsal);
 
     if (err) {
       console.error(err);
@@ -24,6 +24,7 @@ export default (props) => {
     }
 
     setIsLoginFailed(false);
+    setMsal(msal);
     setWelcome(data.account.name)
     setTimeout(() => {
       navigate('/')
@@ -78,7 +79,7 @@ export default (props) => {
               }}>
                 <h1>Welcome, {welcome}!</h1>
                 <h1>{"Let's get farming :)"}</h1>
-                <img src="/pigface.png" width={"15%"} height={"15%"} style={{
+                <img src="/pigface.png" width={"15%"} height={"15%"} alt="" style={{
                   animation: `spin 2s linear infinite`
                 }}/>
               </div>
