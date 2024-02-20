@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
+@CrossOrigin(origins = {"http://localhost:3000", "https://cityfarm.murraygrov.es"}, methods = {RequestMethod.GET, RequestMethod.POST})
 public class CalendarController {
     @Autowired
     EventRepository eventRepository;
@@ -29,12 +30,11 @@ public class CalendarController {
     AnimalRepository animalRepository;
 
     private final String host_url = "http://localhost:3000";
-    HttpHeaders responseHeaders = new HttpHeaders();
+
 
 
     @GetMapping("/api/events")
     public ResponseEntity<List<EventInstance>> get_events(@RequestParam ZonedDateTime from, @RequestParam ZonedDateTime to) {
-        responseHeaders.set(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, host_url);
 
         List<Event> events = eventRepository.findAll();
 
@@ -44,12 +44,12 @@ public class CalendarController {
             instances.addAll(event.occurencesBetween(from, to));
         }
 
-        return ResponseEntity.ok().headers(responseHeaders).body(instances);
+        return ResponseEntity.ok().body(instances);
     }
 
     @GetMapping("/api/events/by_id/{id}")
     public ResponseEntity<Event> get_event_by_id(@PathVariable String id) {
-        responseHeaders.set(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, host_url);
+
 
         Event event = eventRepository.findEventById(id);
 
@@ -62,7 +62,7 @@ public class CalendarController {
 
     @GetMapping("/api/events/by_title/{title}")
     public ResponseEntity<List<Event>> get_events_by_title(@PathVariable String title) {
-        responseHeaders.set(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, host_url);
+
 
         List<Event> events = eventRepositoryCustom.findEventByTitle(title);
 
@@ -71,7 +71,7 @@ public class CalendarController {
 
     @GetMapping("/api/events/by_animal/{animal_id}")
     public ResponseEntity<List<Event>> get_events_by_animal(@PathVariable String animal_id) {
-        responseHeaders.set(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, host_url);
+
 
         List<Event> events = eventRepository.findEventByAnimal(animal_id);
 
@@ -80,7 +80,7 @@ public class CalendarController {
 
     @GetMapping("/api/events/by_enclosure/{enclosure_id}")
     public ResponseEntity<List<Event>> get_events_by_enclosure(@PathVariable String enclosure_id) {
-        responseHeaders.set(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, host_url);
+
 
         List<Event> events = eventRepository.findEventByEnclosure(enclosure_id);
 
@@ -89,7 +89,7 @@ public class CalendarController {
 
     @DeleteMapping("/api/events/by_id/{id}")
     public ResponseEntity<String> delete_event(@PathVariable String id) {
-        responseHeaders.set(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, host_url);
+
 
         eventRepository.deleteById(id);
 
@@ -99,7 +99,7 @@ public class CalendarController {
 
     @PostMapping("/api/events/create/once")
     public ResponseEntity<Event> create_event(@RequestBody CreateEventOnceRequest event) {
-        responseHeaders.set(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, host_url);
+
 
         List<Enclosure> enclosures = new ArrayList<>();
         for (String enclosure: event.enclosures) {
@@ -117,12 +117,11 @@ public class CalendarController {
 
         eventRepository.save(new_event);
 
-        return ResponseEntity.ok().headers(responseHeaders).body(new_event);
+        return ResponseEntity.ok().body(new_event);
     }
 
     @PostMapping("/api/events/create/recurring")
     public ResponseEntity<Event> create_event(@RequestBody CreateEventRecurringRequest event) {
-        responseHeaders.set(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, host_url);
 
         List<Enclosure> enclosures = new ArrayList<>();
         for (String enclosure: event.enclosures) {
@@ -140,7 +139,7 @@ public class CalendarController {
 
         eventRepository.save(newEvent);
 
-        return ResponseEntity.ok().headers(responseHeaders).body(newEvent);
+        return ResponseEntity.ok().body(newEvent);
     }
 
 }

@@ -1,0 +1,25 @@
+.selectedBox {
+    width: 400px;
+    margin: 0 0 20px 0;
+    padding: 10px 10px 10px 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+    position: absolute;
+    right: 25%;
+    top: 25%;
+}
+.closeCross {
+    display: inline-flex;
+    border: none;
+    background-color: white;
+    cursor: pointer;
+    width: 24px;
+    height: 24px;
+    position: absolute;
+    right: 26%;
+    top: 26%;
+
+}
+.closeCross img {
+    width: 24px;
+    height: 24px;
+}

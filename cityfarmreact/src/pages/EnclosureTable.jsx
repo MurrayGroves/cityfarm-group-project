@@ -1,15 +1,11 @@
 import React, {useEffect, useState} from "react";
 import axios from "../api/axiosConfig";
-import SearchBar from "../components/SearchBar";
-import TextField from '@mui/material/TextField';
-import "../components/AnimalTable.css";
+import "./AnimalTable.css";
 import FarmTabs from "../components/FarmTabs";
 import TableContainer from '@mui/material/TableContainer';
-import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
 import { DataGrid } from "@mui/x-data-grid";
 import Paper from '@mui/material/Paper';
-import TableContainer from '@mui/material/TableContainer';
 import EditIcon from '@mui/icons-material/Edit';
 import IconButton from '@mui/material/IconButton';
 import { diff } from "deep-object-diff";
@@ -28,7 +24,7 @@ const EnclosureTable = () => {
     const [clear, setClear] = useState(0); /* Clear will reset the table to display all enclosures once updated*/
     const [editMode, setEditMode] = useState(false); /* Whether edit mode is on. Initial state is false */
 
-    const [farm, setFarm] = useState("");
+    const [farm, setFarm] = useState(0);
 
     //useEffect(displayAll,[clear]);
 
@@ -97,7 +93,7 @@ const EnclosureTable = () => {
                 style={{margin: '0 20px 20px 0'}}
                 onChange={(e) => setSearchTerm(e.target.value)}
             ></TextField>
-            <FarmTabs selectFarm={setFarm} colours={colours}/>
+            <FarmTabs selectedFarm={farm} setSelectedFarm={setFarm}/>
         </span>
         <TableContainer component={Paper} style={{borderRadius: '20px'}}>
             <DataGrid rows={rows} columns={cols} 
