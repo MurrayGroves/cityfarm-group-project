@@ -10,6 +10,7 @@ import Calendar from "./pages/Calendar";
 import EnclosureTable from "./pages/EnclosureTable";
 import Schemas from "./pages/Schemas";
 import Error from "./pages/Error.jsx";
+import Login from './pages/Login.jsx';
 import SingleAnimal from "./pages/SingleAnimal";
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import React, { useState } from 'react';
@@ -82,6 +83,7 @@ const App = () => {
                     <Route path="schemas" element={<Schemas/>}/>
                     <Route path="single-animal/:animalID" element={<SingleAnimal/>} />
                     <Route path="*" element={<Error/>}/>
+                    <Route path="login" element={<Login/>}/>
                 </Route>
             </Routes>
             </div>
