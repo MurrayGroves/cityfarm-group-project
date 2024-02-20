@@ -8,7 +8,7 @@ public class CreateEventOnceRequest {
 
     public List<String> animals;
 
-    public List<Integer> farms;
+    public List<String> farms;
 
     public String title;
 

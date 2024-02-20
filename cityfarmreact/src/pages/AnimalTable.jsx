@@ -9,13 +9,11 @@ import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
 import AnimalCreator from "../components/AnimalCreator";
 
-
-const WH = 0, HC = 1, SW = 2;
-const AnimalTable = () => {
+const AnimalTable = ({farms}) => {
     const [animalList, setAnimalList] = useState([]); /* The State for the list of animals. The initial state is [] */
     const [searchTerm, setSearchTerm] = useState(''); /* The term being searched for in the searchbar */
     
-    const [farm, setFarm] = useState(0);
+    const [farm, setFarm] = useState(Object.keys(farms)[0]);
 
     //useEffect(displayAll,[clear])
 
@@ -46,7 +44,7 @@ const AnimalTable = () => {
     },[searchTerm])
 
     useEffect(() => {
-        /*setAnimalList(animalList.filter((animal)=>{animal.farms.includes(farm)}))*/
+        //setAnimalList(animalList.filter((animal)=>{animal.farms.includes(farm)}))
     },[farm])
 
     const rows = animalList.map((animal) => ({
@@ -80,7 +78,7 @@ const AnimalTable = () => {
                 style={{margin: '0 20px 20px 0'}}
                 onChange={(e) => setSearchTerm(e.target.value)}
             ></TextField>
-            <FarmTabs selectedFarm={farm} setSelectedFarm={setFarm}/>
+            <FarmTabs farms={farms} selectedFarm={farm} setSelectedFarm={setFarm}/>
         </span>
         <Paper style={{height: 'calc(100% - 525px)', marginBottom: '20px'}}>
             <DataGrid style={{fontSize: '1rem'}} checkboxSelection columns={cols} rows={rows}/>

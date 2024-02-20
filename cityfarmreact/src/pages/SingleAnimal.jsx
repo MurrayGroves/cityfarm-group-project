@@ -8,8 +8,10 @@ import AnimalPopover from "../components/AnimalPopover";
 import CloseIcon from "../assets/close-512.webp";
 import SelectedEvent from "../components/SelectedEvent";
 
-const WH = 0, HC = 1, SW = 2;
-const SingleAnimal = () => {
+const SingleAnimal = (props) => {
+
+    const farms = props.farms;
+
     const { animalID } = useParams();
     const [relEvents,setRelEvents] = useState([])
     const [chosenAnimal, setChosenAnimal] = useState({});
@@ -84,15 +86,15 @@ const SingleAnimal = () => {
                             <p>{event.start.toLocaleString([], {year: '2-digit', month: '2-digit', day: '2-digit', hour: '2-digit', minute:'2-digit'})} - {event.start.toLocaleDateString() === event.end.toLocaleDateString() ? event.end.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : event.end.toLocaleString([], {year: '2-digit', month: '2-digit', day: '2-digit', hour: '2-digit', minute:'2-digit'})}</p>
                         </div>}
                     {event.farms.length !== 0 ? <h4>Farms: </h4> : <></>}
-                    {event.farms.includes(WH) ? <p>Windmill Hill </p> : <></>}
-                    {event.farms.includes(HC) ? <p>Hartcliffe </p> : <></>}
-                    {event.farms.includes(SW) ? <p>St Werberghs</p> : <></>}
+                    {event.farms.includes(farms.WH) ? <p>Windmill Hill </p> : <></>}
+                    {event.farms.includes(farms.HC) ? <p>Hartcliffe </p> : <></>}
+                    {event.farms.includes(farms.SW) ? <p>St Werberghs</p> : <></>}
                 </div>
             )})}
         </div>
         {selectedEvent !== "No event selected" && (
             <>
-                <SelectedEvent event={selectedEvent} />
+                <SelectedEvent event={selectedEvent} farms={farms}/>
                 <button className='closeCross' onClick={() => setSelectedEvent("No event selected")}><img src={CloseIcon} alt="Close"/></button>
             </>
         )}

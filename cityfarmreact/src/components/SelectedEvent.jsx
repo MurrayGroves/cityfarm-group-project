@@ -1,8 +1,11 @@
 import AnimalPopover from "./AnimalPopover";
 import * as React from "react";
 
-const WH = 0, HC = 1, SW = 2;
-const SelectedEvent = ({event}) => {
+const SelectedEvent = (props) => {
+
+  const event = props.event;
+  const farms = props.farms;
+
   if (!event || event === "No event selected") {
     return <></>;
   }
@@ -25,9 +28,9 @@ const SelectedEvent = ({event}) => {
               </div>
           }
           {event.farms.length !== 0 && <h3>Farms</h3>}
-          {event.farms.includes(WH) && <p>Windmill Hill</p>}
-          {event.farms.includes(HC) && <p>Hartcliffe</p>}
-          {event.farms.includes(SW) && <p>St Werberghs</p>}
+          {event.farms.includes(farms.WH) && <p>Windmill Hill</p>}
+          {event.farms.includes(farms.HC) && <p>Hartcliffe</p>}
+          {event.farms.includes(farms.SW) && <p>St Werberghs</p>}
           {event.animals.length !== 0 && <h3>Animals</h3>}
           {event.animals.map((animal) => (
               <AnimalPopover key={animal._id} animalID={animal._id}/>

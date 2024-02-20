@@ -10,12 +10,12 @@ import EditIcon from '@mui/icons-material/Edit';
 import IconButton from '@mui/material/IconButton';
 import { diff } from "deep-object-diff";
 
-const EnclosureTable = () => {
+const EnclosureTable = ({farms}) => {
     const [enclosureList, setEnclosureList] = useState([]); /* The State for the list of enclosures. The initial state is [] */
     const [searchTerm, setSearchTerm] = useState(''); /* The term being search for in the searchbar */
     const [editMode, setEditMode] = useState(false); /* Whether edit mode is on. Initial state is false */
 
-    const [farm, setFarm] = useState(0);
+    const [farm, setFarm] = useState(Object.keys(farms)[0]);
 
     function displayAll() {
         (async () => {
@@ -72,7 +72,7 @@ const EnclosureTable = () => {
                 style={{margin: '0 20px 20px 0'}}
                 onChange={(e) => setSearchTerm(e.target.value)}
             ></TextField>
-            <FarmTabs selectedFarm={farm} setSelectedFarm={setFarm}/>
+            <FarmTabs farms={farms} selectedFarm={farm} setSelectedFarm={setFarm}/>
         </span>
         <TableContainer component={Paper} style={{borderRadius: '20px'}}>
             <DataGrid rows={rows} columns={cols} 
