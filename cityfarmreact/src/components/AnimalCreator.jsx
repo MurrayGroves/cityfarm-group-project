@@ -190,7 +190,7 @@ const AnimalCreator = (props) => {
                 <Table>
                     <TableHead> {/*style={{borderTop: '2px dashed rgba(196, 196, 196, 1)'}}*/}
                         <TableRow>
-                            <TableCell style={{borderRight: '1px solid rgba(224, 224, 224, 1)', width: `${100/(Object.keys(schema._fields).length + 1)}%`}}>Field Name</TableCell>
+                            <TableCell style={{borderRight: '1px solid rgba(224, 224, 224, 1)', width: `${100/(Object.keys(schema._fields).length + 1)}%`}}>Property Name</TableCell>
                             {Object.keys(schema._fields).map((field, index) => {
                                 return (
                                 <TableCell key={index} style={{width: `${100/(Object.keys(schema._fields).length + 1)}%`}}>{field.charAt(0).toUpperCase() + field.slice(1)}</TableCell>
@@ -200,7 +200,7 @@ const AnimalCreator = (props) => {
                     </TableHead>
                     <TableBody>
                         <TableRow>
-                            <TableCell style={{borderRight: '1px solid rgba(224, 224, 224, 1)'}} variant='head'>Field Value</TableCell>
+                            <TableCell style={{borderRight: '1px solid rgba(224, 224, 224, 1)'}} variant='head'>Property Value</TableCell>
                             {Object.keys(schema._fields).map((_, index) => {
                                 i++;
                                 

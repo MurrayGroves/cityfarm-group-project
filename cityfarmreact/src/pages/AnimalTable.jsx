@@ -59,7 +59,7 @@ const AnimalTable = () => {
     const rows = animalList.map((animal) => ({
         id: animal._id,
         name: animal,
-        type: animal.type,
+        type: animal.type.charAt(0).toUpperCase() + animal.type.slice(1),
         father: animal.father !== null ? animal : 'Unregistered',
         mother: animal.mother !== null ? animal : 'Unregistered',
         sex: animal.male ? 'Male' : 'Female',
@@ -90,7 +90,7 @@ const AnimalTable = () => {
             <FarmTabs selectedFarm={farm} setSelectedFarm={setFarm}/>
         </span>
         <Paper style={{height: 'calc(100% - 502px)', marginBottom: '20px'}}>
-            <DataGrid checkboxSelection columns={cols} rows={rows}/>
+            <DataGrid style={{fontSize: '1rem'}} checkboxSelection columns={cols} rows={rows}/>
         </Paper>
         <AnimalCreator animalList={animalList}/>
     </>)

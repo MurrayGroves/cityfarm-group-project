@@ -95,19 +95,19 @@ const Schemas = () => {
     },[searchTerm])
 
     return(<>
-        <h1>Schemas</h1>
+        <h1>Animal Types</h1>
 
-        <h2>Create New Schema</h2>
+        <h2>Create New Animal Type</h2>
         <div style = {{width: "90%"}}>
             <TableContainer component={Paper}>
-            <TextField style={{paddingTop: "1%", paddingLeft: "1.25%"}} placeholder="Schema Name" value={newSchemaName} size="small" onChange={(e) => {
+            <TextField style={{paddingTop: "1%", paddingLeft: "1.25%"}} placeholder="Species Name" value={newSchemaName} size="small" onChange={(e) => {
             setNewSchemaName(e.target.value);
         }}/>
                 <Table sx={{ minWidth: 650 }} aria-label="fields table">
                     <TableHead>
                     <TableRow>
-                        <TableCell>Field Name</TableCell>
-                        <TableCell align="left">Type</TableCell>
+                        <TableCell>Property Name</TableCell>
+                        <TableCell align="left">Data Type</TableCell>
                         <TableCell align="left">Required</TableCell>
                         <TableCell/>
                     </TableRow>
@@ -119,7 +119,7 @@ const Schemas = () => {
                         sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                         >
                         <TableCell component="th" scope="row">
-                            <TextField placeholder="field name" id="field name" variant="outlined" size="small" value={field["name"]} onChange={(e) => {
+                            <TextField placeholder="Property Name" id="field name" variant="outlined" size="small" value={field["name"]} onChange={(e) => {
                                 setNewFields(newFields.map((elem, changeIndex) => {
                                     if (changeIndex === index) {
                                         elem["name"] = e.target.value;
@@ -214,7 +214,7 @@ const Schemas = () => {
                 </TableContainer>
         </div>
 
-        <h2>Existing Schemas</h2>
+        <h2>Existing Animal Types</h2>
 
         <TextField placeholder="Search" value={searchTerm} size="small" onChange={(e) => {
             setSearchTerm(e.target.value);
@@ -228,8 +228,8 @@ const Schemas = () => {
                             <Table sx={{ minWidth: 650 }} aria-label="fields table">
                                 <TableHead>
                                 <TableRow>
-                                    <TableCell>Field Name</TableCell>
-                                    <TableCell align="left">Type</TableCell>
+                                    <TableCell>Property Name</TableCell>
+                                    <TableCell align="left">Data Type</TableCell>
                                     <TableCell align="left">Required</TableCell>
                                     <TableCell align="right">
                                         <IconButton onClick={async () => {
