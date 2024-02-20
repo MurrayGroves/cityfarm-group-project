@@ -113,7 +113,7 @@ public class CalendarController {
             animals.add(anm);
         }
 
-        EventOnce new_event = new EventOnce(event.start, event.end, event.all_day, event.title, event.description, null, enclosures, animals, null);
+        EventOnce new_event = new EventOnce(event.start, event.end, event.all_day, event.title, event.description, null, enclosures, animals, event.farms, null);
 
         eventRepository.save(new_event);
 
@@ -135,7 +135,7 @@ public class CalendarController {
             animals.add(anm);
         }
 
-        EventRecurring newEvent = new EventRecurring(event.start, event.firstEnd, event.all_day, event.title, event.description, enclosures, animals, event.people, event.end, event.delay, null);
+        EventRecurring newEvent = new EventRecurring(event.start, event.firstEnd, event.all_day, event.title, event.description, enclosures, animals, event.farms, event.people, event.end, event.delay, null);
 
         eventRepository.save(newEvent);
 

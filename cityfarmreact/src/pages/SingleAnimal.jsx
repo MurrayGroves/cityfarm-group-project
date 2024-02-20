@@ -8,6 +8,7 @@ import AnimalPopover from "../components/AnimalPopover";
 import CloseIcon from "../assets/close-512.webp";
 import SelectedEvent from "../components/SelectedEvent";
 
+const WH = 0, HC = 1, SW = 2;
 const SingleAnimal = () => {
     const { animalID } = useParams();
     const [relEvents,setRelEvents] = useState([])
@@ -36,7 +37,7 @@ const SingleAnimal = () => {
                     allDay: events[i].allDay,
                     start: new  Date(events[i].start),
                     end: new  Date(events[i].end),
-                    // farms: events[i].farms,
+                    farms: events[i].farms,
                     animals: events[i].animals,
                     description: events[i].description,
                     enclosures: events[i].enclosures
@@ -82,10 +83,10 @@ const SingleAnimal = () => {
                         <div>
                             <p>{event.start.toLocaleString([], {year: '2-digit', month: '2-digit', day: '2-digit', hour: '2-digit', minute:'2-digit'})} - {event.start.toLocaleDateString() === event.end.toLocaleDateString() ? event.end.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : event.end.toLocaleString([], {year: '2-digit', month: '2-digit', day: '2-digit', hour: '2-digit', minute:'2-digit'})}</p>
                         </div>}
-                    {/*{event.farms.length !== 0 ? <h4>Farms: </h4> : <></>}*/}
-                    {/*{event.farms.includes(WH) ? <p>Windmill Hill </p> : <></>}*/}
-                    {/*{event.farms.includes(HC) ? <p>Hartcliffe </p> : <></>}*/}
-                    {/*{event.farms.includes(SW) ? <p>St Werberghs</p> : <></>}*/}
+                    {event.farms.length !== 0 ? <h4>Farms: </h4> : <></>}
+                    {event.farms.includes(WH) ? <p>Windmill Hill </p> : <></>}
+                    {event.farms.includes(HC) ? <p>Hartcliffe </p> : <></>}
+                    {event.farms.includes(SW) ? <p>St Werberghs</p> : <></>}
                 </div>
             )})}
         </div>
