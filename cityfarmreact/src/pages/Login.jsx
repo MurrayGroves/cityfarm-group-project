@@ -1,12 +1,29 @@
 import React, { useState } from "react";
 import MicrosoftLogin from "react-microsoft-login";
 import { useNavigate } from "react-router-dom";
+import { Alert } from "@mui/material";
 
 import "./anims.css";
+import { set } from "date-fns";
 
 export default (props) => {
-  const authHandler = (err, data) => {
+  const [isLoginFailed, setIsLoginFailed] = useState(false);
+
+  const authHandler = (err, data, msal) => {
     console.log(err, data);
+
+    if (err) {
+      console.error(err);
+      return;
+    }
+
+    if (!data.account.username.endsWith("bristol.ac.uk") && !data.account.username.endsWith("windmillhillcityfarm.org.uk")) {
+      msal.logout();
+      setIsLoginFailed(true);
+      return;
+    }
+
+    setIsLoginFailed(false);
     setWelcome(data.account.name)
     setTimeout(() => {
       navigate('/')
@@ -27,6 +44,19 @@ export default (props) => {
         flexDirection: 'column'
         }}>
           {
+            isLoginFailed ? 
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                position: 'relative',
+                flexDirection: 'column'
+              }}>
+                <Alert severity="error">Login failed. Please use your city farm email address.</Alert>
+              </div>
+              :
+              
+
             welcome === "" ? 
               <div style={{
                 display: 'flex',
