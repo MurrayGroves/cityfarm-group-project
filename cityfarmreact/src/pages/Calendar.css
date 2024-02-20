@@ -22,8 +22,16 @@
     width: 24px;
     height: 24px;
 }
+.closeButton img {
+    width: 24px;
+    height: 24px;
+}
 
-h2 h3 {
+h2 {
+    margin: 0;
+}
+
+h3 {
     margin-bottom: 0;
 }
 

@@ -1,41 +1,31 @@
+import Tabs from "@mui/material/Tabs";
+import Tab from "@mui/material/Tab";
 import "./FarmTabs.css";
-import Button from '@mui/material/Button';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { React, useState } from 'react';
+import { ThemeProvider, useTheme } from "@emotion/react";
+import { createTheme } from "@mui/material";
 
 const WH = 0, HC = 1, SW = 2;
-
-const theme = createTheme({
-  palette: {
-    WH: {
-        main: '#035afc',
-        light: '#ffffff',
-        dark: '#2643a3',
-        contrastText: '#050f24'
-    },
-    HC: {
-        main: '#FF0012',
-        light: '#FFFFFF',
-        dark: '#AA0033',
-        contrastText: '#333333'
-    },
-    SW: {
-        main: '#E3D026',
-        light: '#E9DB5D',
-        dark: '#A29415',
-        contrastText: '#242105'
-    }
-  },
-});
+const farms = {
+    0: 'WH',
+    1: 'HC',
+    2: 'SW'
+}
 
 const FarmTabs = (props) => {
+    var tabTheme = createTheme();
+    tabTheme.palette.primary.main = useTheme().palette[farms[props.selectedFarm]].main;
+
     return (
-        <ThemeProvider theme={theme}>
         <div className="tab-container">
-            <Button variant='contained' disableElevation onClick={()=>{props.selectFarm(WH)}} color="WH">Windmill Hill</Button>
-            <Button variant='contained' disableElevation onClick={()=>{props.selectFarm(HC)}} color="HC">Hartecliffe</Button>
-            <Button variant='contained' disableElevation onClick={()=>{props.selectFarm(SW)}} color="SW">St Werburghs</Button>
+            <ThemeProvider theme={tabTheme}>
+                <Tabs value={props.selectedFarm} onChange={(e, farm)=>{props.setSelectedFarm(farm)}}>
+                    <Tab value={WH} label="Windmill Hill"/>
+                    <Tab value={HC} label="Hartcliffe"/>
+                    <Tab value={SW} label="St Werburghs"/>
+                </Tabs>
+            </ThemeProvider>
         </div>
-        </ThemeProvider>
     );
 }
 
