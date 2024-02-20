@@ -7,6 +7,7 @@
     right: 25%;
     top: 25%;
 }
+
 .closeCross {
     display: inline-flex;
     border: none;
@@ -19,7 +20,12 @@
     top: 26%;
 
 }
+
 .closeCross img {
     width: 24px;
     height: 24px;
+}
+
+h2 {
+    margin-top: 20px;
 }

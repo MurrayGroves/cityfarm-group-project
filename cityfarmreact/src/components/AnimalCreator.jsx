@@ -16,27 +16,32 @@ import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
-
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import FieldSelector from './FieldSelector';
 
 const AnimalCreator = (props) => {
-    const [newAnimal, setNewAnimal] = useState({name: '', type: '', father: '', mother: '', male: true, alive: true, fields: {}})
+    const [newAnimal, setNewAnimal] = useState({name: '', type: '', father: '', mother: '', male: true, alive: true, fields: {}});
     const [schemaList, setSchemaList] = useState([]);
     const [schema, setSchema] = useState();
+    const [fieldList, setFieldList] = useState([]);
     const [create, setCreate] = useState(false);
 
+    let i = -1;
+
     const fieldTypeSwitch = (field) => {
-        newAnimal.fields[field] = '' ;
+        console.log('switching');
+        newAnimal.fields[field] = '';
         switch(schema._fields[field]._type) {
             case "java.lang.Boolean":
                 return (
                 <Select
                     style={{width: '100%'}}
                     value={newAnimal.fields[field]}
-                    onChange={(e)=>{let tempNewAnimal = newAnimal; tempNewAnimal.fields[field] = e.target.value; setNewAnimal(tempNewAnimal);}}>
+                    onChange={(e)=>{
+                        let tempNewAnimal = newAnimal;
+                        tempNewAnimal.fields[field] = e.target.value;
+                        setNewAnimal(tempNewAnimal);
+                    }}
+                >
                     <MenuItem value={true}>Yes</MenuItem>
                     <MenuItem value={false}>No</MenuItem>
                 </Select>
@@ -49,7 +54,14 @@ const AnimalCreator = (props) => {
                 return <TextField/>
             case "java.time.ZonedDateTime":
                 return (
-                <DatePicker slotProps={{textField: {fullWidth: true}}}/>
+                <DatePicker
+                    onClick={(e) => {
+                        let tempNewAnimal = newAnimal;
+                        tempNewAnimal.fields[field] = e.$d;
+                        setNewAnimal(tempNewAnimal);
+                    }}
+                    slotProps={{textField: {fullWidth: true}}}
+                />
                 )
             default:
                 return <></>;
@@ -68,13 +80,8 @@ const AnimalCreator = (props) => {
     },[]);
 
     useEffect(() => {
-        setSchema(schemaList.filter((schema) => schema._name === newAnimal.type).pop());
-        newAnimal.fields = {};
-    },[newAnimal.type]);
 
-    useEffect(() => {
-        console.log(newAnimal);
-    },[newAnimal]);
+    },[schema])
 
     return (<>
         {create ? <>
@@ -107,7 +114,18 @@ const AnimalCreator = (props) => {
                                     renderInput={(params) => <TextField {...params} label="Type"/>}
                                     getOptionLabel={option => option._name.charAt(0).toUpperCase() + option._name.slice(1)}
                                     options={schemaList}
-                                    onChange={(e, v) => {v ? setNewAnimal({...newAnimal, type: v._name}) : setNewAnimal({...newAnimal, type: ''})}}
+                                    onChange={(e, v) => {
+                                        if(v) {
+                                            setNewAnimal({...newAnimal, type: v._name, fields: {}});
+                                            let tempSchema = schemaList.filter((schema) => schema._name === v._name).pop();
+                                            setSchema(tempSchema);
+                                            setFieldList(Object.keys[tempSchema._fields]);
+                                            console.log(newAnimal, schema, fieldList);
+                                        } else {
+                                            setNewAnimal({...newAnimal, type: '', fields: {}});
+                                            setSchema();
+                                            setFieldList([]);
+                                        }}}
                                 />
                             </TableCell>
                             <TableCell>
@@ -173,9 +191,9 @@ const AnimalCreator = (props) => {
                     <TableHead> {/*style={{borderTop: '2px dashed rgba(196, 196, 196, 1)'}}*/}
                         <TableRow>
                             <TableCell style={{borderRight: '1px solid rgba(224, 224, 224, 1)', width: `${100/(Object.keys(schema._fields).length + 1)}%`}}>Field Name</TableCell>
-                            {Object.keys(schema._fields).map((field) => {
+                            {Object.keys(schema._fields).map((field, index) => {
                                 return (
-                                <TableCell style={{width: `${100/(Object.keys(schema._fields).length + 1)}%`}}>{field.charAt(0).toUpperCase() + field.slice(1)}</TableCell>
+                                <TableCell key={index} style={{width: `${100/(Object.keys(schema._fields).length + 1)}%`}}>{field.charAt(0).toUpperCase() + field.slice(1)}</TableCell>
                                 );
                             })}
                         </TableRow>
@@ -183,9 +201,11 @@ const AnimalCreator = (props) => {
                     <TableBody>
                         <TableRow>
                             <TableCell style={{borderRight: '1px solid rgba(224, 224, 224, 1)'}} variant='head'>Field Value</TableCell>
-                            {Object.keys(schema._fields).map((field) => {
+                            {Object.keys(schema._fields).map((_, index) => {
+                                i++;
+                                
                                 return (
-                                <TableCell variant='head'>{fieldTypeSwitch(field)}</TableCell>
+                                    <TableCell key={index}>{fieldList && fieldTypeSwitch(fieldList[i])}</TableCell>
                                 );
                             })}
                         </TableRow>

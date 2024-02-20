@@ -20,13 +20,9 @@ const colours = {
 const EnclosureTable = () => {
     const [enclosureList, setEnclosureList] = useState([]); /* The State for the list of enclosures. The initial state is [] */
     const [searchTerm, setSearchTerm] = useState(''); /* The term being search for in the searchbar */
-    const [searchMode, setSearchMode] = useState("name") /* The mode of search (by name or id) */
-    const [clear, setClear] = useState(0); /* Clear will reset the table to display all enclosures once updated*/
     const [editMode, setEditMode] = useState(false); /* Whether edit mode is on. Initial state is false */
 
     const [farm, setFarm] = useState(0);
-
-    //useEffect(displayAll,[clear]);
 
     function displayAll() {
         (async () => {
@@ -45,21 +41,11 @@ const EnclosureTable = () => {
                 displayAll();
                 return;
             }
-            if (searchMode === "name") {
-                try {
-                    const response = await axios.get(`/enclosures/by_name/${searchTerm}`);
-                    setEnclosureList(response.data);
-                } catch (error) {
-                    window.alert(error);
-                }
-            }
-            else {
-                try {
-                    const response = await axios.get(`/enclosures/by_id/${searchTerm}`);
-                    setEnclosureList(response.data);
-                } catch (error) {
-                    window.alert(error);
-                }
+            try {
+                const response = await axios.get(`/enclosures/by_name/${searchTerm}`);
+                setEnclosureList(response.data);
+            } catch (error) {
+                window.alert(error);
             }
         })()
     },[searchTerm])

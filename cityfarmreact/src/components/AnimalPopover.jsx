@@ -8,11 +8,9 @@ import { useState, useEffect } from 'react';
 
 const aExamples = [
     {
-
-    name:"error",
-
-}]
-
+        name: "Loading...",
+    }
+]
 
 const AnimalPopover = (props) => {
     const [anchorEl, setAnchorEl] = useState(null);
@@ -41,22 +39,21 @@ const AnimalPopover = (props) => {
     }, [props.animalID]);
 
     useEffect(()=>{
-        if(chosenAnimal.mother !== undefined && chosenAnimal.mother !== null){
-            console.log("hello");
+        if(chosenAnimal.mother){
             (async ()=>{
             try{
                 const mother = await axios.get(`/animals/by_id/${chosenAnimal.mother}`);
                 setMother(mother.data.name);
             }catch(error){
-                //window.alert(`mother issue \n ${error}`)
+                window.alert(`mother issue \n ${error}`)
             }})()}
-        if (chosenAnimal.father !== undefined && chosenAnimal.father !== null){
+        if (chosenAnimal.father){
             (async ()=>{
             try{
                 const father = await axios.get(`/animals/by_id/${chosenAnimal.father}`);
                 setFather(father.data.name);
             }catch(error){
-                //window.alert(`father issue \n ${error}`)
+                window.alert(`father issue \n ${error}`)
             }})()
         }
 
@@ -69,7 +66,7 @@ const AnimalPopover = (props) => {
                 aria-haspopup="true"
                 onMouseEnter={handlePopoverOpen}
                 onMouseLeave={handlePopoverClose}
-                    // style={{margin: '5px 0'}}
+                // style={{margin: '5px 0'}}
             >
                 <Link to={`/single-animal/${chosenAnimal._id}`}>{chosenAnimal.name}</Link>
             </Typography>
@@ -91,11 +88,9 @@ const AnimalPopover = (props) => {
             >
                 <Typography sx={{ p: 1, whiteSpace: 'pre-line' }}>
                     {`Type: ${chosenAnimal.type}`}<br/>
-                    {`Father : ${animalFather}`}<br/>
-                    {`Mother : ${animalMother}`}<br/>
-                    {chosenAnimal.tb_inoculated ? 'Inoculated: True' : 'Inoculated: False'}<br/>
-                    {chosenAnimal.male ? 'Sex: Male' : 'Sex: Female'}<br/>
-                    {chosenAnimal.alive ? 'Live: Yes' : 'Live: No'}
+                    {`Father: ${animalFather}`}<br/>
+                    {`Mother: ${animalMother}`}<br/>
+                    {chosenAnimal.male ? 'Sex: Male' : 'Sex: Female'}
                 </Typography>
             </Popover>
         </div>
