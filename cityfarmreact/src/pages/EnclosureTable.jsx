@@ -2,14 +2,11 @@ import React, {useEffect, useState} from "react";
 import axios from "../api/axiosConfig";
 import SearchBar from "../components/SearchBar";
 import TextField from '@mui/material/TextField';
-import "../components/AnimalTable.css";
+import "../pages/AnimalTable.css";
 import FarmTabs from "../components/FarmTabs";
 import TableContainer from '@mui/material/TableContainer';
 import Paper from '@mui/material/Paper';
-import TextField from '@mui/material/TextField';
 import { DataGrid } from "@mui/x-data-grid";
-import Paper from '@mui/material/Paper';
-import TableContainer from '@mui/material/TableContainer';
 import EditIcon from '@mui/icons-material/Edit';
 import IconButton from '@mui/material/IconButton';
 import { diff } from "deep-object-diff";
@@ -78,8 +75,7 @@ const EnclosureTable = () => {
         id: enclosure._id,
         name: enclosure.name,
         holding: Object.keys(enclosure.holding).map((key) => {
-            return (` ${key}:
-            ${Object.keys(enclosure.holding[key]).map((animal) => {
+            return (`${Object.keys(enclosure.holding[key]).map((animal) => {
                 return enclosure.holding[key][animal].name
             })}`)
         }),
