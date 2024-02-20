@@ -21,6 +21,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import 'dayjs/locale/en-gb';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { PublicClientApplication } from "@azure/msal-browser";
 
 const App = () => {
 
@@ -69,17 +70,29 @@ const App = () => {
     const [dark, setDark] = useState(false);
     const [msal, setMsal] = useState(null);
 
+    const msalConfig = {
+        auth: {
+            clientId: '5668872b-7957-4c09-a995-56cd915cb4a9',
+            postLogoutRedirectUri: "/login",
+        }
+    };
+
+    const msalInstance = new PublicClientApplication(msalConfig);
+    msalInstance.initialize().then(() => {
+        setMsal(msalInstance);
+    })
+
     return (
         <ThemeProvider theme={dark ? darkTheme : defaultTheme}>
         <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={'en-gb'}>
         <CssBaseline/>
         <Router>
-            <div className="Content">
             <Routes>
                 <Route path="login" element={<Login msal={msal} setMsal={setMsal} />}/>
                 <Route exact path="*" element={
                     <div>
                     <NavBar setDark={setDark} msal={msal}/>
+                    <div className='Content'>
                     <Routes>
                     <Route path="calendar" element={<Calendar/>}/>
                     <Route path="animals" element={<AnimalTable/>}/>
@@ -90,11 +103,12 @@ const App = () => {
                     <Route path="*" element={<Error/>}/>
                     </Routes>
                     </div>
+
+                    </div>
                     }>
 
                 </Route>
             </Routes>
-            </div>
         </Router>
         </LocalizationProvider>
         </ThemeProvider>

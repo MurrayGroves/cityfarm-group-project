@@ -18,17 +18,22 @@ export default ({msal, setMsal}) => {
     }
 
     if (!data.account.username.endsWith("bristol.ac.uk") && !data.account.username.endsWith("windmillhillcityfarm.org.uk")) {
-      msal.logout();
+      msal.logoutRedirect({
+        onRedirectNavigate: (url) => {
+            // Return false if you would like to stop navigation after local logout
+            return false;
+        },
+        account: data.account
+      });
       setIsLoginFailed(true);
-      return;
+    } else {
+      setIsLoginFailed(false);
+      setMsal(msal);
+      setWelcome(data.account.name)
+      setTimeout(() => {
+        navigate('/')
+      }, 2000)
     }
-
-    setIsLoginFailed(false);
-    setMsal(msal);
-    setWelcome(data.account.name)
-    setTimeout(() => {
-      navigate('/')
-    }, 2000)
   };
 
   let navigate = useNavigate();
@@ -51,13 +56,14 @@ export default ({msal, setMsal}) => {
                 alignItems: 'center',
                 justifyContent: 'center',
                 position: 'relative',
-                flexDirection: 'column'
+                flexDirection: 'column',
+                paddingTop: "1%"
               }}>
                 <Alert severity="error">Login failed. Please use your city farm email address.</Alert>
               </div>
-              :
-              
-
+            :
+              <div></div>
+            }{
             welcome === "" ? 
               <div style={{
                 display: 'flex',
@@ -66,7 +72,7 @@ export default ({msal, setMsal}) => {
                 position: 'relative',
                 flexDirection: 'column'
               }}>
-                <h1>Login</h1>
+                <h1>Cityfarm Login</h1>
                 <MicrosoftLogin clientId={"5668872b-7957-4c09-a995-56cd915cb4a9"} authCallback={authHandler} />
               </div>
             :
