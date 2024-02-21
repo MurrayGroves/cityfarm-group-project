@@ -1,6 +1,6 @@
 package cityfarm.api.calendar;
 
-import cityfarm.api.animals.AnimalUnique;
+import cityfarm.api.animals.AnimalCustom;
 import cityfarm.api.enclosure.Enclosure;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -45,7 +45,7 @@ public class EventOnce extends Event {
     @PersistenceCreator
     public EventOnce(@JsonProperty("start") @NonNull ZonedDateTime start, @JsonProperty("end") @Nullable ZonedDateTime end, @JsonProperty("all_day") @NonNull Boolean all_day,
                      @JsonProperty("title") @NonNull String title, @JsonProperty("description") @Nullable String description, @JsonProperty("_id") @Nullable String id,
-                     @JsonProperty("enclosures") @Nullable List<String> attachedEnclosures, @JsonProperty("animals") @Nullable List<String> attachedAnimals, @JsonProperty("people") @Nullable List<String> attachedPeople) {
+                     @JsonProperty("enclosures") @Nullable List<Enclosure> enclosures, @JsonProperty("animals") @Nullable List<AnimalCustom> animals, @JsonProperty("farms") @Nullable List<String> farms, @JsonProperty("people") @Nullable List<String> attachedPeople) {
         if (end == null && !all_day) {
             throw new IllegalArgumentException("If end isn't present, the event must be marked as all day");
         }
@@ -55,8 +55,9 @@ public class EventOnce extends Event {
         this.all_day = all_day;
         this.title = title;
         this.description = description;
-        this.attachedEnclosures = attachedEnclosures;
-        this.attachedAnimals = attachedAnimals;
+        this.enclosures = enclosures;
+        this.animals = animals;
+        this.farms = farms;
         this.attachedPeople = attachedPeople;
         this.id = Objects.requireNonNullElseGet(id, () -> UUID.randomUUID().toString());
     }

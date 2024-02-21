@@ -1,4 +1,4 @@
-package cityfarm.api.animals;
+package cityfarm.api.schemas;
 
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -8,16 +8,16 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-public class AnimalRepositoryCustom {
+public class SchemaRepositoryCustom {
 
     private final MongoOperations mongoOperations;
 
-    public AnimalRepositoryCustom(MongoOperations mongoOperations) {
+    public SchemaRepositoryCustom(MongoOperations mongoOperations) {
         this.mongoOperations = mongoOperations;
     }
 
-    public List<AnimalCustom> findAnimalByName(String name){
+    public List<AnimalSchema> findSchemaByName(String name){
         Criteria regex = Criteria.where("name").regex(name, "i");
-        return mongoOperations.find(new Query().addCriteria(regex), AnimalCustom.class);
+        return mongoOperations.find(new Query().addCriteria(regex), AnimalSchema.class);
     }
 }

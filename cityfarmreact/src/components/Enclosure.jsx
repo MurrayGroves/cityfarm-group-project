@@ -2,7 +2,19 @@ import * as React from 'react';
 import Popover from '@mui/material/Popover';
 import Typography from '@mui/material/Typography';
 import {Link} from "react-router-dom";
-import './Animal.css'
+import './Enclosure.css';
+import AnimalPopover from './AnimalPopover';
+
+let exampleHolding = new Map([
+    ["cow", aExamples[0]],
+    ["sheep", aExamples[1]]
+]
+);
+
+let exampleCapacities = new Map([
+    ["cow", 3]
+    ["sheep", 4]
+]);
 
 const aExamples =[
     {
@@ -28,9 +40,18 @@ const aExamples =[
 
     }]
 
-const Animal = (props) => {
+const eExamples =[
+    {
+    id : 1,
+    name:"pen",
+    holding: exampleHolding,
+    capacities: exampleCapacities
+
+}]
+
+const Enclosure = (props) => {
     const [anchorEl, setAnchorEl] = React.useState(null);
-    const [chosenanimal, setChosenAnimal] = React.useState(aExamples[0]);
+    const [chosenenclosure, setChosenEnclosure] = React.useState(eExamples[0]);
 
     const handlePopoverOpen = (event) => {
         setAnchorEl(event.currentTarget);
@@ -43,13 +64,13 @@ const Animal = (props) => {
     const open = Boolean(anchorEl);
 
     React.useEffect(() => {
-        // Update chosenanimal when animalID prop changes
-        for (let i = 0; i < aExamples.length; i++) {
-            if (props.animalID === aExamples[i].id) {
-                setChosenAnimal(aExamples[i]);
+        // Update chosenenclosure when enclosureID prop changes
+        for (let i = 0; i < eExamples.length; i++) {
+            if (props.enclosureID === eExamples[i].id) {
+                setChosenEnclosure(eExamples[i]);
             }
         }
-    }, [props.animalID]);
+    }, [props.enclosureID]);
 
     return (
         <div>
@@ -59,7 +80,7 @@ const Animal = (props) => {
                 onMouseEnter={handlePopoverOpen}
                 onMouseLeave={handlePopoverClose}
             >
-                <Link to="/animals"> {chosenanimal.name} </Link>
+                <Link to="/enclosure"> {chosenenclosure.name} </Link>
             </Typography>
             <Popover
                 id="mouse-over-popover"
@@ -80,14 +101,13 @@ const Animal = (props) => {
                 disableRestoreFocus
             >
                 <Typography sx={{ p: 1,whiteSpace: 'pre-line' }}>
-                {chosenanimal.sex}{'\n'}
-                {chosenanimal.type}{'\n'}
-                {chosenanimal.father}{'\n'}
-                {chosenanimal.mother}{'\n'}
+                {chosenenclosure.name}{'\n'}
+                {chosenenclosure.holding}{'\n'}
+                {chosenenclosure.capacities}{'\n'}
                 </Typography>
             </Popover>
         </div>
     );
 }
 
-export default Animal;
+export default Enclosure;

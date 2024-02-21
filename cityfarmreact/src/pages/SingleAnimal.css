@@ -1,0 +1,26 @@
+.selectedBox {
+    width: 400px;
+    margin: 0;
+    padding: 10px 10px 10px 10px;
+    position: absolute;
+    top: 240px;
+    right: 40px;
+}
+
+.closeButton {
+    background-color: transparent;
+    width: 32px;
+    height: 32px;
+}
+.closeButton img {
+    width: 24px;
+    height: 24px;
+}
+
+h2 {
+    margin-top: 20px;
+}
+
+h4 {
+    margin: 0;
+}

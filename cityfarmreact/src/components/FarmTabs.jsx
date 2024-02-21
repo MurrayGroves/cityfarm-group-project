@@ -1,11 +1,25 @@
+import Tabs from "@mui/material/Tabs";
+import Tab from "@mui/material/Tab";
 import "./FarmTabs.css";
+import { React, useState } from 'react';
+import { ThemeProvider, useTheme } from "@emotion/react";
+import { createTheme } from "@mui/material";
 
 const FarmTabs = (props) => {
+    const farms = props.farms;
+
+    var tabTheme = createTheme({palette: {mode: useTheme().palette.mode}});
+    tabTheme.palette.primary.main = useTheme().palette[farms[props.selectedFarm]].main;
+
     return (
         <div className="tab-container">
-            <button style={{borderColor: "#FF0000"}} onClick={()=>{props.selectFarm("wh")}}>Windmill Hill</button>
-            <button style={{borderColor: "#6666FF"}} onClick={()=>{props.selectFarm("hc")}}>Hartecliff</button>
-            <button style={{borderColor: "#3312FF"}} onClick={()=>{props.selectFarm("sw")}}>St Werburghs</button>
+            <ThemeProvider theme={tabTheme}>
+                <Tabs value={props.selectedFarm} onChange={(e, farm)=>{props.setSelectedFarm(farm)}}>
+                    <Tab value={farms.WH} label="Windmill Hill"/>
+                    <Tab value={farms.HC} label="Hartcliffe"/>
+                    <Tab value={farms.SW} label="St Werburghs"/>
+                </Tabs>
+            </ThemeProvider>
         </div>
     );
 }

@@ -1,16 +1,19 @@
 package cityfarm.api.enclosure;
 
-import cityfarm.api.animals.AnimalGeneric;
+import cityfarm.api.animals.AnimalCustom;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpHeaders;
+import org.springframework.boot.actuate.autoconfigure.observation.ObservationProperties;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.HttpHeaders;
 
 import java.net.URI;
 import java.util.*;
 
 @RestController
+@CrossOrigin(origins = {"http://localhost:3000", "https://cityfarm.murraygrov.es"}, methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE, RequestMethod.PATCH})
 public class EnclosureController {
     @Autowired
     EnclosureRepository enclosureRepository;
@@ -21,7 +24,7 @@ public class EnclosureController {
     @Autowired
     MongoTemplate mongoTemplate;
 
-    HttpHeaders responseHeaders = new HttpHeaders();
+    //HttpHeaders responseHeaders = new HttpHeaders();
 
     @PostMapping("/api/enclosures/create")
     public ResponseEntity<Enclosure> create_enclosure(@RequestBody EnclosureGeneric enclosureReq) {
@@ -36,32 +39,29 @@ public class EnclosureController {
 
     @GetMapping("/api/enclosures")
     public ResponseEntity<List<Enclosure>> get_enclosures() {
-        responseHeaders.set(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "http://localhost:3000");
-        return ResponseEntity.ok().headers(responseHeaders).body(enclosureRepository.findAll());
+        return ResponseEntity.ok().body(enclosureRepository.findAll());
     }
 
     @GetMapping("/api/enclosures/by_id/{id}")
     public ResponseEntity<Enclosure> get_enclosure_by_id(@PathVariable String id) {
-        responseHeaders.set(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "http://localhost:3000");
         Enclosure enclosure = enclosureRepository.findEnclosureById(id);
 
         if (enclosure == null) {
             return ResponseEntity.notFound().build();
         }
 
-        return ResponseEntity.ok().headers(responseHeaders).body(enclosure);
+        return ResponseEntity.ok().body(enclosure);
     }
 
     @GetMapping("/api/enclosures/by_name/{name}")
     public ResponseEntity<List<Enclosure>> get_enclosure_by_name(@PathVariable String name) {
-        responseHeaders.set(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "http://localhost:3000");
-        List<Enclosure> enclosure = enclosureRepository.findEnclosureByName(name);
+        List<Enclosure> enclosure = enclosureRepositoryCustom.findEnclosureByName(name);
 
-        return ResponseEntity.ok().headers(responseHeaders).body(enclosure);
+        return ResponseEntity.ok().body(enclosure);
     }
 
     @PatchMapping("/api/enclosures/by_id/{id}/holding")
-    public ResponseEntity<String> set_enclosure_holding(@PathVariable String id, @RequestBody HashMap<String, Set<AnimalGeneric>> holding) {
+    public ResponseEntity<String> set_enclosure_holding(@PathVariable String id, @RequestBody HashMap<String, Set<AnimalCustom>> holding) {
         Enclosure enc = enclosureRepository.findEnclosureById(id);
 
         for (String type : holding.keySet()) {
@@ -88,13 +88,27 @@ public class EnclosureController {
         Enclosure enc = enclosureRepository.findEnclosureById(id);
 
         for (String type : capacities.keySet()) {
-            Set<AnimalGeneric> holds = Objects.requireNonNullElse(enc.holding.get(type), new HashSet<>());
+            Set<AnimalCustom> holds = Objects.requireNonNullElse(enc.holding.get(type), new HashSet<>());
             if (holds.size() > capacities.get(type)) {
                 return ResponseEntity.badRequest().body("Capacity too low for current inhabitants");
             }
         }
 
         long res = enclosureRepositoryCustom.updateCapacities(id, capacities);
+
+        // If no documents updated
+        if (res == 0) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/api/enclosures/by_id/{id}/name/{newName}")
+    public ResponseEntity<String> set_enclosure_name(@PathVariable String id, @PathVariable String newName) {
+        //console.log("name: " + newName);
+
+        long res = enclosureRepositoryCustom.updateName(id, newName);
 
         // If no documents updated
         if (res == 0) {

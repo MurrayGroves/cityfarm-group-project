@@ -1,100 +1,108 @@
 import React, {useEffect, useState} from "react";
 import axios from "../api/axiosConfig";
-import SearchBar from "../components/SearchBar";
-import "../components/AnimalTable.css";
+import "./AnimalTable.css";
 import FarmTabs from "../components/FarmTabs";
+import TableContainer from '@mui/material/TableContainer';
+import TextField from '@mui/material/TextField';
+import { DataGrid } from "@mui/x-data-grid";
+import Paper from '@mui/material/Paper';
+import EditIcon from '@mui/icons-material/Edit';
+import Button from '@mui/material/Button';
+import { diff } from "deep-object-diff";
 
-const EnclosureTable = () => {
+const EnclosureTable = ({farms}) => {
     const [enclosureList, setEnclosureList] = useState([]); /* The State for the list of enclosures. The initial state is [] */
     const [searchTerm, setSearchTerm] = useState(''); /* The term being search for in the searchbar */
-    const [searchMode, setSearchMode] = useState("name") /* The mode of search (by name or id) */
-    const [clear, setClear] = useState(0); /* Clear will reset the table to display all enclosures once updated*/
+    const [editMode, setEditMode] = useState(false); /* Whether edit mode is on. Initial state is false */
 
-    const [farm, setFarm] = useState("");
-
-    useEffect(displayAll,[])
-    useEffect(displayAll,[clear]);
+    const [farm, setFarm] = useState(Object.keys(farms)[0]);
 
     function displayAll() {
         (async () => {
             try {
                 const response = await axios.get(`/enclosures`);
-                console.log(response.data);
                 setEnclosureList(response.data);
             } catch (error) {
                 window.alert(error);
             }
         })()
     }
+
     useEffect (() => {
         (async () => {
             if (searchTerm === '') {
+                displayAll();
                 return;
             }
-            if (searchMode === "name") {
-                try {
-                    const response = await axios.get(`/enclosures/by_name/${searchTerm}`);
-                    console.log(response.data);
-                    setEnclosureList(response.data);
-                } catch (error) {
-                    window.alert(error);
-                }
-            }
-            else {
-                try {
-                const response = await axios.get(`/enclosures/by_id/${searchTerm}`);
-                console.log(response.data);
+            try {
+                const response = await axios.get(`/enclosures/by_name/${searchTerm}`);
                 setEnclosureList(response.data);
-                } catch (error) {
-                    window.alert(error);
-                }
+            } catch (error) {
+                window.alert(error);
             }
         })()
     },[searchTerm])
 
+    const cols =  [
+        { field: 'name', editable: true, headerName: 'Name', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
+        { field: 'holding', headerName: 'Holding', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
+        { field: 'capacities', headerName: 'Capacities', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
+    ]
+
+    const rows = enclosureList.map((enclosure) => ({
+        id: enclosure._id,
+        name: enclosure.name,
+        holding: Object.keys(enclosure.holding).map((key) => {
+            return (` ${key}:
+            ${Object.keys(enclosure.holding[key]).map((animal) => {
+                return enclosure.holding[key][animal].name
+            })}`)
+        }),
+        capacities: Object.keys(enclosure.capacities).map((key) => {
+            return (` ${key}: ${enclosure.capacities[key]}`)
+        })
+    }))
+
     return(<>
         <h1>Enclosures</h1>
-        <SearchBar setSearchMode={setSearchMode} search={setSearchTerm} clearValue={clear} clearSearch={setClear}/>
-        {enclosureList?.length > 0 ? (<>
-            <FarmTabs selectFarm={setFarm}/>
-            <div className="animal-table">
-                <table style={{width: '100%'}}>
-                    <thead>
-                    <tr>
-                    <th>Name</th>
-                    <th>Holding</th>
-                    <th>Capacities</th>
-                    </tr>   
-                    </thead>
-                    <tbody>
-                        {enclosureList.map((enclosure) => (
-                            <tr>
-                                <td>{enclosure.name}</td>
-                                <td>{Object.keys(enclosure.holding).map((key) => {
-                                    return(<>
-                                        {key}: {Object.keys(enclosure.holding[key]).map((animal) => {
-                                            return(<>
-                                                {enclosure.holding[key][animal].name},
-                                            </>)
-                                        })} <br></br>
-                                    </>)
-                                })}</td>
-
-                                <td>{Object.keys(enclosure.capacities).map((key) => {
-                                    return(<>
-                                        {key}: {enclosure.capacities[key]} <br></br>
-                                    </>)
-                                })}</td>
-                            </tr>
-                        ))}
-                </tbody>
-                </table>
-            </div>
-        </>) : (
-            <div className="empty">
-                <h2>No enclosures found</h2>
-            </div>
-        )}
+        <span style={{display: 'flex', justifyContent: 'space-between', height: '60px'}}>
+            <TextField
+                size='small'
+                placeholder='Search'
+                style={{margin: '0 20px 20px 0'}}
+                onChange={(e) => setSearchTerm(e.target.value)}
+            ></TextField>
+            <FarmTabs farms={farms} selectedFarm={farm} setSelectedFarm={setFarm}/>
+        </span>
+        <TableContainer component={Paper} style={{marginBottom: '20px'}}>
+            <DataGrid rows={rows} columns={cols} 
+            isCellEditable = {() => editMode} 
+            // onCellEditStop = {(params: GridCellParams, event) => {
+                
+            //     setEditMode(!editMode);
+            // }}
+            processRowUpdate = {(newVal, oldVal) => {
+                console.log("it gets here")
+                const result = diff(oldVal, newVal);
+                console.log(result);
+                const newName = newVal.name;
+                console.log(newName);
+                const _id = oldVal.id;
+                console.log(_id);
+                (async() =>{
+                    try{
+                        const response = await axios.patch(`/enclosures/by_id/${_id}/name/${newName}`)
+                        console.log(response);
+                        window.location.reload(false);
+                    }catch (error){
+                        window.alert(error);
+                    }
+                })();
+                setEditMode(false);
+                return newVal;
+            }}/>
+        </TableContainer>
+        <Button style={{float: 'right'}} aria-label="edit" onClick={() => setEditMode(true)} variant='contained' endIcon={<EditIcon/>}>Edit</Button>
     </>)
 }
 

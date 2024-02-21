@@ -1,6 +1,5 @@
 package cityfarm.api.calendar;
 
-import cityfarm.api.animals.AnimalGeneric;
 import cityfarm.api.enclosure.Enclosure;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -11,7 +10,6 @@ import org.springframework.stereotype.Component;
 import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
 
 @Component
 public class EventRepositoryCustom {
