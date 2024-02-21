@@ -1,6 +1,6 @@
 import {Calendar as BigCalendar, dayjsLocalizer} from 'react-big-calendar';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
-import React, {useState, useEffect } from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import dayjs from 'dayjs';
 import "./Calendar.css";
 import Event from "../components/Event";
@@ -13,8 +13,10 @@ import TextField from '@mui/material/TextField';
 import { IconButton, Button, ButtonGroup, Checkbox, FormControlLabel, FormGroup, useTheme } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
+import axios from '../api/axiosConfig'
 
-const WH = 0, HC = 1, SW = 2;
+
+const WH = "WH", HC = "HC", SW = "SW";
 const events = [ /*These are example events.*/
     {
         title : "Boss Meeting",
@@ -60,6 +62,7 @@ const events = [ /*These are example events.*/
 
 const Calendar = () => {
 
+
     const theme = useTheme().palette;
 
     const [newEvent,setNewEvent] = useState({
@@ -83,7 +86,7 @@ const Calendar = () => {
         enclosures: []
     })
 
-    const [allEvents,setAllEvents] = useState(events);
+    const [allEvents,setAllEvents] = useState([]);
     const [selectedEvent,setSelectedEvent] = useState("No event selected");
     const [visibleFarms, setVisibleFarms] = useState([WH, HC, SW]);
     const [modifyEvent, setModifyEvent] = useState(false);
@@ -91,7 +94,22 @@ const Calendar = () => {
     useEffect(() =>{
         setModifiedEvent(selectedEvent);
     },[selectedEvent]);
+    useEffect(() => {
+        (async () => {
+            try {
 
+                const start = new Date()
+                start.setMonth(start.getMonth()-1)
+                const end =  new Date()
+                end.setMonth(end.getMonth()+1)
+
+                const response = await axios.get(`/events`, {params: {from: start.toISOString(), to: end.toISOString()}});
+                setAllEvents(eventsConversion(response.data));
+            } catch (error) {
+                window.alert(error);
+            }
+        })();
+    }, []);
     const removeAnimal = (animalID, type) => {
         if (type === "add"){
 
@@ -125,6 +143,7 @@ const Calendar = () => {
     }
 
     const eventStyleGetter = (event) => {
+        //console.log(event)
         var colour1 = event.farms.includes(WH) ? theme.WH.main : (event.farms.includes(HC) ? theme.HC.main : theme.SW.main);
         var colour2 = event.farms.includes(HC) ? (event.farms.includes(WH) ? theme.HC.main : (event.farms.includes(SW) ? theme.SW.main : theme.SW.main)) : theme.SW.main;
         const offset = 0;
@@ -179,13 +198,11 @@ const Calendar = () => {
     const onRangeChange = useCallback(async (range) => {
         if (range.start !== undefined){ //month or agenda case start and end are the times displayed on the calendar
             try {
-                const start = new Date(range.start)
-                const end = new Date(range.end)
-                window.alert(start);
-                window.alert(end);
-                const response = await axios.get(`/events`, {params: {from: start.toJSON(), to: end.toJSON()}});
-                console.log(response.data);
-                setAllEvents(response.data);
+                const start = range.start.toISOString()
+                const end = range.end.toISOString()
+
+                const response = await axios.get(`/events`, {params: {from: start, to: end}});
+                setAllEvents(eventsConversion(response.data));
             } catch (error) {
                 window.alert(error);
 
@@ -193,29 +210,51 @@ const Calendar = () => {
         } else {
             if (range[1] !== undefined){ //week case has an array of 7 times
                 try {
-                    const start = new Date(range[0])
-                    const end = new Date(range[range.length - 1])
-                    const response = await axios.get(`/events`, start, end);
-                    console.log(response.data);
-                    setAllEvents(response.data);
+                    const start = range[0].toISOString()
+                    const end = range[range.length - 1].toISOString()
+                    const response = await axios.get(`/events`, {params: {from: start, to: end}});
+
+                    setAllEvents(eventsConversion(response.data));
                 } catch (error){
                     window.alert(error);
                 }
             }
             else{ // day case has a single element of the start time
                 try {
-                const start = new Date(range[0])
-                const end = new Date(start)
-                end.setDate(start.getDate() + 1)
-                    const response = await axios.get(`/events`, start, end);
-                    console.log(response.data);
-                    setAllEvents(response.data);
+                    const start = range[0]
+                    const end = start
+                    end.setDate(start.getDate() + 1)
+
+                    const response = await axios.get(`/events`, {params: {from: start.toISOString(), to: end.toISOString()}});
+
+                    setAllEvents(eventsConversion(response.data));
                 } catch (error) {
                     window.alert(error)
                 }
             }
         }
       }, [])
+
+    const eventsConversion=(events)=>{
+        let changed=[]
+        for (let i=0;i<events.length;i++){
+            changed.push(
+                {
+                    title : events[i].event.title,
+                    allDay: events[i].event.allDay,
+                    start: new  Date(events[i].start),
+                    end: new  Date(events[i].end),
+                    farms: events[i].event.farms,
+                    animals: events[i].event.animals,
+                    description: events[i].event.description,
+                    enclosures: events[i].event.enclosures
+                }
+            )
+        }
+        console.log(changed)
+        return changed
+    }
+
     return (
         <div className="CalendarPage" style={{height: "85%"}}>
         <h1>Calendar</h1>
@@ -274,7 +313,7 @@ const Calendar = () => {
                         {selectedEvent.farms.includes(SW) ? <p>St Werberghs</p> : <></>}
                         {selectedEvent.animals.length !== 0 ? <h3>Animals</h3> : <></>}
                         {selectedEvent.animals.map((animalID) => (
-                            <AnimalPopover key={animalID} animalID={animalID}/>
+                            <AnimalPopover key={animalID._id} animalID={animalID._id}/>
                         ))}
                         {selectedEvent.enclosures.length !== 0 &&
                         <div>
