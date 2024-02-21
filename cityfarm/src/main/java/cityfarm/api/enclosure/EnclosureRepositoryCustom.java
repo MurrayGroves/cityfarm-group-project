@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
 
 @Component
 public class EnclosureRepositoryCustom {
@@ -20,7 +19,7 @@ public class EnclosureRepositoryCustom {
         this.mongoOperations = mongoOperations;
     }
 
-    public long updateHolding(String id, HashMap<String, Set<AnimalCustom>> holding) {
+    public long updateHolding(String id, List<AnimalCustom> holding) {
         Query query = new Query(Criteria.where("_id").is(id));
         Update update = new Update().set("holding", holding);
         return mongoOperations.updateFirst(query, update, Enclosure.class).getModifiedCount();

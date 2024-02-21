@@ -9,6 +9,7 @@ import Paper from '@mui/material/Paper';
 import EditIcon from '@mui/icons-material/Edit';
 import IconButton from '@mui/material/IconButton';
 import { diff } from "deep-object-diff";
+import AnimalPopover from "../components/AnimalPopover";
 
 const colours = {
     WH: "#333388",
@@ -64,6 +65,19 @@ const EnclosureTable = () => {
         })()
     },[searchTerm])
 
+    // function searchAnimal(animalID) {
+    //     (async() =>{
+    //         try{
+    //             const response = await axios.get(`/animals/by_id/${animalID}`)
+    //             console.log(response);
+    //             return response;
+    //         }catch (error){
+    //             window.alert(error);
+    //             return null;
+    //         }
+    //     })();
+    // }
+
     const cols =  [
         { field: 'name', editable: true, headerName: 'Name', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
         { field: 'holding', headerName: 'Holding', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
@@ -73,10 +87,10 @@ const EnclosureTable = () => {
     const rows = enclosureList.map((enclosure) => ({
         id: enclosure._id,
         name: enclosure.name,
-        holding: Object.keys(enclosure.holding).map((key) => {
-            return (`${Object.keys(enclosure.holding[key]).map((animal) => {
-                return enclosure.holding[key][animal].name
-            })}`)
+        holding: enclosure.holding.map((animal) => {
+            console.log("it gets here");
+            console.log(animal);
+            return (`${animal.name}`)
         }),
         capacities: Object.keys(enclosure.capacities).map((key) => {
             return (` ${key}: ${enclosure.capacities[key]}`)

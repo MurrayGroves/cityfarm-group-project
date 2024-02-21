@@ -1,16 +1,12 @@
 package cityfarm.api.enclosure;
 
-import cityfarm.api.animals.AnimalCustom;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.http.HttpHeaders;
-import org.springframework.boot.actuate.autoconfigure.observation.ObservationProperties;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.http.HttpHeaders;
 
 import java.net.URI;
-import java.util.*;
+import java.util.List;
 
 @RestController
 @CrossOrigin(origins = {"http://localhost:3000", "https://cityfarm.murraygrov.es"}, methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE, RequestMethod.PATCH})
@@ -60,49 +56,49 @@ public class EnclosureController {
         return ResponseEntity.ok().body(enclosure);
     }
 
-    @PatchMapping("/api/enclosures/by_id/{id}/holding")
-    public ResponseEntity<String> set_enclosure_holding(@PathVariable String id, @RequestBody HashMap<String, Set<AnimalCustom>> holding) {
-        Enclosure enc = enclosureRepository.findEnclosureById(id);
+//    @PatchMapping("/api/enclosures/by_id/{id}/holding")
+//    public ResponseEntity<String> set_enclosure_holding(@PathVariable String id, @RequestBody List<AnimalCustom> holding) {
+//        Enclosure enc = enclosureRepository.findEnclosureById(id);
+//
+//        for (String type : holding.keySet()) {
+//            if (!enc.capacities.containsKey(type)) {
+//                continue;
+//            }
+//            if (holding.get(type).size() > enc.capacities.get(type)) {
+//                return ResponseEntity.badRequest().body("Holding exceeds capacity");
+//            }
+//        }
+//
+//        long res = enclosureRepositoryCustom.updateHolding(id, holding);
+//
+//        // If no documents updated
+//        if (res == 0) {
+//            return ResponseEntity.notFound().build();
+//        }
+//
+//        return ResponseEntity.ok().build();
+//    }
 
-        for (String type : holding.keySet()) {
-            if (!enc.capacities.containsKey(type)) {
-                continue;
-            }
-            if (holding.get(type).size() > enc.capacities.get(type)) {
-                return ResponseEntity.badRequest().body("Holding exceeds capacity");
-            }
-        }
-
-        long res = enclosureRepositoryCustom.updateHolding(id, holding);
-
-        // If no documents updated
-        if (res == 0) {
-            return ResponseEntity.notFound().build();
-        }
-
-        return ResponseEntity.ok().build();
-    }
-
-    @PatchMapping("/api/enclosures/by_id/{id}/capacities")
-    public ResponseEntity<String> set_enclosure_capacities(@PathVariable String id, @RequestBody HashMap<String, Integer> capacities) {
-        Enclosure enc = enclosureRepository.findEnclosureById(id);
-
-        for (String type : capacities.keySet()) {
-            Set<AnimalCustom> holds = Objects.requireNonNullElse(enc.holding.get(type), new HashSet<>());
-            if (holds.size() > capacities.get(type)) {
-                return ResponseEntity.badRequest().body("Capacity too low for current inhabitants");
-            }
-        }
-
-        long res = enclosureRepositoryCustom.updateCapacities(id, capacities);
-
-        // If no documents updated
-        if (res == 0) {
-            return ResponseEntity.notFound().build();
-        }
-
-        return ResponseEntity.ok().build();
-    }
+//    @PatchMapping("/api/enclosures/by_id/{id}/capacities")
+//    public ResponseEntity<String> set_enclosure_capacities(@PathVariable String id, @RequestBody HashMap<String, Integer> capacities) {
+//        Enclosure enc = enclosureRepository.findEnclosureById(id);
+//
+//        for (int i = 0; i < enc.holding.size(); i++) {
+//         List<AnimalCustom> holds = new ArrayList(Objects.requireNonNullElse(enc.holding.get(type), new HashSet<>()));
+//            if (holds.size() > capacities.get(type)) {
+//                return ResponseEntity.badRequest().body("Capacity too low for current inhabitants");
+//            }
+//        }
+//
+//        long res = enclosureRepositoryCustom.updateCapacities(id, capacities);
+//
+//        // If no documents updated
+//        if (res == 0) {
+//            return ResponseEntity.notFound().build();
+//        }
+//
+//        return ResponseEntity.ok().build();
+//    }
 
     @PatchMapping("/api/enclosures/by_id/{id}/name/{newName}")
     public ResponseEntity<String> set_enclosure_name(@PathVariable String id, @PathVariable String newName) {
