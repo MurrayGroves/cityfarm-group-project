@@ -60,8 +60,9 @@ const Schemas = () => {
                 if (error.response.status === 401) {
                     window.location.href = "/login";
                     return;
+                } else {
+                    window.alert(error);
                 }
-                window.alert(error);
             }
         })()
     }
@@ -87,20 +88,22 @@ const Schemas = () => {
                     if (error.response.status === 401) {
                         window.location.href = "/login";
                         return;
+                    } else {
+                        window.alert(error);
                     }
-                    window.alert(error);
                 }
             } else {
                 try {
-                const response = await axios.get(`/schemas/by_name/${searchTerm}`);
-                console.log(response.data);
-                setSchemaList(response.data.reverse());
+                    const response = await axios.get(`/schemas/by_name/${searchTerm}`);
+                    console.log(response.data);
+                    setSchemaList(response.data.reverse());
                 } catch (error) {
                     if (error.response.status === 401) {
                         window.location.href = "/login";
                         return;
+                    } else {
+                        window.alert(error);
                     }
-                    window.alert(error);
                 }
             }
         })()
@@ -246,14 +249,15 @@ const Schemas = () => {
                                     <TableCell align="right">
                                         <IconButton onClick={async () => {
                                             try{
-                                            await axios.delete(`/schemas/by_name/${schema._name}`);
-                                            window.location.reload(false);
-                                            } catch(error) {
+                                                await axios.delete(`/schemas/by_name/${schema._name}`);
+                                                window.location.reload(false);
+                                            } catch (error) {
                                                 if (error.response.status === 401) {
                                                     window.location.href = "/login";
                                                     return;
+                                                } else {
+                                                    window.alert(error);
                                                 }
-                                                window.alert(error);
                                             }
                                         }}><DeleteIcon/>
                                         </IconButton>

@@ -37,8 +37,9 @@ const EnclosureTable = () => {
                 if (error.response.status === 401) {
                     window.location.href = "/login";
                     return;
+                } else {
+                    window.alert(error);
                 }
-                window.alert(error);
             }
         })()
     }
@@ -57,8 +58,9 @@ const EnclosureTable = () => {
                     if (error.response.status === 401) {
                         window.location.href = "/login";
                         return;
+                    } else {
+                        window.alert(error);
                     }
-                    window.alert(error);
                 }
             }
             else {
@@ -69,8 +71,9 @@ const EnclosureTable = () => {
                     if (error.response.status === 401) {
                         window.location.href = "/login";
                         return;
+                    } else {
+                        window.alert(error);
                     }
-                    window.alert(error);
                 }
             }
         })()
@@ -127,12 +130,13 @@ const EnclosureTable = () => {
                         const response = await axios.patch(`/enclosures/by_id/${_id}/name/${newName}`)
                         console.log(response);
                         window.location.reload(false);
-                    }catch (error){
+                    } catch (error) {
                         if (error.response.status === 401) {
                             window.location.href = "/login";
                             return;
+                        } else {
+                            window.alert(error);
                         }
-                        window.alert(error);
                     }
                 })();
                 setEditMode(false);

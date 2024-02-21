@@ -62,7 +62,12 @@ const AnimalCreator = (props) => {
                 const response = await axios.get(`/schemas`);
                 setSchemaList(response.data.reverse());
             } catch (error) {
-                window.alert(error);
+                if (error.response.status === 401) {
+                    window.location.href = "/login";
+                    return;
+                } else {
+                    window.alert(error);
+                }
             }
         })()
     },[]);

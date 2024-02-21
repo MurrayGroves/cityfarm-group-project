@@ -31,8 +31,9 @@ const SingleAnimal = () => {
                 if (error.response.status === 401) {
                     window.location.href = "/login";
                     return;
+                } else {
+                    window.alert(error);
                 }
-                window.alert(error);
             }
         })();
     }, [animalID]);
@@ -45,12 +46,13 @@ const SingleAnimal = () => {
                 console.log(events.data)
                 setRelEvents(eventsConversion(events.data))
                 console.log(relEvents)
-            } catch(error){
+            } catch (error) {
                 if (error.response.status === 401) {
                     window.location.href = "/login";
                     return;
+                } else {
+                    window.alert(error);
                 }
-                window.alert(error)
             }
         })();
     }, [animalID]);

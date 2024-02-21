@@ -47,16 +47,26 @@ const AnimalPopover = (props) => {
             try{
                 const mother = await axios.get(`/animals/by_id/${chosenAnimal.mother}`);
                 setMother(mother.data.name);
-            }catch(error){
-                //window.alert(`mother issue \n ${error}`)
+            } catch (error) {
+                if (error.response.status === 401) {
+                    window.location.href = "/login";
+                    return;
+                } else {
+                    window.alert(error);
+                }
             }})()}
         if (chosenAnimal.father !== undefined && chosenAnimal.father !== null){
             (async ()=>{
             try{
                 const father = await axios.get(`/animals/by_id/${chosenAnimal.father}`);
                 setFather(father.data.name);
-            }catch(error){
-                //window.alert(`father issue \n ${error}`)
+            } catch (error) {
+                if (error.response.status === 401) {
+                    window.location.href = "/login";
+                    return;
+                } else {
+                    window.alert(error);
+                }
             }})()
         }
 

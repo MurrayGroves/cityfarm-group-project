@@ -35,9 +35,10 @@ const AnimalTable = () => {
                 if (error.response.status === 401) {
                     window.location.href = "/login";
                     return;
+                } else {
+                    window.alert(error);
                 }
-                window.alert(error);
-            }
+            };
         })()
     }
 
@@ -54,8 +55,9 @@ const AnimalTable = () => {
                 if (error.response.status === 401) {
                     window.location.href = "/login";
                     return;
+                } else {
+                    window.alert(error);
                 }
-                window.alert(error);
             }
         })()
     },[searchTerm])
