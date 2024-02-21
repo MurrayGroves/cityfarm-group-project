@@ -34,6 +34,10 @@ const EnclosureTable = () => {
                 const response = await axios.get(`/enclosures`);
                 setEnclosureList(response.data);
             } catch (error) {
+                if (error.response.status === 401) {
+                    window.location.href = "/login";
+                    return;
+                }
                 window.alert(error);
             }
         })()
@@ -50,6 +54,10 @@ const EnclosureTable = () => {
                     const response = await axios.get(`/enclosures/by_name/${searchTerm}`);
                     setEnclosureList(response.data);
                 } catch (error) {
+                    if (error.response.status === 401) {
+                        window.location.href = "/login";
+                        return;
+                    }
                     window.alert(error);
                 }
             }
@@ -58,6 +66,10 @@ const EnclosureTable = () => {
                     const response = await axios.get(`/enclosures/by_id/${searchTerm}`);
                     setEnclosureList(response.data);
                 } catch (error) {
+                    if (error.response.status === 401) {
+                        window.location.href = "/login";
+                        return;
+                    }
                     window.alert(error);
                 }
             }
@@ -116,6 +128,10 @@ const EnclosureTable = () => {
                         console.log(response);
                         window.location.reload(false);
                     }catch (error){
+                        if (error.response.status === 401) {
+                            window.location.href = "/login";
+                            return;
+                        }
                         window.alert(error);
                     }
                 })();

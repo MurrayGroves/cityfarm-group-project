@@ -32,6 +32,10 @@ const AnimalTable = () => {
                 const response = await axios.get(`/animals`);
                 setAnimalList(response.data);
             } catch (error) {
+                if (error.response.status === 401) {
+                    window.location.href = "/login";
+                    return;
+                }
                 window.alert(error);
             }
         })()
@@ -47,6 +51,10 @@ const AnimalTable = () => {
                 const response = await axios.get(`/animals/by_name/${searchTerm}`);
                 setAnimalList(response.data);
             } catch (error) {
+                if (error.response.status === 401) {
+                    window.location.href = "/login";
+                    return;
+                }
                 window.alert(error);
             }
         })()

@@ -57,6 +57,10 @@ const Schemas = () => {
                 console.log(response.data);
                 setSchemaList(response.data.reverse());
             } catch (error) {
+                if (error.response.status === 401) {
+                    window.location.href = "/login";
+                    return;
+                }
                 window.alert(error);
             }
         })()
@@ -80,6 +84,10 @@ const Schemas = () => {
                     console.log(response.data);
                     setSchemaList(response.data.reverse());
                 } catch (error) {
+                    if (error.response.status === 401) {
+                        window.location.href = "/login";
+                        return;
+                    }
                     window.alert(error);
                 }
             } else {
@@ -88,6 +96,10 @@ const Schemas = () => {
                 console.log(response.data);
                 setSchemaList(response.data.reverse());
                 } catch (error) {
+                    if (error.response.status === 401) {
+                        window.location.href = "/login";
+                        return;
+                    }
                     window.alert(error);
                 }
             }
@@ -237,6 +249,10 @@ const Schemas = () => {
                                             await axios.delete(`/schemas/by_name/${schema._name}`);
                                             window.location.reload(false);
                                             } catch(error) {
+                                                if (error.response.status === 401) {
+                                                    window.location.href = "/login";
+                                                    return;
+                                                }
                                                 window.alert(error);
                                             }
                                         }}><DeleteIcon/>

@@ -28,6 +28,10 @@ const SingleAnimal = () => {
                 console.log(response.data);
                 setChosenAnimal(response.data);
             } catch (error) {
+                if (error.response.status === 401) {
+                    window.location.href = "/login";
+                    return;
+                }
                 window.alert(error);
             }
         })();
@@ -42,6 +46,10 @@ const SingleAnimal = () => {
                 setRelEvents(eventsConversion(events.data))
                 console.log(relEvents)
             } catch(error){
+                if (error.response.status === 401) {
+                    window.location.href = "/login";
+                    return;
+                }
                 window.alert(error)
             }
         })();
