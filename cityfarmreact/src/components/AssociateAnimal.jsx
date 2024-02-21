@@ -8,12 +8,13 @@ import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
 
-
+const WH = "WH", HC = "HC", SW = "SW";
 const AssociateAnimal = (props) => {
     const [linkedAnimals, setLinkedAnimals] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [animalList, setAnimalList] = useState([]);
     const linkAnimals = () => {
+        console.log(linkedAnimals)
         props.setAnimals(linkedAnimals)
     }
     function displayAll() {
@@ -26,7 +27,7 @@ const AssociateAnimal = (props) => {
             }
         })()
     }
-    const [farm, setFarm] = useState(0);
+    const [farm, setFarm] = useState([WH,HC,SW]);
     useEffect(() => {
         (async () => {
             if (searchTerm === '') {
@@ -62,7 +63,7 @@ const AssociateAnimal = (props) => {
         style={{margin: '0 20px 20px 0'}}
         onChange={(e) => setSearchTerm(e.target.value)}
         ></TextField>
-        <FarmTabs selectedFarm={farm} setSelectedFarm={setFarm}/>
+        {/*<FarmTabs selectedFarm={farm} setSelectedFarm={setFarm}/>*/}
         <Paper style={{ marginBottom: '20px'}}>
         <DataGrid checkboxSelection columns={cols}
          rows={rows} disableRowSelectionOnClick

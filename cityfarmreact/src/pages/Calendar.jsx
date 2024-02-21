@@ -21,48 +21,7 @@ import axios from '../api/axiosConfig'
 
 
 const WH = "WH", HC = "HC", SW = "SW";
-const events = [ /*These are example events.*/
-    {
-        title : "Boss Meeting",
-        allDay: false,
-        start: new  Date(2024,1,1, 13),
-        end: new  Date(2024,1,1, 14),
-        farms: [],
-        animals: ["174447d3-bedb-4311-a16c-1771aa82d173"],
-        description: "Bring notes",
-        enclosures: ["Pig pen 2", "Pig pen 1"]
-    },
-    {
-        title : "Bull in with cows",
-        allDay: false,
-        start: new  Date(2024,1,5, 8),
-        end: new  Date(2024,1,8, 16),
-        farms: [WH],
-        animals: ["ae7ee5e6-0d26-4b52-b94e-b3da9b434b2e"],
-        description: "move animals from one pen to another.",
-        enclosures: ["Pig pen 1"]
-    },
-    {
-        title : "School Visits",
-        allDay: true,
-        start: new  Date(2024,1,9, 8),
-        end: new  Date(2024,1,9, 23, 59),
-        farms: [HC, SW],
-        animals: ["05eea36a-1098-4392-913b-25e6508df54c","ae7ee5e6-0d26-4b52-b94e-b3da9b434b2e"],
-        description: "",
-        enclosures: []
-    },
-    {
-        title : "Defra Inspection",
-        allDay: true,
-        start: new  Date(2024,1,20  ),
-        end: new Date(2024,1,20),
-        farms: [WH, HC, SW],
-        animals: ["a157482d-21aa-4461-968b-f3f873605057"],
-        description: "",
-        enclosures: []
-    }
-];
+
 
 const Calendar = () => {
 
@@ -99,6 +58,7 @@ const Calendar = () => {
         setModifiedEvent(selectedEvent);
     },[selectedEvent]);
     const setModifiedEventAnimals = (animalList) => {
+        console.log(animalList)
         setModifiedEvent({...modifiedEvent, animals: animalList})
     }
     const setAddEventAnimals = (animalList) => {
@@ -373,7 +333,7 @@ const Calendar = () => {
                         </div>
                         <h3>Animals</h3>
                         {modifiedEvent.animals.map((animalID) => (
-                            <p><AnimalPopover key={animalID} animalID={animalID} /></p>
+                            <p><AnimalPopover key={animalID._id} animalID={animalID._id} /></p>
                         ))}{/*Add a way to remove animals from events */}
                         <Button variant='outlined' color='tertiary' onClick={functionopenPopup}>Add Animal</Button> 
                          <div id="AssociateAnimal" style={{textAlign:'center'}}>
