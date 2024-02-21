@@ -32,6 +32,7 @@ public abstract class Event {
 
     public List<String> farms;
 
+
     public String description;
 
     // List of IDs of attached people

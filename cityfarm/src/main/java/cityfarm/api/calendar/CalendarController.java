@@ -39,6 +39,7 @@ public class CalendarController {
             @RequestParam("from") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) ZonedDateTime from
             , @RequestParam("to") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) ZonedDateTime to) {
 
+
         List<Event> events = eventRepository.findAll();
 
         List<EventInstance> instances = new ArrayList<>();
