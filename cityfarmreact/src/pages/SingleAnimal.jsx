@@ -5,10 +5,14 @@ import Typography from "@mui/material/Typography";
 import axios from '../api/axiosConfig';
 import { useState, useEffect } from 'react';
 import AnimalPopover from "../components/AnimalPopover";
-import CloseIcon from "../assets/close-512.webp";
+import CloseIcon from "../assets/close-512-light.webp";
+import Paper from "@mui/material/Paper";
 import SelectedEvent from "../components/SelectedEvent";
 
-const SingleAnimal = () => {
+const SingleAnimal = (props) => {
+
+    const farms = props.farms;
+
     const { animalID } = useParams();
     const [relEvents,setRelEvents] = useState([])
     const [chosenAnimal, setChosenAnimal] = useState({});
@@ -36,7 +40,7 @@ const SingleAnimal = () => {
                     allDay: events[i].allDay,
                     start: new  Date(events[i].start),
                     end: new  Date(events[i].end),
-                    // farms: events[i].farms,
+                    farms: events[i].farms,
                     animals: events[i].animals,
                     description: events[i].description,
                     enclosures: events[i].enclosures
@@ -82,18 +86,17 @@ const SingleAnimal = () => {
                         <div>
                             <p>{event.start.toLocaleString([], {year: '2-digit', month: '2-digit', day: '2-digit', hour: '2-digit', minute:'2-digit'})} - {event.start.toLocaleDateString() === event.end.toLocaleDateString() ? event.end.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : event.end.toLocaleString([], {year: '2-digit', month: '2-digit', day: '2-digit', hour: '2-digit', minute:'2-digit'})}</p>
                         </div>}
-                    {/*{event.farms.length !== 0 ? <h4>Farms: </h4> : <></>}*/}
-                    {/*{event.farms.includes(WH) ? <p>Windmill Hill </p> : <></>}*/}
-                    {/*{event.farms.includes(HC) ? <p>Hartcliffe </p> : <></>}*/}
-                    {/*{event.farms.includes(SW) ? <p>St Werberghs</p> : <></>}*/}
+                    {event.farms.length !== 0 ? <h4>Farms: </h4> : <></>}
+                    {event.farms.includes(farms.WH) ? <p>Windmill Hill </p> : <></>}
+                    {event.farms.includes(farms.HC) ? <p>Hartcliffe </p> : <></>}
+                    {event.farms.includes(farms.SW) ? <p>St Werberghs</p> : <></>}
                 </div>
             )})}
         </div>
         {selectedEvent !== "No event selected" && (
-            <>
-                <SelectedEvent event={selectedEvent} />
-                <button className='closeCross' onClick={() => setSelectedEvent("No event selected")}><img src={CloseIcon} alt="Close"/></button>
-            </>
+            <Paper elevation={3} className='selectedBox'>
+                <SelectedEvent event={selectedEvent} setEvent={setSelectedEvent} farms={farms}/>
+            </Paper>
         )}
         </>;
 }

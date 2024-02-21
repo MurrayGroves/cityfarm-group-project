@@ -23,6 +23,12 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 
 const App = () => {
 
+    const farms = {
+        WH: "WH",
+        HC: "HC",
+        SW: "SW"
+    }
+
     const darkTheme = createTheme({
         palette: {
             mode: 'dark',
@@ -77,10 +83,10 @@ const App = () => {
             <Routes>
                 <Route exact path="/"> {/*This is just for testing. Will probably navigate to a home page */}
                     <Route path="calendar" element={<Calendar/>}/>
-                    <Route path="animals" element={<AnimalTable/>}/> {/*There won't be pathing issues since all api paths start /api*/}
-                    <Route path="enclosures" element={<EnclosureTable/>}/>
-                    <Route path="schemas" element={<Schemas/>}/>
-                    <Route path="single-animal/:animalID" element={<SingleAnimal/>} />
+                    <Route path="animals" element={<AnimalTable farms={farms}/>}/> {/*There won't be pathing issues since all api paths start /api*/}
+                    <Route path="enclosures" element={<EnclosureTable farms={farms}/>}/>
+                    <Route path="schemas" element={<Schemas farms={farms}/>}/>
+                    <Route path="single-animal/:animalID" element={<SingleAnimal farms={farms}/>} />
                     <Route path="*" element={<Error/>}/>
                 </Route>
             </Routes>
