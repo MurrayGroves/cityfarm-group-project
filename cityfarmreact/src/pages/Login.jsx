@@ -19,10 +19,6 @@ export default ({msal, setMsal}) => {
 
     if (!data.account.username.endsWith("bristol.ac.uk") && !data.account.username.endsWith("windmillhillcityfarm.org.uk")) {
       msal.logoutRedirect({
-        onRedirectNavigate: (url) => {
-            // Return false if you would like to stop navigation after local logout
-            return false;
-        },
         account: data.account
       });
       setIsLoginFailed(true);

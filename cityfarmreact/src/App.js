@@ -77,10 +77,18 @@ const App = () => {
         }
     };
 
-    const msalInstance = new PublicClientApplication(msalConfig);
-    msalInstance.initialize().then(() => {
-        setMsal(msalInstance);
-    })
+    if (msal == null) {
+        const msalInstance = new PublicClientApplication(msalConfig);
+        msalInstance.initialize().then(() => {
+            setMsal(msalInstance);
+            if (msalInstance.getAllAccounts().length == 0) {
+                if (!window.location.href.includes("/login")) {
+                    window.location.href = "/login";
+                }
+            }
+        })
+    }
+
 
     return (
         <ThemeProvider theme={dark ? darkTheme : defaultTheme}>
