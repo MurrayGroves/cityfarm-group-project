@@ -10,10 +10,13 @@ import AnimalPopover from "../components/AnimalPopover";
 import CloseIcon from "../assets/close-512.webp";
 import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
-import { Button, ButtonGroup, Checkbox, FormControlLabel, FormGroup } from '@mui/material';
-
+import { ButtonGroup, Checkbox, Dialog, FormControlLabel, FormGroup } from '@mui/material';
+import { Button, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
+import AssociateAnimal from '../components/AssociateAnimal';
+import { Unstable_Popup as BasePopup } from '@mui/base/Unstable_Popup';
+import { styled } from '@mui/system';
 
 const WH = 0, HC = 1, SW = 2;
 const colours = {
@@ -96,6 +99,12 @@ const Calendar = () => {
     useEffect(() =>{
         setModifiedEvent(selectedEvent);
     },[selectedEvent]);
+    const setModifiedEventAnimals = (animalList) => {
+        setModifiedEvent({...modifiedEvent, animals: animalList})
+    }
+    const setAddEventAnimals = (animalList) => {
+        setNewEvent({...newEvent, animals: animalList})
+    }
 
     const removeAnimal = (animalID, type) => {
         if (type == "add"){
@@ -180,6 +189,14 @@ const Calendar = () => {
                 </>)
             }
         }
+    }
+    const [anchor, setAnchor] = React.useState(null);
+    const [openPopup ,setOpenPopup] = useState(false)
+    const functionopenPopup = () => {
+        setOpenPopup(true)
+    }
+    const functionclosePopup = () => {
+        setOpenPopup(false)
     }
 
     return (
@@ -282,7 +299,17 @@ const Calendar = () => {
                         {modifiedEvent.animals.map((animalID) => (
                             <p><AnimalPopover key={animalID} animalID={animalID} /></p>
                         ))}{/*Add a way to remove animals from events */}
-                        <Button variant='outlined' color='tertiary'>Add Animal</Button> {/* Apply changes to do with associating animals here */}
+                        <Button variant='outlined' color='tertiary' onClick={functionopenPopup}>Add Animal</Button> 
+                         <div id="AssociateAnimal" style={{textAlign:'center'}}>
+                        <Dialog open={openPopup} onClose={functionclosePopup}>
+                        <DialogTitle>Add Animal</DialogTitle>
+                        <DialogContent>
+                        <AssociateAnimal setAnimals={setModifiedEventAnimals}></AssociateAnimal>
+                        <DialogContentText>Test</DialogContentText>
+                        </DialogContent>
+                        <DialogActions><Button color="error" variant="contained">Link to Event</Button></DialogActions>
+                        </Dialog>
+                        </div>
                         <div>
                             <h3>Enclosures</h3>
                             {modifiedEvent.enclosures.map((enclosureName) => (
@@ -335,7 +362,17 @@ const Calendar = () => {
                     {newEvent.animals.map((animalID) => (
                         <p><AnimalPopover key={animalID} animalID={animalID} /></p>
                     ))}
-                    <Button variant='outlined' color='tertiary'>Add Animal</Button> {/* idea: make this open the animal table page with a new column of checkboxes. Click on an associate animal(s) button would then pass a list of animal id to the calendar to the new event state. This could be re used in the modification of events.  */}
+                    <Button variant='outlined' color='tertiary' onClick={functionopenPopup}>Add Animal</Button> 
+                    <div id="AssociateAnimal" style={{textAlign:'center'}}>
+                        <Dialog open={openPopup} onClose={functionclosePopup}>
+                        <DialogTitle>Add Animal</DialogTitle>
+                        <DialogContent>
+                        <AssociateAnimal setAnimals={setAddEventAnimals}></AssociateAnimal>
+                        <DialogContentText>Test</DialogContentText>
+                        </DialogContent>
+                        <DialogActions><Button color="error" variant="contained">Link to Event</Button></DialogActions>
+                        </Dialog>
+                    </div>
                 </div>
                 <div>
                     <h3>Enclosures</h3>
