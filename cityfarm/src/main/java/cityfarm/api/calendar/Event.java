@@ -30,7 +30,7 @@ public abstract class Event {
 
     public String title;
 
-
+    public List<String> farms;
 
     public String description;
 
