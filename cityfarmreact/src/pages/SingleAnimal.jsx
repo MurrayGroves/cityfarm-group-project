@@ -5,7 +5,8 @@ import Typography from "@mui/material/Typography";
 import axios from '../api/axiosConfig';
 import { useState, useEffect } from 'react';
 import AnimalPopover from "../components/AnimalPopover";
-import CloseIcon from "../assets/close-512.webp";
+import CloseIcon from "../assets/close-512-light.webp";
+import Paper from "@mui/material/Paper";
 import SelectedEvent from "../components/SelectedEvent";
 
 const SingleAnimal = (props) => {
@@ -93,10 +94,9 @@ const SingleAnimal = (props) => {
             )})}
         </div>
         {selectedEvent !== "No event selected" && (
-            <>
-                <SelectedEvent event={selectedEvent} farms={farms}/>
-                <button className='closeCross' onClick={() => setSelectedEvent("No event selected")}><img src={CloseIcon} alt="Close"/></button>
-            </>
+            <Paper elevation={3} className='selectedBox'>
+                <SelectedEvent event={selectedEvent} setEvent={setSelectedEvent} farms={farms}/>
+            </Paper>
         )}
         </>;
 }

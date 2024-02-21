@@ -7,7 +7,7 @@ import TextField from '@mui/material/TextField';
 import { DataGrid } from "@mui/x-data-grid";
 import Paper from '@mui/material/Paper';
 import EditIcon from '@mui/icons-material/Edit';
-import IconButton from '@mui/material/IconButton';
+import Button from '@mui/material/Button';
 import { diff } from "deep-object-diff";
 
 const EnclosureTable = ({farms}) => {
@@ -74,7 +74,7 @@ const EnclosureTable = ({farms}) => {
             ></TextField>
             <FarmTabs farms={farms} selectedFarm={farm} setSelectedFarm={setFarm}/>
         </span>
-        <TableContainer component={Paper} style={{borderRadius: '20px'}}>
+        <TableContainer component={Paper} style={{marginBottom: '20px'}}>
             <DataGrid rows={rows} columns={cols} 
             isCellEditable = {() => editMode} 
             // onCellEditStop = {(params: GridCellParams, event) => {
@@ -102,12 +102,7 @@ const EnclosureTable = ({farms}) => {
                 return newVal;
             }}/>
         </TableContainer>
-        <IconButton aria-label="edit" onClick={() => setEditMode(true)} size="small">
-        <EditIcon fontSize = "small"/>
-        <div>
-            Edit
-        </div>
-        </IconButton>
+        <Button style={{float: 'right'}} aria-label="edit" onClick={() => setEditMode(true)} variant='contained' endIcon={<EditIcon/>}>Edit</Button>
     </>)
 }
 

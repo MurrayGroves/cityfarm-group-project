@@ -5,6 +5,7 @@ import {Link} from "react-router-dom";
 import './AnimalPopover.css'
 import axios from "../api/axiosConfig";
 import { useState, useEffect } from 'react';
+import { useTheme } from '@mui/material/styles';
 
 const aExamples = [
     {
@@ -13,6 +14,8 @@ const aExamples = [
 ]
 
 const AnimalPopover = (props) => {
+    const colour = useTheme().palette.mode === 'light' ? 'black' : 'white';
+
     const [anchorEl, setAnchorEl] = useState(null);
     const [chosenAnimal, setChosenAnimal] = useState(aExamples[0]);
     const [animalMother, setMother] = useState("Unregistered")
@@ -66,9 +69,9 @@ const AnimalPopover = (props) => {
                 aria-haspopup="true"
                 onMouseEnter={handlePopoverOpen}
                 onMouseLeave={handlePopoverClose}
-                style={{display: 'inline-block'}}
+                style={{display: 'inline-block', margin: '2.5px 0'}}
             >
-                <Link to={`/single-animal/${chosenAnimal._id}`}>{chosenAnimal.name}</Link>
+                <Link style={{color: colour}} to={`/single-animal/${chosenAnimal._id}`}>{chosenAnimal.name}</Link>
             </Typography>
             <Popover
                 id="mouse-over-popover"

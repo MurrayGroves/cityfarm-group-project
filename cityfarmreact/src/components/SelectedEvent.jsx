@@ -1,19 +1,25 @@
 import AnimalPopover from "./AnimalPopover";
 import * as React from "react";
+import CloseIconLight from "../assets/close-512-light.webp";
+import CloseIconDark from "../assets/close-512-dark.webp";
+import IconButton from "@mui/material/IconButton";
+import { useTheme } from "@mui/material";
 
 const SelectedEvent = (props) => {
 
   const event = props.event;
   const farms = props.farms;
+  const theme = useTheme().palette;
 
   if (!event || event === "No event selected") {
     return <></>;
   }
 
   return (
-      <div className='selectedBox'>
+      <div>
         <div style={{display: "flex", justifyContent: "space-between"}}>
           <h2 className='boxTitle'>Selected Event</h2>
+          <IconButton className='closeButton' onClick={() => props.setEvent("No event selected")}><img src={theme.mode === 'light' ? CloseIconLight : CloseIconDark} alt='close button'/></IconButton>
         </div>
         <div>
           <h3>{event.title}</h3>

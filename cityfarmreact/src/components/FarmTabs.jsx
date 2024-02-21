@@ -8,7 +8,7 @@ import { createTheme } from "@mui/material";
 const FarmTabs = (props) => {
     const farms = props.farms;
 
-    var tabTheme = createTheme();
+    var tabTheme = createTheme({palette: {mode: useTheme().palette.mode}});
     tabTheme.palette.primary.main = useTheme().palette[farms[props.selectedFarm]].main;
 
     return (

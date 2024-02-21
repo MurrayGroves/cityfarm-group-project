@@ -6,10 +6,11 @@ import "./Calendar.css";
 import Event from "../components/Event";
 import CreateEvent from "../components/CreateEvent";
 import AnimalPopover from "../components/AnimalPopover";
-import CloseIcon from "../assets/close-512.webp";
+import CloseIconLight from "../assets/close-512-light.webp";
+import CloseIconDark from "../assets/close-512-dark.webp";
 import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
-import { Button, ButtonGroup, Checkbox, FormControlLabel, FormGroup, useTheme } from '@mui/material';
+import { IconButton, Button, ButtonGroup, Checkbox, FormControlLabel, FormGroup, useTheme } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 
@@ -209,7 +210,7 @@ const Calendar = () => {
                 <Paper elevation={3} style={{position: 'relative', width: '400px', margin: '0 0 20px 0', padding: '10px'}}>
                     <div style={{display: "flex", justifyContent: "space-between"}}>
                         <h2 className='boxTitle'>Selected Event</h2>
-                        <button className='closeButton' onClick={() => {setModifyEvent(false); setSelectedEvent("No event selected")}}><img src={CloseIcon} alt='close button'/></button>
+                        <IconButton className='closeButton' onClick={() => {setModifyEvent(false); setSelectedEvent("No event selected")}}><img src={theme.mode === 'light' ? CloseIconLight : CloseIconDark} alt='close button'/></IconButton>
                     </div>
                     {!modifyEvent ?
                     <div>
@@ -252,7 +253,6 @@ const Calendar = () => {
                             fullWidth
                             placeholder={selectedEvent.title}
                             label='Title'
-                            size='small'
                             value={modifiedEvent.title}
                             onChange={(e)=>setModifiedEvent({...modifiedEvent, title: e.target.value})}
                         />
@@ -286,6 +286,7 @@ const Calendar = () => {
                         </div>
                         <div>
                             <span>Description:</span>
+                            <TextField label='Description'/>
                             <textarea style={{minHeight: "52px", minWidth: "386px"}} type="text" placeholder="enter description here:" value={modifiedEvent.description} onChange={(e) => {setModifiedEvent({...modifiedEvent, description: e.target.value})}}></textarea>
                         </div>
 
@@ -304,7 +305,6 @@ const Calendar = () => {
                     fullWidth
                     placeholder="Add Title"
                     label='Title'
-                    size='small'
                     value={newEvent.title}
                     onChange={(e)=>setNewEvent({...newEvent, title: e.target.value})}
                 />
@@ -340,7 +340,15 @@ const Calendar = () => {
                 </div>
                 <div>
                     <h3>Description</h3>
-                    <textarea style={{minHeight: "52px", minWidth: "386px"}} type="text" placeholder="Enter description:" value={newEvent.description} onChange={(e) => {setNewEvent({...newEvent, description: e.target.value})}}></textarea>
+                    <TextField
+                        fullWidth
+                        multiline
+                        rows={2}
+                        maxRows={4}
+                        placeholder='Enter Description'
+                        value={newEvent.description}
+                        onChange={(e) => {setNewEvent({...newEvent, description: e.target.value})}}
+                    />
                 </div>
             </Paper>
             </div>
