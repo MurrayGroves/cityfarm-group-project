@@ -6,6 +6,7 @@ import cityfarm.api.enclosure.Enclosure;
 import cityfarm.api.enclosure.EnclosureRepository;
 import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -34,7 +35,10 @@ public class CalendarController {
 
 
     @GetMapping("/api/events")
-    public ResponseEntity<List<EventInstance>> get_events(@RequestParam ZonedDateTime from, @RequestParam ZonedDateTime to) {
+    public ResponseEntity<List<EventInstance>> get_events(
+            @RequestParam("from") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) ZonedDateTime from
+            , @RequestParam("to") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) ZonedDateTime to) {
+
 
         List<Event> events = eventRepository.findAll();
 
@@ -113,7 +117,7 @@ public class CalendarController {
             animals.add(anm);
         }
 
-        EventOnce new_event = new EventOnce(event.start, event.end, event.all_day, event.title, event.description, null, enclosures, animals, null);
+        EventOnce new_event = new EventOnce(event.start, event.end, event.all_day, event.title, event.description, null, enclosures, animals, event.farms, null);
 
         eventRepository.save(new_event);
 
@@ -135,7 +139,7 @@ public class CalendarController {
             animals.add(anm);
         }
 
-        EventRecurring newEvent = new EventRecurring(event.start, event.firstEnd, event.all_day, event.title, event.description, enclosures, animals, event.people, event.end, event.delay, null);
+        EventRecurring newEvent = new EventRecurring(event.start, event.firstEnd, event.all_day, event.title, event.description, enclosures, animals, event.farms, event.people, event.end, event.delay, null);
 
         eventRepository.save(newEvent);
 
