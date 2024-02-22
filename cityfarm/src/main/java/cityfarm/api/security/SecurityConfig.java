@@ -25,7 +25,7 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList("https://cityfarm.murraygrov.es", "http://localhost:3000"));
         configuration.setAllowedMethods(Arrays.asList("GET","POST", "OPTIONS", "DELETE", "PATCH"));
-        configuration.addAllowedHeader("authorization");
+        configuration.setAllowedHeaders(Arrays.asList("authorization", "content-type"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;

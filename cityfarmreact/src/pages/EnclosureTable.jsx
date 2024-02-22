@@ -46,42 +46,17 @@ const EnclosureTable = ({farms}) => {
                 displayAll();
                 return;
             }
-            if (searchMode === "name") {
-                try {
-                    const response = await axios.get(`/enclosures/by_name/${searchTerm}`, token);
-                    setEnclosureList(response.data);
-                } catch (error) {
-                    if (error.response.status === 401) {
-                        window.location.href = "/login";
-                        return;
-                    } else {
-                        window.alert(error);
-                    }
-                }
-            }
-            else {
-                try {
-                    const response = await axios.get(`/enclosures/by_id/${searchTerm}`, token);
-                    setEnclosureList(response.data);
-                } catch (error) {
-                    if (error.response.status === 401) {
-                        window.location.href = "/login";
-                        return;
-                    } else {
-                        window.alert(error);
-                    }
-                }
             try {
-                const response = await axios.get(`/enclosures/by_name/${searchTerm}`);
+                const response = await axios.get(`/enclosures/by_name/${searchTerm}`, token);
                 setEnclosureList(response.data);
             } catch (error) {
-                    if (error.response.status === 401) {
-                        window.location.href = "/login";
-                        return;
-                    } else {
-                        window.alert(error);
-                    }
+                if (error.response.status === 401) {
+                    window.location.href = "/login";
+                    return;
+                } else {
+                    window.alert(error);
                 }
+            }
         })()
     },[searchTerm])
 

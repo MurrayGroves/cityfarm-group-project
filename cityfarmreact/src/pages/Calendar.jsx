@@ -15,6 +15,8 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import axios from '../api/axiosConfig'
 
+import { getConfig } from '../api/getToken';
+
 
 const WH = "WH", HC = "HC", SW = "SW";
 const events = [ /*These are example events.*/
@@ -61,7 +63,7 @@ const events = [ /*These are example events.*/
 ];
 
 const Calendar = () => {
-
+    const token = getConfig();
 
     const theme = useTheme().palette;
 
@@ -104,7 +106,7 @@ const Calendar = () => {
                 const end =  new Date()
                 end.setMonth(end.getMonth()+1)
 
-                const response = await axios.get(`/events`, {params: {from: start.toISOString(), to: end.toISOString()}});
+                const response = await axios.get(`/events`, {params: {from: start.toISOString(), to: end.toISOString()}, ...token});
                 setAllEvents(eventsConversion(response.data));
             } catch (error) {
                 window.alert(error);
@@ -202,7 +204,7 @@ const Calendar = () => {
                 const start = range.start.toISOString()
                 const end = range.end.toISOString()
 
-                const response = await axios.get(`/events`, {params: {from: start, to: end}});
+                const response = await axios.get(`/events`, {params: {from: start, to: end}, ...token});
                 setAllEvents(eventsConversion(response.data));
             } catch (error) {
                 window.alert(error);
@@ -213,7 +215,7 @@ const Calendar = () => {
                 try {
                     const start = range[0].toISOString()
                     const end = range[range.length - 1].toISOString()
-                    const response = await axios.get(`/events`, {params: {from: start, to: end}});
+                    const response = await axios.get(`/events`, {params: {from: start, to: end}, ...token});
 
                     setAllEvents(eventsConversion(response.data));
                 } catch (error){
@@ -226,7 +228,7 @@ const Calendar = () => {
                     const end = start
                     end.setDate(start.getDate() + 1)
 
-                    const response = await axios.get(`/events`, {params: {from: start.toISOString(), to: end.toISOString()}});
+                    const response = await axios.get(`/events`, {params: {from: start.toISOString(), to: end.toISOString()}, ...token});
 
                     setAllEvents(eventsConversion(response.data));
                 } catch (error) {
