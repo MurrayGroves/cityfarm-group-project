@@ -1,25 +1,26 @@
 .selectedBox {
     width: 400px;
-    margin: 0 0 20px 0;
+    margin: 0;
     padding: 10px 10px 10px 10px;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
     position: absolute;
-    right: 25%;
-    top: 25%;
+    top: 240px;
+    right: 40px;
 }
-.closeCross {
-    display: inline-flex;
-    border: none;
-    background-color: white;
-    cursor: pointer;
-    width: 24px;
-    height: 24px;
-    position: absolute;
-    right: 26%;
-    top: 26%;
 
+.closeButton {
+    background-color: transparent;
+    width: 32px;
+    height: 32px;
 }
-.closeCross img {
+.closeButton img {
     width: 24px;
     height: 24px;
+}
+
+h2 {
+    margin-top: 20px;
+}
+
+h4 {
+    margin: 0;
 }

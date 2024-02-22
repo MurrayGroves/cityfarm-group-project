@@ -11,19 +11,11 @@ import AnimalCreator from "../components/AnimalCreator";
 
 import { getConfig } from '../api/getToken';
 
-const WH = 0, HC = 1, SW = 2;
-const colours = {
-    WH: "#333388",
-    HC: "#FF0000",
-    SW: "#3312FF",
-    default: "#888888"
-};
-
-const AnimalTable = () => {
+const AnimalTable = ({farms}) => {
     const [animalList, setAnimalList] = useState([]); /* The State for the list of animals. The initial state is [] */
     const [searchTerm, setSearchTerm] = useState(''); /* The term being searched for in the searchbar */
     
-    const [farm, setFarm] = useState(0);
+    const [farm, setFarm] = useState(Object.keys(farms)[0]);
 
     const token = getConfig();
 
@@ -67,13 +59,13 @@ const AnimalTable = () => {
     },[searchTerm])
 
     useEffect(() => {
-        {/*setAnimalList(animalList.filter((animal)=>{animal.farms.includes(farm)}))*/}
+        //setAnimalList(animalList.filter((animal)=>{animal.farms.includes(farm)}))
     },[farm])
 
     const rows = animalList.map((animal) => ({
         id: animal._id,
         name: animal,
-        type: animal.type,
+        type: animal.type.charAt(0).toUpperCase() + animal.type.slice(1),
         father: animal.father !== null ? animal : 'Unregistered',
         mother: animal.mother !== null ? animal : 'Unregistered',
         sex: animal.male ? 'Male' : 'Female',
@@ -101,10 +93,10 @@ const AnimalTable = () => {
                 style={{margin: '0 20px 20px 0'}}
                 onChange={(e) => setSearchTerm(e.target.value)}
             ></TextField>
-            <FarmTabs selectedFarm={farm} setSelectedFarm={setFarm}/>
+            <FarmTabs farms={farms} selectedFarm={farm} setSelectedFarm={setFarm}/>
         </span>
-        <Paper style={{height: 'calc(100% - 502px)', marginBottom: '20px'}}>
-            <DataGrid checkboxSelection columns={cols} rows={rows}/>
+        <Paper style={{height: 'calc(100% - 525px)', marginBottom: '20px'}}>
+            <DataGrid style={{fontSize: '1rem'}} checkboxSelection columns={cols} rows={rows}/>
         </Paper>
         <AnimalCreator animalList={animalList}/>
     </>)

@@ -15,7 +15,7 @@ const NavBar = (props) => {
             <Link to="/calendar"> Calendar </Link>
             <Link to="/animals"> Livestock </Link>
             <Link to="/enclosures"> Enclosures </Link>
-            <Link to="/schemas"> Schemas </Link>
+            <Link to="/schemas"> Animal Types </Link>
             <span style={{width: '100%', position: 'absolute', bottom: '10px', left: '10px', color: 'white'}}>Dark Mode<Switch style={{marginLeft: '5px'}} size='small' onChange={(e) => {props.setDark(e.target.checked); console.log(e.target.checked)}}/></span>
             <span style={{width: '100%', position: 'absolute', bottom: '5%', left: '10px', color: 'white'}}><Button onClick={() => {
                 props.msal.logoutRedirect({

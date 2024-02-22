@@ -25,6 +25,12 @@ import { PublicClientApplication } from "@azure/msal-browser";
 
 const App = () => {
 
+    const farms = {
+        WH: "WH",
+        HC: "HC",
+        SW: "SW"
+    }
+
     const darkTheme = createTheme({
         palette: {
             mode: 'dark',
@@ -107,10 +113,10 @@ const App = () => {
                     <div className='Content'>
                     <Routes>
                     <Route path="calendar" element={<Calendar/>}/>
-                    <Route path="animals" element={<AnimalTable/>}/>
-                    <Route path="enclosures" element={<EnclosureTable/>}/>
-                    <Route path="schemas" element={<Schemas/>}/>
-                    <Route path="single-animal/:animalID" element={<SingleAnimal/>} />
+                    <Route path="animals" element={<AnimalTable farms={farms}/>}/>
+                    <Route path="enclosures" element={<EnclosureTable farms={farms}/>}/>
+                    <Route path="schemas" element={<Schemas farms={farms}/>}/>
+                    <Route path="single-animal/:animalID" element={<SingleAnimal farms={farms}/>} />
                     <Route path="/" element={"Homepage"}/>
                     <Route path="*" element={<Error/>}/>
                     </Routes>

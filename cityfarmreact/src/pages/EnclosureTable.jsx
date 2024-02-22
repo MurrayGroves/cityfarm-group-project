@@ -7,31 +7,22 @@ import TextField from '@mui/material/TextField';
 import { DataGrid } from "@mui/x-data-grid";
 import Paper from '@mui/material/Paper';
 import EditIcon from '@mui/icons-material/Edit';
-import IconButton from '@mui/material/IconButton';
+import Button from '@mui/material/Button';
 import { diff } from "deep-object-diff";
 
 import { getConfig } from '../api/getToken';
 
-const colours = {
-    WH: "#333388",
-    HC: "#FF0000",
-    SW: "#3312FF",
-    default: "#888888"
-}
-
-
-const EnclosureTable = () => {
+const EnclosureTable = ({farms}) => {
     const [enclosureList, setEnclosureList] = useState([]); /* The State for the list of enclosures. The initial state is [] */
     const [searchTerm, setSearchTerm] = useState(''); /* The term being search for in the searchbar */
-    const [searchMode, setSearchMode] = useState("name") /* The mode of search (by name or id) */
-    const [clear, setClear] = useState(0); /* Clear will reset the table to display all enclosures once updated*/
     const [editMode, setEditMode] = useState(false); /* Whether edit mode is on. Initial state is false */
 
-    const [farm, setFarm] = useState(0);
+
 
     const token = getConfig();
 
     //useEffect(displayAll,[clear]);
+    const [farm, setFarm] = useState(Object.keys(farms)[0]);
 
     function displayAll() {
         (async () => {
@@ -80,7 +71,17 @@ const EnclosureTable = () => {
                         window.alert(error);
                     }
                 }
-            }
+            try {
+                const response = await axios.get(`/enclosures/by_name/${searchTerm}`);
+                setEnclosureList(response.data);
+            } catch (error) {
+                    if (error.response.status === 401) {
+                        window.location.href = "/login";
+                        return;
+                    } else {
+                        window.alert(error);
+                    }
+                }
         })()
     },[searchTerm])
 
@@ -113,9 +114,9 @@ const EnclosureTable = () => {
                 style={{margin: '0 20px 20px 0'}}
                 onChange={(e) => setSearchTerm(e.target.value)}
             ></TextField>
-            <FarmTabs selectedFarm={farm} setSelectedFarm={setFarm}/>
+            <FarmTabs farms={farms} selectedFarm={farm} setSelectedFarm={setFarm}/>
         </span>
-        <TableContainer component={Paper} style={{borderRadius: '20px'}}>
+        <TableContainer component={Paper} style={{marginBottom: '20px'}}>
             <DataGrid rows={rows} columns={cols} 
             isCellEditable = {() => editMode} 
             // onCellEditStop = {(params: GridCellParams, event) => {
@@ -148,12 +149,7 @@ const EnclosureTable = () => {
                 return newVal;
             }}/>
         </TableContainer>
-        <IconButton aria-label="edit" onClick={() => setEditMode(true)} size="small">
-        <EditIcon fontSize = "small"/>
-        <div>
-            Edit
-        </div>
-        </IconButton>
+        <Button style={{float: 'right'}} aria-label="edit" onClick={() => setEditMode(true)} variant='contained' endIcon={<EditIcon/>}>Edit</Button>
     </>)
 }
 

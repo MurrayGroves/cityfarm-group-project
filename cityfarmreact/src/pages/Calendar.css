@@ -15,12 +15,9 @@
 }
 
 .closeButton {
-    display: inline-flex;
-    border: none;
-    background-color: white;
-    cursor: pointer;
-    width: 24px;
-    height: 24px;
+    background-color: transparent;
+    width: 32px;
+    height: 32px;
 }
 .closeButton img {
     width: 24px;
@@ -32,7 +29,7 @@ h2 {
 }
 
 h3 {
-    margin-bottom: 0;
+    margin-bottom: 10px;
 }
 
 p {
