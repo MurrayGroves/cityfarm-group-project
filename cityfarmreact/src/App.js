@@ -74,6 +74,10 @@ const App = () => {
         auth: {
             clientId: '5668872b-7957-4c09-a995-56cd915cb4a9',
             postLogoutRedirectUri: "/login",
+        },
+        cache: {
+            cacheLocation: "localStorage",
+            storeAuthStateInCookie: false,
         }
     };
 
@@ -87,8 +91,8 @@ const App = () => {
                 }
             }
         })
+        return;
     }
-
 
     return (
         <ThemeProvider theme={dark ? darkTheme : defaultTheme}>
