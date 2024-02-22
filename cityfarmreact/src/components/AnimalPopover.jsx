@@ -6,6 +6,8 @@ import './AnimalPopover.css'
 import axios from "../api/axiosConfig";
 import { useState, useEffect } from 'react';
 
+import { getConfig } from '../api/getToken';
+
 const aExamples = [
     {
 
@@ -20,6 +22,8 @@ const AnimalPopover = (props) => {
     const [animalMother, setMother] = useState("Unregistered")
     const [animalFather, setFather] = useState("Unregistered")
 
+    const token = getConfig();
+
     const handlePopoverOpen = (e) => {
         setAnchorEl(e.currentTarget);
     };
@@ -33,7 +37,7 @@ const AnimalPopover = (props) => {
     useEffect(() => {
         (async () => {
         try {
-            const response = await axios.get(`/animals/by_id/${props.animalID}`);
+            const response = await axios.get(`/animals/by_id/${props.animalID}`, token);
             setChosenAnimal(response.data);
         } catch (error) {
             window.alert(error);
@@ -45,7 +49,7 @@ const AnimalPopover = (props) => {
             console.log("hello");
             (async ()=>{
             try{
-                const mother = await axios.get(`/animals/by_id/${chosenAnimal.mother}`);
+                const mother = await axios.get(`/animals/by_id/${chosenAnimal.mother}`, token);
                 setMother(mother.data.name);
             } catch (error) {
                 if (error.response.status === 401) {
@@ -58,7 +62,7 @@ const AnimalPopover = (props) => {
         if (chosenAnimal.father !== undefined && chosenAnimal.father !== null){
             (async ()=>{
             try{
-                const father = await axios.get(`/animals/by_id/${chosenAnimal.father}`);
+                const father = await axios.get(`/animals/by_id/${chosenAnimal.father}`, token);
                 setFather(father.data.name);
             } catch (error) {
                 if (error.response.status === 401) {

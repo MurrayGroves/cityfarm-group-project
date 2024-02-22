@@ -22,11 +22,15 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import FieldSelector from './FieldSelector';
 
+import { getConfig } from '../api/getToken';
+
 const AnimalCreator = (props) => {
     const [newAnimal, setNewAnimal] = useState({name: '', type: '', father: '', mother: '', male: true, alive: true, fields: {}})
     const [schemaList, setSchemaList] = useState([]);
     const [schema, setSchema] = useState();
     const [create, setCreate] = useState(false);
+
+    const token = getConfig();
 
     const fieldTypeSwitch = (field) => {
         newAnimal.fields[field] = '' ;
@@ -59,7 +63,7 @@ const AnimalCreator = (props) => {
     useEffect(() => {
         (async () => {
             try {
-                const response = await axios.get(`/schemas`);
+                const response = await axios.get(`/schemas`, token);
                 setSchemaList(response.data.reverse());
             } catch (error) {
                 if (error.response.status === 401) {
@@ -208,7 +212,7 @@ const AnimalCreator = (props) => {
                     { crossdomain: true, headers: {
                         "Access-Control-Allow-Origin": 'http://localhost:3000',
                         "Access-Control-Allow-Credentials": true
-                    }})
+                    }, ...token})
                 } catch(error) {
                     window.alert(error);
                 }

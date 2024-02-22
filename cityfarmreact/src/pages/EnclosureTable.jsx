@@ -10,12 +10,15 @@ import EditIcon from '@mui/icons-material/Edit';
 import IconButton from '@mui/material/IconButton';
 import { diff } from "deep-object-diff";
 
+import { getConfig } from '../api/getToken';
+
 const colours = {
     WH: "#333388",
     HC: "#FF0000",
     SW: "#3312FF",
     default: "#888888"
 }
+
 
 const EnclosureTable = () => {
     const [enclosureList, setEnclosureList] = useState([]); /* The State for the list of enclosures. The initial state is [] */
@@ -26,12 +29,14 @@ const EnclosureTable = () => {
 
     const [farm, setFarm] = useState(0);
 
+    const token = getConfig();
+
     //useEffect(displayAll,[clear]);
 
     function displayAll() {
         (async () => {
             try {
-                const response = await axios.get(`/enclosures`);
+                const response = await axios.get(`/enclosures`, token);
                 setEnclosureList(response.data);
             } catch (error) {
                 if (error.response.status === 401) {
@@ -52,7 +57,7 @@ const EnclosureTable = () => {
             }
             if (searchMode === "name") {
                 try {
-                    const response = await axios.get(`/enclosures/by_name/${searchTerm}`);
+                    const response = await axios.get(`/enclosures/by_name/${searchTerm}`, token);
                     setEnclosureList(response.data);
                 } catch (error) {
                     if (error.response.status === 401) {
@@ -65,7 +70,7 @@ const EnclosureTable = () => {
             }
             else {
                 try {
-                    const response = await axios.get(`/enclosures/by_id/${searchTerm}`);
+                    const response = await axios.get(`/enclosures/by_id/${searchTerm}`, token);
                     setEnclosureList(response.data);
                 } catch (error) {
                     if (error.response.status === 401) {
@@ -127,7 +132,7 @@ const EnclosureTable = () => {
                 console.log(_id);
                 (async() =>{
                     try{
-                        const response = await axios.patch(`/enclosures/by_id/${_id}/name/${newName}`)
+                        const response = await axios.patch(`/enclosures/by_id/${_id}/name/${newName}`, token)
                         console.log(response);
                         window.location.reload(false);
                     } catch (error) {
