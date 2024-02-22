@@ -26,7 +26,7 @@ public class AuthManager implements AuthorizationManager<RequestAuthorizationCon
         }
 
 
-        if (user.endsWith("bristol.ac.uk") || user.endsWith("windmillhillcitfarm.org.uk")) {
+        if (user.endsWith("bristol.ac.uk") || user.endsWith("windmillhillcityfarm.org.uk")) {
             return new AuthorizationDecision(true);
         } else {
             return new AuthorizationDecision(false);
