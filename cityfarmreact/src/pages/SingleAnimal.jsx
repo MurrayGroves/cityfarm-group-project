@@ -23,10 +23,17 @@ const SingleAnimal = (props) => {
             try {
                 const response = await axios.get(`/animals/by_id/${animalID}`);
                 setChosenAnimal(response.data);
+
                 const events = await axios.get(`/events/by_animal/${animalID}`)
                 setRelEvents(eventsConversion(events.data))
+
             } catch (error) {
-                window.alert(error);
+                if (error.response.status === 401) {
+                    window.location.href = "/login";
+                    return;
+                } else {
+                    window.alert(error);
+                }
             }
         })();
     }, [animalID]);

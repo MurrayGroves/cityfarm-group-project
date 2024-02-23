@@ -9,22 +9,32 @@ import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
 import AnimalCreator from "../components/AnimalCreator";
 
+import { getConfig } from '../api/getToken';
+
 const AnimalTable = ({farms}) => {
     const [animalList, setAnimalList] = useState([]); /* The State for the list of animals. The initial state is [] */
     const [searchTerm, setSearchTerm] = useState(''); /* The term being searched for in the searchbar */
     
     const [farm, setFarm] = useState(Object.keys(farms)[0]);
 
+    const token = getConfig();
+
     //useEffect(displayAll,[clear])
 
     function displayAll() {
         (async () => {
             try {
-                const response = await axios.get(`/animals`);
+                const response = await axios.get(`/animals`, token);
                 setAnimalList(response.data);
             } catch (error) {
-                window.alert(error);
-            }
+                console.log(error);
+                if (error.response.status === 401) {
+                    window.location.href = "/login";
+                    return;
+                } else {
+                    window.alert(error);
+                }
+            };
         })()
     }
 
@@ -35,10 +45,15 @@ const AnimalTable = ({farms}) => {
                 return;
             }
             try {
-                const response = await axios.get(`/animals/by_name/${searchTerm}`);
+                const response = await axios.get(`/animals/by_name/${searchTerm}`, token);
                 setAnimalList(response.data);
             } catch (error) {
-                window.alert(error);
+                if (error.response.status === 401) {
+                    window.location.href = "/login";
+                    return;
+                } else {
+                    window.alert(error);
+                }
             }
         })()
     },[searchTerm])

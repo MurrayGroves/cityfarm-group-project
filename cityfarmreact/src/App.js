@@ -10,6 +10,7 @@ import Calendar from "./pages/Calendar";
 import EnclosureTable from "./pages/EnclosureTable";
 import Schemas from "./pages/Schemas";
 import Error from "./pages/Error.jsx";
+import Login from './pages/Login.jsx';
 import SingleAnimal from "./pages/SingleAnimal";
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import React, { useState } from 'react';
@@ -20,6 +21,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import 'dayjs/locale/en-gb';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { PublicClientApplication } from "@azure/msal-browser";
 
 const App = () => {
 
@@ -72,25 +74,59 @@ const App = () => {
     });
     
     const [dark, setDark] = useState(false);
+    const [msal, setMsal] = useState(null);
+
+    const msalConfig = {
+        auth: {
+            clientId: '5668872b-7957-4c09-a995-56cd915cb4a9',
+            postLogoutRedirectUri: "/login",
+        },
+        cache: {
+            cacheLocation: "localStorage",
+            storeAuthStateInCookie: false,
+        }
+    };
+
+    if (msal == null) {
+        const msalInstance = new PublicClientApplication(msalConfig);
+        msalInstance.initialize().then(() => {
+            setMsal(msalInstance);
+            if (msalInstance.getAllAccounts().length == 0) {
+                if (!window.location.href.includes("/login")) {
+                    window.location.href = "/login";
+                }
+            }
+        })
+        return;
+    }
 
     return (
         <ThemeProvider theme={dark ? darkTheme : defaultTheme}>
         <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={'en-gb'}>
         <CssBaseline/>
         <Router>
-            <NavBar setDark={setDark}/> {/* Navbar available in all pages for navigation*/}
-            <div className="Content">
             <Routes>
-                <Route exact path="/"> {/*This is just for testing. Will probably navigate to a home page */}
+                <Route path="login" element={<Login msal={msal} setMsal={setMsal} />}/>
+                <Route exact path="*" element={
+                    <div>
+                    <NavBar setDark={setDark} msal={msal}/>
+                    <div className='Content'>
+                    <Routes>
                     <Route path="calendar" element={<Calendar/>}/>
-                    <Route path="animals" element={<AnimalTable farms={farms}/>}/> {/*There won't be pathing issues since all api paths start /api*/}
+                    <Route path="animals" element={<AnimalTable farms={farms}/>}/>
                     <Route path="enclosures" element={<EnclosureTable farms={farms}/>}/>
                     <Route path="schemas" element={<Schemas farms={farms}/>}/>
                     <Route path="single-animal/:animalID" element={<SingleAnimal farms={farms}/>} />
+                    <Route path="/" element={"Homepage"}/>
                     <Route path="*" element={<Error/>}/>
+                    </Routes>
+                    </div>
+
+                    </div>
+                    }>
+
                 </Route>
             </Routes>
-            </div>
         </Router>
         </LocalizationProvider>
         </ThemeProvider>

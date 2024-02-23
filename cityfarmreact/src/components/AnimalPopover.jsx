@@ -7,6 +7,8 @@ import axios from "../api/axiosConfig";
 import { useState, useEffect } from 'react';
 import { useTheme } from '@mui/material/styles';
 
+import { getConfig } from '../api/getToken';
+
 const aExamples = [
     {
         name: "Loading...",
@@ -21,6 +23,8 @@ const AnimalPopover = (props) => {
     const [animalMother, setMother] = useState("Unregistered")
     const [animalFather, setFather] = useState("Unregistered")
 
+    const token = getConfig();
+
     const handlePopoverOpen = (e) => {
         setAnchorEl(e.currentTarget);
     };
@@ -34,7 +38,7 @@ const AnimalPopover = (props) => {
     useEffect(() => {
         (async () => {
         try {
-            const response = await axios.get(`/animals/by_id/${props.animalID}`);
+            const response = await axios.get(`/animals/by_id/${props.animalID}`, token);
             setChosenAnimal(response.data);
         } catch (error) {
             window.alert(error);
@@ -45,18 +49,28 @@ const AnimalPopover = (props) => {
         if(chosenAnimal.mother){
             (async ()=>{
             try{
-                const mother = await axios.get(`/animals/by_id/${chosenAnimal.mother}`);
+                const mother = await axios.get(`/animals/by_id/${chosenAnimal.mother}`, token);
                 setMother(mother.data.name);
-            }catch(error){
-                window.alert(`mother issue \n ${error}`)
+            } catch (error) {
+                if (error.response.status === 401) {
+                    window.location.href = "/login";
+                    return;
+                } else {
+                    window.alert(`mother issue \n ${error}`)
+                }
             }})()}
         if (chosenAnimal.father){
             (async ()=>{
             try{
-                const father = await axios.get(`/animals/by_id/${chosenAnimal.father}`);
+                const father = await axios.get(`/animals/by_id/${chosenAnimal.father}`, token);
                 setFather(father.data.name);
-            }catch(error){
-                window.alert(`father issue \n ${error}`)
+            } catch (error) {
+                if (error.response.status === 401) {
+                    window.location.href = "/login";
+                    return;
+                } else {
+                    window.alert(`father issue \n ${error}`)
+                }
             }})()
         }
 

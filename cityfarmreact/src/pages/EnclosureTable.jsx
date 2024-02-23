@@ -10,20 +10,32 @@ import EditIcon from '@mui/icons-material/Edit';
 import Button from '@mui/material/Button';
 import { diff } from "deep-object-diff";
 
+import { getConfig } from '../api/getToken';
+
 const EnclosureTable = ({farms}) => {
     const [enclosureList, setEnclosureList] = useState([]); /* The State for the list of enclosures. The initial state is [] */
     const [searchTerm, setSearchTerm] = useState(''); /* The term being search for in the searchbar */
     const [editMode, setEditMode] = useState(false); /* Whether edit mode is on. Initial state is false */
 
+
+
+    const token = getConfig();
+
+    //useEffect(displayAll,[clear]);
     const [farm, setFarm] = useState(Object.keys(farms)[0]);
 
     function displayAll() {
         (async () => {
             try {
-                const response = await axios.get(`/enclosures`);
+                const response = await axios.get(`/enclosures`, token);
                 setEnclosureList(response.data);
             } catch (error) {
-                window.alert(error);
+                if (error.response.status === 401) {
+                    window.location.href = "/login";
+                    return;
+                } else {
+                    window.alert(error);
+                }
             }
         })()
     }
@@ -35,10 +47,15 @@ const EnclosureTable = ({farms}) => {
                 return;
             }
             try {
-                const response = await axios.get(`/enclosures/by_name/${searchTerm}`);
+                const response = await axios.get(`/enclosures/by_name/${searchTerm}`, token);
                 setEnclosureList(response.data);
             } catch (error) {
-                window.alert(error);
+                if (error.response.status === 401) {
+                    window.location.href = "/login";
+                    return;
+                } else {
+                    window.alert(error);
+                }
             }
         })()
     },[searchTerm])
@@ -91,11 +108,16 @@ const EnclosureTable = ({farms}) => {
                 console.log(_id);
                 (async() =>{
                     try{
-                        const response = await axios.patch(`/enclosures/by_id/${_id}/name/${newName}`)
+                        const response = await axios.patch(`/enclosures/by_id/${_id}/name/${newName}`, token)
                         console.log(response);
                         window.location.reload(false);
-                    }catch (error){
-                        window.alert(error);
+                    } catch (error) {
+                        if (error.response.status === 401) {
+                            window.location.href = "/login";
+                            return;
+                        } else {
+                            window.alert(error);
+                        }
                     }
                 })();
                 setEditMode(false);

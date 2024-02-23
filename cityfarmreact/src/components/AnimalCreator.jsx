@@ -18,12 +18,16 @@ import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
+import { getConfig } from '../api/getToken';
+
 const AnimalCreator = (props) => {
     const [newAnimal, setNewAnimal] = useState({name: '', type: '', father: '', mother: '', male: true, alive: true, fields: {}});
     const [schemaList, setSchemaList] = useState([]);
     const [schema, setSchema] = useState();
     const [fieldList, setFieldList] = useState([]);
     const [create, setCreate] = useState(false);
+
+    const token = getConfig();
 
     const fieldTypeSwitch = (key) => {
         let field = fieldList[key];
@@ -116,10 +120,15 @@ const AnimalCreator = (props) => {
     useEffect(() => {
         (async () => {
             try {
-                const response = await axios.get(`/schemas`);
+                const response = await axios.get(`/schemas`, token);
                 setSchemaList(response.data.reverse());
             } catch (error) {
-                window.alert(error);
+                if (error.response.status === 401) {
+                    window.location.href = "/login";
+                    return;
+                } else {
+                    window.alert(error);
+                }
             }
         })()
     },[]);
@@ -266,7 +275,7 @@ const AnimalCreator = (props) => {
                     { crossdomain: true, headers: {
                         "Access-Control-Allow-Origin": 'http://localhost:3000',
                         "Access-Control-Allow-Credentials": true
-                    }})
+                    }, ...token})
                 } catch(error) {
                     window.alert(error);
                 }

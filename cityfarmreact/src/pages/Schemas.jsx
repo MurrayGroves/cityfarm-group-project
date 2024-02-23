@@ -19,6 +19,8 @@ import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete'
 import TextField from '@mui/material/TextField';
 
+import { getConfig } from '../api/getToken';
+
 const classToReadable = {
     "java.lang.Boolean": "Yes/No",
     "java.lang.String": "Text",
@@ -32,6 +34,8 @@ const Schemas = () => {
     const [searchTerm, setSearchTerm] = useState(''); /* The term being search for in the searchbar */
     const [newFields, setNewFields] = useState([{"name": "", "type": "", "required": ""}])
     const [newSchemaName, setNewSchemaName] = useState("");
+
+    const token = getConfig();
 
     useEffect(displayAll,[])
 
@@ -53,11 +57,16 @@ const Schemas = () => {
     function displayAll() {
         (async () => {
             try {
-                const response = await axios.get(`/schemas`);
+                const response = await axios.get(`/schemas`, token);
                 console.log(response.data);
                 setSchemaList(response.data.reverse());
             } catch (error) {
-                window.alert(error);
+                if (error.response.status === 401) {
+                    window.location.href = "/login";
+                    return;
+                } else {
+                    window.alert(error);
+                }
             }
         })()
     }
@@ -76,19 +85,29 @@ const Schemas = () => {
         (async () => {
             if (searchTerm === '') {
                 try {
-                    const response = await axios.get(`/schemas`);
+                    const response = await axios.get(`/schemas`, token);
                     console.log(response.data);
                     setSchemaList(response.data.reverse());
                 } catch (error) {
-                    window.alert(error);
+                    if (error.response.status === 401) {
+                        window.location.href = "/login";
+                        return;
+                    } else {
+                        window.alert(error);
+                    }
                 }
             } else {
                 try {
-                const response = await axios.get(`/schemas/by_name/${searchTerm}`);
-                console.log(response.data);
-                setSchemaList(response.data.reverse());
+                    const response = await axios.get(`/schemas/by_name/${searchTerm}`, token);
+                    console.log(response.data);
+                    setSchemaList(response.data.reverse());
                 } catch (error) {
-                    window.alert(error);
+                    if (error.response.status === 401) {
+                        window.location.href = "/login";
+                        return;
+                    } else {
+                        window.alert(error);
+                    }
                 }
             }
         })()
@@ -201,8 +220,7 @@ const Schemas = () => {
                                     fields: fieldsObj,
                                 }
 
-                                await axios.post(`/schemas/create`, request, {crossdomain:true, headers: { "Access-Control-Allow-Origin": 'http://localhost:3000',
-                                "Access-Control-Allow-Credentials": true}});
+                                await axios.post(`/schemas/create`, request, token);
                                 window.location.reload(false);
                             }}>
                                 Create
@@ -234,10 +252,15 @@ const Schemas = () => {
                                     <TableCell align="right">
                                         <IconButton onClick={async () => {
                                             try{
-                                            await axios.delete(`/schemas/by_name/${schema._name}`);
-                                            window.location.reload(false);
-                                            } catch(error) {
-                                                window.alert(error);
+                                                await axios.delete(`/schemas/by_name/${schema._name}`, token);
+                                                window.location.reload(false);
+                                            } catch (error) {
+                                                if (error.response.status === 401) {
+                                                    window.location.href = "/login";
+                                                    return;
+                                                } else {
+                                                    window.alert(error);
+                                                }
                                             }
                                         }}><DeleteIcon/>
                                         </IconButton>
