@@ -132,6 +132,7 @@ const App = () => {
         </LocalizationProvider>
         </ThemeProvider>
     )
+
 }
 
 export default App;

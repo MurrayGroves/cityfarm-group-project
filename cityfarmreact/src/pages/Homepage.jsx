@@ -34,6 +34,7 @@ const Homepage = () => {
       )}else{
       setLiveContent(<></>)}},[liveShowing])
 
+
   const showEnc =()=>{
     if (encShowing){setEncShowing(false)}else {setEncShowing(true)}}
   useEffect(()=>{
