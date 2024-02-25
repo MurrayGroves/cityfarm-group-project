@@ -1,7 +1,13 @@
 import Eevent from "../assets/example event.png"
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
+import axios from "../api/axiosConfig";
+import "./Homepage.css"
+import { getConfig } from '../api/getToken';
+import {Button} from "@mui/material";
+import AnimalPopover from "../components/AnimalPopover";
+const WH = "WH", HC = "HC", SW = "SW";
 const Homepage = () => {
-  const  [calShowing,setCalShowing] = useState(false)
+  const [calShowing,setCalShowing] = useState(false)
   const [calContent,setCalContent] = useState(<></>)
   const [liveShowing,setLiveShowing] = useState(false)
   const [liveContent,setLiveContent] = useState(<></>)
@@ -9,7 +15,8 @@ const Homepage = () => {
   const [encContent,setEncContent] = useState(<></>)
   const [typeShowing,setTypeShowing] = useState(false)
   const [typeContent,setTypeContent] = useState(<></>)
-
+  const [events,setEvents] = useState([])
+  const token = getConfig();
   const showCal =()=>{
     if (calShowing){setCalShowing(false)}else {setCalShowing(true)}}
   useEffect(()=>{
@@ -33,8 +40,6 @@ const Homepage = () => {
           </>
       )}else{
       setLiveContent(<></>)}},[liveShowing])
-
-
   const showEnc =()=>{
     if (encShowing){setEncShowing(false)}else {setEncShowing(true)}}
   useEffect(()=>{
@@ -45,7 +50,6 @@ const Homepage = () => {
           </>
       )}else{
       setEncContent(<></>)}},[encShowing])
-
   const showType =()=>{
     if (typeShowing){setTypeShowing(false)}else {setTypeShowing(true)}}
   useEffect(()=>{
@@ -56,7 +60,38 @@ const Homepage = () => {
           </>
       )}else{
       setTypeContent(<></>)}},[typeShowing])
-
+  const eventsConversion=(events)=>{
+    let changed=[]
+    for (let i=0;i<events.length;i++){
+        changed.push(
+            {
+                title : events[i].event.title,
+                allDay: events[i].event.allDay,
+                start: new  Date(events[i].start),
+                end: new  Date(events[i].end),
+                farms: events[i].event.farms,
+                animals: events[i].event.animals,
+                description: events[i].event.description,
+                enclosures: events[i].event.enclosures
+            }
+        )
+    }
+    console.log(changed)
+    return changed
+}
+  useEffect(() => {
+        (async () => {
+            try {
+                const start = new Date()
+                const end =  new Date()
+                end.setMonth(end.getMonth()+1)
+                const response = await axios.get(`/events`, {params: {from: start.toISOString(), to: end.toISOString()}, ...token});
+                setEvents(eventsConversion(response.data.slice(0, 5)));
+            } catch (error) {
+                window.alert(error);
+            }
+        })();
+    }, []);
 
   return(<>
       <h1>City Farm Livestock Manager</h1>
@@ -78,6 +113,45 @@ const Homepage = () => {
     {encContent}
     <h2 onClick={showType}>Animal Types</h2>
     {typeContent}
+    <div className="events-container">
+    {events.map((e)=>(
+        <div className="event-box" key={e.title}>
+             <h2>{e.title}</h2>
+             {
+                 e.allDay ?
+                     <div>
+                         <p>{e.start.toLocaleDateString()} {e.end == null ? <></> : e.end.toLocaleDateString() === e.start.toLocaleDateString() ? <></> : " - " + e.end.toLocaleDateString()}</p>
+                     </div>
+                     :
+                     <div>
+                         <p>{e.start.toLocaleString([], {year: '2-digit', month: '2-digit', day: '2-digit', hour: '2-digit', minute:'2-digit'})} - {e.start.toLocaleDateString() === e.end.toLocaleDateString() ? e.end.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}): e.end.toLocaleString([], {year: '2-digit', month: '2-digit', day: '2-digit', hour: '2-digit', minute:'2-digit'})}</p>
+                     </div>
+
+             }
+             {e.farms.length !== 0 ? <h3>Farms</h3> : <></>}
+             {e.farms.includes(WH) ? <p>Windmill Hill</p> : <></>}
+             {e.farms.includes(HC) ? <p>Hartcliffe</p> : <></>}
+             {e.farms.includes(SW) ? <p>St Werberghs</p> : <></>}
+             {e.animals.length !== 0 ? <h3>Animals</h3> : <></>}
+             {e.animals.map((animalID) => (
+                 <AnimalPopover key={animalID._id} animalID={animalID._id}/>
+             ))}
+             {e.enclosures.length !== 0 &&
+                 <div>
+                     <h3>Enclosures</h3>
+                     {e.enclosures.map((enclosureName, index) => (
+                         <p key={index}>{enclosureName}</p>
+                     ))}
+                 </div>}
+             {e.description !== "" ?
+                 <div>
+                     <h3>Description</h3>
+                     {e.description}
+                 </div> : <></>}
+         </div>
+     ))}
+    </div>
+
 
 
 
