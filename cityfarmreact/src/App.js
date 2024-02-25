@@ -23,6 +23,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { PublicClientApplication } from "@azure/msal-browser";
 import Homepage from "./pages/Homepage";
+import HelpPage from "./pages/HelpPage";
 
 const App = () => {
 
@@ -120,6 +121,7 @@ const App = () => {
                     <Route path="single-animal/:animalID" element={<SingleAnimal farms={farms}/>} />
                     <Route path="/" element={<Homepage/>}/>
                     <Route path="*" element={<Error/>}/>
+                    <Route path="help" element={<HelpPage/>}/>
                     </Routes>
                     </div>
 

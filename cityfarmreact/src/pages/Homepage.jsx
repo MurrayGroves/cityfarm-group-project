@@ -7,59 +7,10 @@ import {Button} from "@mui/material";
 import AnimalPopover from "../components/AnimalPopover";
 const WH = "WH", HC = "HC", SW = "SW";
 const Homepage = () => {
-  const [calShowing,setCalShowing] = useState(false)
-  const [calContent,setCalContent] = useState(<></>)
-  const [liveShowing,setLiveShowing] = useState(false)
-  const [liveContent,setLiveContent] = useState(<></>)
-  const [encShowing,setEncShowing] = useState(false)
-  const [encContent,setEncContent] = useState(<></>)
-  const [typeShowing,setTypeShowing] = useState(false)
-  const [typeContent,setTypeContent] = useState(<></>)
+
   const [events,setEvents] = useState([])
   const token = getConfig();
-  const showCal =()=>{
-    if (calShowing){setCalShowing(false)}else {setCalShowing(true)}}
-  useEffect(()=>{
-    if (calShowing){
-      setCalContent(
-          <>
-            This displays a calendar which shows relevant events for you and the animals,
-            each event has  a title, a description, start and end times (or date), an indicator whether it lasts a full day or not,
-            a list of relevant animals it effects, a list of what farms it happens in and the people associated with that event. For example:
-            <p><img src={Eevent} width={400} height={200}/></p>
-          </>
-      )}else{
-      setCalContent(<></>)}},[calShowing])
-  const showLive =()=>{
-    if (liveShowing){setLiveShowing(false)}else {setLiveShowing(true)}}
-  useEffect(()=>{
-    if (liveShowing){
-      setLiveContent(
-          <>
-            LIVESTOCK
-          </>
-      )}else{
-      setLiveContent(<></>)}},[liveShowing])
-  const showEnc =()=>{
-    if (encShowing){setEncShowing(false)}else {setEncShowing(true)}}
-  useEffect(()=>{
-    if (encShowing){
-      setEncContent(
-          <>
-            ENCLOSURES
-          </>
-      )}else{
-      setEncContent(<></>)}},[encShowing])
-  const showType =()=>{
-    if (typeShowing){setTypeShowing(false)}else {setTypeShowing(true)}}
-  useEffect(()=>{
-    if (typeShowing){
-      setTypeContent(
-          <>
-            ANIMAL TYPES
-          </>
-      )}else{
-      setTypeContent(<></>)}},[typeShowing])
+
   const eventsConversion=(events)=>{
     let changed=[]
     for (let i=0;i<events.length;i++){
@@ -84,7 +35,8 @@ const Homepage = () => {
             try {
                 const start = new Date()
                 const end =  new Date()
-                end.setMonth(end.getMonth()+1)
+                end.setMonth(end.getMonth()+2)
+                console.log(start.getMonth(),end.getMonth())
                 const response = await axios.get(`/events`, {params: {from: start.toISOString(), to: end.toISOString()}, ...token});
                 setEvents(eventsConversion(response.data.slice(0, 5)));
             } catch (error) {
@@ -104,15 +56,8 @@ const Homepage = () => {
     </ul>
     On the left is the side menu, this contains various ways to manage livestock across the three farms. Below are instructions and help to navigate your way around the application, click the headers to reveal their content.
 
-    <h2 onClick={showCal}>Calendar</h2>
-    {calContent}
 
-    <h2 onClick={showLive}>Animal Table</h2>
-    {liveContent}
-    <h2 onClick={showEnc}>Enclosures</h2>
-    {encContent}
-    <h2 onClick={showType}>Animal Types</h2>
-    {typeContent}
+      <h2>Upcoming Events:</h2>
     <div className="events-container">
     {events.map((e)=>(
         <div className="event-box" key={e.title}>
