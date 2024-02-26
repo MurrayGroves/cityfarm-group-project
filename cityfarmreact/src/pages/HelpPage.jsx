@@ -5,9 +5,15 @@ export const calData =<>This displays a calendar which shows relevant events for
     each event has  a title, a description, start and end times (or date), an indicator whether it lasts a full day or not,
     a list of relevant animals it effects, a list of what farms it happens in and the people associated with that event. For example:
     <p><img src={Eevent} width={400} height={200}/></p></>
-export const liveData=<>LIVESTOCK</>
-export const encData=<>ENCLOSURES</>
-export const typeData=<>ANIMAL TYPES</>
+export const liveData=<>This table displays all the animals, each one has 5 main attributes, father, mother, name, type and sex.
+This can be searched by name using the search bar at the top. Each name in the table is clickable and will take you to a single animal viewpage that
+will displays more information about the animl, including further fields and any related events with that animal.{'\n'}
+The add animal button adds an animal where you can selected the types from the ones defined in the animal types page and all the fields can be assigned.</>
+export const encData=<>Every enclosure has animals assigned to it, you can give it specific events which will affect all the animals within it.
+Click on an enclosure to expand it, you can edit them by clicking the edit button then pressing a field.</>
+export const typeData=<>This displays a page to create custom animal types, in case any new animals are to be added,
+    once the type name is filled out, any number of properties can be added that pertain to that animal. Once an animal type is added,
+    the creation of animals in the livestock table will be updated to include that.</>
 
 const HelpPage = () => {
     const [calShowing,setCalShowing] = useState(false)

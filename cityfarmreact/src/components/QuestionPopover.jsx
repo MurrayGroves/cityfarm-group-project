@@ -9,12 +9,6 @@ import {calData,liveData,encData,typeData} from '../pages/HelpPage'
 import { getConfig } from '../api/getToken';
 import question from "../assets/question mark.png";
 
-const aExamples = [
-    {
-        name: "Loading...",
-    }
-]
-
 const QuestionPopover = (props) => {
     const colour = useTheme().palette.mode === 'light' ? 'black' : 'white';
     const location = useLocation();
@@ -37,7 +31,7 @@ const QuestionPopover = (props) => {
             case '/calendar':
                 return calData;
             case '/animals':
-                return typeData;
+                return liveData;
             case '/enclosures':
                 return encData
             case '/schemas':
@@ -77,7 +71,7 @@ const QuestionPopover = (props) => {
                 onClose={handlePopoverClose}
                 disableRestoreFocus
             >
-                <Typography sx={{ p: 1, whiteSpace: 'pre-line' }}>
+                <Typography sx={{ p: 1, whiteSpace: 'pre-line' }} maxHeight={400} maxWidth={500}>
                     {getContentForCurrentPath()}
                 </Typography>
             </Popover>
