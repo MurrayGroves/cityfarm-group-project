@@ -9,6 +9,8 @@ import CloseIcon from "../assets/close-512-light.webp";
 import Paper from "@mui/material/Paper";
 import SelectedEvent from "../components/SelectedEvent";
 
+import { getConfig } from '../api/getToken';
+
 const SingleAnimal = (props) => {
 
     const farms = props.farms;
@@ -18,13 +20,15 @@ const SingleAnimal = (props) => {
     const [chosenAnimal, setChosenAnimal] = useState({});
     const [selectedEvent,setSelectedEvent] = useState("No event selected");
 
+    const token = getConfig();
+
     useEffect(() => {
         (async () => {
             try {
-                const response = await axios.get(`/animals/by_id/${animalID}`);
+                const response = await axios.get(`/animals/by_id/${animalID}`, token);
                 setChosenAnimal(response.data);
 
-                const events = await axios.get(`/events/by_animal/${animalID}`)
+                const events = await axios.get(`/events/by_animal/${animalID}`, token)
                 setRelEvents(eventsConversion(events.data))
 
             } catch (error) {

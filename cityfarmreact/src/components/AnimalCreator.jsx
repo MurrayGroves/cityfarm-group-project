@@ -271,11 +271,7 @@ const AnimalCreator = (props) => {
             endIcon={<AddIcon/>}
             onClick={async() => {
                 try{
-                    await axios.post(`/animals/create`, newAnimal,
-                    { crossdomain: true, headers: {
-                        "Access-Control-Allow-Origin": 'http://localhost:3000',
-                        "Access-Control-Allow-Credentials": true
-                    }, ...token})
+                    await axios.post(`/animals/create`, newAnimal, token)
                 } catch(error) {
                     window.alert(error);
                 }
@@ -284,7 +280,7 @@ const AnimalCreator = (props) => {
             >Create</Button>
             </div>
             : <></>}</>
-        : <Button variant='contained' endIcon={<AddIcon/>} style={{float: 'right'}} onClick={() => setCreate(true)}>Create</Button>}
+        : <Button className='tallButton' variant='contained' endIcon={<AddIcon/>} style={{float: 'right'}} onClick={() => setCreate(true)}>Create</Button>}
     </>)
 }
 
