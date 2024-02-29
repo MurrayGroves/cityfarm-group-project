@@ -19,7 +19,6 @@ const EnclosureTable = ({farms}) => {
 
     const token = getConfig();
 
-    //useEffect(displayAll,[clear]);
     const [farm, setFarm] = useState(Object.keys(farms)[0]);
 
     function displayAll() {
@@ -91,20 +90,16 @@ const EnclosureTable = ({farms}) => {
         </span>
         <TableContainer component={Paper} style={{marginBottom: '20px'}}>
             <DataGrid rows={rows} columns={cols} 
-            isCellEditable = {() => editMode} 
-            // onCellEditStop = {(params: GridCellParams, event) => {
+            isCellEditable={() => editMode}
+            // editMode="row"
+            // onCellEditStop = {(params, event) => {
                 
-            //     setEditMode(!editMode);
             // }}
             processRowUpdate = {(newVal, oldVal) => {
-                console.log("it gets here")
-                const result = diff(oldVal, newVal);
-                console.log(result);
+                if (newVal.name === oldVal.name) { return newVal; }
                 const newName = newVal.name;
-                console.log(newName);
                 const _id = oldVal.id;
-                console.log(_id);
-                (async() =>{
+                (async() => {
                     try{
                         const response = await axios.patch(`/enclosures/by_id/${_id}/name/${newName}`, token)
                         console.log(response);
