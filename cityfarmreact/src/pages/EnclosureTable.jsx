@@ -17,8 +17,6 @@ const EnclosureTable = ({farms}) => {
     const [searchTerm, setSearchTerm] = useState(''); /* The term being search for in the searchbar */
     const [editMode, setEditMode] = useState(false); /* Whether edit mode is on. Initial state is false */
 
-
-
     const token = getConfig();
 
     //useEffect(displayAll,[clear]);
