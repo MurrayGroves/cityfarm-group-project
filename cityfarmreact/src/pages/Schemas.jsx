@@ -37,8 +37,6 @@ const Schemas = () => {
 
     const token = getConfig();
 
-    useEffect(displayAll,[])
-
     function checkIfNewRowNeeded() {
         let changed = false;
         Object.values(newFields[newFields.length-1]).map((value) => {
@@ -83,17 +81,7 @@ const Schemas = () => {
     useEffect (() => {
         (async () => {
             if (searchTerm === '') {
-                try {
-                    const response = await axios.get(`/schemas`, token);
-                    setSchemaList(response.data.reverse());
-                } catch (error) {
-                    if (error.response.status === 401) {
-                        window.location.href = "/login";
-                        return;
-                    } else {
-                        window.alert(error);
-                    }
-                }
+                displayAll();
             } else {
                 try {
                     const response = await axios.get(`/schemas/by_name/${searchTerm}`, token);
@@ -198,7 +186,7 @@ const Schemas = () => {
                     </TableBody>
                     <TableFooter>
                         <TableRow style={{padding: "2.5%", paddingTop: "0%"}}>
-                            <TableCell>
+                            <TableCell style={{border: 'none'}}>
                                 <Button variant="contained" aria-label="add" endIcon={<AddIcon />} onClick={async () => {
                                     newFields.pop();
                                     let fieldsObj = {};
@@ -249,8 +237,9 @@ const Schemas = () => {
                                     <TableCell align="left">Required</TableCell>
                                     <TableCell align="right">
                                         <IconButton onClick={async () => {
-                                            try{
-                                                await axios.delete(`/schemas/delete/${schema._name}`, token);
+                                            try {
+                                                //await axios.delete(`/schemas/delete/${schema._name}`, token);
+                                                await axios.patch(`/schemas/by_name/${schema._name}/hidden`, {hidden: true}, token)
                                                 window.location.reload(false);
                                             } catch (error) {
                                                 if (error.response.status === 401) {

@@ -30,11 +30,15 @@ public class AnimalSchema {
     @NonNull
     private final Map<String, SchemaValue> fields;
 
+    @NonNull
+    private boolean hidden;
+
     @JsonCreator
     @PersistenceCreator
     public AnimalSchema(@NonNull String name, @NonNull Map<String, SchemaValue> fields) {
         this.name = name;
         this.fields = fields;
+        this.hidden = false;
     }
 
     public String get_name() {
@@ -43,6 +47,14 @@ public class AnimalSchema {
 
     public Map<String, SchemaValue> get_fields() {
         return this.fields;
+    }
+
+    public Boolean get_hidden() {
+        return this.hidden;
+    }
+
+    public void set_hidden(Boolean hidden) {
+        this.hidden = hidden;
     }
 
     public AnimalCustom new_animal(@NonNull AnimalCreateRequest animalReq) {

@@ -1,5 +1,6 @@
 package cityfarm.api.schemas;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpHeaders;
@@ -28,13 +29,21 @@ public class SchemaController {
 
     @GetMapping("/api/schemas")
     public ResponseEntity<List<AnimalSchema>> get_schemas() {
-        return ResponseEntity.ok().body(schemaRepository.findAll());
+        return ResponseEntity.ok().body(
+                schemaRepository.findAll()
+                .stream()
+                .filter(s -> !s.get_hidden())
+                .toList()
+        );
     }
 
     @GetMapping("/api/schemas/by_name/{name}")
-
     public ResponseEntity<List<AnimalSchema>> by_name(@PathVariable String name) {
-        List<AnimalSchema> schema = schemaRepositoryCustom.findSchemaByName(name);
+        List<AnimalSchema> schema =
+                schemaRepositoryCustom.findSchemaByName(name)
+                .stream()
+                .filter(s -> !s.get_hidden())
+                .toList();
 
         return ResponseEntity.ok().body(schema);
     }
@@ -44,5 +53,14 @@ public class SchemaController {
         schemaRepository.deleteByName(name);
 
         return ResponseEntity.ok(name);
+    }
+
+    @PatchMapping("/api/schemas/by_name/{name}/hidden")
+    public ResponseEntity<Boolean> set_hidden(@PathVariable String name, @RequestBody JsonNode req) {
+        AnimalSchema schema = schemaRepositoryCustom.findSchemaByName(name).getFirst();
+        schema.set_hidden(req.get("hidden").asBoolean());
+        schemaRepository.save(schema);
+
+        return ResponseEntity.ok(req.get("hidden").asBoolean());
     }
 }
