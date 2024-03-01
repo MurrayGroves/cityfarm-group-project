@@ -82,17 +82,17 @@ const Schemas = () => {
         (async () => {
             if (searchTerm === '') {
                 displayAll();
-            } else {
-                try {
-                    const response = await axios.get(`/schemas/by_name/${searchTerm}`, token);
-                    setSchemaList(response.data.reverse());
-                } catch (error) {
-                    if (error.response.status === 401) {
-                        window.location.href = "/login";
-                        return;
-                    } else {
-                        window.alert(error);
-                    }
+                return;
+            }
+            try {
+                const response = await axios.get(`/schemas/by_name/${searchTerm}`, token);
+                setSchemaList(response.data.reverse());
+            } catch (error) {
+                if (error.response.status === 401) {
+                    window.location.href = "/login";
+                    return;
+                } else {
+                    window.alert(error);
                 }
             }
         })()

@@ -14,12 +14,11 @@ import { getConfig } from '../api/getToken';
 const AnimalTable = ({farms}) => {
     const [animalList, setAnimalList] = useState([]); /* The State for the list of animals. The initial state is [] */
     const [searchTerm, setSearchTerm] = useState(''); /* The term being searched for in the searchbar */
+    const [schemaList, setSchemaList] = useState([]);
     
     const [farm, setFarm] = useState(Object.keys(farms)[0]);
 
     const token = getConfig();
-
-    //useEffect(displayAll,[clear])
 
     function displayAll() {
         (async () => {
@@ -37,6 +36,25 @@ const AnimalTable = ({farms}) => {
             };
         })()
     }
+
+    function getSchemas() {
+        (async () => {
+            try {
+                const response = await axios.get(`/schemas`, token);
+                setSchemaList(response.data.reverse());
+            } catch (error) {
+                if (error.response.status === 401) {
+                    window.location.href = "/login";
+                    return;
+                } else {
+                    window.alert(error);
+                }
+            }
+        })()
+    }
+
+    useEffect(getSchemas, []);
+
 
     useEffect(() => {
         (async () => {
@@ -65,7 +83,7 @@ const AnimalTable = ({farms}) => {
     const rows = animalList.map((animal) => ({
         id: animal._id,
         name: animal,
-        type: animal.type.charAt(0).toUpperCase() + animal.type.slice(1),
+        type: animal,
         father: animal.father !== null ? animal : 'Unregistered',
         mother: animal.mother !== null ? animal : 'Unregistered',
         sex: animal.male ? 'Male' : 'Female',
@@ -74,12 +92,23 @@ const AnimalTable = ({farms}) => {
     const cols = [
         { field: 'name', headerName: 'Name', headerClassName: 'grid-header', headerAlign: 'left', flex: 1,
             renderCell: (animal) => {return <AnimalPopover animalID={animal.value._id}/>} },
-        { field: 'type', headerName: 'Type', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
+        { field: 'type', headerName: 'Type', headerClassName: 'grid-header', headerAlign: 'left', flex: 1,
+            renderCell: (animal) => {
+                let exists = false;
+                schemaList.forEach(schema => {
+                    if(schema._name === animal.value.type) {
+                        exists = true;
+                    }
+                });
+                return exists 
+                    ? <p>{animal.value.type.charAt(0).toUpperCase() + animal.value.type.slice(1)}</p>
+                    : <p style={{color: 'red'}}>{animal.value.type.charAt(0).toUpperCase() + animal.value.type.slice(1)}</p>
+            }},
         { field: 'father', headerName: 'Father', headerClassName: 'grid-header', headerAlign: 'left', flex: 1,
-        renderCell:(animal)=>{return animal.value.father?
-             <AnimalPopover key={animal.value.father} animalID={animal.value.father}/> : "Unregistered"}},
+            renderCell: (animal) => {return animal.value.father?
+                <AnimalPopover key={animal.value.father} animalID={animal.value.father}/> : "Unregistered"}},
         { field: 'mother', headerName: 'Mother', headerClassName: 'grid-header', headerAlign: 'left', flex: 1,
-            renderCell:(animal)=>{return animal.value.mother?
+            renderCell: (animal) => {return animal.value.mother?
                 <AnimalPopover key={animal.value.mother} animalID={animal.value.mother}/> : "Unregistered"}},
         { field: 'sex', headerName: 'Sex', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
     ];
@@ -96,9 +125,9 @@ const AnimalTable = ({farms}) => {
             <FarmTabs farms={farms} selectedFarm={farm} setSelectedFarm={setFarm}/>
         </span>
         <Paper style={{height: 'calc(100% - 525px)', marginBottom: '20px'}}>
-            <DataGrid style={{fontSize: '1rem'}} checkboxSelection columns={cols} rows={rows}/>
+            <DataGrid style={{fontSize: '1rem'}} columns={cols} rows={rows}/>
         </Paper>
-        <AnimalCreator animalList={animalList}/>
+        <AnimalCreator animalList={animalList} schemaList={schemaList}/>
     </>)
 }
 
