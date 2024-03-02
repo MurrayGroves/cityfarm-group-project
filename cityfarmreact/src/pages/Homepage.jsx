@@ -5,38 +5,21 @@ import "./Homepage.css"
 import { getConfig } from '../api/getToken';
 import {Button} from "@mui/material";
 import AnimalPopover from "../components/AnimalPopover";
+import {eventsConversion} from "./Calendar";
 const WH = "WH", HC = "HC", SW = "SW";
 const Homepage = () => {
 
   const [events,setEvents] = useState([])
   const token = getConfig();
 
-  const eventsConversion=(events)=>{
-    let changed=[]
-    for (let i=0;i<events.length;i++){
-        changed.push(
-            {
-                title : events[i].event.title,
-                allDay: events[i].event.allDay,
-                start: new  Date(events[i].start),
-                end: new  Date(events[i].end),
-                farms: events[i].event.farms,
-                animals: events[i].event.animals,
-                description: events[i].event.description,
-                enclosures: events[i].event.enclosures
-            }
-        )
-    }
-    console.log(changed)
-    return changed
-}
+  //get the events for the next 2 months (IF IT WORKS)
   useEffect(() => {
         (async () => {
             try {
                 const start = new Date()
                 const end =  new Date()
                 end.setMonth(end.getMonth()+2)
-                console.log(start.getMonth(),end.getMonth())
+                console.log(start,end)
                 const response = await axios.get(`/events`, {params: {from: start.toISOString(), to: end.toISOString()}, ...token});
                 setEvents(eventsConversion(response.data.slice(0, 5)));
             } catch (error) {
@@ -54,10 +37,10 @@ const Homepage = () => {
       <li> <a href="https://www.swcityfarm.co.uk/" target="_blank">St Werburghs</a></li>
       <li> <a href="https://hartcliffecityfarm.org.uk/" target="_blank">Hartcliffe</a></li>
     </ul>
-    On the left is the side menu, this contains various ways to manage livestock across the three farms. Below are instructions and help to navigate your way around the application, click the headers to reveal their content.
-
-
+    On the left is the side menu, this contains various ways to manage livestock across the three farms.
+      Hover over the question mark on the nav bar in any page to see useful help on that page and click it for an overall view of the entire website.
       <h2>Upcoming Events:</h2>
+    {/*  events are mapped below, same as in selected event with some visual changes*/}
     <div className="events-container">
     {events.map((e)=>(
         <div className="event-box" key={e.title}>

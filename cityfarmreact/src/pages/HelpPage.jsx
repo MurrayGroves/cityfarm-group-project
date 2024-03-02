@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from "react";
 import Eevent from "../assets/example event.png";
 
+//updating the constants here updates them globally
 export const calData =<>This displays a calendar which shows relevant events for you and the animals,
     each event has  a title, a description, start and end times (or date), an indicator whether it lasts a full day or not,
     a list of relevant animals it effects, a list of what farms it happens in and the people associated with that event. For example:
@@ -14,8 +15,12 @@ Click on an enclosure to expand it, you can edit them by clicking the edit butto
 export const typeData=<>This displays a page to create custom animal types, in case any new animals are to be added,
     once the type name is filled out, any number of properties can be added that pertain to that animal. Once an animal type is added,
     the creation of animals in the livestock table will be updated to include that.</>
-
+export const singleData=<>This is the page for viewing a single animal, below you can see the upcoming events pertaining
+    to it as well as more information about it such as tb inoculation status if it's a cow. In order to change what farm this animal belongs to,
+    press the change farm button on the right.
+</>
 const HelpPage = () => {
+
     const [calShowing,setCalShowing] = useState(false)
     const [calContent,setCalContent] = useState(<></>)
     const [liveShowing,setLiveShowing] = useState(false)
@@ -24,6 +29,8 @@ const HelpPage = () => {
     const [encContent,setEncContent] = useState(<></>)
     const [typeShowing,setTypeShowing] = useState(false)
     const [typeContent,setTypeContent] = useState(<></>)
+
+    //allows all the various elements to be expanded and minimised
     const showCal =()=>{
         if (calShowing){setCalShowing(false)}else {setCalShowing(true)}}
     useEffect(()=>{

@@ -5,9 +5,10 @@ import {Link,  useLocation} from "react-router-dom";
 import './AnimalPopover.css'
 import { useState, useEffect } from 'react';
 import { useTheme } from '@mui/material/styles';
-import {calData,liveData,encData,typeData} from '../pages/HelpPage'
+import {calData, liveData, encData, typeData, singleData} from '../pages/HelpPage'
 import { getConfig } from '../api/getToken';
 import question from "../assets/question mark.png";
+import singleAnimal from "../pages/SingleAnimal";
 
 const QuestionPopover = (props) => {
     const colour = useTheme().palette.mode === 'light' ? 'black' : 'white';
@@ -36,10 +37,15 @@ const QuestionPopover = (props) => {
                 return encData
             case '/schemas':
                 return typeData
+            case '/single-animal':
+                return singleData
             case '/':
-                return "this is the homepage"
+                return "This is the homepage, use the bar above to navigate"
+
+            case '/help':
+                return "This is the help page, use the bar above to navigate"
             default:
-                return 'for more info click on the question mark';
+                return "This is an error, go back to a previous page or click the homepage";
         }
     };
 
