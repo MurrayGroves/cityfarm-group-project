@@ -22,7 +22,6 @@ import { getConfig } from '../api/getToken';
 
 const AnimalCreator = (props) => {
     const [newAnimal, setNewAnimal] = useState({name: '', type: '', father: '', mother: '', male: true, alive: true, fields: {}});
-    const [schemaList, setSchemaList] = useState([]);
     const [schema, setSchema] = useState();
     const [fieldList, setFieldList] = useState([]);
     const [create, setCreate] = useState(false);
@@ -118,22 +117,6 @@ const AnimalCreator = (props) => {
     }
 
     useEffect(() => {
-        (async () => {
-            try {
-                const response = await axios.get(`/schemas`, token);
-                setSchemaList(response.data.reverse());
-            } catch (error) {
-                if (error.response.status === 401) {
-                    window.location.href = "/login";
-                    return;
-                } else {
-                    window.alert(error);
-                }
-            }
-        })()
-    },[]);
-
-    useEffect(() => {
         console.log(newAnimal);
     },[newAnimal])
 
@@ -168,11 +151,11 @@ const AnimalCreator = (props) => {
                                     isOptionEqualToValue={(option, value) => option._name === value._name}
                                     renderInput={(params) => <TextField {...params} label="Type"/>}
                                     getOptionLabel={option => option._name.charAt(0).toUpperCase() + option._name.slice(1)}
-                                    options={schemaList}
+                                    options={props.schemaList}
                                     onChange={(e, v) => {
                                         if(v) {
                                             setNewAnimal({...newAnimal, type: v._name, fields: {}});
-                                            let tempSchema = schemaList.filter((schema) => schema._name === v._name).pop();
+                                            let tempSchema = props.schemaList.filter((schema) => schema._name === v._name).pop();
                                             setSchema(tempSchema);
                                             setFieldList(Object.keys(tempSchema._fields));
                                         } else {
@@ -271,11 +254,7 @@ const AnimalCreator = (props) => {
             endIcon={<AddIcon/>}
             onClick={async() => {
                 try{
-                    await axios.post(`/animals/create`, newAnimal,
-                    { crossdomain: true, headers: {
-                        "Access-Control-Allow-Origin": 'http://localhost:3000',
-                        "Access-Control-Allow-Credentials": true
-                    }, ...token})
+                    await axios.post(`/animals/create`, newAnimal, token)
                 } catch(error) {
                     window.alert(error);
                 }
@@ -284,7 +263,7 @@ const AnimalCreator = (props) => {
             >Create</Button>
             </div>
             : <></>}</>
-        : <Button variant='contained' endIcon={<AddIcon/>} style={{float: 'right'}} onClick={() => setCreate(true)}>Create</Button>}
+        : <Button className='tallButton' variant='contained' endIcon={<AddIcon/>} style={{float: 'right'}} onClick={() => setCreate(true)}>Create</Button>}
     </>)
 }
 

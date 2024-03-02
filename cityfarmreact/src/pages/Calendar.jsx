@@ -17,54 +17,8 @@ import axios from '../api/axiosConfig'
 
 import { getConfig } from '../api/getToken';
 
-
-const WH = "WH", HC = "HC", SW = "SW";
-const events = [ /*These are example events.*/
-    {
-        title : "Boss Meeting",
-        allDay: false,
-        start: new  Date(2024,1,1, 13),
-        end: new  Date(2024,1,1, 14),
-        farms: [],
-        animals: ["174447d3-bedb-4311-a16c-1771aa82d173"],
-        description: "Bring notes",
-        enclosures: ["Pig pen 2", "Pig pen 1"]
-    },
-    {
-        title : "Bull in with cows",
-        allDay: false,
-        start: new  Date(2024,1,5, 8),
-        end: new  Date(2024,1,8, 16),
-        farms: [WH],
-        animals: ["ae7ee5e6-0d26-4b52-b94e-b3da9b434b2e"],
-        description: "move animals from one pen to another.",
-        enclosures: ["Pig pen 1"]
-    },
-    {
-        title : "School Visits",
-        allDay: true,
-        start: new  Date(2024,1,9, 8),
-        end: new  Date(2024,1,9, 23, 59),
-        farms: [HC, SW],
-        animals: ["05eea36a-1098-4392-913b-25e6508df54c","ae7ee5e6-0d26-4b52-b94e-b3da9b434b2e"],
-        description: "",
-        enclosures: []
-    },
-    {
-        title : "Defra Inspection",
-        allDay: true,
-        start: new  Date(2024,1,20  ),
-        end: new Date(2024,1,20),
-        farms: [WH, HC, SW],
-        animals: ["a157482d-21aa-4461-968b-f3f873605057"],
-        description: "",
-        enclosures: []
-    }
-];
-
-const Calendar = () => {
+const Calendar = ({farms}) => {
     const token = getConfig();
-
     const theme = useTheme().palette;
 
     const [newEvent,setNewEvent] = useState({
@@ -90,17 +44,16 @@ const Calendar = () => {
 
     const [allEvents,setAllEvents] = useState([]);
     const [selectedEvent,setSelectedEvent] = useState("No event selected");
-    const [visibleFarms, setVisibleFarms] = useState([WH, HC, SW]);
+    const [visibleFarms, setVisibleFarms] = useState([farms.WH, farms.HC, farms.SW]);
     const [modifyEvent, setModifyEvent] = useState(false);
 
     useEffect(() =>{
         setModifiedEvent(selectedEvent);
     },[selectedEvent]);
+
     useEffect(() => {
         (async () => {
             try {
-
-
                 const start = new Date()
                 start.setMonth(start.getMonth()-1)
                 const end =  new Date()
@@ -112,7 +65,8 @@ const Calendar = () => {
                 window.alert(error);
             }
         })();
-    }, []);
+    },[]);
+
     const removeAnimal = (animalID, type) => {
         if (type === "add"){
 
@@ -147,8 +101,8 @@ const Calendar = () => {
 
     const eventStyleGetter = (event) => {
         //console.log(event)
-        var colour1 = event.farms.includes(WH) ? theme.WH.main : (event.farms.includes(HC) ? theme.HC.main : theme.SW.main);
-        var colour2 = event.farms.includes(HC) ? (event.farms.includes(WH) ? theme.HC.main : (event.farms.includes(SW) ? theme.SW.main : theme.SW.main)) : theme.SW.main;
+        var colour1 = event.farms.includes(farms.WH) ? theme.WH.main : (event.farms.includes(farms.HC) ? theme.HC.main : theme.SW.main);
+        var colour2 = event.farms.includes(farms.HC) ? (event.farms.includes(farms.WH) ? theme.HC.main : (event.farms.includes(farms.SW) ? theme.SW.main : theme.SW.main)) : theme.SW.main;
         const offset = 0;
         var visible = true;
         if (event.farms.length > 0) {
@@ -281,9 +235,9 @@ const Calendar = () => {
                 <Paper elevation={3} style={{width: '400px', margin: '0 0 20px 0', padding: '10px'}}>
                     <h2 className='boxTitle'>Selected Farms</h2>
                     <FormGroup>
-                        <FormControlLabel control={<Checkbox defaultChecked color='WH' size='small'/>} label="Windmill Hill" onChange={() => updateVisibleFarms(WH)}/>
-                        <FormControlLabel control={<Checkbox defaultChecked color='HC' size='small'/>} label="Hartecliffe" onChange={() => updateVisibleFarms(HC)}/>
-                        <FormControlLabel control={<Checkbox defaultChecked color='SW' size='small'/>} label="St Werburghs" onChange={() => updateVisibleFarms(SW)}/>
+                        <FormControlLabel control={<Checkbox defaultChecked color={farms.WH} size='small'/>} label="Windmill Hill" onChange={() => updateVisibleFarms(farms.WH)}/>
+                        <FormControlLabel control={<Checkbox defaultChecked color={farms.HC} size='small'/>} label="Hartecliffe" onChange={() => updateVisibleFarms(farms.HC)}/>
+                        <FormControlLabel control={<Checkbox defaultChecked color={farms.SW} size='small'/>} label="St Werburghs" onChange={() => updateVisibleFarms(farms.SW)}/>
                     </FormGroup>
                 </Paper>
 
@@ -311,9 +265,9 @@ const Calendar = () => {
                         
                         }
                         {selectedEvent.farms.length !== 0 ? <h3>Farms</h3> : <></>}
-                        {selectedEvent.farms.includes(WH) ? <p>Windmill Hill</p> : <></>}
-                        {selectedEvent.farms.includes(HC) ? <p>Hartcliffe</p> : <></>}
-                        {selectedEvent.farms.includes(SW) ? <p>St Werberghs</p> : <></>}
+                        {selectedEvent.farms.includes(farms.WH) ? <p>Windmill Hill</p> : <></>}
+                        {selectedEvent.farms.includes(farms.HC) ? <p>Hartcliffe</p> : <></>}
+                        {selectedEvent.farms.includes(farms.SW) ? <p>St Werberghs</p> : <></>}
                         {selectedEvent.animals.length !== 0 ? <h3>Animals</h3> : <></>}
                         {selectedEvent.animals.map((animalID) => (
                             <AnimalPopover key={animalID._id} animalID={animalID._id}/>
@@ -350,9 +304,9 @@ const Calendar = () => {
                         <div>
                         <h3>Farms</h3>
                         <FormGroup>
-                            <FormControlLabel control={<Checkbox defaultChecked={selectedEvent.farms.includes(WH)} color='WH' size='small'/>} label="Windmill Hill" onChange={() => setModifiedEvent({...modifiedEvent, farms: modifiedEvent.farms.includes(WH) ? modifiedEvent.farms.filter((farm) => farm !== WH) : modifiedEvent.farms.concat(WH)})}/>
-                            <FormControlLabel control={<Checkbox defaultChecked={selectedEvent.farms.includes(HC)} color='HC' size='small'/>} label="Hartcliffe" onChange={()=>setModifiedEvent({...modifiedEvent, farms: modifiedEvent.farms.includes(HC) ? modifiedEvent.farms.filter((farm) => farm !== HC) : modifiedEvent.farms.concat(HC)})}/>
-                            <FormControlLabel control={<Checkbox defaultChecked={selectedEvent.farms.includes(SW)} color='SW' size='small'/>} label="St Werburghs" onChange={()=>setModifiedEvent({...modifiedEvent, farms: modifiedEvent.farms.includes(SW) ? modifiedEvent.farms.filter((farm) => farm !== SW) : modifiedEvent.farms.concat(SW)})}/>
+                            <FormControlLabel control={<Checkbox defaultChecked={selectedEvent.farms.includes(farms.WH)} color={farms.HC} size='small'/>} label="Windmill Hill" onChange={() => setModifiedEvent({...modifiedEvent, farms: modifiedEvent.farms.includes(farms.WH) ? modifiedEvent.farms.filter((farm) => farm !== farms.WH) : modifiedEvent.farms.concat(farms.WH)})}/>
+                            <FormControlLabel control={<Checkbox defaultChecked={selectedEvent.farms.includes(farms.HC)} color={farms.HC} size='small'/>} label="Hartcliffe" onChange={()=>setModifiedEvent({...modifiedEvent, farms: modifiedEvent.farms.includes(farms.HC) ? modifiedEvent.farms.filter((farm) => farm !== farms.HC) : modifiedEvent.farms.concat(farms.HC)})}/>
+                            <FormControlLabel control={<Checkbox defaultChecked={selectedEvent.farms.includes(farms.SW)} color={farms.SW} size='small'/>} label="St Werburghs" onChange={()=>setModifiedEvent({...modifiedEvent, farms: modifiedEvent.farms.includes(farms.SW) ? modifiedEvent.farms.filter((farm) => farm !== farms.SW) : modifiedEvent.farms.concat(farms.SW)})}/>
                         </FormGroup>
                         </div>
                         <h3>Animals</h3>
@@ -402,9 +356,9 @@ const Calendar = () => {
                 <div style={{marginTop: "10px"}}>
                 <h3>Farms</h3>
                 <FormGroup>
-                    <FormControlLabel control={<Checkbox color='WH' size='small'/>} label="Windmill Hill" onChange={() => setNewEvent({...newEvent, farms: newEvent.farms.includes(WH) ? newEvent.farms.filter((farm) => farm !== WH) : newEvent.farms.concat(WH)})}/>
-                    <FormControlLabel control={<Checkbox color='HC' size='small'/>} label="Hartcliffe" onChange={()=>setNewEvent({...newEvent, farms: newEvent.farms.includes(HC) ? newEvent.farms.filter((farm) => farm !== HC) : newEvent.farms.concat(HC)})}/>
-                    <FormControlLabel control={<Checkbox color='SW' size='small'/>} label="St Werburghs" onChange={()=>setNewEvent({...newEvent, farms: newEvent.farms.includes(SW) ? newEvent.farms.filter((farm) => farm !== SW) : newEvent.farms.concat(SW)})}/>
+                    <FormControlLabel control={<Checkbox color={farms.WH} size='small'/>} label="Windmill Hill" onChange={() => setNewEvent({...newEvent, farms: newEvent.farms.includes(farms.WH) ? newEvent.farms.filter((farm) => farm !== farms.WH) : newEvent.farms.concat(farms.WH)})}/>
+                    <FormControlLabel control={<Checkbox color={farms.HC} size='small'/>} label="Hartcliffe" onChange={()=>setNewEvent({...newEvent, farms: newEvent.farms.includes(farms.HC) ? newEvent.farms.filter((farm) => farm !== farms.HC) : newEvent.farms.concat(farms.HC)})}/>
+                    <FormControlLabel control={<Checkbox color={farms.SW} size='small'/>} label="St Werburghs" onChange={()=>setNewEvent({...newEvent, farms: newEvent.farms.includes(farms.SW) ? newEvent.farms.filter((farm) => farm !== farms.SW) : newEvent.farms.concat(farms.SW)})}/>
                 </FormGroup>
                 </div>
                 <div>
@@ -427,7 +381,6 @@ const Calendar = () => {
                         fullWidth
                         multiline
                         rows={2}
-                        maxRows={4}
                         placeholder='Enter Description'
                         value={newEvent.description}
                         onChange={(e) => {setNewEvent({...newEvent, description: e.target.value})}}

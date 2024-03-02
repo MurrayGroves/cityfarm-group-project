@@ -37,8 +37,6 @@ const Schemas = () => {
 
     const token = getConfig();
 
-    useEffect(displayAll,[])
-
     function checkIfNewRowNeeded() {
         let changed = false;
         Object.values(newFields[newFields.length-1]).map((value) => {
@@ -58,7 +56,6 @@ const Schemas = () => {
         (async () => {
             try {
                 const response = await axios.get(`/schemas`, token);
-                console.log(response.data);
                 setSchemaList(response.data.reverse());
             } catch (error) {
                 if (error.response.status === 401) {
@@ -84,30 +81,18 @@ const Schemas = () => {
     useEffect (() => {
         (async () => {
             if (searchTerm === '') {
-                try {
-                    const response = await axios.get(`/schemas`, token);
-                    console.log(response.data);
-                    setSchemaList(response.data.reverse());
-                } catch (error) {
-                    if (error.response.status === 401) {
-                        window.location.href = "/login";
-                        return;
-                    } else {
-                        window.alert(error);
-                    }
-                }
-            } else {
-                try {
-                    const response = await axios.get(`/schemas/by_name/${searchTerm}`, token);
-                    console.log(response.data);
-                    setSchemaList(response.data.reverse());
-                } catch (error) {
-                    if (error.response.status === 401) {
-                        window.location.href = "/login";
-                        return;
-                    } else {
-                        window.alert(error);
-                    }
+                displayAll();
+                return;
+            }
+            try {
+                const response = await axios.get(`/schemas/by_name/${searchTerm}`, token);
+                setSchemaList(response.data.reverse());
+            } catch (error) {
+                if (error.response.status === 401) {
+                    window.location.href = "/login";
+                    return;
+                } else {
+                    window.alert(error);
                 }
             }
         })()
@@ -152,7 +137,7 @@ const Schemas = () => {
                         </TableCell>
                         <TableCell align="left">
                             <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
-                                <Select height="10px" value={classToReadable[field["type"]]} onChange={(e) => {
+                                <Select height="10px" value={field["type"] || ''} onChange={(e) => {
                                     setNewFields(newFields.map((elem, changeIndex) => {
                                         if (changeIndex === index) {
                                             elem["type"] = e.target.value;
@@ -163,8 +148,8 @@ const Schemas = () => {
                                     }))
                                     checkIfNewRowNeeded();
                                 }}>
-                                    {Object.entries(classToReadable).map(([javaName, className]) => 
-                                        <MenuItem value={javaName}>{className}</MenuItem>
+                                    {Object.entries(classToReadable).map(([javaName, className], index) => 
+                                        <MenuItem value={javaName} key={index}>{className}</MenuItem>
                                     )}
                                 </Select>
                             </FormControl>
@@ -200,33 +185,34 @@ const Schemas = () => {
                     ))}
                     </TableBody>
                     <TableFooter>
-                        <div style={{padding: "2.5%", paddingTop: "0%"}}>
-                            <Button variant="contained" aria-label="add" endIcon={<AddIcon />} onClick={async () => {
-                                newFields.pop();
-                                let fieldsObj = {};
-                                newFields.map((field) => {
-                                    fieldsObj = {...fieldsObj,
-                                        [field.name]: {
-                                            type: field.type,
-                                            required: field.required,
+                        <TableRow style={{padding: "2.5%", paddingTop: "0%"}}>
+                            <TableCell style={{border: 'none'}}>
+                                <Button variant="contained" aria-label="add" endIcon={<AddIcon />} onClick={async () => {
+                                    newFields.pop();
+                                    let fieldsObj = {};
+                                    newFields.map((field) => {
+                                        fieldsObj = {...fieldsObj,
+                                            [field.name]: {
+                                                type: field.type,
+                                                required: field.required,
+                                            }
                                         }
+                                        
+                                        return null;
+                                    });
+
+                                    let request = {
+                                        name: newSchemaName,
+                                        fields: fieldsObj,
                                     }
-                                    
-                                    return null;
-                                });
 
-                                let request = {
-                                    name: newSchemaName,
-                                    fields: fieldsObj,
-                                }
-
-                                await axios.post(`/schemas/create`, request, token);
-                                window.location.reload(false);
-                            }}>
-                                Create
-                            </Button>   
-                        </div>
-                        
+                                    await axios.post(`/schemas/create`, request, token);
+                                    window.location.reload(false);
+                                }}>
+                                    Create
+                                </Button>   
+                            </TableCell>
+                        </TableRow>
                     </TableFooter>
                 </Table>
                 </TableContainer>
@@ -251,8 +237,9 @@ const Schemas = () => {
                                     <TableCell align="left">Required</TableCell>
                                     <TableCell align="right">
                                         <IconButton onClick={async () => {
-                                            try{
-                                                await axios.delete(`/schemas/by_name/${schema._name}`, token);
+                                            try {
+                                                //await axios.delete(`/schemas/delete/${schema._name}`, token);
+                                                await axios.patch(`/schemas/by_name/${schema._name}/hidden`, {hidden: true}, token)
                                                 window.location.reload(false);
                                             } catch (error) {
                                                 if (error.response.status === 401) {
