@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.PersistenceCreator;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
@@ -74,7 +75,7 @@ public class AnimalSchema {
                 mapper.treeToValue(field.getValue(), this.fields.get(field_name).get_type());
             } catch (JsonProcessingException e) {
                 try {
-                    ZonedDateTime.parse(field.getValue().asText(), DateTimeFormatter.ISO_ZONED_DATE_TIME);
+                    ZonedDateTime.parse(field.getValue().asText(), DateTimeFormatter.ISO_DATE_TIME);
                 } catch (DateTimeParseException p) {
                     throw new IllegalArgumentException(String.format("`%s` is not of type %s", field_name, this.fields.get(field_name).get_type()));
                 }

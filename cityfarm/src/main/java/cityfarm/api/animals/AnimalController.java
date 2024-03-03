@@ -37,8 +37,13 @@ public class AnimalController {
      * @return a list of all animals in the DB
      */
     @GetMapping("/api/animals")
-    public ResponseEntity<List<AnimalCustom>> get_animals() {
-        return ResponseEntity.ok().body(animalRepository.findAll());
+    public ResponseEntity<List<AnimalCustom>> get_animals(@RequestParam("farm") String farm) {
+        List<AnimalCustom> animals = animalRepository.findAll();
+        animals = animals
+                .stream()
+                .filter((animal) -> animal.farm.equals(farm))
+                .toList();
+        return ResponseEntity.ok().body(animals);
     }
 
     /**
@@ -62,9 +67,12 @@ public class AnimalController {
      * @return list of all animals with that name
      */
     @GetMapping("/api/animals/by_name/{name}")
-    public ResponseEntity<List<AnimalCustom>> get_animals_by_name(@PathVariable String name) {
+    public ResponseEntity<List<AnimalCustom>> get_animals_by_name(@PathVariable String name, @RequestParam String farm) {
         List<AnimalCustom> animals = animalRepositoryCustom.findAnimalByName(name);
-
+        animals = animals
+                .stream()
+                .filter((animal) -> animal.farm.equals(farm))
+                .toList();
         return ResponseEntity.ok().body(animals);
     }
 

@@ -23,7 +23,7 @@ const AnimalTable = ({farms}) => {
     function displayAll() {
         (async () => {
             try {
-                const response = await axios.get(`/animals`, token);
+                const response = await axios.get(`/animals`, {params: {farm: farm}, ...token});
                 setAnimalList(response.data);
             } catch (error) {
                 console.log(error);
@@ -63,7 +63,7 @@ const AnimalTable = ({farms}) => {
                 return;
             }
             try {
-                const response = await axios.get(`/animals/by_name/${searchTerm}`, token);
+                const response = await axios.get(`/animals/by_name/${searchTerm}`, {params: {farm: farm}, ...token});
                 setAnimalList(response.data);
             } catch (error) {
                 if (error.response.status === 401) {
@@ -74,11 +74,7 @@ const AnimalTable = ({farms}) => {
                 }
             }
         })()
-    },[searchTerm])
-
-    useEffect(() => {
-        //setAnimalList(animalList.filter((animal)=>{animal.farms.includes(farm)}))
-    },[farm])
+    },[searchTerm, farm])
 
     const rows = animalList.map((animal) => ({
         id: animal._id,

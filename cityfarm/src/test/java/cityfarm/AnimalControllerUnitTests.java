@@ -47,7 +47,7 @@ public class AnimalControllerUnitTests {
 
     @Test
     public void nonPresentNameEmptyList() {
-        ResponseEntity<List<AnimalCustom>> animals = animalController.get_animals_by_name("nonName");
+        ResponseEntity<List<AnimalCustom>> animals = animalController.get_animals_by_name("nonName", "WH");
 
         assertThat(animals.getStatusCode().value()).isEqualTo(200);
         assertThat(animals.getBody().size()).isEqualTo(0);
@@ -55,7 +55,7 @@ public class AnimalControllerUnitTests {
 
     @Test
     public void getAnimalsByNameRightSize() {
-        ResponseEntity<List<AnimalCustom>> animals = animalController.get_animals_by_name("Alice");
+        ResponseEntity<List<AnimalCustom>> animals = animalController.get_animals_by_name("Alice", "WH");
 
         assertThat(animals.getBody().size()).isEqualTo(2);
     }
