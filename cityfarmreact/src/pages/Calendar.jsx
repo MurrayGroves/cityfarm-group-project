@@ -128,25 +128,25 @@ const Calendar = ({farms}) => {
         if (type === "add") {
             if (isShown){
                 return(<>
-                    <DateTimePicker value={dayjs(newEvent.start)} onChange={(e) => {setNewEvent({...newEvent, start: e.$d})}} slotProps={{textField: {fullWidth: true}}}/>
-                    <DateTimePicker value={dayjs(newEvent.end)} onChange={(e) => {setNewEvent({...newEvent, end: e.$d})}} slotProps={{textField: {fullWidth: true}}}/>
+                    <DateTimePicker size='small' value={dayjs(newEvent.start)} onChange={(e) => {setNewEvent({...newEvent, start: e.$d})}} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
+                    <DateTimePicker size='small' value={dayjs(newEvent.end)} onChange={(e) => {setNewEvent({...newEvent, end: e.$d})}} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
                 </>)
             } else {
                 return(<>
-                    <DatePicker value={dayjs(newEvent.start)} onChange={(e) => {setNewEvent({...newEvent, start: e.$d})}} slotProps={{textField: {fullWidth: true}}}/>
-                    <DatePicker value={dayjs(newEvent.end)} onChange={(e) => {setNewEvent({...newEvent, end: e.$d})}} slotProps={{textField: {fullWidth: true}}}/>
+                    <DatePicker value={dayjs(newEvent.start)} onChange={(e) => {setNewEvent({...newEvent, start: e.$d})}} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
+                    <DatePicker value={dayjs(newEvent.end)} onChange={(e) => {setNewEvent({...newEvent, end: e.$d})}} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
                 </>)
             }
         } else {
             if (isShown) {
                 return(<>
-                    <DateTimePicker value={dayjs(modifiedEvent.start)} placeholder={selectedEvent.start} onChange={(e) => {setModifiedEvent({...modifiedEvent, start: e.$d})}} slotProps={{textField: {fullWidth: true}}}/>
-                    <DateTimePicker value={dayjs(modifiedEvent.end)} placeholder={selectedEvent.end} onChange={(e) => {setModifiedEvent({...modifiedEvent, end: e.$d})}} slotProps={{textField: {fullWidth: true}}}/>
+                    <DateTimePicker value={dayjs(modifiedEvent.start)} placeholder={selectedEvent.start} onChange={(e) => {setModifiedEvent({...modifiedEvent, start: e.$d})}} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
+                    <DateTimePicker value={dayjs(modifiedEvent.end)} placeholder={selectedEvent.end} onChange={(e) => {setModifiedEvent({...modifiedEvent, end: e.$d})}} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
                 </>)
             } else {
                 return(<>
-                    <DatePicker value={dayjs(modifiedEvent.start)} placeholder={selectedEvent.start} onChange={(e) => {setModifiedEvent({...modifiedEvent, start: e.$d})}} slotProps={{textField: {fullWidth: true}}}/>
-                    <DatePicker value={dayjs(modifiedEvent.end)} placeholder={selectedEvent.end} onChange={(e) => {setModifiedEvent({...modifiedEvent, end: e.$d})}} slotProps={{textField: {fullWidth: true}}}/>
+                    <DatePicker value={dayjs(modifiedEvent.start)} placeholder={selectedEvent.start} onChange={(e) => {setModifiedEvent({...modifiedEvent, start: e.$d})}} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
+                    <DatePicker value={dayjs(modifiedEvent.end)} placeholder={selectedEvent.end} onChange={(e) => {setModifiedEvent({...modifiedEvent, end: e.$d})}} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
                 </>)
             }
         }
@@ -288,6 +288,7 @@ const Calendar = ({farms}) => {
                     : <div className='modifyEvent'>
                         <TextField
                             fullWidth
+                            size='small'
                             placeholder={selectedEvent.title}
                             label='Title'
                             value={modifiedEvent.title}
@@ -322,9 +323,16 @@ const Calendar = ({farms}) => {
                             <Button variant='outlined' color='tertiary'>Add Enclosure</Button> {/* idea: make this open the enlcosure  page with a new column of checkboxes. Click on an associate enlcosure(s) button would then pass a list of enclosure names to the calendar to be placed in a field*/}
                         </div>
                         <div>
-                            <span>Description:</span>
-                            <TextField label='Description'/>
-                            <textarea style={{minHeight: "52px", minWidth: "386px"}} type="text" placeholder="enter description here:" value={modifiedEvent.description} onChange={(e) => {setModifiedEvent({...modifiedEvent, description: e.target.value})}}></textarea>
+                            <h3>Description</h3>
+                            <TextField
+                                fullWidth
+                                size='small'
+                                multiline
+                                rows={2}
+                                placeholder='Enter Description'
+                                value={modifiedEvent.description}
+                                onChange={(e) => {setModifiedEvent({...modifiedEvent, description: e.target.value})}}
+                            />
                         </div>
 
                     </div>
@@ -339,6 +347,7 @@ const Calendar = ({farms}) => {
                 <h2 className='boxTitle'>Create New Event</h2>
                 <div>
                 <TextField
+                    size='small'
                     fullWidth
                     placeholder="Add Title"
                     label='Title'
@@ -379,6 +388,7 @@ const Calendar = ({farms}) => {
                     <h3>Description</h3>
                     <TextField
                         fullWidth
+                        size='small'
                         multiline
                         rows={2}
                         placeholder='Enter Description'

@@ -113,6 +113,8 @@ const AnimalTable = ({farms}) => {
         { field: 'sex', headerName: 'Sex', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
     ];
 
+    const [creatorOffset, setCreatorOffset] = useState(36.5+20);
+
     return(<>
         <h1>Livestock</h1>
         <span style={{display: 'flex', justifyContent: 'space-between', height: '60px'}}>
@@ -124,10 +126,10 @@ const AnimalTable = ({farms}) => {
             ></TextField>
             <FarmTabs farms={farms} selectedFarm={farm} setSelectedFarm={setFarm}/>
         </span>
-        <Paper style={{height: 'calc(100% - 525px)', marginBottom: '20px'}}>
+        <Paper style={{height: `calc(100vh - (170.88px + ${creatorOffset}px))`, marginBottom: '20px'}}>
             <DataGrid style={{fontSize: '1rem'}} columns={cols} rows={rows}/>
         </Paper>
-        <AnimalCreator animalList={animalList} schemaList={schemaList}/>
+        <AnimalCreator animalList={animalList} schemaList={schemaList} setOffset={setCreatorOffset}/>
     </>)
 }
 

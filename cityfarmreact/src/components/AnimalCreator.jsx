@@ -38,6 +38,7 @@ const AnimalCreator = (props) => {
                     <FormHelperText style={{marginLeft: '5px'}}>{schema._fields[field]._required ? 'Required' : 'Not Required'}</FormHelperText>
                     <Select
                         value={newAnimal.fields[field] !== undefined ? newAnimal.fields[field] : ''}
+                        size='small'
                         onChange={(e) => {
                             let newFields = newAnimal.fields;
                             newFields[field] = e.target.value;
@@ -56,6 +57,7 @@ const AnimalCreator = (props) => {
                     <FormHelperText style={{marginLeft: '5px'}}>{schema._fields[field]._required ? 'Required' : 'Not Required'}</FormHelperText>
                     <TextField
                         fullWidth
+                        size='small'
                         placeholder={field[0].toUpperCase() + field.slice(1)}
                         onChange={(e) => {
                             let newFields = newAnimal.fields;
@@ -72,6 +74,7 @@ const AnimalCreator = (props) => {
                     <TextField
                         type='number'
                         fullWidth
+                        size='small'
                         placeholder={field[0].toUpperCase() + field.slice(1)}
                         onChange={(e) => {
                             let newFields = newAnimal.fields;
@@ -88,6 +91,7 @@ const AnimalCreator = (props) => {
                     <TextField
                         type='number'
                         fullWidth
+                        size='small'
                         placeholder={field[0].toUpperCase() + field.slice(1)}
                         onChange={(e) => {
                             let newFields = newAnimal.fields;
@@ -104,10 +108,10 @@ const AnimalCreator = (props) => {
                     <DatePicker
                         onChange={(e) => {
                             let newFields = newAnimal.fields;
-                            newFields[field] = e.$d;
+                            newFields[field] = e.$d.toISOString();
                             setNewAnimal({...newAnimal, fields: newFields});
                         }}
-                        slotProps={{textField: {fullWidth: true}}}
+                        slotProps={{textField: {fullWidth: true, size: 'small'}}}
                     />
                     </FormControl>
                 )
@@ -136,7 +140,7 @@ const AnimalCreator = (props) => {
                     </TableHead>
                     <TableBody>
                         <TableRow>
-                            <TableCell><TextField fullWidth onChange={(e)=>{setNewAnimal({...newAnimal, name: e.target.value})}} label='Name'/></TableCell>
+                            <TableCell><TextField fullWidth size='small' onChange={(e)=>{setNewAnimal({...newAnimal, name: e.target.value})}} label='Name'/></TableCell>
                             <TableCell>
                                 <Autocomplete
                                     style={{width: '100%'}}
@@ -149,7 +153,7 @@ const AnimalCreator = (props) => {
                                         );
                                     }}
                                     isOptionEqualToValue={(option, value) => option._name === value._name}
-                                    renderInput={(params) => <TextField {...params} label="Type"/>}
+                                    renderInput={(params) => <TextField {...params} fullWidth size='small' label="Type"/>}
                                     getOptionLabel={option => option._name.charAt(0).toUpperCase() + option._name.slice(1)}
                                     options={props.schemaList}
                                     onChange={(e, v) => {
@@ -157,10 +161,12 @@ const AnimalCreator = (props) => {
                                             setNewAnimal({...newAnimal, type: v._name, fields: {}});
                                             let tempSchema = props.schemaList.filter((schema) => schema._name === v._name).pop();
                                             setSchema(tempSchema);
+                                            props.setOffset(129.6+20+152.5+20);
                                             setFieldList(Object.keys(tempSchema._fields));
                                         } else {
                                             setNewAnimal({...newAnimal, type: '', fields: {}});
                                             setSchema();
+                                            props.setOffset(129.6+20);
                                             setFieldList([]);
                                         }}}
                                 />
@@ -176,7 +182,7 @@ const AnimalCreator = (props) => {
                                             </li>
                                         );
                                     }}
-                                    renderInput={(params) => <TextField {...params} label="Father"/>}
+                                    renderInput={(params) => <TextField {...params} fullWidth size='small' label="Father"/>}
                                     isOptionEqualToValue={(option, value) => option.id === value.id}
                                     getOptionLabel={option => option.name}
                                     options={
@@ -198,7 +204,7 @@ const AnimalCreator = (props) => {
                                             </li>
                                         );
                                     }}
-                                    renderInput={(params) => <TextField {...params} label="Mother"/>}
+                                    renderInput={(params) => <TextField {...params} fullWidth size='small' label="Mother"/>}
                                     isOptionEqualToValue={(option, value) => option.id === value.id}
                                     getOptionLabel={option => option.name}
                                     options={
@@ -210,7 +216,7 @@ const AnimalCreator = (props) => {
                                 />
                             </TableCell>
                             <TableCell>
-                                <Select style={{width: '100%'}} value={newAnimal.male} onChange={(e) => {setNewAnimal({...newAnimal, male: e.target.value})}}>
+                                <Select style={{width: '100%'}} value={newAnimal.male} size='small' onChange={(e) => {setNewAnimal({...newAnimal, male: e.target.value})}}>
                                     <MenuItem value={true}>Male</MenuItem>  
                                     <MenuItem value={false}>Female</MenuItem>   
                                 </Select>
@@ -219,7 +225,7 @@ const AnimalCreator = (props) => {
                     </TableBody>
                 </Table>
             </TableContainer>
-            <Button className='tallButton' variant='contained' endIcon={<DeleteIcon/>} onClick={() => setCreate(false)}>Discard</Button>
+            <Button className='tallButton' variant='contained' endIcon={<DeleteIcon/>} onClick={() => {setCreate(false); setSchema(); props.setOffset(36.5+20)}}>Discard</Button>
             </div>
             {schema ?
             <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '20px'}}>
@@ -248,22 +254,22 @@ const AnimalCreator = (props) => {
                 </Table>
             </TableContainer>
             <Button
-            className='tallButton'
-            variant="contained"
-            aria-label="add"
-            endIcon={<AddIcon/>}
-            onClick={async() => {
-                try{
-                    await axios.post(`/animals/create`, newAnimal, token)
-                } catch(error) {
-                    window.alert(error);
-                }
-                window.location.reload(false);
-            }}
+                className='tallButton'
+                variant="contained"
+                aria-label="add"
+                endIcon={<AddIcon/>}
+                onClick={async() => {
+                    try{
+                        await axios.post(`/animals/create`, newAnimal, token)
+                    } catch(error) {
+                        window.alert(error);
+                    }
+                    window.location.reload(false);
+                }}
             >Create</Button>
             </div>
             : <></>}</>
-        : <Button className='tallButton' variant='contained' endIcon={<AddIcon/>} style={{float: 'right'}} onClick={() => setCreate(true)}>Create</Button>}
+        : <Button className='tallButton' variant='contained' endIcon={<AddIcon/>} style={{float: 'right'}} onClick={() => {setCreate(true); props.setOffset(129.6+20)}}>Create</Button>}
     </>)
 }
 

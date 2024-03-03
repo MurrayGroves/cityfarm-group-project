@@ -205,9 +205,12 @@ const Schemas = () => {
                                         name: newSchemaName,
                                         fields: fieldsObj,
                                     }
-
-                                    await axios.post(`/schemas/create`, request, token);
-                                    window.location.reload(false);
+                                    try {
+                                        await axios.post(`/schemas/create`, request, token);
+                                        window.location.reload(false);
+                                    } catch(error) {
+                                        window.alert(error);
+                                    }
                                 }}>
                                     Create
                                 </Button>   
