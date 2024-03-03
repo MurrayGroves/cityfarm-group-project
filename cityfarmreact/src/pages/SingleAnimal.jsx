@@ -17,10 +17,19 @@ const SingleAnimal = (props) => {
 
     const { animalID } = useParams();
     const [relEvents,setRelEvents] = useState([])
-    const [chosenAnimal, setChosenAnimal] = useState({});
+    const [chosenAnimal, setChosenAnimal] = useState({name: 'Loading...', type: 'Loading...'});
     const [selectedEvent,setSelectedEvent] = useState("No event selected");
 
     const token = getConfig();
+
+    function readableFarm(farm) {
+        switch(farm) {
+            case "WH": return "Windmill Hill";
+            case "HC": return "Hartcliffe";
+            case "SW": return "St Werburghs";
+            default: return "Loading...";
+        }
+    }
 
     useEffect(() => {
         (async () => {
@@ -67,8 +76,8 @@ const SingleAnimal = (props) => {
 
     return<>
         <h1>{chosenAnimal.name}</h1>
-        Sex: {chosenAnimal.male ? 'Male' : 'Female'}<br/>
-        Species: {chosenAnimal.type}<br/>
+        Sex: {chosenAnimal.male === undefined ? 'Loading' : (chosenAnimal.male ? 'Male' : 'Female')}<br/>
+        Species: {chosenAnimal.type.charAt(0).toUpperCase() + chosenAnimal.type.slice(1)}<br/>
         <span style={{display: 'flex'}}>
             <span style={{marginRight: '0.5em'}}>Father:</span>
             {chosenAnimal.father ?
@@ -81,7 +90,7 @@ const SingleAnimal = (props) => {
                 <AnimalPopover key={chosenAnimal.mother} animalID={chosenAnimal.mother}/>
             : 'Unregistered'}
         </span>
-        Farm: to be completed when database supports different farms
+        Farm: {readableFarm(chosenAnimal.farm)}
         <div>
             {relEvents.length !== 0 ? <h2>Linked Events</h2> : <></>}
             {relEvents.map((event, index) => {
@@ -100,7 +109,7 @@ const SingleAnimal = (props) => {
                     {event.farms.length !== 0 ? <h4>Farms: </h4> : <></>}
                     {event.farms.includes(farms.WH) ? <p>Windmill Hill </p> : <></>}
                     {event.farms.includes(farms.HC) ? <p>Hartcliffe </p> : <></>}
-                    {event.farms.includes(farms.SW) ? <p>St Werberghs</p> : <></>}
+                    {event.farms.includes(farms.SW) ? <p>St Werburghs</p> : <></>}
                 </div>
             )})}
         </div>

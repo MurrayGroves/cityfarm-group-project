@@ -236,7 +236,7 @@ const Calendar = ({farms}) => {
                     <h2 className='boxTitle'>Selected Farms</h2>
                     <FormGroup>
                         <FormControlLabel control={<Checkbox defaultChecked color={farms.WH} size='small'/>} label="Windmill Hill" onChange={() => updateVisibleFarms(farms.WH)}/>
-                        <FormControlLabel control={<Checkbox defaultChecked color={farms.HC} size='small'/>} label="Hartecliffe" onChange={() => updateVisibleFarms(farms.HC)}/>
+                        <FormControlLabel control={<Checkbox defaultChecked color={farms.HC} size='small'/>} label="Hartcliffe" onChange={() => updateVisibleFarms(farms.HC)}/>
                         <FormControlLabel control={<Checkbox defaultChecked color={farms.SW} size='small'/>} label="St Werburghs" onChange={() => updateVisibleFarms(farms.SW)}/>
                     </FormGroup>
                 </Paper>
@@ -267,7 +267,7 @@ const Calendar = ({farms}) => {
                         {selectedEvent.farms.length !== 0 ? <h3>Farms</h3> : <></>}
                         {selectedEvent.farms.includes(farms.WH) ? <p>Windmill Hill</p> : <></>}
                         {selectedEvent.farms.includes(farms.HC) ? <p>Hartcliffe</p> : <></>}
-                        {selectedEvent.farms.includes(farms.SW) ? <p>St Werberghs</p> : <></>}
+                        {selectedEvent.farms.includes(farms.SW) ? <p>St Werburghs</p> : <></>}
                         {selectedEvent.animals.length !== 0 ? <h3>Animals</h3> : <></>}
                         {selectedEvent.animals.map((animalID) => (
                             <AnimalPopover key={animalID._id} animalID={animalID._id}/>

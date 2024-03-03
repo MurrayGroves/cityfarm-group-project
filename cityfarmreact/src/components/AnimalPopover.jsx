@@ -83,7 +83,7 @@ const AnimalPopover = (props) => {
                 aria-haspopup="true"
                 onMouseEnter={handlePopoverOpen}
                 onMouseLeave={handlePopoverClose}
-                style={{display: 'inline-block', margin: '2.5px 0'}}
+                style={{display: 'inline-block'}}
             >
                 <Link style={{color: colour}} to={`/single-animal/${chosenAnimal._id}`}>{chosenAnimal.name}</Link>
             </Typography>

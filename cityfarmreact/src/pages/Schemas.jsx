@@ -242,7 +242,7 @@ const Schemas = () => {
                                         <IconButton onClick={async () => {
                                             try {
                                                 //await axios.delete(`/schemas/delete/${schema._name}`, token);
-                                                await axios.patch(`/schemas/by_name/${schema._name}/hidden`, {hidden: true}, token)
+                                                await axios.patch(`/schemas/by_name/${schema._name}/hidden`, {params: {hidden: true}, ...token})
                                                 window.location.reload(false);
                                             } catch (error) {
                                                 if (error.response.status === 401) {
