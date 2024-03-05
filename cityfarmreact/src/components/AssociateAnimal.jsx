@@ -6,7 +6,7 @@ import "../pages/AnimalTable.css";
 import { DataGrid } from '@mui/x-data-grid';
 import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
+import {Button} from "@mui/material";
 
 const WH = "WH", HC = "HC", SW = "SW";
 const AssociateAnimal = (props) => {
@@ -14,7 +14,7 @@ const AssociateAnimal = (props) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [animalList, setAnimalList] = useState([]);
     const linkAnimals = () => {
-        console.log(linkedAnimals)
+        window.alert(linkedAnimals)
         props.setAnimals(linkedAnimals)
     }
     function displayAll() {
@@ -67,10 +67,13 @@ const AssociateAnimal = (props) => {
         <Paper style={{ marginBottom: '20px'}}>
         <DataGrid checkboxSelection columns={cols}
          rows={rows} disableRowSelectionOnClick
-         onRowSelectionModelChange={(data) => {setLinkedAnimals(data);}}
-          getRowId={(row) => row.id}/>
+         onRowSelectionModelChange={(ids) => {
+            const selectedIDs = Array.of(ids);
+            const selectedRowData = rows.filter((row) => ( selectedIDs.includes(row.id.toString()))) 
+            console.log(selectedRowData)
+            setLinkedAnimals(selectedRowData.id)}}/>
         </Paper>
-        <Button colour="primary" onClick={linkAnimals}></Button>
+        <Button variant='outlined' color='tertiary' style={{float: "right"}} onClick={() => {linkAnimals()}}>Link to Event</Button>
         </div>
     )
 
