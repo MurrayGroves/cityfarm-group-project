@@ -18,13 +18,46 @@ import AssociateAnimal from '../components/AssociateAnimal';
 import { Unstable_Popup as BasePopup } from '@mui/base/Unstable_Popup';
 import { styled } from '@mui/system';
 import axios from '../api/axiosConfig'
+import AssociateEnclosure from '../components/AssociateEnclosure';
 
 
 const WH = "WH", HC = "HC", SW = "SW";
 
-
+const events = [ /*These are example events.*/
+    {
+        title : "Boss Meeting",
+        allDay: false,
+        start: new  Date(2024,1,1, 13),
+        end: new  Date(2024,1,1, 14),
+        farms: [],
+        animals: ["174447d3-bedb-4311-a16c-1771aa82d173"]
+    },
+    {
+        title : "Bull in with cows",
+        allDay: false,
+        start: new  Date(2024,1,5, 8),
+        end: new  Date(2024,1,8, 16),
+        farms: [WH],
+        animals: ["05eea36a-1098-4392-913b-25e6508df54c"]
+    },
+    {
+        title : "School Visits",
+        allDay: true,
+        start: new  Date(2024,1,9, 8),
+        end: new  Date(2024,1,9, 23, 59),
+        farms: [HC, SW],
+        animals: ["05eea36a-1098-4392-913b-25e6508df54c","4735ad94-8a16-4845-870d-513d9947b262"]
+    },
+    {
+        title : "Defra Inspection",
+        allDay: true,
+        start: new  Date(2024,1,20  ),
+        end: new Date(2024,1,20),
+        farms: [WH, HC, SW],
+        animals: []
+    }
+];
 const Calendar = () => {
-
 
     const theme = useTheme().palette;
 
@@ -60,6 +93,14 @@ const Calendar = () => {
     const setModifiedEventAnimals = (animalList) => {
         console.log(animalList)
         setModifiedEvent({...modifiedEvent, animals: animalList})
+    }
+    const setModifiedEventEnclosures = (enclosures) => {
+        console.log(enclosures)
+        setModifiedEvent({...modifiedEvent, enclosures: enclosures})
+    }
+    const setAddEventEnclosures = (enclosures) => {
+        console.log(enclosures)
+        setNewEvent({...modifiedEvent, enclosures: enclosures})
     }
     const setAddEventAnimals = (animalList) => {
         setNewEvent({...newEvent, animals: animalList})
@@ -166,12 +207,13 @@ const Calendar = () => {
         }
     }
     const [anchor, setAnchor] = React.useState(null);
-    const [openPopup ,setOpenPopup] = useState(false)
-    const functionopenPopup = () => {
-        setOpenPopup(true)
+    const [openAnimalsPopup ,setOpenAnimalsPopup] = useState(false)
+    const functionopenPopup = (type) => { 
+         if (type === "animals") { setOpenAnimalsPopup(true)} else {setOpenEnclosurePopup(true)}
     }
     const functionclosePopup = () => {
-        setOpenPopup(false)
+        setOpenAnimalsPopup(false)
+        setOpenEnclosurePopup(false)
     }
 
     const onRangeChange = useCallback(async (range) => {
@@ -213,6 +255,7 @@ const Calendar = () => {
             }
         }
       }, [])
+      const [openEnclosurePopup, setOpenEnclosurePopup] = useState(false)
 
     const eventsConversion=(events)=>{
         let changed=[]
@@ -335,15 +378,14 @@ const Calendar = () => {
                         {modifiedEvent.animals.map((animalID) => (
                             <p><AnimalPopover key={animalID._id} animalID={animalID._id} /></p>
                         ))}{/*Add a way to remove animals from events */}
-                        <Button variant='outlined' color='tertiary' onClick={functionopenPopup}>Add Animal</Button> 
+                        <Button variant='outlined' color='tertiary' onClick={() => {functionopenPopup("animals")}}>Add Animal</Button> 
                          <div id="AssociateAnimal" style={{textAlign:'center'}}>
-                        <Dialog open={openPopup} onClose={functionclosePopup}>
+                        <Dialog open={openAnimalsPopup} onClose={functionclosePopup}>
                         <DialogTitle>Add Animal</DialogTitle>
                         <DialogContent>
                         <AssociateAnimal setAnimals={setModifiedEventAnimals}></AssociateAnimal>
                         <DialogContentText>Test</DialogContentText>
                         </DialogContent>
-                        <DialogActions><Button color="error" variant="contained">Link to Event</Button></DialogActions>
                         </Dialog>
                         </div>
                         <div>
@@ -351,7 +393,16 @@ const Calendar = () => {
                             {modifiedEvent.enclosures.map((enclosureName, index) => (
                                 <p key={index}>{enclosureName}</p>
                             ))}{/*Add a way to remove enclosures from events */}
-                            <Button variant='outlined' color='tertiary'>Add Enclosure</Button> {/* idea: make this open the enlcosure  page with a new column of checkboxes. Click on an associate enlcosure(s) button would then pass a list of enclosure names to the calendar to be placed in a field*/}
+                            <Button variant='outlined' onClick={() => {functionopenPopup("enclosures")}} color='tertiary'>Add Enclosure</Button> {/* idea: make this open the enlcosure  page with a new column of checkboxes. Click on an associate enlcosure(s) button would then pass a list of enclosure names to the calendar to be placed in a field*/}
+                        <div id="AssociateEnclosure" style={{textAlign:'center'}}>
+                        <Dialog open={openEnclosurePopup} onClose={functionclosePopup}>
+                        <DialogTitle>Add Enclosure</DialogTitle>
+                        <DialogContent>
+                        <AssociateEnclosure setEnclosures={setModifiedEventEnclosures}></AssociateEnclosure>
+                        <DialogContentText>Test</DialogContentText>
+                        </DialogContent>
+                        </Dialog>
+                        </div>
                         </div>
                         <div>
                             <span>Description:</span>
@@ -398,15 +449,14 @@ const Calendar = () => {
                     {newEvent.animals.map((animalID) => (
                         <p><AnimalPopover key={animalID} animalID={animalID} /></p>
                     ))}
-                    <Button variant='outlined' color='tertiary' onClick={functionopenPopup}>Add Animal</Button> 
+                    <Button variant='outlined' color='tertiary' onClick={() => {functionopenPopup("animals")}}>Add Animal</Button> 
                     <div id="AssociateAnimal" style={{textAlign:'center'}}>
-                        <Dialog open={openPopup} onClose={functionclosePopup}>
+                        <Dialog open={openAnimalsPopup} onClose={functionclosePopup}>
                         <DialogTitle>Add Animal</DialogTitle>
                         <DialogContent>
                         <AssociateAnimal setAnimals={setAddEventAnimals}></AssociateAnimal>
                         <DialogContentText>Test</DialogContentText>
                         </DialogContent>
-                        <DialogActions><Button color="error" variant="contained">Link to Event</Button></DialogActions>
                         </Dialog>
                     </div>
                 </div>
@@ -415,7 +465,16 @@ const Calendar = () => {
                     {newEvent.enclosures.map((enclosureName, index) => (
                         <p key={index}>{enclosureName}</p>
                     ))}{/*Add a way to remove enclosures from events */}
-                    <Button variant='outlined' color='tertiary'>Add Enclosure</Button> {/* idea: make this open the enlcosure  page with a new column of checkboxes. Click on an associate enlcosure(s) button would then pass a list of enclosure names to the calendar to be placed in a field*/}
+                    <Button variant='outlined' color='tertiary' onClick={() => {functionopenPopup("enclosures")}}>Add Enclosure</Button> {/* idea: make this open the enlcosure  page with a new column of checkboxes. Click on an associate enlcosure(s) button would then pass a list of enclosure names to the calendar to be placed in a field*/}
+                    <div id="AssociateEnclosure" style={{textAlign:'center'}}>
+                        <Dialog open={openEnclosurePopup} onClose={functionclosePopup}>
+                        <DialogTitle>Add Enclosure</DialogTitle>
+                        <DialogContent>
+                        <AssociateEnclosure setEnclosures={setAddEventEnclosures}></AssociateEnclosure>
+                        <DialogContentText>Test</DialogContentText>
+                        </DialogContent>
+                        </Dialog>
+                        </div>
                 </div>
                 <div>
                     <h3>Description</h3>
@@ -438,4 +497,5 @@ const Calendar = () => {
 }
 
 export default Calendar;
+
 
