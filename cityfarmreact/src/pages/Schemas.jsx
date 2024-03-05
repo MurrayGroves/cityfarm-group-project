@@ -100,145 +100,144 @@ const Schemas = () => {
 
     return(<>
         <h1>Animal Types</h1>
-
         <h2>Create New Animal Type</h2>
-        <div style = {{width: "90%"}}>
-            <TableContainer component={Paper}>
-            <TextField style={{paddingTop: "1%", paddingLeft: "1.25%"}} placeholder="Species Name" value={newSchemaName} size="small" onChange={(e) => {
-            setNewSchemaName(e.target.value);
-        }}/>
-                <Table sx={{ minWidth: 650 }} aria-label="fields table">
-                    <TableHead>
+        <TableContainer style={{marginTop: '20px'}} component={Paper}>
+        <div style={{display: 'flex'}}>
+            <TextField style={{margin: '15px 15px 0 15px'}} placeholder="Species Name" value={newSchemaName} size="small"
+                onChange={(e) => {
+                    setNewSchemaName(e.target.value);
+                }}
+            />
+            <Button disableElevation variant="contained" aria-label="add" endIcon={<AddIcon />} style={{maxHeight: '40px', marginTop: '15px'}}
+                onClick={async () => {
+                    newFields.pop();
+                    let fieldsObj = {};
+                    newFields.map((field) => {
+                        fieldsObj = {...fieldsObj,
+                            [field.name]: {
+                                type: field.type,
+                                required: field.required,
+                            }
+                        }
+                        
+                        return null;
+                    });
+
+                    let request = {
+                        name: newSchemaName,
+                        fields: fieldsObj,
+                    }
+                    try {
+                        await axios.post(`/schemas/create`, request, token);
+                        window.location.reload(false);
+                    } catch(error) {
+                        window.alert(error);
+                    }
+                }}
+            >
+                Create
+            </Button>
+        </div>
+            <Table aria-label="fields table">
+                <TableHead>
                     <TableRow>
-                        <TableCell>Property Name</TableCell>
-                        <TableCell align="left">Data Type</TableCell>
-                        <TableCell align="left">Required</TableCell>
+                        <TableCell width='34%'>Property Name</TableCell>
+                        <TableCell width='33%'>Data Type</TableCell>
+                        <TableCell width='33%'>Required</TableCell>
                         <TableCell/>
                     </TableRow>
-                    </TableHead>
-                    <TableBody>
-                    {newFields.map((field, index) => (
-                        <TableRow
+                </TableHead>
+                <TableBody>
+                {newFields.map((field, index) => (
+                    <TableRow
                         key={index}
                         sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                        >
-                        <TableCell component="th" scope="row">
-                            <TextField placeholder="Property Name" id="field name" variant="outlined" size="small" value={field["name"]} onChange={(e) => {
+                    >
+                    <TableCell component="th" scope="row">
+                        <TextField fullWidth placeholder="Property Name" id="field name" variant="outlined" size="small" value={field["name"]} onChange={(e) => {
+                            setNewFields(newFields.map((elem, changeIndex) => {
+                                if (changeIndex === index) {
+                                    elem["name"] = e.target.value;
+                                    return elem;
+                                } else {
+                                    return elem;
+                                }
+                            }))
+                            checkIfNewRowNeeded();
+                        }}/>
+                    </TableCell>
+                    <TableCell align="left">
+                        <FormControl fullWidth sx={{ m: 1, minWidth: 120 }} size="small">
+                            <Select height="10px" value={field["type"] || ''} onChange={(e) => {
                                 setNewFields(newFields.map((elem, changeIndex) => {
                                     if (changeIndex === index) {
-                                        elem["name"] = e.target.value;
+                                        elem["type"] = e.target.value;
                                         return elem;
                                     } else {
                                         return elem;
                                     }
                                 }))
                                 checkIfNewRowNeeded();
-                            }}/>
-                        </TableCell>
-                        <TableCell align="left">
-                            <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
-                                <Select height="10px" value={field["type"] || ''} onChange={(e) => {
-                                    setNewFields(newFields.map((elem, changeIndex) => {
-                                        if (changeIndex === index) {
-                                            elem["type"] = e.target.value;
-                                            return elem;
-                                        } else {
-                                            return elem;
-                                        }
-                                    }))
-                                    checkIfNewRowNeeded();
-                                }}>
-                                    {Object.entries(classToReadable).map(([javaName, className], index) => 
-                                        <MenuItem value={javaName} key={index}>{className}</MenuItem>
-                                    )}
-                                </Select>
-                            </FormControl>
-                        </TableCell>
-                        <TableCell align="left">
-                            <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
-                                <Select height="10px" value={field["required"]} onChange={(e) => {
-                                    setNewFields(newFields.map((elem, changeIndex) => {
-                                        if (changeIndex === index) {
-                                            elem["required"] = e.target.value;
-                                            return elem;
-                                        } else {
-                                            return elem;
-                                        }
-                                    }))
-                                    checkIfNewRowNeeded();
-                                }}>
-                                    <MenuItem value={true}>Yes</MenuItem>
-                                    <MenuItem value={false}>No</MenuItem>
-                                </Select>
-                            </FormControl>
-                        </TableCell>
-                        <TableCell align="right">
-                            {
-                                (index !== newFields.length-1) ? 
-                                    <IconButton onClick={() => deleteRow(index)}>
-                                        <DeleteIcon/> 
-                                    </IconButton>
-                                 : ""
-                            }
-                        </TableCell>
-                        </TableRow>
-                    ))}
-                    </TableBody>
-                    <TableFooter>
-                        <TableRow style={{padding: "2.5%", paddingTop: "0%"}}>
-                            <TableCell style={{border: 'none'}}>
-                                <Button variant="contained" aria-label="add" endIcon={<AddIcon />} onClick={async () => {
-                                    newFields.pop();
-                                    let fieldsObj = {};
-                                    newFields.map((field) => {
-                                        fieldsObj = {...fieldsObj,
-                                            [field.name]: {
-                                                type: field.type,
-                                                required: field.required,
-                                            }
-                                        }
-                                        
-                                        return null;
-                                    });
-
-                                    let request = {
-                                        name: newSchemaName,
-                                        fields: fieldsObj,
+                            }}>
+                                {Object.entries(classToReadable).map(([javaName, className], index) => 
+                                    <MenuItem value={javaName} key={index}>{className}</MenuItem>
+                                )}
+                            </Select>
+                        </FormControl>
+                    </TableCell>
+                    <TableCell align="left">
+                        <FormControl fullWidth sx={{ m: 1, minWidth: 120 }} size="small">
+                            <Select height="10px" value={field["required"]} onChange={(e) => {
+                                setNewFields(newFields.map((elem, changeIndex) => {
+                                    if (changeIndex === index) {
+                                        elem["required"] = e.target.value;
+                                        return elem;
+                                    } else {
+                                        return elem;
                                     }
-                                    try {
-                                        await axios.post(`/schemas/create`, request, token);
-                                        window.location.reload(false);
-                                    } catch(error) {
-                                        window.alert(error);
-                                    }
-                                }}>
-                                    Create
-                                </Button>   
-                            </TableCell>
-                        </TableRow>
-                    </TableFooter>
-                </Table>
-                </TableContainer>
-        </div>
+                                }))
+                                checkIfNewRowNeeded();
+                            }}>
+                                <MenuItem value={true}>Yes</MenuItem>
+                                <MenuItem value={false}>No</MenuItem>
+                            </Select>
+                        </FormControl>
+                    </TableCell>
+                    <TableCell align="right">
+                        {
+                            (index !== newFields.length-1) ? 
+                                <IconButton onClick={() => deleteRow(index)}>
+                                    <DeleteIcon/> 
+                                </IconButton>
+                                : ""
+                        }
+                    </TableCell>
+                    </TableRow>
+                ))}
+                </TableBody>
+            </Table>
+        </TableContainer>
 
         <h2>Existing Animal Types</h2>
 
-        <TextField placeholder="Search" value={searchTerm} size="small" onChange={(e) => {
-            setSearchTerm(e.target.value);
-        }}/>
-        <Grid container spacing={2}>
+        <TextField style={{margin: '10px 0 20px 0'}} placeholder="Search" value={searchTerm} size="small"
+            onChange={(e) => {
+                setSearchTerm(e.target.value);
+            }}
+        />
+        <Grid container spacing={2} columns={2}>
             {schemaList.map((schema) => (
-                <Grid item xs={5} key={schema._name}>
+                <Grid item xs={1} key={schema._name}>
                     <div className="schema-card">
-                        <h2>{schema._name}</h2>
+                        <h2 style={{margin: '0 0 10px 0'}}>{schema._name}</h2>
                         <TableContainer component={Paper}>
-                            <Table sx={{ minWidth: 650 }} aria-label="fields table">
+                            <Table aria-label="fields table">
                                 <TableHead>
                                 <TableRow>
-                                    <TableCell>Property Name</TableCell>
-                                    <TableCell align="left">Data Type</TableCell>
-                                    <TableCell align="left">Required</TableCell>
-                                    <TableCell align="right">
+                                    <TableCell width='30%'>Property Name</TableCell>
+                                    <TableCell width='30%'>Data Type</TableCell>
+                                    <TableCell width='25%'>Required</TableCell>
+                                    <TableCell width='15%'>
                                         <IconButton onClick={async () => {
                                             try {
                                                 await axios.patch(`/schemas/by_name/${schema._name}/hidden`, {hidden: true}, token)
