@@ -6,8 +6,8 @@ import { getConfig } from '../api/getToken';
 import {Button} from "@mui/material";
 import AnimalPopover from "../components/AnimalPopover";
 import {eventsConversion} from "./Calendar";
-const WH = "WH", HC = "HC", SW = "SW";
-const Homepage = () => {
+
+const Homepage = ({farms}) => {
 
   const [events,setEvents] = useState([])
   const token = getConfig();
@@ -57,9 +57,9 @@ const Homepage = () => {
 
              }
              {e.farms.length !== 0 ? <h3>Farms</h3> : <></>}
-             {e.farms.includes(WH) ? <p>Windmill Hill</p> : <></>}
-             {e.farms.includes(HC) ? <p>Hartcliffe</p> : <></>}
-             {e.farms.includes(SW) ? <p>St Werberghs</p> : <></>}
+             {e.farms.includes(farms.WH) ? <p>Windmill Hill</p> : <></>}
+             {e.farms.includes(farms.HC) ? <p>Hartcliffe</p> : <></>}
+             {e.farms.includes(farms.SW) ? <p>St Werberghs</p> : <></>}
              {e.animals.length !== 0 ? <h3>Animals</h3> : <></>}
              {e.animals.map((animalID) => (
                  <AnimalPopover key={animalID._id} animalID={animalID._id}/>

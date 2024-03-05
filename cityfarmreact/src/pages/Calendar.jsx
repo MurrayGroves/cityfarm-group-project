@@ -18,7 +18,7 @@ import axios from '../api/axiosConfig'
 import { getConfig } from '../api/getToken';
 
 
-const WH = "WH", HC = "HC", SW = "SW";
+
 
 export const eventsConversion=(events)=>{
     let changed=[]
