@@ -114,7 +114,7 @@ const App = () => {
                     <NavBar setDark={setDark} msal={msal}/>
                     <div className='Content'>
                     <Routes>
-                    <Route path="calendar" element={<Calendar/>}/>
+                    <Route path="calendar" element={<Calendar farms={farms}/>}/>
                     <Route path="animals" element={<AnimalTable farms={farms}/>}/>
                     <Route path="enclosures" element={<EnclosureTable farms={farms}/>}/>
                     <Route path="schemas" element={<Schemas farms={farms}/>}/>
