@@ -21,7 +21,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { getConfig } from '../api/getToken';
 
 const AnimalCreator = (props) => {
-    const [newAnimal, setNewAnimal] = useState({name: '', type: '', father: '', mother: '', male: true, alive: true, fields: {}});
+    const [newAnimal, setNewAnimal] = useState({name: '', type: '', father: '', mother: '', male: true, alive: true, farm: '', fields: {}});
     const [schema, setSchema] = useState();
     const [fieldList, setFieldList] = useState([]);
     const [create, setCreate] = useState(false);
@@ -131,11 +131,12 @@ const AnimalCreator = (props) => {
                 <Table>
                     <TableHead>
                         <TableRow>
-                            <TableCell width='20%'>Name</TableCell>
-                            <TableCell width='20%'>Type</TableCell>
-                            <TableCell width='20%'>Father</TableCell>
-                            <TableCell width='20%'>Mother</TableCell>
-                            <TableCell width='20%'>Sex</TableCell>
+                            <TableCell width='16.7%'>Name</TableCell>
+                            <TableCell width='16.7%'>Type</TableCell>
+                            <TableCell width='16.7%'>Father</TableCell>
+                            <TableCell width='16.7%'>Mother</TableCell>
+                            <TableCell width='16.6%'>Sex</TableCell>
+                            <TableCell width='16.6%'>Farm</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -221,6 +222,13 @@ const AnimalCreator = (props) => {
                                     <MenuItem value={false}>Female</MenuItem>   
                                 </Select>
                             </TableCell>
+                            <TableCell>
+                                <Select style={{width: '100%'}} value={newAnimal.farm} size='small' onChange={(e) => {setNewAnimal({...newAnimal, farm: e.target.value})}}>
+                                    <MenuItem value={props.farms.WH}>Windmill Hill</MenuItem>
+                                    <MenuItem value={props.farms.HC}>Hartcliffe</MenuItem>
+                                    <MenuItem value={props.farms.SW}>St Werburghs</MenuItem>
+                                </Select>
+                            </TableCell>
                         </TableRow>
                     </TableBody>
                 </Table>
@@ -259,7 +267,7 @@ const AnimalCreator = (props) => {
                 aria-label="add"
                 endIcon={<AddIcon/>}
                 onClick={async() => {
-                    try{
+                    try {
                         await axios.post(`/animals/create`, newAnimal, token)
                     } catch(error) {
                         window.alert(error);

@@ -125,7 +125,7 @@ const AnimalTable = ({farms}) => {
         <Paper style={{height: `calc(100vh - (170.88px + ${creatorOffset}px))`, marginBottom: '20px'}}>
             <DataGrid style={{fontSize: '1rem'}} columns={cols} rows={rows}/>
         </Paper>
-        <AnimalCreator animalList={animalList} schemaList={schemaList} setOffset={setCreatorOffset}/>
+        <AnimalCreator animalList={animalList} schemaList={schemaList} setOffset={setCreatorOffset} farms={farms}/>
     </>)
 }
 

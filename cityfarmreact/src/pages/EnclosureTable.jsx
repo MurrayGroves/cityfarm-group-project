@@ -101,7 +101,7 @@ const EnclosureTable = ({farms}) => {
                 const _id = oldVal.id;
                 (async() => {
                     try{
-                        const response = await axios.patch(`/enclosures/by_id/${_id}/name/${newName}`, token)
+                        const response = await axios.patch(`/enclosures/by_id/${_id}/name/${newName}`, null, token)
                         console.log(response);
                         window.location.reload(false);
                     } catch (error) {

@@ -56,7 +56,8 @@ public class SchemaController {
     }
 
     @PatchMapping("/api/schemas/by_name/{name}/hidden")
-    public ResponseEntity<Boolean> set_hidden(@PathVariable String name, @RequestParam Boolean hidden) {
+    public ResponseEntity<Boolean> set_hidden(@PathVariable String name, @RequestBody JsonNode hiddenReq) {
+        Boolean hidden = hiddenReq.get("hidden").asBoolean();
         AnimalSchema schema = schemaRepository.findSchemaByName(name);
         schema.set_hidden(hidden);
         schemaRepository.save(schema);

@@ -176,7 +176,7 @@ const Calendar = ({farms}) => {
                     window.alert(error);
                 }
             }
-            else{ // day case has a single element of the start time
+            else { // day case has a single element of the start time
                 try {
                     const start = range[0]
                     const end = start
