@@ -21,12 +21,18 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { getConfig } from '../api/getToken';
 
 const AnimalCreator = (props) => {
-    const [newAnimal, setNewAnimal] = useState({name: '', type: '', father: '', mother: '', male: true, alive: true, farm: '', fields: {}});
+    const [newAnimal, setNewAnimal] = useState({name: '', type: '', father: '', mother: '', male: '', alive: true, farm: '', fields: {}});
     const [schema, setSchema] = useState();
     const [fieldList, setFieldList] = useState([]);
     const [create, setCreate] = useState(false);
 
     const token = getConfig();
+
+    const reset = () => {
+        setCreate(false);
+        setNewAnimal({name: '', type: '', father: '', mother: '', male: '', alive: true, farm: '', fields: {}})
+        setSchema();
+    }
 
     const fieldTypeSwitch = (key) => {
         let field = fieldList[key];
@@ -34,7 +40,7 @@ const AnimalCreator = (props) => {
         switch(schema._fields[field]._type) { /* check the type of the field and display appropriate input method */
             case "java.lang.Boolean":
                 return (
-                    <FormControl required={schema._fields[field]._required} sx={{width: '100%'}}>
+                    <FormControl error={newAnimal.fields[field] === '' && schema._fields[field]._required} required={schema._fields[field]._required} sx={{width: '100%'}}>
                     <FormHelperText style={{marginLeft: '5px'}}>{schema._fields[field]._required ? 'Required' : 'Not Required'}</FormHelperText>
                     <Select
                         value={newAnimal.fields[field] !== undefined ? newAnimal.fields[field] : ''}
@@ -45,7 +51,7 @@ const AnimalCreator = (props) => {
                             setNewAnimal({...newAnimal, fields: newFields});
                         }}
                     >
-                        <MenuItem value={''}><em>Empty</em></MenuItem>
+                        {!schema._fields[field]._required && <MenuItem value={''}><em>Empty</em></MenuItem>}
                         <MenuItem value={true}>Yes</MenuItem>
                         <MenuItem value={false}>No</MenuItem>
                     </Select>
@@ -53,7 +59,7 @@ const AnimalCreator = (props) => {
                 );
             case "java.lang.String":
                 return (
-                    <FormControl required={schema._fields[field]._required} sx={{width: '100%'}}>
+                    <FormControl error={newAnimal.fields[field] === '' && schema._fields[field]._required} required={schema._fields[field]._required} sx={{width: '100%'}}>
                     <FormHelperText style={{marginLeft: '5px'}}>{schema._fields[field]._required ? 'Required' : 'Not Required'}</FormHelperText>
                     <TextField
                         fullWidth
@@ -69,7 +75,7 @@ const AnimalCreator = (props) => {
                 );
             case "java.lang.Integer":
                 return (
-                    <FormControl required={schema._fields[field]._required} sx={{width: '100%'}}>
+                    <FormControl error={newAnimal.fields[field] === '' && schema._fields[field]._required} required={schema._fields[field]._required} sx={{width: '100%'}}>
                     <FormHelperText style={{marginLeft: '5px'}}>{schema._fields[field]._required ? 'Required' : 'Not Required'}</FormHelperText>
                     <TextField
                         type='number'
@@ -86,7 +92,7 @@ const AnimalCreator = (props) => {
                 );
             case "java.lang.Double":
                 return (
-                    <FormControl required={schema._fields[field]._required} sx={{width: '100%'}}>
+                    <FormControl error={newAnimal.fields[field] === '' && schema._fields[field]._required} required={schema._fields[field]._required} sx={{width: '100%'}}>
                     <FormHelperText style={{marginLeft: '5px'}}>{schema._fields[field]._required ? 'Required' : 'Not Required'}</FormHelperText>
                     <TextField
                         type='number'
@@ -103,7 +109,7 @@ const AnimalCreator = (props) => {
                 );
             case "java.time.ZonedDateTime":
                 return (
-                    <FormControl required={schema._fields[field]._required} sx={{width: '100%'}}>
+                    <FormControl error={newAnimal.fields[field] === '' && schema._fields[field]._required} required={schema._fields[field]._required} sx={{width: '100%'}}>
                     <FormHelperText style={{marginLeft: '5px'}}>{schema._fields[field]._required ? 'Required' : 'Not Required'}</FormHelperText>
                     <DatePicker
                         onChange={(e) => {
@@ -141,11 +147,11 @@ const AnimalCreator = (props) => {
                     </TableHead>
                     <TableBody>
                         <TableRow>
-                            <TableCell><TextField fullWidth size='small' onChange={(e)=>{setNewAnimal({...newAnimal, name: e.target.value})}} label='Name'/></TableCell>
+                            <TableCell>
+                                <TextField fullWidth error={newAnimal.name === ''} required size='small' onChange={(e)=>{setNewAnimal({...newAnimal, name: e.target.value})}} label='Name'/>
+                            </TableCell>
                             <TableCell>
                                 <Autocomplete
-                                    style={{width: '100%'}}
-                                    size='medium'
                                     renderOption={(props, option) => {
                                         return (
                                             <li {...props} key={option._name}>
@@ -154,7 +160,7 @@ const AnimalCreator = (props) => {
                                         );
                                     }}
                                     isOptionEqualToValue={(option, value) => option._name === value._name}
-                                    renderInput={(params) => <TextField {...params} fullWidth size='small' label="Type"/>}
+                                    renderInput={(params) => <TextField {...params} fullWidth error={newAnimal.type === ''} required size='small' label="Type"/>}
                                     getOptionLabel={option => option._name.charAt(0).toUpperCase() + option._name.slice(1)}
                                     options={props.schemaList}
                                     onChange={(e, v) => {
@@ -174,8 +180,6 @@ const AnimalCreator = (props) => {
                             </TableCell>
                             <TableCell>
                                 <Autocomplete
-                                    style={{width: '100%'}}
-                                    size='medium'
                                     renderOption={(props, option) => {
                                         return (
                                             <li {...props} key={option.id}>
@@ -183,7 +187,7 @@ const AnimalCreator = (props) => {
                                             </li>
                                         );
                                     }}
-                                    renderInput={(params) => <TextField {...params} fullWidth size='small' label="Father"/>}
+                                    renderInput={(params) => <TextField {...params} fullWidth required={false} size='small' label="Father"/>}
                                     isOptionEqualToValue={(option, value) => option.id === value.id}
                                     getOptionLabel={option => option.name}
                                     options={
@@ -196,8 +200,6 @@ const AnimalCreator = (props) => {
                             </TableCell>
                             <TableCell>
                                 <Autocomplete
-                                    style={{width: '100%'}}
-                                    size='medium'
                                     renderOption={(props, option) => {
                                         return (
                                             <li {...props} key={option.id}>
@@ -205,7 +207,7 @@ const AnimalCreator = (props) => {
                                             </li>
                                         );
                                     }}
-                                    renderInput={(params) => <TextField {...params} fullWidth size='small' label="Mother"/>}
+                                    renderInput={(params) => <TextField {...params} fullWidth required={false} size='small' label="Mother"/>}
                                     isOptionEqualToValue={(option, value) => option.id === value.id}
                                     getOptionLabel={option => option.name}
                                     options={
@@ -217,23 +219,23 @@ const AnimalCreator = (props) => {
                                 />
                             </TableCell>
                             <TableCell>
-                                <Select style={{width: '100%'}} value={newAnimal.male} size='small' onChange={(e) => {setNewAnimal({...newAnimal, male: e.target.value})}}>
+                                <TextField select fullWidth error={newAnimal.male === ''} required label='Sex' value={newAnimal.male} size='small' onChange={(e) => {setNewAnimal({...newAnimal, male: e.target.value})}}>
                                     <MenuItem value={true}>Male</MenuItem>  
                                     <MenuItem value={false}>Female</MenuItem>   
-                                </Select>
+                                </TextField>
                             </TableCell>
                             <TableCell>
-                                <Select style={{width: '100%'}} value={newAnimal.farm} size='small' onChange={(e) => {setNewAnimal({...newAnimal, farm: e.target.value})}}>
+                                <TextField select fullWidth error={newAnimal.farm === ''} required label='Farm' value={newAnimal.farm} size='small' onChange={(e) => {setNewAnimal({...newAnimal, farm: e.target.value})}}>
                                     <MenuItem value={props.farms.WH}>Windmill Hill</MenuItem>
                                     <MenuItem value={props.farms.HC}>Hartcliffe</MenuItem>
                                     <MenuItem value={props.farms.SW}>St Werburghs</MenuItem>
-                                </Select>
+                                </TextField>
                             </TableCell>
                         </TableRow>
                     </TableBody>
                 </Table>
             </TableContainer>
-            <Button className='tallButton' variant='contained' endIcon={<DeleteIcon/>} onClick={() => {setCreate(false); setSchema(); props.setOffset(36.5+20)}}>Discard</Button>
+            <Button className='tallButton' variant='contained' endIcon={<DeleteIcon/>} onClick={() => {reset(); props.setOffset(36.5+20)}}>Discard</Button>
             </div>
             {schema ?
             <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '20px'}}>
@@ -241,7 +243,7 @@ const AnimalCreator = (props) => {
                 <Table>
                     <TableHead>
                         <TableRow>
-                            <TableCell style={{borderRight: '1px solid rgba(224, 224, 224, 1)', width: `${100/(Object.keys(schema._fields).length + 1)}%`}}>Property Name</TableCell>
+                            <TableCell style={{width: `${100/(Object.keys(schema._fields).length + 1)}%`}}>Property Name</TableCell>
                             {Object.keys(schema._fields).map((field, index) => {
                                 return (
                                 <TableCell key={index} style={{width: `${100/(Object.keys(schema._fields).length + 1)}%`}}>{field.charAt(0).toUpperCase() + field.slice(1)}</TableCell>
@@ -251,7 +253,7 @@ const AnimalCreator = (props) => {
                     </TableHead>
                     <TableBody>
                         <TableRow>
-                            <TableCell style={{borderRight: '1px solid rgba(224, 224, 224, 1)'}} variant='head'>Property Value</TableCell>
+                            <TableCell variant='head'>Property Value</TableCell>
                             {Object.keys(schema._fields).map((_, index) => {
                                 return (
                                     <TableCell key={index}>{fieldList ? fieldTypeSwitch(index) : <p>Loading...</p>}</TableCell>
