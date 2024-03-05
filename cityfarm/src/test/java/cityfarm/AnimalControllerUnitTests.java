@@ -32,6 +32,7 @@ public class AnimalControllerUnitTests {
         AnimalCreateRequest animalReq = new AnimalCreateRequest();
         animalReq.alive = true;
         animalReq.name = "Alice";
+        animalReq.farm = "WH";
         AnimalCustom alice = cowSchema.new_animal(animalReq);
         AnimalCustom alice2 = cowSchema.new_animal(animalReq);
         List<AnimalCustom> aliceCows = List.of(alice, alice2);
