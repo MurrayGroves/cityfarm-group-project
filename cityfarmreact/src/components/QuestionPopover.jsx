@@ -28,6 +28,9 @@ const QuestionPopover = (props) => {
     const open = Boolean(anchorEl);
 
     const getContentForCurrentPath = () => {
+        if (location.pathname.startsWith('/single-animal/')){
+            return singleData}
+
         switch (location.pathname) {
             case '/calendar':
                 return calData;
@@ -35,10 +38,10 @@ const QuestionPopover = (props) => {
                 return liveData;
             case '/enclosures':
                 return encData
+
             case '/schemas':
                 return typeData
-            case '/single-animal':
-                return singleData
+
             case '/':
                 return "This is the homepage, use the bar above to navigate"
 

@@ -40,7 +40,7 @@ export const eventsConversion=(events)=>{
     return changed
 }
 
-const Calendar = () => {
+
 const Calendar = ({farms}) => {
     const token = getConfig();
     const theme = useTheme().palette;
@@ -114,7 +114,7 @@ const Calendar = ({farms}) => {
         });
         console.log(allEvents, newEvent);
     }
-    
+
     const changeAllDay = (isAllDay, type) => {
         type === "add" ? setNewEvent({...newEvent, allDay: isAllDay}) : setModifiedEvent({...modifiedEvent, allDay: isAllDay})
     }
@@ -267,7 +267,7 @@ const Calendar = ({farms}) => {
                                 <div>
                                     <p>{selectedEvent.start.toLocaleString([], {year: '2-digit', month: '2-digit', day: '2-digit', hour: '2-digit', minute:'2-digit'})} - {selectedEvent.start.toLocaleDateString() === selectedEvent.end.toLocaleDateString() ? selectedEvent.end.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}): selectedEvent.end.toLocaleString([], {year: '2-digit', month: '2-digit', day: '2-digit', hour: '2-digit', minute:'2-digit'})}</p>
                                 </div>
-                        
+
                         }
                         {selectedEvent.farms.length !== 0 ? <h3>Farms</h3> : <></>}
                         {selectedEvent.farms.includes(farms.WH) ? <p>Windmill Hill</p> : <></>}
