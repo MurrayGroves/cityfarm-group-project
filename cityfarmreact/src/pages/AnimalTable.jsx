@@ -4,12 +4,14 @@ import FarmTabs from "../components/FarmTabs";
 import AnimalPopover from "../components/AnimalPopover";
 import "./AnimalTable.css";
 import { DataGrid } from '@mui/x-data-grid';
+import { useGridApiRef } from "@mui/x-data-grid";
 import TableContainer from '@mui/material/TableContainer';
 import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
 import AnimalCreator from "../components/AnimalCreator";
 
 import { getConfig } from '../api/getToken';
+import { Link } from "react-router-dom";
 
 const AnimalTable = ({farms}) => {
     const [animalList, setAnimalList] = useState([]); /* The State for the list of animals. The initial state is [] */
@@ -17,7 +19,10 @@ const AnimalTable = ({farms}) => {
     
     const [farm, setFarm] = useState(Object.keys(farms)[0]);
 
+    const [filterModel, setFilterModel] = useState({items: []});
+
     const token = getConfig();
+    const gridApi = useGridApiRef();
 
     //useEffect(displayAll,[clear])
 
@@ -96,7 +101,20 @@ const AnimalTable = ({farms}) => {
             <FarmTabs farms={farms} selectedFarm={farm} setSelectedFarm={setFarm}/>
         </span>
         <Paper style={{height: 'calc(100% - 525px)', marginBottom: '20px'}}>
-            <DataGrid style={{fontSize: '1rem'}} checkboxSelection columns={cols} rows={rows}/>
+            <DataGrid filterModel={filterModel} style={{fontSize: '1rem'}} checkboxSelection columns={cols} rows={rows} onCellClick={(params, event, details) => {
+                if (params.field === 'type') {
+                    setFilterModel({
+                        items: [
+                         {
+                          id: 1,
+                          field: "type",
+                          operator: "contains",
+                          value: params.value,
+                         },
+                        ]
+                       })
+                }
+            }}/>
         </Paper>
         <AnimalCreator animalList={animalList}/>
     </>)
