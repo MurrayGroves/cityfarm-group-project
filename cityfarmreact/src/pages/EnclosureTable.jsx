@@ -58,6 +58,19 @@ const EnclosureTable = ({farms}) => {
         })()
     },[searchTerm])
 
+    // function searchAnimal(animalID) {
+    //     (async() =>{
+    //         try{
+    //             const response = await axios.get(`/animals/by_id/${animalID}`)
+    //             console.log(response);
+    //             return response;
+    //         }catch (error){
+    //             window.alert(error);
+    //             return null;
+    //         }
+    //     })();
+    // }
+
     const cols =  [
         { field: 'name', editable: true, headerName: 'Name', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
         { field: 'holding', headerName: 'Holding', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
@@ -119,6 +132,7 @@ const EnclosureTable = ({farms}) => {
         </TableContainer>
         <Button style={{float: 'right'}} aria-label="edit" onClick={() => setEditMode(true)} variant='contained' endIcon={<EditIcon/>}>Edit</Button>
         <EnclosureCreator/>
+        <EnclosureCreatorCreator/>
     </>)
 }
 
