@@ -10,7 +10,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import Button from '@mui/material/Button';
 import { diff } from "deep-object-diff";
 import AnimalPopover from "../components/AnimalPopover";
-
+import AnimalCreator from "../components/AnimalCreator";
 import { getConfig } from '../api/getToken';
 
 const EnclosureTable = ({farms}) => {
@@ -58,19 +58,6 @@ const EnclosureTable = ({farms}) => {
         })()
     },[searchTerm])
 
-    // function searchAnimal(animalID) {
-    //     (async() =>{
-    //         try{
-    //             const response = await axios.get(`/animals/by_id/${animalID}`)
-    //             console.log(response);
-    //             return response;
-    //         }catch (error){
-    //             window.alert(error);
-    //             return null;
-    //         }
-    //     })();
-    // }
-
     const cols =  [
         { field: 'name', editable: true, headerName: 'Name', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
         { field: 'holding', headerName: 'Holding', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
@@ -80,10 +67,10 @@ const EnclosureTable = ({farms}) => {
     const rows = enclosureList.map((enclosure) => ({
         id: enclosure._id,
         name: enclosure.name,
-        holding: enclosure.holding.map((animal) => {
-            console.log("it gets here");
-            console.log(animal);
-            return (`${animal.name}`)
+        holding: Object.keys(enclosure.holding).map((key) => {
+            return (`${Object.keys(enclosure.holding[key]).map((animal) => {
+                return enclosure.holding[key][animal].name
+            })}`)
         }),
         capacities: Object.keys(enclosure.capacities).map((key) => {
             return (` ${key}: ${enclosure.capacities[key]}`)
@@ -131,6 +118,7 @@ const EnclosureTable = ({farms}) => {
             }}/>
         </TableContainer>
         <Button style={{float: 'right'}} aria-label="edit" onClick={() => setEditMode(true)} variant='contained' endIcon={<EditIcon/>}>Edit</Button>
+        <EnclosureCreator/>
     </>)
 }
 
