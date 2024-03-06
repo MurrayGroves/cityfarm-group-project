@@ -87,7 +87,6 @@ const AnimalTable = ({farms}) => {
 
 
     function calculateColumnsAndRows(schema) {
-        console.log("CALCULATING COLUMNS AND ROWS")
         let newCols = defaultCols;
 
         if (schema) {
@@ -188,11 +187,12 @@ const AnimalTable = ({farms}) => {
                 }
             }}/>
         </Paper>
-        <div style={{margin: '1%'}}>
+        <div style={{margin: '1%', display: 'flex'}}>
             <Button variant="contained" onClick={() => {
                 setFilterModel({items: []});
                 setSelectedSchema(null);
             }}>Clear Filter</Button>
+            {selectedSchema ? <p style={{marginLeft: '1%'}}>Currently filtering to show {selectedSchema._name}s</p> : <></>}
         </div>
         <AnimalCreator animalList={animalList}/>
     </>)
