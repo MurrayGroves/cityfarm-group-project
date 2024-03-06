@@ -4,14 +4,15 @@ import FarmTabs from "../components/FarmTabs";
 import AnimalPopover from "../components/AnimalPopover";
 import "./AnimalTable.css";
 import { DataGrid } from '@mui/x-data-grid';
-import { useGridApiRef } from "@mui/x-data-grid";
 import TableContainer from '@mui/material/TableContainer';
 import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
 import AnimalCreator from "../components/AnimalCreator";
 
 import { getConfig } from '../api/getToken';
 import { Link } from "react-router-dom";
+import { set } from "date-fns";
 
 const AnimalTable = ({farms}) => {
     const [animalList, setAnimalList] = useState([]); /* The State for the list of animals. The initial state is [] */
@@ -20,9 +21,9 @@ const AnimalTable = ({farms}) => {
     const [farm, setFarm] = useState(Object.keys(farms)[0]);
 
     const [filterModel, setFilterModel] = useState({items: []});
+    const [schemas, setSchemas] = useState([]);
 
     const token = getConfig();
-    const gridApi = useGridApiRef();
 
     //useEffect(displayAll,[clear])
 
@@ -64,19 +65,42 @@ const AnimalTable = ({farms}) => {
     },[searchTerm])
 
     useEffect(() => {
+        (async () => {
+            try {
+                const response = await axios.get(`/schemas`, token);
+                setSchemas(response.data);
+            } catch (error) {
+                if (error.response.status === 401) {
+                    window.location.href = "/login";
+                    return;
+                } else {
+                    window.alert(error);
+                }
+            }
+        })()
+    }, [])
+
+    useEffect(() => {
         //setAnimalList(animalList.filter((animal)=>{animal.farms.includes(farm)}))
     },[farm])
 
-    const rows = animalList.map((animal) => ({
-        id: animal._id,
-        name: animal,
-        type: animal.type.charAt(0).toUpperCase() + animal.type.slice(1),
-        father: animal.father !== null ? animal : 'Unregistered',
-        mother: animal.mother !== null ? animal : 'Unregistered',
-        sex: animal.male ? 'Male' : 'Female',
-    }));
 
-    const cols = [
+    const [rows, setRows] = useState([]);
+
+    useEffect(() => {
+        const defaultRows = animalList.map((animal) => ({
+            id: animal._id,
+            name: animal,
+            type: animal.type.charAt(0).toUpperCase() + animal.type.slice(1),
+            father: animal.father !== null ? animal : 'Unregistered',
+            mother: animal.mother !== null ? animal : 'Unregistered',
+            sex: animal.male ? 'Male' : 'Female',
+        }));
+        setRows(defaultRows);
+    }, [animalList])
+
+
+    const defaultCols = [
         { field: 'name', headerName: 'Name', headerClassName: 'grid-header', headerAlign: 'left', flex: 1,
             renderCell: (animal) => {return <AnimalPopover animalID={animal.value._id}/>} },
         { field: 'type', headerName: 'Type', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
@@ -88,6 +112,7 @@ const AnimalTable = ({farms}) => {
                 <AnimalPopover key={animal.value.mother} animalID={animal.value.mother}/> : "Unregistered"}},
         { field: 'sex', headerName: 'Sex', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
     ];
+    const [cols, setCols] = useState(defaultCols);
 
     return(<>
         <h1>Livestock</h1>
@@ -101,7 +126,7 @@ const AnimalTable = ({farms}) => {
             <FarmTabs farms={farms} selectedFarm={farm} setSelectedFarm={setFarm}/>
         </span>
         <Paper style={{height: 'calc(100% - 525px)', marginBottom: '20px'}}>
-            <DataGrid filterModel={filterModel} style={{fontSize: '1rem'}} checkboxSelection columns={cols} rows={rows} onCellClick={(params, event, details) => {
+            <DataGrid disableRowSelectionOnClick filterModel={filterModel} style={{fontSize: '1rem'}} checkboxSelection columns={cols} rows={rows} onCellClick={(params, event, details) => {
                 if (params.field === 'type') {
                     setFilterModel({
                         items: [
@@ -112,10 +137,36 @@ const AnimalTable = ({farms}) => {
                           value: params.value,
                          },
                         ]
-                       })
+                    })
+
+                    let newCols = defaultCols;
+                    let schema = schemas.find((schema) => {return schema._name.toLowerCase() === params.value.toLowerCase()});
+                    console.log(schema);
+                    for (let key in schema._fields) {
+                        newCols.push({field: key, headerName: key, headerClassName: 'grid-header', headerAlign: 'left', flex: 1});
+                    }
+                    console.log(newCols)
+                    setCols(newCols);
+
+                    let newRows = [];
+                    for (let i = 0; i < rows.length; i++) {
+                        let newRow = rows[i];
+                        let animal = animalList.find((animal) => {return animal._id === newRow.id});
+                        console.log(animal);
+                        for (let key in schema._fields) {
+                            newRow[key] = animal.fields[key];
+                        }
+                        newRows.push(newRow);
+                    }
+                    setRows(newRows);
                 }
             }}/>
         </Paper>
+        <div style={{margin: '1%'}}>
+            <Button variant="contained" onClick={() => {
+                setFilterModel({items: []});
+            }}>Clear Filter</Button>
+        </div>
         <AnimalCreator animalList={animalList}/>
     </>)
 }
