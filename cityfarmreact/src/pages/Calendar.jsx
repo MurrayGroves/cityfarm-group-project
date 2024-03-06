@@ -17,6 +17,30 @@ import axios from '../api/axiosConfig'
 
 import { getConfig } from '../api/getToken';
 
+
+
+
+export const eventsConversion=(events)=>{
+    let changed=[]
+    for (let i=0;i<events.length;i++){
+        changed.push(
+            {
+                title : events[i].event.title,
+                allDay: events[i].event.allDay,
+                start: new  Date(events[i].start),
+                end: new  Date(events[i].end),
+                farms: events[i].event.farms,
+                animals: events[i].event.animals,
+                description: events[i].event.description,
+                enclosures: events[i].event.enclosures
+            }
+        )
+    }
+    console.log(changed)
+    return changed
+}
+
+
 const Calendar = ({farms}) => {
     const token = getConfig();
     const theme = useTheme().palette;
@@ -90,7 +114,7 @@ const Calendar = ({farms}) => {
         });
         console.log(allEvents, newEvent);
     }
-    
+
     const changeAllDay = (isAllDay, type) => {
         type === "add" ? setNewEvent({...newEvent, allDay: isAllDay}) : setModifiedEvent({...modifiedEvent, allDay: isAllDay})
     }
@@ -192,25 +216,6 @@ const Calendar = ({farms}) => {
         }
       }, [])
 
-    const eventsConversion=(events)=>{
-        let changed=[]
-        for (let i=0;i<events.length;i++){
-            changed.push(
-                {
-                    title : events[i].event.title,
-                    allDay: events[i].event.allDay,
-                    start: new  Date(events[i].start),
-                    end: new  Date(events[i].end),
-                    farms: events[i].event.farms,
-                    animals: events[i].event.animals,
-                    description: events[i].event.description,
-                    enclosures: events[i].event.enclosures
-                }
-            )
-        }
-        console.log(changed)
-        return changed
-    }
 
     return (
         <div className="CalendarPage" style={{height: "85%"}}>
@@ -262,7 +267,7 @@ const Calendar = ({farms}) => {
                                 <div>
                                     <p>{selectedEvent.start.toLocaleString([], {year: '2-digit', month: '2-digit', day: '2-digit', hour: '2-digit', minute:'2-digit'})} - {selectedEvent.start.toLocaleDateString() === selectedEvent.end.toLocaleDateString() ? selectedEvent.end.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}): selectedEvent.end.toLocaleString([], {year: '2-digit', month: '2-digit', day: '2-digit', hour: '2-digit', minute:'2-digit'})}</p>
                                 </div>
-                        
+
                         }
                         {selectedEvent.farms.length !== 0 ? <h3>Farms</h3> : <></>}
                         {selectedEvent.farms.includes(farms.WH) ? <p>Windmill Hill</p> : <></>}

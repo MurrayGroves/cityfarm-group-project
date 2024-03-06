@@ -4,8 +4,10 @@ import {Link} from "react-router-dom";
 import Button from '@mui/material/Button';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { useNavigate } from "react-router-dom";
+import question from "../assets/question mark.png"
 
 import Switch from '@mui/material/Switch';
+import QuestionPopover from "./QuestionPopover";
 
 const NavBar = (props) => {
     const navigate = useNavigate();
@@ -16,6 +18,7 @@ const NavBar = (props) => {
             <Link to="/animals"> Livestock </Link>
             <Link to="/enclosures"> Enclosures </Link>
             <Link to="/schemas"> Animal Types </Link>
+            <QuestionPopover/>
             <span style={{width: '100%', position: 'absolute', bottom: '10px', left: '10px', color: 'white'}}>Dark Mode<Switch style={{marginLeft: '5px'}} size='small' onChange={(e) => {props.setDark(e.target.checked); console.log(e.target.checked)}}/></span>
             <span style={{width: '100%', position: 'absolute', bottom: '5%', left: '10px', color: 'white'}}><Button onClick={() => {
                 props.msal.logoutRedirect({

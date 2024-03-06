@@ -22,6 +22,8 @@ import 'dayjs/locale/en-gb';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { PublicClientApplication } from "@azure/msal-browser";
+import Homepage from "./pages/Homepage";
+import HelpPage from "./pages/HelpPage";
 
 const App = () => {
 
@@ -117,8 +119,9 @@ const App = () => {
                     <Route path="enclosures" element={<EnclosureTable farms={farms}/>}/>
                     <Route path="schemas" element={<Schemas farms={farms}/>}/>
                     <Route path="single-animal/:animalID" element={<SingleAnimal farms={farms}/>} />
-                    <Route path="/" element={"Homepage"}/>
+                    <Route path="/" element={<Homepage farms={farms}/>}/>
                     <Route path="*" element={<Error/>}/>
+                    <Route path="help" element={<HelpPage/>}/>
                     </Routes>
                     </div>
 
@@ -131,6 +134,7 @@ const App = () => {
         </LocalizationProvider>
         </ThemeProvider>
     )
+
 }
 
 export default App;
