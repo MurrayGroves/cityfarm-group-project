@@ -13,7 +13,7 @@ import Error from "./pages/Error.jsx";
 import Login from './pages/Login.jsx';
 import SingleAnimal from "./pages/SingleAnimal";
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -22,6 +22,8 @@ import 'dayjs/locale/en-gb';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { PublicClientApplication } from "@azure/msal-browser";
+
+import usePersistState from './components/PersistentState.jsx'
 
 const App = () => {
 
@@ -52,7 +54,7 @@ const App = () => {
         },
     });
 
-    const defaultTheme = createTheme({
+    const lightTheme = createTheme({
         palette: {
             mode: 'light',
             WH: {
@@ -73,7 +75,7 @@ const App = () => {
         }
     });
     
-    const [dark, setDark] = useState(false);
+    const [theme, setTheme] = usePersistState('light', 'theme');
     const [msal, setMsal] = useState(null);
 
     const msalConfig = {
@@ -101,7 +103,7 @@ const App = () => {
     }
 
     return (
-        <ThemeProvider theme={dark ? darkTheme : defaultTheme}>
+        <ThemeProvider theme={theme === 'dark' ? darkTheme : lightTheme}>
         <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={'en-gb'}>
         <CssBaseline/>
         <Router>
@@ -109,7 +111,7 @@ const App = () => {
                 <Route path="login" element={<Login msal={msal} setMsal={setMsal} />}/>
                 <Route exact path="*" element={
                     <div>
-                    <NavBar setDark={setDark} msal={msal}/>
+                    <NavBar theme={theme} setTheme={setTheme} msal={msal}/>
                     <div className='Content'>
                     <Routes>
                     <Route path="calendar" element={<Calendar farms={farms}/>}/>
