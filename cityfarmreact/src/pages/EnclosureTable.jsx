@@ -19,7 +19,7 @@ const EnclosureTable = ({farms}) => {
 
     const token = getConfig();
 
-    const [farm, setFarm] = useState('');
+    const [farm, setFarm] = useState(null);
 
     function displayAll() {
         (async () => {

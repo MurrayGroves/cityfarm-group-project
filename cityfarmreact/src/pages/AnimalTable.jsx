@@ -16,7 +16,7 @@ const AnimalTable = ({farms}) => {
     const [searchTerm, setSearchTerm] = useState(''); /* The term being searched for in the searchbar */
     const [schemaList, setSchemaList] = useState([]);
 
-    const [farm, setFarm] = useState('');
+    const [farm, setFarm] = useState(null);
 
     const token = getConfig();
 
