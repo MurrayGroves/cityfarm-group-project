@@ -22,6 +22,7 @@ const AnimalTable = ({farms}) => {
 
     const [filterModel, setFilterModel] = useState({items: []});
     const [schemas, setSchemas] = useState([]);
+    const [selectedSchema, setSelectedSchema] = useState(null);
 
     const token = getConfig();
 
@@ -85,6 +86,49 @@ const AnimalTable = ({farms}) => {
     },[farm])
 
 
+    function calculateColumnsAndRows(schema) {
+        console.log("CALCULATING COLUMNS AND ROWS")
+        let newCols = defaultCols;
+
+        if (schema) {
+            for (let key in schema._fields) {
+                newCols.push({field: key, headerName: key, headerClassName: 'grid-header', headerAlign: 'left', flex: 1});
+            }
+        }
+ 
+        setCols(newCols);
+
+        const defaultRows = animalList.map((animal) => ({
+            id: animal._id,
+            name: animal,
+            type: animal.type.charAt(0).toUpperCase() + animal.type.slice(1),
+            father: animal.father !== null ? animal : 'Unregistered',
+            mother: animal.mother !== null ? animal : 'Unregistered',
+            sex: animal.male ? 'Male' : 'Female',
+        }));
+
+        let newRows = [];
+        for (let i = 0; i < defaultRows.length; i++) {
+            let newRow = defaultRows[i];
+            if (schema) {
+                if (newRow.type.toLowerCase() !== schema._name.toLowerCase()) {
+                    continue;
+                }
+                let animal = animalList.find((animal) => {return animal._id === newRow.id});
+                for (let key in schema._fields) {
+                    newRow[key] = animal.fields[key];
+                }
+            }
+       
+            newRows.push(newRow);
+        }
+        setRows(newRows);
+    }
+
+    useEffect(() => {
+        calculateColumnsAndRows(selectedSchema);
+    }, [selectedSchema, animalList])
+
     const [rows, setRows] = useState([]);
 
     useEffect(() => {
@@ -139,32 +183,15 @@ const AnimalTable = ({farms}) => {
                         ]
                     })
 
-                    let newCols = defaultCols;
                     let schema = schemas.find((schema) => {return schema._name.toLowerCase() === params.value.toLowerCase()});
-                    console.log(schema);
-                    for (let key in schema._fields) {
-                        newCols.push({field: key, headerName: key, headerClassName: 'grid-header', headerAlign: 'left', flex: 1});
-                    }
-                    console.log(newCols)
-                    setCols(newCols);
-
-                    let newRows = [];
-                    for (let i = 0; i < rows.length; i++) {
-                        let newRow = rows[i];
-                        let animal = animalList.find((animal) => {return animal._id === newRow.id});
-                        console.log(animal);
-                        for (let key in schema._fields) {
-                            newRow[key] = animal.fields[key];
-                        }
-                        newRows.push(newRow);
-                    }
-                    setRows(newRows);
+                    setSelectedSchema(schema);
                 }
             }}/>
         </Paper>
         <div style={{margin: '1%'}}>
             <Button variant="contained" onClick={() => {
                 setFilterModel({items: []});
+                setSelectedSchema(null);
             }}>Clear Filter</Button>
         </div>
         <AnimalCreator animalList={animalList}/>
