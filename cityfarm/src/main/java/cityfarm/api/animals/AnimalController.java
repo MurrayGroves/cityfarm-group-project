@@ -7,6 +7,7 @@ import org.springframework.boot.actuate.autoconfigure.observation.ObservationPro
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -34,11 +35,20 @@ public class AnimalController {
 
 
     /**
-     * @return a list of all animals in the DB
+     * @param farm to filter animals by.
+     * @return a list of all animals, filtered by farm.
      */
     @GetMapping("/api/animals")
-    public ResponseEntity<List<AnimalCustom>> get_animals() {
-        return ResponseEntity.ok().body(animalRepository.findAll());
+    public ResponseEntity<List<AnimalCustom>> get_animals(@RequestParam("farm") @Nullable String farm) {
+        List<AnimalCustom> animals = animalRepository.findAll();
+        if (farm != null) {
+            animals = animals
+                    .stream()
+                    .filter((animal) -> animal.farm.equals(farm))
+                    .toList();
+        }
+
+        return ResponseEntity.ok().body(animals);
     }
 
     /**
@@ -58,12 +68,19 @@ public class AnimalController {
 
     /**
      * Get list of animals with a specific name
-     * @param name name of the animals to search for (case-sensitive and must be exact)
+     * @param name name of the animals to search for (fuzzy search)
+     * @param farm name of the farm to filter animal list by
      * @return list of all animals with that name
      */
     @GetMapping("/api/animals/by_name/{name}")
-    public ResponseEntity<List<AnimalCustom>> get_animals_by_name(@PathVariable String name) {
+    public ResponseEntity<List<AnimalCustom>> get_animals_by_name(@PathVariable String name, @RequestParam @Nullable String farm) {
         List<AnimalCustom> animals = animalRepositoryCustom.findAnimalByName(name);
+        if (farm != null) {
+            animals = animals
+                    .stream()
+                    .filter((animal) -> animal.farm.equals(farm))
+                    .toList();
+        }
 
         return ResponseEntity.ok().body(animals);
     }

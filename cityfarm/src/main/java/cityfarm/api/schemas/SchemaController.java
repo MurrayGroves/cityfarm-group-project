@@ -10,7 +10,7 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
-@CrossOrigin(origins = {"http://localhost:3000", "https://cityfarm.murraygrov.es"}, methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE})
+@CrossOrigin(origins = {"http://localhost:3000", "https://cityfarm.murraygrov.es"}, methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE, RequestMethod.PATCH})
 public class SchemaController {
     @Autowired
     SchemaRepository schemaRepository;
@@ -56,11 +56,12 @@ public class SchemaController {
     }
 
     @PatchMapping("/api/schemas/by_name/{name}/hidden")
-    public ResponseEntity<Boolean> set_hidden(@PathVariable String name, @RequestBody JsonNode req) {
-        AnimalSchema schema = schemaRepositoryCustom.findSchemaByName(name).getFirst();
-        schema.set_hidden(req.get("hidden").asBoolean());
+    public ResponseEntity<Boolean> set_hidden(@PathVariable String name, @RequestBody JsonNode hiddenReq) {
+        Boolean hidden = hiddenReq.get("hidden").asBoolean();
+        AnimalSchema schema = schemaRepository.findSchemaByName(name);
+        schema.set_hidden(hidden);
         schemaRepository.save(schema);
 
-        return ResponseEntity.ok(req.get("hidden").asBoolean());
+        return ResponseEntity.ok(hidden);
     }
 }

@@ -23,7 +23,7 @@ const AnimalTable = ({farms}) => {
     function displayAll() {
         (async () => {
             try {
-                const response = await axios.get(`/animals`, token);
+                const response = await axios.get(`/animals`, {params: {farm: farm}, ...token});
                 setAnimalList(response.data);
             } catch (error) {
                 console.log(error);
@@ -55,7 +55,6 @@ const AnimalTable = ({farms}) => {
 
     useEffect(getSchemas, []);
 
-
     useEffect(() => {
         (async () => {
             if (searchTerm === '') {
@@ -63,7 +62,7 @@ const AnimalTable = ({farms}) => {
                 return;
             }
             try {
-                const response = await axios.get(`/animals/by_name/${searchTerm}`, token);
+                const response = await axios.get(`/animals/by_name/${searchTerm}`, {params: {farm: farm}, ...token});
                 setAnimalList(response.data);
             } catch (error) {
                 if (error.response.status === 401) {
@@ -74,11 +73,7 @@ const AnimalTable = ({farms}) => {
                 }
             }
         })()
-    },[searchTerm])
-
-    useEffect(() => {
-        //setAnimalList(animalList.filter((animal)=>{animal.farms.includes(farm)}))
-    },[farm])
+    },[searchTerm, farm])
 
     const rows = animalList.map((animal) => ({
         id: animal._id,
@@ -113,6 +108,8 @@ const AnimalTable = ({farms}) => {
         { field: 'sex', headerName: 'Sex', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
     ];
 
+    const [creatorOffset, setCreatorOffset] = useState(36.5+20);
+
     return(<>
         <h1>Livestock</h1>
         <span style={{display: 'flex', justifyContent: 'space-between', height: '60px'}}>
@@ -124,10 +121,10 @@ const AnimalTable = ({farms}) => {
             ></TextField>
             <FarmTabs farms={farms} selectedFarm={farm} setSelectedFarm={setFarm}/>
         </span>
-        <Paper style={{height: 'calc(100% - 525px)', marginBottom: '20px'}}>
+        <Paper style={{height: `calc(100vh - (170.88px + ${creatorOffset}px))`, marginBottom: '20px'}}>
             <DataGrid style={{fontSize: '1rem'}} columns={cols} rows={rows}/>
         </Paper>
-        <AnimalCreator animalList={animalList} schemaList={schemaList}/>
+        <AnimalCreator animalList={animalList} schemaList={schemaList} setOffset={setCreatorOffset} farms={farms}/>
     </>)
 }
 

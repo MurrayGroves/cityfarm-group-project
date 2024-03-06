@@ -13,7 +13,7 @@ import Error from "./pages/Error.jsx";
 import Login from './pages/Login.jsx';
 import SingleAnimal from "./pages/SingleAnimal";
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -22,8 +22,9 @@ import 'dayjs/locale/en-gb';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { PublicClientApplication } from "@azure/msal-browser";
-import Homepage from "./pages/Homepage";
-import HelpPage from "./pages/HelpPage";
+import Home from "./pages/Home.jsx";
+import Help from "./pages/Help.jsx";
+import usePersistState from './components/PersistentState.jsx'
 
 const App = () => {
 
@@ -48,13 +49,13 @@ const App = () => {
             grey: {
                 main: "#888888"
             },
-            tertiary: {
+            primary: {
                 main: '#0085FA'
             }
         },
     });
 
-    const defaultTheme = createTheme({
+    const lightTheme = createTheme({
         palette: {
             mode: 'light',
             WH: {
@@ -69,13 +70,13 @@ const App = () => {
             grey: {
                 main: "#888888"
             },
-            tertiary: {
+            primary: {
                 main: '#0085FA'
             }
         }
     });
     
-    const [dark, setDark] = useState(false);
+    const [theme, setTheme] = usePersistState('light', 'theme');
     const [msal, setMsal] = useState(null);
 
     const msalConfig = {
@@ -103,31 +104,27 @@ const App = () => {
     }
 
     return (
-        <ThemeProvider theme={dark ? darkTheme : defaultTheme}>
+        <ThemeProvider theme={theme === 'dark' ? darkTheme : lightTheme}>
         <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={'en-gb'}>
         <CssBaseline/>
         <Router>
             <Routes>
-                <Route path="login" element={<Login msal={msal} setMsal={setMsal} />}/>
-                <Route exact path="*" element={
-                    <div>
-                    <NavBar setDark={setDark} msal={msal}/>
+                <Route path="/login" element={<Login msal={msal} setMsal={setMsal} />}/>
+                <Route exact path="*" element={<>
+                    <NavBar theme={theme} setTheme={setTheme} msal={msal}/>
                     <div className='Content'>
-                    <Routes>
-                    <Route path="calendar" element={<Calendar farms={farms}/>}/>
-                    <Route path="animals" element={<AnimalTable farms={farms}/>}/>
-                    <Route path="enclosures" element={<EnclosureTable farms={farms}/>}/>
-                    <Route path="schemas" element={<Schemas farms={farms}/>}/>
-                    <Route path="single-animal/:animalID" element={<SingleAnimal farms={farms}/>} />
-                    <Route path="/" element={<Homepage farms={farms}/>}/>
-                    <Route path="*" element={<Error/>}/>
-                    <Route path="help" element={<HelpPage/>}/>
-                    </Routes>
+                        <Routes>
+                            <Route path="/" element={<Home farms={farms}/>}/>
+                            <Route path="/calendar" element={<Calendar farms={farms}/>}/>
+                            <Route path="/animals" element={<AnimalTable farms={farms}/>}/>
+                            <Route path="/enclosures" element={<EnclosureTable farms={farms}/>}/>
+                            <Route path="/schemas" element={<Schemas farms={farms}/>}/>
+                            <Route path="/help" element={<Help/>}/>
+                            <Route path="/single-animal/:animalID" element={<SingleAnimal farms={farms}/>} />
+                            <Route path="*" element={<Error/>}/>
+                        </Routes>
                     </div>
-
-                    </div>
-                    }>
-
+                </>}>
                 </Route>
             </Routes>
         </Router>

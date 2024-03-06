@@ -5,17 +5,16 @@ import {Link,  useLocation} from "react-router-dom";
 import './AnimalPopover.css'
 import { useState, useEffect } from 'react';
 import { useTheme } from '@mui/material/styles';
-import {calData, liveData, encData, typeData, singleData} from '../pages/HelpPage'
+import {calData, liveData, encData, typeData, singleData} from '../pages/Help'
 import { getConfig } from '../api/getToken';
 import question from "../assets/question mark.png";
 import singleAnimal from "../pages/SingleAnimal";
 
-const QuestionPopover = (props) => {
+const QuestionPopover = () => {
+
     const colour = useTheme().palette.mode === 'light' ? 'black' : 'white';
     const location = useLocation();
     const [anchorEl, setAnchorEl] = useState(null);
-
-
 
     const handlePopoverOpen = (e) => {
         setAnchorEl(e.currentTarget);
@@ -38,17 +37,14 @@ const QuestionPopover = (props) => {
                 return liveData;
             case '/enclosures':
                 return encData
-
             case '/schemas':
                 return typeData
-
             case '/':
-                return "This is the homepage, use the bar above to navigate"
-
+                return "This is the homepage, use the bar above to navigate."
             case '/help':
-                return "This is the help page, use the bar above to navigate"
+                return "This is the help page, use the bar above to navigate."
             default:
-                return "This is an error, go back to a previous page or click the homepage";
+                return "This is an error, go back to a previous page or click the homepage.";
         }
     };
 
@@ -62,7 +58,7 @@ const QuestionPopover = (props) => {
                 onMouseLeave={handlePopoverClose}
                 style={{display: 'inline-block', margin: '2.5px 0'}}
             >
-                <Link to="/help"><img src={question} width={25} height={25}/></Link>
+                <Link to="/help"><img src={question} width={24} height={24}/></Link>
             </Typography>
             <Popover
                 id="mouse-over-popover"

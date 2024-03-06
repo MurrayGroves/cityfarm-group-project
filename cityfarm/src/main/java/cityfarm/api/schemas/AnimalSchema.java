@@ -15,6 +15,8 @@ import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -71,7 +73,11 @@ public class AnimalSchema {
             try {
                 mapper.treeToValue(field.getValue(), this.fields.get(field_name).get_type());
             } catch (JsonProcessingException e) {
-                throw new IllegalArgumentException(String.format("`%s` is not of type %s", field_name, this.fields.get(field_name).get_type()));
+                try {
+                    ZonedDateTime.parse(field.getValue().asText(), DateTimeFormatter.ISO_DATE_TIME);
+                } catch (DateTimeParseException p) {
+                    throw new IllegalArgumentException(String.format("`%s` is not of type %s", field_name, this.fields.get(field_name).get_type()));
+                }
             }
         });
 

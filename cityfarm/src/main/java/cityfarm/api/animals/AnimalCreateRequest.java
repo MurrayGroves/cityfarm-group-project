@@ -23,4 +23,6 @@ public class AnimalCreateRequest {
     public ZonedDateTime dateOfBirth;
 
     public String notes;
+
+    public String farm;
 }

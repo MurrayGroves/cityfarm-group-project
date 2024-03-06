@@ -75,9 +75,15 @@ public class AnimalCustom implements AnimalUnique {
     @Nullable
     public String notes;
 
+    /**
+     * Farm that the animal is held at
+     */
+    @NonNull
+    public String farm;
+
     @PersistenceCreator
     @JsonCreator
-    public AnimalCustom(@JsonProperty("type") @NonNull AnimalSchema schema, @Nullable String id, @Nullable JsonNode fields, @JsonProperty("name") @Nullable String name, @Nullable String mother, @Nullable String father,@Nullable String breed, @NonNull Boolean alive, @NonNull Boolean male, @Nullable ZonedDateTime dateOfBirth, @Nullable String notes) {
+    public AnimalCustom(@JsonProperty("type") @NonNull AnimalSchema schema, @Nullable String id, @Nullable JsonNode fields, @JsonProperty("name") @Nullable String name, @Nullable String mother, @Nullable String father, @Nullable String breed, @NonNull Boolean alive, @NonNull Boolean male, @Nullable ZonedDateTime dateOfBirth, @Nullable String notes, @NonNull String farm) {
         this.schema = schema;
         this.type = schema.get_name();
         this.name = name;
@@ -89,6 +95,7 @@ public class AnimalCustom implements AnimalUnique {
         this.dateOfBirth = dateOfBirth;
         this.id = id;
         this.fields = Objects.requireNonNullElse(fields, JsonNodeFactory.instance.objectNode());
+        this.farm = farm;
     }
 
     public AnimalCustom(@NonNull AnimalSchema schema, @NonNull AnimalCreateRequest animalReq) {
@@ -103,6 +110,7 @@ public class AnimalCustom implements AnimalUnique {
         this.alive = Objects.requireNonNullElse(animalReq.alive, true);
         this.male = animalReq.male;
         this.dateOfBirth = animalReq.dateOfBirth;
+        this.farm = animalReq.farm;
     }
 
     @Override
