@@ -34,6 +34,8 @@ const Schemas = () => {
     const [searchTerm, setSearchTerm] = useState(''); /* The term being search for in the searchbar */
     const [newFields, setNewFields] = useState([{"name": "", "type": "", "required": ""}])
     const [newSchemaName, setNewSchemaName] = useState("");
+    
+    const [editing, setEditing] = useState(false);
 
     const token = getConfig();
 
@@ -103,9 +105,10 @@ const Schemas = () => {
         <h2>Create New Animal Type</h2>
         <TableContainer style={{marginTop: '20px'}} component={Paper}>
         <div style={{display: 'flex'}}>
-            <TextField style={{margin: '15px 15px 0 15px'}} placeholder="Species Name" value={newSchemaName} size="small"
+            <TextField error={newSchemaName === '' && editing && newFields.length > 1} required style={{margin: '15px 15px 0 15px'}} placeholder="Species Name" value={newSchemaName} size="small"
                 onChange={(e) => {
                     setNewSchemaName(e.target.value);
+                    setEditing(true);
                 }}
             />
             <Button disableElevation variant="contained" aria-label="add" endIcon={<AddIcon />} style={{maxHeight: '40px', marginTop: '15px'}}
@@ -141,10 +144,10 @@ const Schemas = () => {
             <Table aria-label="fields table">
                 <TableHead>
                     <TableRow>
-                        <TableCell width='34%'>Property Name</TableCell>
-                        <TableCell width='33%'>Data Type</TableCell>
-                        <TableCell width='33%'>Required</TableCell>
-                        <TableCell/>
+                        <TableCell width='30%'>Property Name</TableCell>
+                        <TableCell width='30%'>Data Type</TableCell>
+                        <TableCell width='30%'>Required</TableCell>
+                        <TableCell width='10%'/>
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -154,7 +157,7 @@ const Schemas = () => {
                         sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                     >
                     <TableCell component="th" scope="row">
-                        <TextField fullWidth placeholder="Property Name" id="field name" variant="outlined" size="small" value={field["name"]} onChange={(e) => {
+                        <TextField fullWidth error={field["name"] === '' && editing && index !== newFields.length - 1} required placeholder="Property Name" id="field name" variant="outlined" size="small" value={field["name"]} onChange={(e) => {
                             setNewFields(newFields.map((elem, changeIndex) => {
                                 if (changeIndex === index) {
                                     elem["name"] = e.target.value;
@@ -164,10 +167,11 @@ const Schemas = () => {
                                 }
                             }))
                             checkIfNewRowNeeded();
+                            setEditing(true);
                         }}/>
                     </TableCell>
                     <TableCell align="left">
-                        <FormControl fullWidth sx={{ m: 1, minWidth: 120 }} size="small">
+                        <FormControl fullWidth error={field["type"] === '' && editing && index !== newFields.length - 1} required sx={{ m: 1, minWidth: 120 }} size="small">
                             <Select height="10px" value={field["type"] || ''} onChange={(e) => {
                                 setNewFields(newFields.map((elem, changeIndex) => {
                                     if (changeIndex === index) {
@@ -178,6 +182,7 @@ const Schemas = () => {
                                     }
                                 }))
                                 checkIfNewRowNeeded();
+                                setEditing(true);
                             }}>
                                 {Object.entries(classToReadable).map(([javaName, className], index) => 
                                     <MenuItem value={javaName} key={index}>{className}</MenuItem>
@@ -186,7 +191,7 @@ const Schemas = () => {
                         </FormControl>
                     </TableCell>
                     <TableCell align="left">
-                        <FormControl fullWidth sx={{ m: 1, minWidth: 120 }} size="small">
+                        <FormControl fullWidth error={field["required"] === '' && editing && index !== newFields.length - 1} required sx={{ m: 1, minWidth: 120 }} size="small">
                             <Select height="10px" value={field["required"]} onChange={(e) => {
                                 setNewFields(newFields.map((elem, changeIndex) => {
                                     if (changeIndex === index) {
@@ -197,6 +202,7 @@ const Schemas = () => {
                                     }
                                 }))
                                 checkIfNewRowNeeded();
+                                setEditing(true);
                             }}>
                                 <MenuItem value={true}>Yes</MenuItem>
                                 <MenuItem value={false}>No</MenuItem>

@@ -104,7 +104,7 @@ const AnimalPopover = (props) => {
                 disableRestoreFocus
             >
                 <Typography sx={{ p: 1, whiteSpace: 'pre-line' }}>
-                    {`Type: ${chosenAnimal.type}`}<br/>
+                    {`Type: ${chosenAnimal.type ? chosenAnimal.type.charAt(0).toUpperCase() + chosenAnimal.type.slice(1) : 'Loading...'}`}<br/>
                     {`Father: ${animalFather}`}<br/>
                     {`Mother: ${animalMother}`}<br/>
                     {chosenAnimal.male ? 'Sex: Male' : 'Sex: Female'}

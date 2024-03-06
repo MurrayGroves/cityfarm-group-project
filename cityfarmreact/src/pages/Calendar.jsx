@@ -128,8 +128,8 @@ const Calendar = ({farms}) => {
         if (type === "add") {
             if (isShown){
                 return(<>
-                    <DateTimePicker size='small' value={dayjs(newEvent.start)} onChange={(e) => {setNewEvent({...newEvent, start: e.$d})}} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
-                    <DateTimePicker size='small' value={dayjs(newEvent.end)} onChange={(e) => {setNewEvent({...newEvent, end: e.$d})}} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
+                    <DateTimePicker value={dayjs(newEvent.start)} onChange={(e) => {setNewEvent({...newEvent, start: e.$d})}} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
+                    <DateTimePicker value={dayjs(newEvent.end)} onChange={(e) => {setNewEvent({...newEvent, end: e.$d})}} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
                 </>)
             } else {
                 return(<>
