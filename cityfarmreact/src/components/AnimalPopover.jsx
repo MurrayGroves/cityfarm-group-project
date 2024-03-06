@@ -6,7 +6,6 @@ import './AnimalPopover.css'
 import axios from "../api/axiosConfig";
 import { useState, useEffect } from 'react';
 import { useTheme } from '@mui/material/styles';
-
 import { getConfig } from '../api/getToken';
 
 const aExamples = [
@@ -17,6 +16,7 @@ const aExamples = [
 
 const AnimalPopover = (props) => {
     const colour = useTheme().palette.mode === 'light' ? 'black' : 'white';
+    const hoverColour = '#f1f1f1';
 
     const [anchorEl, setAnchorEl] = useState(null);
     const [chosenAnimal, setChosenAnimal] = useState(aExamples[0]);
@@ -85,7 +85,7 @@ const AnimalPopover = (props) => {
                 onMouseLeave={handlePopoverClose}
                 style={{display: 'inline-block'}}
             >
-                <Link style={{color: colour}} to={`/single-animal/${chosenAnimal._id}`}>{chosenAnimal.name}</Link>
+                <Link className='animalLink' style={{'--colour': colour, '--hoverColour': hoverColour}} to={`/single-animal/${chosenAnimal._id}`}>{chosenAnimal.name}</Link>
             </Typography>
             <Popover
                 id="mouse-over-popover"

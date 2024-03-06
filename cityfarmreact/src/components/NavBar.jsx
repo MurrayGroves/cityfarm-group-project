@@ -4,7 +4,9 @@ import {Link} from "react-router-dom";
 import Button from '@mui/material/Button';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { useNavigate } from "react-router-dom";
+import question from "../assets/question mark.png"
 import Switch from '@mui/material/Switch';
+import QuestionPopover from "./QuestionPopover";
 
 const NavBar = (props) => {
     const navigate = useNavigate();
@@ -15,12 +17,12 @@ const NavBar = (props) => {
             <Link to="/animals"> Livestock </Link>
             <Link to="/enclosures"> Enclosures </Link>
             <Link to="/schemas"> Animal Types </Link>
-            <span style={{width: '100%', position: 'absolute', bottom: '0', left: '0', margin: '10px', color: 'white'}}>
+            <QuestionPopover/>
+            <span style={{width: '120px', position: 'absolute', bottom: '0', left: '0', margin: '15px', color: 'white'}}>
                 Dark Mode
-                <Switch color='tertiary' style={{marginLeft: '5px'}} size='medium' checked={props.theme === 'dark'} onChange={(e) => {props.setTheme(e.target.checked ? 'dark' : 'light')}}/>
+                <Switch style={{marginLeft: '5px'}} size='small' checked={props.theme === 'dark'} onChange={(e) => {props.setTheme(e.target.checked ? 'dark' : 'light')}}/>
             </span>
             <Button
-                color='tertiary'
                 style={{margin: '15px', width: '120px', height: '40px', position: 'absolute', bottom: '40px', left: 0}}
                 variant='outlined'
                 onClick={() => {

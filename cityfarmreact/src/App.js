@@ -22,7 +22,8 @@ import 'dayjs/locale/en-gb';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { PublicClientApplication } from "@azure/msal-browser";
-
+import Home from "./pages/Home.jsx";
+import Help from "./pages/Help.jsx";
 import usePersistState from './components/PersistentState.jsx'
 
 const App = () => {
@@ -48,7 +49,7 @@ const App = () => {
             grey: {
                 main: "#888888"
             },
-            tertiary: {
+            primary: {
                 main: '#0085FA'
             }
         },
@@ -69,7 +70,7 @@ const App = () => {
             grey: {
                 main: "#888888"
             },
-            tertiary: {
+            primary: {
                 main: '#0085FA'
             }
         }
@@ -108,31 +109,29 @@ const App = () => {
         <CssBaseline/>
         <Router>
             <Routes>
-                <Route path="login" element={<Login msal={msal} setMsal={setMsal} />}/>
-                <Route exact path="*" element={
-                    <div>
+                <Route path="/login" element={<Login msal={msal} setMsal={setMsal} />}/>
+                <Route exact path="*" element={<>
                     <NavBar theme={theme} setTheme={setTheme} msal={msal}/>
                     <div className='Content'>
-                    <Routes>
-                    <Route path="calendar" element={<Calendar farms={farms}/>}/>
-                    <Route path="animals" element={<AnimalTable farms={farms}/>}/>
-                    <Route path="enclosures" element={<EnclosureTable farms={farms}/>}/>
-                    <Route path="schemas" element={<Schemas farms={farms}/>}/>
-                    <Route path="single-animal/:animalID" element={<SingleAnimal farms={farms}/>} />
-                    <Route path="/" element={"Homepage"}/>
-                    <Route path="*" element={<Error/>}/>
-                    </Routes>
+                        <Routes>
+                            <Route path="/" element={<Home farms={farms}/>}/>
+                            <Route path="/calendar" element={<Calendar farms={farms}/>}/>
+                            <Route path="/animals" element={<AnimalTable farms={farms}/>}/>
+                            <Route path="/enclosures" element={<EnclosureTable farms={farms}/>}/>
+                            <Route path="/schemas" element={<Schemas farms={farms}/>}/>
+                            <Route path="/help" element={<Help/>}/>
+                            <Route path="/single-animal/:animalID" element={<SingleAnimal farms={farms}/>} />
+                            <Route path="*" element={<Error/>}/>
+                        </Routes>
                     </div>
-
-                    </div>
-                    }>
-
+                </>}>
                 </Route>
             </Routes>
         </Router>
         </LocalizationProvider>
         </ThemeProvider>
     )
+
 }
 
 export default App;
