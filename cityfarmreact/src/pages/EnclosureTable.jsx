@@ -10,6 +10,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import IconButton from '@mui/material/IconButton';
 import { diff } from "deep-object-diff";
 import AnimalPopover from "../components/AnimalPopover";
+import AnimalCreator from "../components/AnimalCreator";
 
 const colours = {
     WH: "#333388",
@@ -142,6 +143,7 @@ const EnclosureTable = () => {
             Edit
         </div>
         </IconButton>
+        <AnimalCreator/>
     </>)
 }
 
