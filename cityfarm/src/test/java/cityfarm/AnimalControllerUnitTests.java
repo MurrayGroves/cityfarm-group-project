@@ -32,7 +32,6 @@ public class AnimalControllerUnitTests {
         AnimalCreateRequest animalReq = new AnimalCreateRequest();
         animalReq.alive = true;
         animalReq.name = "Alice";
-        animalReq.farm = "WH";
         AnimalCustom alice = cowSchema.new_animal(animalReq);
         AnimalCustom alice2 = cowSchema.new_animal(animalReq);
         List<AnimalCustom> aliceCows = List.of(alice, alice2);
@@ -48,7 +47,7 @@ public class AnimalControllerUnitTests {
 
     @Test
     public void nonPresentNameEmptyList() {
-        ResponseEntity<List<AnimalCustom>> animals = animalController.get_animals_by_name("nonName", "WH");
+        ResponseEntity<List<AnimalCustom>> animals = animalController.get_animals_by_name("nonName", null);
 
         assertThat(animals.getStatusCode().value()).isEqualTo(200);
         assertThat(animals.getBody().size()).isEqualTo(0);
@@ -56,7 +55,7 @@ public class AnimalControllerUnitTests {
 
     @Test
     public void getAnimalsByNameRightSize() {
-        ResponseEntity<List<AnimalCustom>> animals = animalController.get_animals_by_name("Alice", "WH");
+        ResponseEntity<List<AnimalCustom>> animals = animalController.get_animals_by_name("Alice", null);
 
         assertThat(animals.getBody().size()).isEqualTo(2);
     }

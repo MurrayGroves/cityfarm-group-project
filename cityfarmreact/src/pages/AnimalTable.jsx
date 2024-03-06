@@ -55,7 +55,6 @@ const AnimalTable = ({farms}) => {
 
     useEffect(getSchemas, []);
 
-
     useEffect(() => {
         (async () => {
             if (searchTerm === '') {
