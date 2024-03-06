@@ -19,12 +19,12 @@ const EnclosureTable = ({farms}) => {
 
     const token = getConfig();
 
-    const [farm, setFarm] = useState(Object.keys(farms)[0]);
+    const [farm, setFarm] = useState('');
 
     function displayAll() {
         (async () => {
             try {
-                const response = await axios.get(`/enclosures`, token);
+                const response = await axios.get(`/enclosures`, {params: {farm: farm}, ...token});
                 setEnclosureList(response.data);
             } catch (error) {
                 if (error.response.status === 401) {
@@ -44,7 +44,7 @@ const EnclosureTable = ({farms}) => {
                 return;
             }
             try {
-                const response = await axios.get(`/enclosures/by_name/${searchTerm}`, token);
+                const response = await axios.get(`/enclosures/by_name/${searchTerm}`, {params: {farm: farm}, ...token});
                 setEnclosureList(response.data);
             } catch (error) {
                 if (error.response.status === 401) {
@@ -55,7 +55,7 @@ const EnclosureTable = ({farms}) => {
                 }
             }
         })()
-    },[searchTerm])
+    },[searchTerm, farm])
 
     const cols =  [
         { field: 'name', editable: true, headerName: 'Name', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
@@ -88,8 +88,9 @@ const EnclosureTable = ({farms}) => {
             ></TextField>
             <FarmTabs farms={farms} selectedFarm={farm} setSelectedFarm={setFarm}/>
         </span>
-        <TableContainer component={Paper} style={{marginBottom: '20px'}}>
-            <DataGrid rows={rows} columns={cols} 
+        <TableContainer component={Paper} style={{marginBottom: '20px', height: 'calc(100vh - (80px + 60px + 48px + (2*21.44px))'}}>
+            <DataGrid rows={rows} columns={cols}
+            style={{fontSize: '1rem'}}
             isCellEditable={() => editMode}
             // editMode="row"
             // onCellEditStop = {(params, event) => {

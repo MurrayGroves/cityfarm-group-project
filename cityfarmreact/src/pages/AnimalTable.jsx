@@ -15,8 +15,8 @@ const AnimalTable = ({farms}) => {
     const [animalList, setAnimalList] = useState([]); /* The State for the list of animals. The initial state is [] */
     const [searchTerm, setSearchTerm] = useState(''); /* The term being searched for in the searchbar */
     const [schemaList, setSchemaList] = useState([]);
-    
-    const [farm, setFarm] = useState(Object.keys(farms)[0]);
+
+    const [farm, setFarm] = useState('');
 
     const token = getConfig();
 

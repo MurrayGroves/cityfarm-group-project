@@ -225,7 +225,8 @@ const AnimalCreator = (props) => {
                                 </TextField>
                             </TableCell>
                             <TableCell>
-                                <TextField select fullWidth error={newAnimal.farm === ''} required label='Farm' value={newAnimal.farm} size='small' onChange={(e) => {setNewAnimal({...newAnimal, farm: e.target.value})}}>
+                                <TextField select fullWidth label='Farm' value={newAnimal.farm} size='small' onChange={(e) => {setNewAnimal({...newAnimal, farm: e.target.value})}}>
+                                    <MenuItem value={''}><em>Empty</em></MenuItem>
                                     <MenuItem value={props.farms.WH}>Windmill Hill</MenuItem>
                                     <MenuItem value={props.farms.HC}>Hartcliffe</MenuItem>
                                     <MenuItem value={props.farms.SW}>St Werburghs</MenuItem>
