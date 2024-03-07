@@ -19,6 +19,7 @@ const SingleAnimal = (props) => {
     const [relEvents,setRelEvents] = useState([])
     const [chosenAnimal, setChosenAnimal] = useState({name: 'Loading...', type: 'Loading...'});
     const [selectedEvent,setSelectedEvent] = useState("No event selected");
+    const [fieldsList,setFieldsList]=useState([])
 
     const token = getConfig();
 
@@ -37,7 +38,7 @@ const SingleAnimal = (props) => {
             try {
                 const response = await axios.get(`/animals/by_id/${animalID}`, token);
                 setChosenAnimal(response.data);
-
+                console.log(chosenAnimal)
                 const events = await axios.get(`/events/by_animal/${animalID}`, token)
                 setRelEvents(eventsConversion(events.data))
 
@@ -49,6 +50,7 @@ const SingleAnimal = (props) => {
                     window.alert(error);
                 }
             }
+
         })();
     }, [animalID]);
 
@@ -75,6 +77,23 @@ const SingleAnimal = (props) => {
         setSelectedEvent(event)
     }
 
+    useEffect(()=>{
+        if (chosenAnimal.fields){
+            let fields =[]
+            for (const [key,value] of Object.entries(chosenAnimal.fields)){
+
+                let elem1=key
+                let elem2=value
+                if (typeof(value) == "boolean"){
+                    if (value){elem2 = "true"
+                    }else {elem2 = "false"}
+                }
+                fields.push([elem1,elem2])
+            }setFieldsList(fields)
+        }
+
+    },[animalID]);
+
     return<>
         <h1>{chosenAnimal.name}</h1>
         Sex: {chosenAnimal.sex === undefined ? 'Loading...' : (chosenAnimal.sex === 'f' ? 'Female' : (chosenAnimal.sex === 'm' ? 'Male' : 'Castrated'))}<br/>
@@ -91,7 +110,12 @@ const SingleAnimal = (props) => {
                 <AnimalPopover key={chosenAnimal.mother} animalID={chosenAnimal.mother}/>
             : 'Unregistered'}
         </span>
-        Farm: {readableFarm(chosenAnimal.farm)}
+        Farm: {readableFarm(chosenAnimal.farm)}<br/>
+        Custom fields:<br/>
+        {fieldsList.map((field)=>{
+            return (<>{field[0]} : {field[1]}<br/></>)
+        })
+        }
         <div>
             {relEvents.length !== 0 ? <h2>Linked Events</h2> : <></>}
             {relEvents.map((event, index) => {
