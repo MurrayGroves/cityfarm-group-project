@@ -52,8 +52,9 @@ const App = () => {
         },
         primary: {
             main: "#21A9FA",
-            dark: "#02304b",
-            light: "#b4e2fd"
+            light: "#b4e2fd",
+            dark: "#0480c8",
+            veryDark: "#02304b",
         }
     }
 

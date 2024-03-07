@@ -216,38 +216,35 @@ const Calendar = ({farms}) => {
         }
       }, [])
 
-    let offRangeColour = theme.mode === 'dark' ? '#212121' : '#f0f0f0';
-    let todayColour = theme.mode === 'dark' ? theme.primary.dark : theme.primary.light;
+    let offRangeColour = theme.mode === 'dark' ? 'black' : '#f0f0f0';
+    let todayColour = theme.mode === 'dark' ? theme.primary.veryDark : theme.primary.light;
     let text = theme.mode === 'dark' ? 'white' : 'black';
 
-    return (
-        <div className="CalendarPage" style={{height: "85%"}}>
-        <h1>Calendar</h1>
-        <div style={{height: "100%"}}>
-            <div style={{ display: "flex", justifyContent: "left", height: "100%"}}>
-            <div style={{width: "calc(100% - 400px"}}>
+    return (<>
+        <div style={{display: 'flex', justifyContent: 'space-between'}}>
+            <h1>Calendar</h1>
+            <FormGroup style={{width: '400px'}} row>
+                <FormControlLabel control={<Checkbox defaultChecked color={farms.WH} size='small'/>} label="Windmill Hill" onChange={() => updateVisibleFarms(farms.WH)}/>
+                <FormControlLabel control={<Checkbox defaultChecked color={farms.HC} size='small'/>} label="Hartcliffe" onChange={() => updateVisibleFarms(farms.HC)}/>
+                <FormControlLabel control={<Checkbox defaultChecked color={farms.SW} size='small'/>} label="St Werburghs" onChange={() => updateVisibleFarms(farms.SW)}/>
+            </FormGroup>
+        </div>
+        <div style={{ display: "flex", justifyContent: "left", height: "calc(100% - 91px)"}}>
+            <Paper elevation={3} style={{height: '100%', width: "calc(100% - 420px)", padding: '15px', marginRight: '20px'}}>
                 <BigCalendar
                     culture='en-gb'
                     localizer={dayjsLocalizer(dayjs)}
                     events={allEvents}
                     startAccessor="start"
                     endAccessor="end"
-                    style={{height: "100%", margin:"20px 20px 0 0", '--off-range': offRangeColour, '--today': todayColour, '--text': text}}
+                    style={{'--off-range': offRangeColour, '--today': todayColour, '--text': text}}
                     showMultiDayTimes
                     onSelectEvent={setSelectedEvent}
                     eventPropGetter={eventStyleGetter}
                     onRangeChange={onRangeChange}
                 />
-            </div>
+            </Paper>
             <div style={{width: "400px"}}>
-                <Paper elevation={3} style={{width: '400px', margin: '0 0 20px 0', padding: '10px'}}>
-                    <h2 className='boxTitle'>Selected Farms</h2>
-                    <FormGroup>
-                        <FormControlLabel control={<Checkbox defaultChecked color={farms.WH} size='small'/>} label="Windmill Hill" onChange={() => updateVisibleFarms(farms.WH)}/>
-                        <FormControlLabel control={<Checkbox defaultChecked color={farms.HC} size='small'/>} label="Hartcliffe" onChange={() => updateVisibleFarms(farms.HC)}/>
-                        <FormControlLabel control={<Checkbox defaultChecked color={farms.SW} size='small'/>} label="St Werburghs" onChange={() => updateVisibleFarms(farms.SW)}/>
-                    </FormGroup>
-                </Paper>
 
                 {/*<Event selectedEvent={selectedEvent} setSelectedEvent={setSelectedEvent}/>*/}
 
@@ -293,7 +290,8 @@ const Calendar = ({farms}) => {
                             {selectedEvent.description}
                         </div> : <></>}
                     </div>
-                    : <div className='modifyEvent'>
+                    :
+                    <div className='modifyEvent'>
                         <TextField
                             fullWidth
                             size='small'
@@ -342,74 +340,69 @@ const Calendar = ({farms}) => {
                                 onChange={(e) => {setModifiedEvent({...modifiedEvent, description: e.target.value})}}
                             />
                         </div>
-
-                    </div>
-                    }
+                    </div>}
                 </Paper>
-                :
-                <></>}
+                : <></>}
 
                 {/*<CreateEvent setEvent={setNewEvent} handleAddEvent={handleAddEvent}/>*/}
 
                 <Paper elevation={3} style={{width: '400px', margin: '0 0 20px 0', padding: '10px'}}>
-                <h2 className='boxTitle'>Create New Event</h2>
-                <div>
-                <TextField
-                    size='small'
-                    fullWidth
-                    placeholder="Add Title"
-                    label='Title'
-                    value={newEvent.title}
-                    onChange={(e)=>setNewEvent({...newEvent, title: e.target.value})}
-                />
-                {showingTime(!newEvent.allDay,"add")}
-                </div>
+                    <h2 className='boxTitle'>Create New Event</h2>
+                    <div>
+                        <TextField
+                            size='small'
+                            fullWidth
+                            placeholder="Add Title"
+                            label='Title'
+                            value={newEvent.title}
+                            onChange={(e)=>setNewEvent({...newEvent, title: e.target.value})}
+                        />
+                        {showingTime(!newEvent.allDay,"add")}
+                    </div>
 
-                <div style={{marginTop: "10px"}}>
-                <FormControlLabel control={<Checkbox defaultChecked size='small'/>} label="All Day" onChange={() => changeAllDay(!newEvent.allDay, "add")}/>
-                <Button variant='outlined' style={{float: "right"}} onClick={()=>handleAddEvent()}>Create</Button>
-                </div>
+                    <div style={{marginTop: "10px"}}>
+                        <FormControlLabel control={<Checkbox defaultChecked size='small'/>} label="All Day" onChange={() => changeAllDay(!newEvent.allDay, "add")}/>
+                        <Button variant='outlined' style={{float: "right"}} onClick={()=>handleAddEvent()}>Create</Button>
+                    </div>
 
-                <div style={{marginTop: "10px"}}>
-                <h3>Farms</h3>
-                <FormGroup>
-                    <FormControlLabel control={<Checkbox color={farms.WH} size='small'/>} label="Windmill Hill" onChange={() => setNewEvent({...newEvent, farms: newEvent.farms.includes(farms.WH) ? newEvent.farms.filter((farm) => farm !== farms.WH) : newEvent.farms.concat(farms.WH)})}/>
-                    <FormControlLabel control={<Checkbox color={farms.HC} size='small'/>} label="Hartcliffe" onChange={()=>setNewEvent({...newEvent, farms: newEvent.farms.includes(farms.HC) ? newEvent.farms.filter((farm) => farm !== farms.HC) : newEvent.farms.concat(farms.HC)})}/>
-                    <FormControlLabel control={<Checkbox color={farms.SW} size='small'/>} label="St Werburghs" onChange={()=>setNewEvent({...newEvent, farms: newEvent.farms.includes(farms.SW) ? newEvent.farms.filter((farm) => farm !== farms.SW) : newEvent.farms.concat(farms.SW)})}/>
-                </FormGroup>
-                </div>
-                <div>
-                    <h3>Animals</h3>
-                    {newEvent.animals.map((animalID) => (
-                        <p><AnimalPopover key={animalID} animalID={animalID} /></p>
-                    ))}
-                    <Button variant='outlined'>Add Animal</Button> {/* idea: make this open the animal table page with a new column of checkboxes. Click on an associate animal(s) button would then pass a list of animal id to the calendar to the new event state. This could be re used in the modification of events.  */}
-                </div>
-                <div>
-                    <h3>Enclosures</h3>
-                    {newEvent.enclosures.map((enclosureName, index) => (
-                        <p key={index}>{enclosureName}</p>
-                    ))}{/*Add a way to remove enclosures from events */}
-                    <Button variant='outlined'>Add Enclosure</Button> {/* idea: make this open the enlcosure  page with a new column of checkboxes. Click on an associate enlcosure(s) button would then pass a list of enclosure names to the calendar to be placed in a field*/}
-                </div>
-                <div>
-                    <h3>Description</h3>
-                    <TextField
-                        fullWidth
-                        size='small'
-                        multiline
-                        rows={2}
-                        placeholder='Enter Description'
-                        value={newEvent.description}
-                        onChange={(e) => {setNewEvent({...newEvent, description: e.target.value})}}
-                    />
-                </div>
-            </Paper>
-            </div>
+                    <div style={{marginTop: "10px"}}>
+                        <h3>Farms</h3>
+                        <FormGroup>
+                            <FormControlLabel control={<Checkbox color={farms.WH} size='small'/>} label="Windmill Hill" onChange={() => setNewEvent({...newEvent, farms: newEvent.farms.includes(farms.WH) ? newEvent.farms.filter((farm) => farm !== farms.WH) : newEvent.farms.concat(farms.WH)})}/>
+                            <FormControlLabel control={<Checkbox color={farms.HC} size='small'/>} label="Hartcliffe" onChange={()=>setNewEvent({...newEvent, farms: newEvent.farms.includes(farms.HC) ? newEvent.farms.filter((farm) => farm !== farms.HC) : newEvent.farms.concat(farms.HC)})}/>
+                            <FormControlLabel control={<Checkbox color={farms.SW} size='small'/>} label="St Werburghs" onChange={()=>setNewEvent({...newEvent, farms: newEvent.farms.includes(farms.SW) ? newEvent.farms.filter((farm) => farm !== farms.SW) : newEvent.farms.concat(farms.SW)})}/>
+                        </FormGroup>
+                    </div>
+                    <div>
+                        <h3>Animals</h3>
+                        {newEvent.animals.map((animalID) => (
+                            <p><AnimalPopover key={animalID} animalID={animalID} /></p>
+                        ))}
+                        <Button variant='outlined'>Add Animal</Button> {/* idea: make this open the animal table page with a new column of checkboxes. Click on an associate animal(s) button would then pass a list of animal id to the calendar to the new event state. This could be re used in the modification of events.  */}
+                    </div>
+                    <div>
+                        <h3>Enclosures</h3>
+                        {newEvent.enclosures.map((enclosureName, index) => (
+                            <p key={index}>{enclosureName}</p>
+                        ))}{/*Add a way to remove enclosures from events */}
+                        <Button variant='outlined'>Add Enclosure</Button> {/* idea: make this open the enlcosure  page with a new column of checkboxes. Click on an associate enlcosure(s) button would then pass a list of enclosure names to the calendar to be placed in a field*/}
+                    </div>
+                    <div>
+                        <h3>Description</h3>
+                        <TextField
+                            fullWidth
+                            size='small'
+                            multiline
+                            rows={2}
+                            placeholder='Enter Description'
+                            value={newEvent.description}
+                            onChange={(e) => {setNewEvent({...newEvent, description: e.target.value})}}
+                        />
+                    </div>
+                </Paper>
             </div>
         </div>
-        </div>
-    );
+    </>);
 }
 
 export default Calendar;

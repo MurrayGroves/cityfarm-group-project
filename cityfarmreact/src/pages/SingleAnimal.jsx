@@ -77,7 +77,7 @@ const SingleAnimal = (props) => {
 
     return<>
         <h1>{chosenAnimal.name}</h1>
-        Sex: {chosenAnimal.male === undefined ? 'Loading' : (chosenAnimal.male ? 'Male' : 'Female')}<br/>
+        Sex: {chosenAnimal.sex === undefined ? 'Loading...' : (chosenAnimal.sex === 'f' ? 'Female' : (chosenAnimal.sex === 'm' ? 'Male' : 'Castrated'))}<br/>
         Species: {chosenAnimal.type.charAt(0).toUpperCase() + chosenAnimal.type.slice(1)}<br/>
         <span style={{display: 'flex'}}>
             <span style={{marginRight: '0.5em'}}>Father:</span>

@@ -74,6 +74,7 @@ const Help = () => {
     },[typeShowing])
 
     return(<>
+        <h1>Help</h1>
         <p>
         On the left is the side menu, this contains various ways to manage livestock across the three farms.<br/>
         Below are instructions and help to navigate your way around the application, click the headers to reveal their content.

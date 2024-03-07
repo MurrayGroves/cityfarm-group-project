@@ -107,7 +107,7 @@ const AnimalPopover = (props) => {
                     {`Type: ${chosenAnimal.type ? chosenAnimal.type.charAt(0).toUpperCase() + chosenAnimal.type.slice(1) : 'Loading...'}`}<br/>
                     {`Father: ${animalFather}`}<br/>
                     {`Mother: ${animalMother}`}<br/>
-                    {chosenAnimal.male ? 'Sex: Male' : 'Sex: Female'}
+                    {`Sex: ${chosenAnimal.sex === 'f' ? 'Female' : (chosenAnimal.sex === 'm' ? 'Male' : 'Castrated')}`}
                 </Typography>
             </Popover>
         </div>

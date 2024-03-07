@@ -81,7 +81,7 @@ const AnimalTable = ({farms}) => {
         type: animal,
         father: animal.father !== null ? animal : 'Unregistered',
         mother: animal.mother !== null ? animal : 'Unregistered',
-        sex: animal.male ? 'Male' : 'Female',
+        sex: animal.sex === 'f' ? 'Male' : (animal.sex === 'm' ? 'Male' : 'Castrated'),
     }));
 
     const cols = [

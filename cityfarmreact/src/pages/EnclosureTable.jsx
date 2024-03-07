@@ -88,7 +88,7 @@ const EnclosureTable = ({farms}) => {
             ></TextField>
             <FarmTabs farms={farms} selectedFarm={farm} setSelectedFarm={setFarm}/>
         </span>
-        <TableContainer component={Paper} style={{marginBottom: '20px', height: 'calc(100vh - (80px + 60px + 48px + (2*21.44px))'}}>
+        <TableContainer component={Paper} style={{marginBottom: '20px', height: 'calc(100vh - (40px + 36.5px + 60px + 48px + (2*21.44px))'}}>
             <DataGrid rows={rows} columns={cols}
             style={{fontSize: '1rem'}}
             isCellEditable={() => editMode}
