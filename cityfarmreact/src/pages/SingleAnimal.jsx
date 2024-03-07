@@ -27,6 +27,7 @@ const SingleAnimal = (props) => {
             case "WH": return "Windmill Hill";
             case "HC": return "Hartcliffe";
             case "SW": return "St Werburghs";
+            case '': return "None";
             default: return "Loading...";
         }
     }

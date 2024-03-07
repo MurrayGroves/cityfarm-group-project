@@ -216,6 +216,9 @@ const Calendar = ({farms}) => {
         }
       }, [])
 
+    let offRangeColour = theme.mode === 'dark' ? '#212121' : '#f0f0f0';
+    let todayColour = theme.mode === 'dark' ? theme.primary.dark : theme.primary.light;
+    let text = theme.mode === 'dark' ? 'white' : 'black';
 
     return (
         <div className="CalendarPage" style={{height: "85%"}}>
@@ -229,7 +232,7 @@ const Calendar = ({farms}) => {
                     events={allEvents}
                     startAccessor="start"
                     endAccessor="end"
-                    style={{height: "100%", margin:"20px 20px 0 0"}}
+                    style={{height: "100%", margin:"20px 20px 0 0", '--off-range': offRangeColour, '--today': todayColour, '--text': text}}
                     showMultiDayTimes
                     onSelectEvent={setSelectedEvent}
                     eventPropGetter={eventStyleGetter}
@@ -252,7 +255,7 @@ const Calendar = ({farms}) => {
                 <Paper elevation={3} style={{position: 'relative', width: '400px', margin: '0 0 20px 0', padding: '10px'}}>
                     <div style={{display: "flex", justifyContent: "space-between"}}>
                         <h2 className='boxTitle'>Selected Event</h2>
-                        <IconButton className='closeButton' onClick={() => {setModifyEvent(false); setSelectedEvent("No event selected")}}><img src={theme.mode === 'light' ? CloseIconLight : CloseIconDark} alt='close button'/></IconButton>
+                        <IconButton className='closeButton' onClick={() => {setModifyEvent(false); setSelectedEvent("No event selected")}}><img src={theme.mode === 'dark' ? CloseIconDark : CloseIconLight} alt='close button'/></IconButton>
                     </div>
                     {!modifyEvent ?
                     <div>

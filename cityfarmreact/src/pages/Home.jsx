@@ -9,7 +9,6 @@ import { eventsConversion } from "./Calendar";
 import { useTheme } from "@mui/material";
 
 const Home = ({farms}) => {
-
     const [events,setEvents] = useState([])
     const token = getConfig();
     const colour = useTheme().palette.mode === 'dark' ? 'white' : 'black';
@@ -25,7 +24,12 @@ const Home = ({farms}) => {
                 const response = await axios.get(`/events`, {params: {from: start.toISOString(), to: end.toISOString()}, ...token});
                 setEvents(eventsConversion(response.data.slice(0, 5)));
             } catch (error) {
-                window.alert(error);
+                if (error.response.status === 401) {
+                    window.location.href = "/login";
+                    return;
+                } else {
+                    window.alert(error);
+                }
             }
         })();
     }, []);

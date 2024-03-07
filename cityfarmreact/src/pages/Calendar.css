@@ -23,3 +23,19 @@
     width: 24px;
     height: 24px;
 }
+
+.rbc-off-range-bg {
+    background: var(--off-range);
+}
+
+.rbc-today {
+    background: var(--today);
+}
+
+.rbc-toolbar button {
+    color: var(--text);
+}
+
+.rbc-toolbar button.rbc-active {
+    color: black;
+}
