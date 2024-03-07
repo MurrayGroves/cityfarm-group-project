@@ -21,7 +21,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { getConfig } from '../api/getToken';
 
 const AnimalCreator = (props) => {
-    const [newAnimal, setNewAnimal] = useState({name: '', type: '', father: '', mother: '', male: '', alive: true, farm: '', fields: {}});
+    const [newAnimal, setNewAnimal] = useState({name: '', type: '', father: '', mother: '', sex: '', alive: true, farm: '', fields: {}});
     const [schema, setSchema] = useState();
     const [fieldList, setFieldList] = useState([]);
     const [create, setCreate] = useState(false);
@@ -30,7 +30,7 @@ const AnimalCreator = (props) => {
 
     const reset = () => {
         setCreate(false);
-        setNewAnimal({name: '', type: '', father: '', mother: '', male: '', alive: true, farm: '', fields: {}})
+        setNewAnimal({name: '', type: '', father: '', mother: '', sex: '', alive: true, farm: '', fields: {}})
         setSchema();
     }
 
@@ -191,7 +191,7 @@ const AnimalCreator = (props) => {
                                     isOptionEqualToValue={(option, value) => option.id === value.id}
                                     getOptionLabel={option => option.name}
                                     options={
-                                        props.animalList.filter((animal)=>{return animal.type === newAnimal.type && animal.male === true}).map((animal)=>{
+                                        props.animalList.filter((animal)=>{return animal.type === newAnimal.type && animal.sex === 'm'}).map((animal)=>{
                                             return {id: animal._id, name: animal.name}
                                         })
                                     }
@@ -211,7 +211,7 @@ const AnimalCreator = (props) => {
                                     isOptionEqualToValue={(option, value) => option.id === value.id}
                                     getOptionLabel={option => option.name}
                                     options={
-                                        props.animalList.filter((animal)=>{return animal.type === newAnimal.type && animal.male !== true}).map((animal)=>{
+                                        props.animalList.filter((animal)=>{return animal.type === newAnimal.type && animal.sex === 'f'}).map((animal)=>{
                                             return {id: animal._id, name: animal.name}
                                         })
                                     }
@@ -219,9 +219,10 @@ const AnimalCreator = (props) => {
                                 />
                             </TableCell>
                             <TableCell>
-                                <TextField select fullWidth error={newAnimal.male === ''} required label='Sex' value={newAnimal.male} size='small' onChange={(e) => {setNewAnimal({...newAnimal, male: e.target.value})}}>
-                                    <MenuItem value={true}>Male</MenuItem>  
-                                    <MenuItem value={false}>Female</MenuItem>   
+                                <TextField select fullWidth error={newAnimal.sex === ''} required label='Sex' value={newAnimal.sex} size='small' onChange={(e) => {setNewAnimal({...newAnimal, sex: e.target.value})}}>
+                                    <MenuItem value={'f'}>Female</MenuItem>  
+                                    <MenuItem value={'m'}>Male</MenuItem>
+                                    <MenuItem value={'c'}>Castrated</MenuItem>
                                 </TextField>
                             </TableCell>
                             <TableCell>
@@ -239,7 +240,7 @@ const AnimalCreator = (props) => {
             <Button className='tallButton' variant='contained' endIcon={<DeleteIcon/>} onClick={() => {reset(); props.setOffset(36.5+20)}}>Discard</Button>
             </div>
             {schema ?
-            <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '20px'}}>
+            <div style={{display: 'flex', justifyContent: 'space-between'}}>
             <TableContainer component={Paper} style={{marginRight: '20px'}}>
                 <Table>
                     <TableHead>

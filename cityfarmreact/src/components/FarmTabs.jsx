@@ -27,7 +27,6 @@ const FarmTabs = (props) => {
                     <Tab value={farms.WH} label="Windmill Hill"/>
                     <Tab value={farms.HC} label="Hartcliffe"/>
                     <Tab value={farms.SW} label="St Werburghs"/>
-                    <Tab value={''} label="Other"/>
                 </Tabs>
             </ThemeProvider>
         </div>
