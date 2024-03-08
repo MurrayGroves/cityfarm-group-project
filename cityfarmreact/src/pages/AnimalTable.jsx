@@ -277,7 +277,29 @@ const AnimalTable = ({farms}) => {
                         }
                     />)
                 }},
-        { field: 'sex', headerName: 'Sex', headerClassName: 'grid-header', headerAlign: 'left', flex: 1, editable: true },
+        { field: 'sex', headerName: 'Sex', headerClassName: 'grid-header', headerAlign: 'left', flex: 1, editable: true, renderEditCell: (params) => {
+            return (<Autocomplete
+                style={{width: '100%'}}
+                size='medium'
+                renderOption={(props, option) => {
+                    return (
+                        <li {...props} key={option.id}>
+                            {option.name}
+                        </li>
+                    );
+                }}
+                renderInput={(params) => <TextField {...params} label="Sex"/>}
+                isOptionEqualToValue={(option, value) => option.id === value.id}
+                getOptionLabel={option => option.name}
+                options={
+                    [
+                        {id: 1, name: "Male"},
+                        {id: 2, name: "Female"},
+                        {id: 3, name: "Castrated"}
+                    ]
+                }
+            />)
+        }},
     ];
     const [cols, setCols] = useState(defaultCols);
 
