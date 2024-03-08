@@ -13,8 +13,9 @@ const AssociateAnimal = (props) => {
     const [linkedAnimals, setLinkedAnimals] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [animalList, setAnimalList] = useState([]);
+    const [farm, setFarm] = useState([WH,HC,SW]);
+    useEffect(() => {console.log(linkedAnimals)},[linkedAnimals])
     const linkAnimals = () => {
-        window.alert(linkedAnimals)
         props.setAnimals(linkedAnimals)
     }
     function displayAll() {
@@ -27,7 +28,6 @@ const AssociateAnimal = (props) => {
             }
         })()
     }
-    const [farm, setFarm] = useState([WH,HC,SW]);
     useEffect(() => {
         (async () => {
             if (searchTerm === '') {
@@ -44,7 +44,7 @@ const AssociateAnimal = (props) => {
     },[searchTerm])
     const rows = animalList.map((animal) => ({
         id: animal._id,
-        name: animal,
+        name: animal.name,
         type: animal.type,
         sex: animal.male ? 'Male' : 'Female',
     }));
@@ -68,16 +68,12 @@ const AssociateAnimal = (props) => {
         <DataGrid checkboxSelection columns={cols}
          rows={rows} disableRowSelectionOnClick
          onRowSelectionModelChange={(ids) => {
-            const selectedIDs = Array.of(ids);
-            const selectedRowData = rows.filter((row) => ( selectedIDs.includes(row.id.toString()))) 
-            console.log(selectedRowData)
-            setLinkedAnimals(selectedRowData.id)}}/>
+            setLinkedAnimals(ids)}}/>
         </Paper>
         <Button variant='outlined' color='tertiary' style={{float: "right"}} onClick={() => {linkAnimals()}}>Link to Event</Button>
         </div>
     )
 
 }
-
 
 export default AssociateAnimal
