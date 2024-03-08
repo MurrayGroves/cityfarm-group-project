@@ -14,7 +14,7 @@ const AssociateEnclosure = (props) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [enclosureList, setEnclosureList] = useState([]);
     const linkEnclosures = () => {
-        window.alert(linkedEnclosures)
+        console.log(linkedEnclosures)
         props.setEnclosures(linkedEnclosures)
     }
 
@@ -77,10 +77,8 @@ const AssociateEnclosure = (props) => {
         <DataGrid checkboxSelection columns={cols}
          rows={rows} disableRowSelectionOnClick
          onRowSelectionModelChange={(ids) => {
-            const selectedIDs = Array.of(ids);
-            const selectedRowData = rows.filter((row) => ( selectedIDs.includes(row.id.toString()))) 
-            console.log(selectedRowData)
-            setLinkedEnclosures(selectedRowData.id)}}/>
+            console.log(ids)
+            setLinkedEnclosures(ids)}}/>
         </Paper>
         <Button variant='outlined' color='tertiary' style={{float: "right"}} onClick={() => {linkEnclosures()}}>Link to Event</Button>
         </div>
