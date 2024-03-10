@@ -96,6 +96,7 @@ public class AnimalCustom implements AnimalUnique {
         this.id = id;
         this.fields = Objects.requireNonNullElse(fields, JsonNodeFactory.instance.objectNode());
         this.farm = farm;
+        this.notes = notes;
     }
 
     public AnimalCustom(@NonNull AnimalSchema schema, @NonNull AnimalCreateRequest animalReq) {
@@ -111,6 +112,7 @@ public class AnimalCustom implements AnimalUnique {
         this.sex = animalReq.sex;
         this.dateOfBirth = animalReq.dateOfBirth;
         this.farm = animalReq.farm;
+        this.notes = animalReq.notes;
     }
 
     @Override

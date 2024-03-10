@@ -223,11 +223,13 @@ const Calendar = ({farms}) => {
     return (<>
         <div style={{display: 'flex', justifyContent: 'space-between'}}>
             <h1>Calendar</h1>
-            <FormGroup style={{width: '400px'}} row>
-                <FormControlLabel control={<Checkbox defaultChecked color={farms.WH} size='small'/>} label="Windmill Hill" onChange={() => updateVisibleFarms(farms.WH)}/>
-                <FormControlLabel control={<Checkbox defaultChecked color={farms.HC} size='small'/>} label="Hartcliffe" onChange={() => updateVisibleFarms(farms.HC)}/>
-                <FormControlLabel control={<Checkbox defaultChecked color={farms.SW} size='small'/>} label="St Werburghs" onChange={() => updateVisibleFarms(farms.SW)}/>
-            </FormGroup>
+            <Paper elevation={3} style={{height: '48px', marginTop: '21.44px', padding: '6px 0 0 10px', width: '400px'}}>
+                <FormGroup row>
+                    <FormControlLabel control={<Checkbox defaultChecked color={farms.WH} size='small'/>} label="Windmill Hill" onChange={() => updateVisibleFarms(farms.WH)}/>
+                    <FormControlLabel control={<Checkbox defaultChecked color={farms.HC} size='small'/>} label="Hartcliffe" onChange={() => updateVisibleFarms(farms.HC)}/>
+                    <FormControlLabel control={<Checkbox defaultChecked color={farms.SW} size='small'/>} label="St Werburghs" onChange={() => updateVisibleFarms(farms.SW)}/>
+                </FormGroup>
+            </Paper>
         </div>
         <div style={{ display: "flex", justifyContent: "left", height: "calc(100% - 91px)"}}>
             <Paper elevation={3} style={{height: '100%', width: "calc(100% - 420px)", padding: '15px', marginRight: '20px'}}>
