@@ -10,7 +10,9 @@ import CloseIconLight from "../assets/close-512-light.webp";
 import CloseIconDark from "../assets/close-512-dark.webp";
 import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
-import { IconButton, Button, ButtonGroup, Checkbox, FormControlLabel, FormGroup, useTheme } from '@mui/material';
+import { IconButton, Button, ButtonGroup, Checkbox, FormControlLabel, FormGroup, useTheme, FormHelperText } from '@mui/material';
+import EditIcon from '@mui/icons-material/Edit';
+import AddIcon from '@mui/icons-material/Add';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import axios from '../api/axiosConfig'
@@ -36,7 +38,6 @@ export const eventsConversion=(events)=>{
             }
         )
     }
-    console.log(changed)
     return changed
 }
 
@@ -71,6 +72,12 @@ const Calendar = ({farms}) => {
     const [visibleFarms, setVisibleFarms] = useState([farms.WH, farms.HC, farms.SW]);
     const [modifyEvent, setModifyEvent] = useState(false);
 
+    var inputErr = {}
+
+    useEffect(() => {
+        inputErr['newTitle'] = newEvent.title === '';
+    }, [newEvent])
+
     useEffect(() =>{
         setModifiedEvent(selectedEvent);
     },[selectedEvent]);
@@ -86,7 +93,12 @@ const Calendar = ({farms}) => {
                 const response = await axios.get(`/events`, {params: {from: start.toISOString(), to: end.toISOString()}, ...token});
                 setAllEvents(eventsConversion(response.data));
             } catch (error) {
-                window.alert(error);
+                if (error.response.status === 401) {
+                    window.location.href = "/login";
+                    return;
+                } else {
+                    window.alert(error);
+                }
             }
         })();
     },[]);
@@ -100,7 +112,15 @@ const Calendar = ({farms}) => {
         }
     }
 
+    const showError = () => {
+        window.alert("Please ensure title is not empty.");
+    }
+
     const handleAddEvent = () => {
+        if (Object.values(inputErr).filter((err) => err === true).length > 0) {
+            showError();
+            return;
+        }
         setAllEvents([...allEvents, newEvent]); /*Adds the new event to the list of allEvents} */
         setNewEvent({
             title: "",
@@ -112,7 +132,6 @@ const Calendar = ({farms}) => {
             description: "",
             enclosures: []
         });
-        console.log(allEvents, newEvent);
     }
 
     const changeAllDay = (isAllDay, type) => {
@@ -152,24 +171,32 @@ const Calendar = ({farms}) => {
         if (type === "add") {
             if (isShown){
                 return(<>
+                    <FormHelperText>Start</FormHelperText>
                     <DateTimePicker value={dayjs(newEvent.start)} onChange={(e) => {setNewEvent({...newEvent, start: e.$d})}} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
+                    <FormHelperText>End</FormHelperText>
                     <DateTimePicker value={dayjs(newEvent.end)} onChange={(e) => {setNewEvent({...newEvent, end: e.$d})}} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
                 </>)
             } else {
                 return(<>
+                    <FormHelperText>Start</FormHelperText>
                     <DatePicker value={dayjs(newEvent.start)} onChange={(e) => {setNewEvent({...newEvent, start: e.$d})}} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
+                    <FormHelperText>End</FormHelperText>
                     <DatePicker value={dayjs(newEvent.end)} onChange={(e) => {setNewEvent({...newEvent, end: e.$d})}} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
                 </>)
             }
         } else {
             if (isShown) {
                 return(<>
+                    <FormHelperText>Start</FormHelperText>
                     <DateTimePicker value={dayjs(modifiedEvent.start)} placeholder={selectedEvent.start} onChange={(e) => {setModifiedEvent({...modifiedEvent, start: e.$d})}} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
+                    <FormHelperText>End</FormHelperText>
                     <DateTimePicker value={dayjs(modifiedEvent.end)} placeholder={selectedEvent.end} onChange={(e) => {setModifiedEvent({...modifiedEvent, end: e.$d})}} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
                 </>)
             } else {
                 return(<>
+                    <FormHelperText>Start</FormHelperText>
                     <DatePicker value={dayjs(modifiedEvent.start)} placeholder={selectedEvent.start} onChange={(e) => {setModifiedEvent({...modifiedEvent, start: e.$d})}} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
+                    <FormHelperText>End</FormHelperText>
                     <DatePicker value={dayjs(modifiedEvent.end)} placeholder={selectedEvent.end} onChange={(e) => {setModifiedEvent({...modifiedEvent, end: e.$d})}} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
                 </>)
             }
@@ -216,9 +243,10 @@ const Calendar = ({farms}) => {
         }
       }, [])
 
-    let offRangeColour = theme.mode === 'dark' ? 'black' : '#f0f0f0';
+    let offRangeColour = theme.mode === 'dark' ? '#1A1A1A' : '#f0f0f0';
     let todayColour = theme.mode === 'dark' ? theme.primary.veryDark : theme.primary.light;
-    let text = theme.mode === 'dark' ? 'white' : 'black';
+    let textColour = theme.mode === 'dark' ? 'white' : 'black';
+    let headerColour = theme.mode === 'dark' ? theme.primary.veryDark : theme.primary.light;
 
     return (<>
         <div style={{display: 'flex', justifyContent: 'space-between'}}>
@@ -239,7 +267,7 @@ const Calendar = ({farms}) => {
                     events={allEvents}
                     startAccessor="start"
                     endAccessor="end"
-                    style={{'--off-range': offRangeColour, '--today': todayColour, '--text': text}}
+                    style={{'--off-range': offRangeColour, '--today': todayColour, '--text': textColour, '--header': headerColour}}
                     showMultiDayTimes
                     onSelectEvent={setSelectedEvent}
                     eventPropGetter={eventStyleGetter}
@@ -254,12 +282,14 @@ const Calendar = ({farms}) => {
                 <Paper elevation={3} style={{position: 'relative', width: '400px', margin: '0 0 20px 0', padding: '10px'}}>
                     <div style={{display: "flex", justifyContent: "space-between"}}>
                         <h2 className='boxTitle'>Selected Event</h2>
-                        <IconButton className='closeButton' onClick={() => {setModifyEvent(false); setSelectedEvent("No event selected")}}><img src={theme.mode === 'dark' ? CloseIconDark : CloseIconLight} alt='close button'/></IconButton>
+                        <span>
+                            {!modifyEvent && <IconButton style={{maxHeight: '36.5px', margin: '0 10px 0  0'}} onClick={()=>{setModifyEvent(true)}}><EditIcon/></IconButton>}
+                            <IconButton className='closeButton' onClick={() => {setModifyEvent(false); setSelectedEvent("No event selected")}}><img src={theme.mode === 'dark' ? CloseIconDark : CloseIconLight} alt='close button'/></IconButton>
+                        </span>
                     </div>
                     {!modifyEvent ?
                     <div>
-                        <h2>{selectedEvent.title}</h2>
-                        <Button style={{float: 'right', position: 'relative', bottom: '36px'}} variant='outlined' onClick={()=>{setModifyEvent(true)}}>Edit</Button>
+                        <h2 className='noMarginTop'>{selectedEvent.title}</h2>
                         {
                             selectedEvent.allDay ?
                                 <div>
@@ -295,6 +325,7 @@ const Calendar = ({farms}) => {
                     :
                     <div className='modifyEvent'>
                         <TextField
+                            error={modifiedEvent.title === ''}
                             fullWidth
                             size='small'
                             placeholder={selectedEvent.title}
@@ -352,6 +383,7 @@ const Calendar = ({farms}) => {
                     <h2 className='boxTitle'>Create New Event</h2>
                     <div>
                         <TextField
+                            error={newEvent.title === ''}
                             size='small'
                             fullWidth
                             placeholder="Add Title"
@@ -364,7 +396,7 @@ const Calendar = ({farms}) => {
 
                     <div style={{marginTop: "10px"}}>
                         <FormControlLabel control={<Checkbox defaultChecked size='small'/>} label="All Day" onChange={() => changeAllDay(!newEvent.allDay, "add")}/>
-                        <Button variant='outlined' style={{float: "right"}} onClick={()=>handleAddEvent()}>Create</Button>
+                        <Button variant='contained' style={{float: "right"}} onClick={()=>handleAddEvent()} endIcon={<AddIcon/>}>Create</Button>
                     </div>
 
                     <div style={{marginTop: "10px"}}>

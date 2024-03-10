@@ -312,7 +312,12 @@ const AnimalCreator = (props) => {
                         try {
                             await axios.post(`/animals/create`, newAnimal, token)
                         } catch(error) {
-                            window.alert(error);
+                            if (error.response.status === 401) {
+                                window.location.href = "/login";
+                                return;
+                            } else {
+                                window.alert(error);
+                            }
                         }
                         window.location.reload(false);
                     })()

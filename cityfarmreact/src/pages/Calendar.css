@@ -11,7 +11,11 @@
 }
 
 .boxTitle {
-    margin: 0 0 10px 0;
+    margin: 0 0 20px 0;
+}
+
+.noMarginTop {
+    margin-top: 0px;
 }
 
 .closeButton {
@@ -38,4 +42,24 @@
 
 .rbc-toolbar button.rbc-active {
     color: black;
+}
+
+.rbc-header {
+    background: var(--header);
+}
+
+.rbc-month-view {
+    border-radius: 5px;
+}
+
+.rbc-row-bg :last-child {
+    border-radius: 0 0 5px 0;
+}
+
+.rbc-month-header :last-child{
+    border-radius: 0 5px 0 0;
+}
+
+.rbc-month-header :first-child {
+    border-radius: 5px 0 0 0;
 }
