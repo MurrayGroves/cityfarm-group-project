@@ -33,7 +33,7 @@ const AnimalCreator = (props) => {
         setSchema();
     }
 
-    var fieldErr = {}
+    var inputErr = {}
 
     const showError = () => {
         window.alert('Please ensure all required fields are filled.')
@@ -44,7 +44,7 @@ const AnimalCreator = (props) => {
         if (newAnimal.fields[field] === undefined) {newAnimal.fields[field] = ''}; {/* initialise field values to empty strings */}
         var error = newAnimal.fields[field] === '' && schema._fields[field]._required;
         const req = schema._fields[field]._required;
-        fieldErr[key] = error;
+        inputErr[key] = error;
         switch(schema._fields[field]._type) { /* check the type of the field and display appropriate input method */
             case "java.lang.Boolean":
                 return (
@@ -135,11 +135,9 @@ const AnimalCreator = (props) => {
     }
 
     useEffect(() => {
-        fieldErr.name = newAnimal.name === '';
-        fieldErr.type = newAnimal.type === '';
-        fieldErr['sex'] = newAnimal.sex === '';
-        console.log(newAnimal);
-        console.log(fieldErr);
+        inputErr['name'] = newAnimal.name === '';
+        inputErr['type'] = newAnimal.type === '';
+        inputErr['sex'] = newAnimal.sex === '';
     },[newAnimal])
 
     return (<>
@@ -306,7 +304,7 @@ const AnimalCreator = (props) => {
                 aria-label="add"
                 endIcon={<AddIcon/>}
                 onClick={() => {
-                    if (Object.values(fieldErr).filter((err) => err === true).length !== 0) {
+                    if (Object.values(inputErr).filter((err) => err === true).length > 0) {
                         showError();
                         return;
                     }
