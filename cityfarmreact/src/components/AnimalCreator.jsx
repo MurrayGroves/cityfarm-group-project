@@ -41,11 +41,11 @@ const AnimalCreator = (props) => {
 
     const fieldTypeSwitch = (key) => {
         let field = fieldList[key];
-        if (newAnimal.fields[field] === undefined) {newAnimal.fields[field] = ''}; {/* initialise field values to empty strings */}
+        if (newAnimal.fields[field] === undefined) newAnimal.fields[field] = '';    /* initialise field values to empty strings */
         var error = newAnimal.fields[field] === '' && schema._fields[field]._required;
         const req = schema._fields[field]._required;
         inputErr[key] = error;
-        switch(schema._fields[field]._type) { /* check the type of the field and display appropriate input method */
+        switch(schema._fields[field]._type) {   /* check the type of the field and display appropriate input method */
             case "java.lang.Boolean":
                 return (
                     <FormControl error={error} required={req} sx={{width: '100%'}}>
@@ -138,7 +138,7 @@ const AnimalCreator = (props) => {
         inputErr['name'] = newAnimal.name === '';
         inputErr['type'] = newAnimal.type === '';
         inputErr['sex'] = newAnimal.sex === '';
-    },[newAnimal])
+    }, [newAnimal])
 
     return (<>
         {create ? <>

@@ -168,9 +168,9 @@ const Schemas = () => {
                 <TableBody>
                 {newFields.map((field, index) => {
                     field.name && (inputErr[field.name] = 
-                        field["name"] === '' && editing && index !== newFields.length - 1 ||
-                        field["type"] === '' && editing && index !== newFields.length - 1 ||
-                        field["required"] === '' && editing && index !== newFields.length - 1)
+                        (field["name"] === '' && editing && index !== newFields.length - 1) ||
+                        (field["type"] === '' && editing && index !== newFields.length - 1) ||
+                        (field["required"] === '' && editing && index !== newFields.length - 1))
                     return (
                     <TableRow
                         key={index}
