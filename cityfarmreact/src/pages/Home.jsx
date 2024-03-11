@@ -7,6 +7,7 @@ import { Button } from "@mui/material";
 import AnimalPopover from "../components/AnimalPopover";
 import { eventsConversion } from "./Calendar";
 import { useTheme } from "@mui/material";
+import Paper from '@mui/material/Paper';
 
 const Home = ({farms}) => {
     const [events,setEvents] = useState([])
@@ -54,7 +55,7 @@ const Home = ({farms}) => {
         {/*  events are mapped below, same as in selected event with some visual changes*/}
         <div className="events-container">
         {events.map((e)=>(
-            <div className="event-box" key={e.title}>
+            <Paper elevation={3} className="event-box" key={e.title}>
                 <h2>{e.title}</h2>
                 {
                     e.allDay ?
@@ -87,7 +88,7 @@ const Home = ({farms}) => {
                         <h3>Description</h3>
                         {e.description}
                     </div> : <></>}
-            </div>
+            </Paper>
         ))}
         </div>
     </>)

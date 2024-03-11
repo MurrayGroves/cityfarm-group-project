@@ -16,19 +16,21 @@ const SingleAnimal = (props) => {
     const farms = props.farms;
 
     const { animalID } = useParams();
+
     const [relEvents,setRelEvents] = useState([])
     const [chosenAnimal, setChosenAnimal] = useState({name: 'Loading...', type: 'Loading...'});
     const [selectedEvent,setSelectedEvent] = useState("No event selected");
+    const [schema, setSchema] = useState();
 
     const token = getConfig();
 
     function readableFarm(farm) {
         switch(farm) {
-            case "WH": return "Windmill Hill";
-            case "HC": return "Hartcliffe";
-            case "SW": return "St Werburghs";
-            case '': return "None";
-            default: return "Loading...";
+            case "WH": return <span>Windmill Hill</span>;
+            case "HC": return <span>Hartcliffe</span>;
+            case "SW": return <span>St Werburghs</span>;
+            case '': return <span>None</span>;
+            default: return <span>Loading...</span>;
         }
     }
 
@@ -68,30 +70,77 @@ const SingleAnimal = (props) => {
                 }
             )
         }
-        return changed
+        return changed;
     }
 
     const handleEventClick=(event)=>{
         setSelectedEvent(event)
     }
 
+    function getSchema() {
+        (async () => {
+            try {
+                const response = await axios.get(`/schemas/by_name/${chosenAnimal.type}`, token);
+                setSchema(response.data.pop());
+            } catch (error) {
+                if (error.response.status === 401) {
+                    window.location.href = "/login";
+                    return;
+                } else {
+                    window.alert(error);
+                }
+            }
+        })()
+    }
+
+    useEffect(() => {
+        chosenAnimal.type !== 'Loading...' && getSchema();
+    }, [chosenAnimal]);
+
+    const fieldTypeSwitch = (name, value) => {
+        if (schema && value !== '') {
+            switch(schema._fields[name]._type) {
+                case "java.lang.Boolean":
+                    return <span key={name}>{name.charAt(0).toUpperCase() + name.slice(1)}: {value ? 'Yes' : 'No'}</span>;
+                case "java.lang.String":
+                    return <span key={name}>{name.charAt(0).toUpperCase() + name.slice(1)}: {value}</span>;
+                case "java.lang.Integer":
+                    return <span key={name}>{name.charAt(0).toUpperCase() + name.slice(1)}: {value}</span>;
+                case "java.lang.Double":
+                    return <span key={name}>{name.charAt(0).toUpperCase() + name.slice(1)}: {value}</span>;
+                case "java.time.ZonedDateTime":
+                    return <span key={name}>{name.charAt(0).toUpperCase() + name.slice(1)}: {new Date(value).toLocaleDateString()}</span>;
+                default:
+                    return <></>;
+            }
+        }
+    }
+
     return<>
         <h1>{chosenAnimal.name}</h1>
-        Sex: {chosenAnimal.sex === undefined ? 'Loading...' : (chosenAnimal.sex === 'f' ? 'Female' : (chosenAnimal.sex === 'm' ? 'Male' : 'Castrated'))}<br/>
-        Species: {chosenAnimal.type.charAt(0).toUpperCase() + chosenAnimal.type.slice(1)}<br/>
-        <span style={{display: 'flex'}}>
+        <div>Sex: {chosenAnimal.sex === undefined ? <span>Loading...</span> : (chosenAnimal.sex === 'f' ? <span>Female</span> : (chosenAnimal.sex === 'm' ? <span>Male</span> : <span>Castrated</span>))}</div>
+        <div>Species: {chosenAnimal.type.charAt(0).toUpperCase() + chosenAnimal.type.slice(1)}</div>
+        <div style={{display: 'flex'}}>
             <span style={{marginRight: '0.5em'}}>Father:</span>
             {chosenAnimal.father ?
                 <AnimalPopover key={chosenAnimal.father} animalID={chosenAnimal.father}/>
-            : 'Unregistered'}
-        </span>
-        <span style={{display: 'flex'}}>
+            : <span>Unregistered</span>}
+        </div>
+        <div style={{display: 'flex'}}>
             <span style={{marginRight: '0.5em'}}>Mother:</span>
             {chosenAnimal.mother ? 
                 <AnimalPopover key={chosenAnimal.mother} animalID={chosenAnimal.mother}/>
-            : 'Unregistered'}
-        </span>
-        Farm: {readableFarm(chosenAnimal.farm)}
+            : <span>Unregistered</span>}
+        </div>
+        <div>
+            Farm: {readableFarm(chosenAnimal.farm)}
+        </div>
+        <div>
+            {chosenAnimal.notes && `Notes: ${chosenAnimal.notes}`}
+        </div>
+        {chosenAnimal.fields && Object.entries(chosenAnimal.fields).map(([name, value]) => {
+            return fieldTypeSwitch(name, value);
+        })}
         <div>
             {relEvents.length !== 0 ? <h2>Linked Events</h2> : <></>}
             {relEvents.map((event, index) => {
