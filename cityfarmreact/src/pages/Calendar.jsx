@@ -13,6 +13,7 @@ import TextField from '@mui/material/TextField';
 import { IconButton, Button, ButtonGroup, Checkbox, FormControlLabel, FormGroup, useTheme, FormHelperText } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import AddIcon from '@mui/icons-material/Add';
+import Delete from '@mui/icons-material/Delete';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import axios from '../api/axiosConfig'
@@ -27,7 +28,8 @@ export const eventsConversion=(events)=>{
     for (let i=0;i<events.length;i++){
         changed.push(
             {
-                title : events[i].event.title,
+                _id: events[i].event._id,
+                title: events[i].event.title,
                 allDay: events[i].event.allDay,
                 start: new  Date(events[i].start),
                 end: new  Date(events[i].end),
@@ -116,12 +118,26 @@ const Calendar = ({farms}) => {
         window.alert("Please ensure title is not empty.");
     }
 
-    const handleAddEvent = () => {
+    const handleAddEvent = async() => {
         if (Object.values(inputErr).filter((err) => err === true).length > 0) {
             showError();
             return;
         }
-        setAllEvents([...allEvents, newEvent]); /*Adds the new event to the list of allEvents} */
+
+        try {
+            await axios.post(`/events/create/once`, newEvent, token);
+        } catch(error) {
+            if (error.response.status === 401) {
+                window.location.href = "/login";
+                return;
+            } else {
+                window.alert(error);
+            }
+        }
+
+        window.location.reload(false);
+
+        //setAllEvents([...allEvents, newEvent]); /*Adds the new event to the list of allEvents} */
         setNewEvent({
             title: "",
             allDay: true,
@@ -134,6 +150,22 @@ const Calendar = ({farms}) => {
         });
     }
 
+    const handleDelEvent = async() => {
+        let id = selectedEvent._id;
+        console.log(id);
+        try {
+            await axios.delete(`/events/by_id/${id}`, token);
+        } catch(error) {
+            if (error.response.status === 401) {
+                window.location.href = "/login";
+                return;
+            } else {
+                window.alert(error);
+            }
+        }
+        window.location.reload(false);
+    }
+
     const changeAllDay = (isAllDay, type) => {
         type === "add" ? setNewEvent({...newEvent, allDay: isAllDay}) : setModifiedEvent({...modifiedEvent, allDay: isAllDay})
     }
@@ -143,7 +175,6 @@ const Calendar = ({farms}) => {
     }
 
     const eventStyleGetter = (event) => {
-        //console.log(event)
         var colour1 = event.farms.includes(farms.WH) ? theme.WH.main : (event.farms.includes(farms.HC) ? theme.HC.main : theme.SW.main);
         var colour2 = event.farms.includes(farms.HC) ? (event.farms.includes(farms.WH) ? theme.HC.main : (event.farms.includes(farms.SW) ? theme.SW.main : theme.SW.main)) : theme.SW.main;
         const offset = 0;
@@ -241,9 +272,10 @@ const Calendar = ({farms}) => {
                 }
             }
         }
-      }, [])
+    }, [])
 
-    let offRangeColour = theme.mode === 'dark' ? '#1A1A1A' : '#f0f0f0';
+    let dayColour = theme.mode === 'dark' ? '#121212': '#fff'
+    let offRangeColour = theme.mode === 'dark' ? '#ffffff14' : '#f0f0f0';
     let todayColour = theme.mode === 'dark' ? theme.primary.veryDark : theme.primary.light;
     let textColour = theme.mode === 'dark' ? 'white' : 'black';
     let headerColour = theme.mode === 'dark' ? theme.primary.veryDark : theme.primary.light;
@@ -267,7 +299,7 @@ const Calendar = ({farms}) => {
                     events={allEvents}
                     startAccessor="start"
                     endAccessor="end"
-                    style={{'--off-range': offRangeColour, '--today': todayColour, '--text': textColour, '--header': headerColour}}
+                    style={{'--day': dayColour, '--off-range': offRangeColour, '--today': todayColour, '--text': textColour, '--header': headerColour}}
                     showMultiDayTimes
                     onSelectEvent={setSelectedEvent}
                     eventPropGetter={eventStyleGetter}
@@ -283,7 +315,8 @@ const Calendar = ({farms}) => {
                     <div style={{display: "flex", justifyContent: "space-between"}}>
                         <h2 className='boxTitle'>Selected Event</h2>
                         <span>
-                            {!modifyEvent && <IconButton style={{maxHeight: '36.5px', margin: '0 10px 0  0'}} onClick={()=>{setModifyEvent(true)}}><EditIcon/></IconButton>}
+                            {!modifyEvent && <IconButton onClick={()=>{setModifyEvent(true)}}><EditIcon/></IconButton>}
+                            <IconButton onClick={() => handleDelEvent()}><Delete/></IconButton>
                             <IconButton className='closeButton' onClick={() => {setModifyEvent(false); setSelectedEvent("No event selected")}}><img src={theme.mode === 'dark' ? CloseIconDark : CloseIconLight} alt='close button'/></IconButton>
                         </span>
                     </div>
@@ -367,7 +400,7 @@ const Calendar = ({farms}) => {
                                 fullWidth
                                 size='small'
                                 multiline
-                                rows={2}
+                                rows={3}
                                 placeholder='Enter Description'
                                 value={modifiedEvent.description}
                                 onChange={(e) => {setModifiedEvent({...modifiedEvent, description: e.target.value})}}
@@ -427,7 +460,7 @@ const Calendar = ({farms}) => {
                             fullWidth
                             size='small'
                             multiline
-                            rows={2}
+                            rows={3}
                             placeholder='Enter Description'
                             value={newEvent.description}
                             onChange={(e) => {setNewEvent({...newEvent, description: e.target.value})}}
