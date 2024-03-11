@@ -299,11 +299,11 @@ const Schemas = () => {
                 </Grid>
             ))}
         </Grid>
-        {showErr && <Backdrop style={{zIndex: '4'}} open onClick={() => setShowErr(false)}>
+        <Backdrop style={{zIndex: '4', background: '#000000AA'}} open={showErr} onClick={() => setShowErr(false)}>
             <Alert severity='warning'>
                 Please ensure all required fields are filled
             </Alert>
-        </Backdrop>}
+        </Backdrop>
     </>)
 }
 

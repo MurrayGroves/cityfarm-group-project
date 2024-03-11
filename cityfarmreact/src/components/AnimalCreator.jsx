@@ -328,11 +328,11 @@ const AnimalCreator = (props) => {
             </div>
             : <></>}</>
         : <Button className='tallButton' variant='contained' endIcon={<AddIcon/>} style={{float: 'right'}} onClick={() => {setCreate(true); props.setOffset(129.6+20)}}>Create</Button>}
-    {showErr && <Backdrop style={{zIndex: '4'}} open onClick={() => setShowErr(false)}>
-        <Alert severity='warning'>
-            Please ensure all required fields are filled
-        </Alert>
-    </Backdrop>}
+        <Backdrop style={{zIndex: '4', background: '#000000AA'}} open={showErr} onClick={() => setShowErr(false)}>
+            <Alert severity='warning'>
+                Please ensure all required fields are filled
+            </Alert>
+        </Backdrop>
     </>)
 }
 

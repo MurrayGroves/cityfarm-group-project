@@ -482,11 +482,11 @@ const Calendar = ({farms}) => {
                 </Paper>
             </div>
         </div>
-        {showErr && <Backdrop style={{zIndex: '4'}} open onClick={() => setShowErr(false)}>
+        <Backdrop style={{zIndex: '4', background: '#000000AA'}} open={showErr} onClick={() => setShowErr(false)}>
             <Alert severity='warning'>
                 Please ensure event title is not empty
             </Alert>
-        </Backdrop>}
+        </Backdrop>
     </>);
 }
 
