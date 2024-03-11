@@ -38,7 +38,7 @@ public abstract class Event {
     // List of IDs of attached people
     public List<String> attachedPeople;
 
-    public Boolean all_day;
+    public Boolean allDay;
 
     public ZonedDateTime start;
     public ZonedDateTime end;

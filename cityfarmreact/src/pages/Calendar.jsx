@@ -216,32 +216,32 @@ const Calendar = ({farms}) => {
             if (isShown){
                 return(<>
                     <FormHelperText>Start</FormHelperText>
-                    <DateTimePicker value={dayjs(newEvent.start)} onChange={(e) => {setNewEvent({...newEvent, start: e.$d})}} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
+                    <DateTimePicker value={dayjs(newEvent.start)} onChange={(e) => {setNewEvent({...newEvent, start: e.$d, end: newEvent.end < e.$d ? e.$d : newEvent.end})}} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
                     <FormHelperText>End</FormHelperText>
-                    <DateTimePicker value={dayjs(newEvent.end)} onChange={(e) => {setNewEvent({...newEvent, end: e.$d})}} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
+                    <DateTimePicker value={dayjs(newEvent.end)} onChange={(e) => {setNewEvent({...newEvent, end: e.$d, start: e.$d < newEvent.start ? e.$d : newEvent.start})}} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
                 </>)
             } else {
                 return(<>
                     <FormHelperText>Start</FormHelperText>
-                    <DatePicker value={dayjs(newEvent.start)} onChange={(e) => {setNewEvent({...newEvent, start: e.$d})}} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
+                    <DatePicker value={dayjs(newEvent.start)} onChange={(e) => {setNewEvent({...newEvent, start: e.$d, end: newEvent.end < e.$d ? e.$d : newEvent.end})}} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
                     <FormHelperText>End</FormHelperText>
-                    <DatePicker value={dayjs(newEvent.end)} onChange={(e) => {setNewEvent({...newEvent, end: e.$d})}} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
+                    <DatePicker value={dayjs(newEvent.end)} onChange={(e) => {setNewEvent({...newEvent, end: e.$d, start: e.$d < newEvent.start ? e.$d : newEvent.start})}} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
                 </>)
             }
         } else {
             if (isShown) {
                 return(<>
                     <FormHelperText>Start</FormHelperText>
-                    <DateTimePicker value={dayjs(modifiedEvent.start)} placeholder={selectedEvent.start} onChange={(e) => {setModifiedEvent({...modifiedEvent, start: e.$d})}} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
+                    <DateTimePicker value={dayjs(modifiedEvent.start)} placeholder={selectedEvent.start} onChange={(e) => {setModifiedEvent({...modifiedEvent, start: e.$d, end: modifiedEvent.end < e.$d ? e.$d : modifiedEvent.end})}} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
                     <FormHelperText>End</FormHelperText>
-                    <DateTimePicker value={dayjs(modifiedEvent.end)} placeholder={selectedEvent.end} onChange={(e) => {setModifiedEvent({...modifiedEvent, end: e.$d})}} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
+                    <DateTimePicker value={dayjs(modifiedEvent.end)} placeholder={selectedEvent.end} onChange={(e) => {setModifiedEvent({...modifiedEvent, end: e.$d, start: e.$d < modifiedEvent.start ? e.$d : modifiedEvent.start})}} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
                 </>)
             } else {
                 return(<>
                     <FormHelperText>Start</FormHelperText>
-                    <DatePicker value={dayjs(modifiedEvent.start)} placeholder={selectedEvent.start} onChange={(e) => {setModifiedEvent({...modifiedEvent, start: e.$d})}} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
+                    <DatePicker value={dayjs(modifiedEvent.start)} placeholder={selectedEvent.start} onChange={(e) => {setModifiedEvent({...modifiedEvent, start: e.$d, end: modifiedEvent.end < e.$d ? e.$d : modifiedEvent.end})}} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
                     <FormHelperText>End</FormHelperText>
-                    <DatePicker value={dayjs(modifiedEvent.end)} placeholder={selectedEvent.end} onChange={(e) => {setModifiedEvent({...modifiedEvent, end: e.$d})}} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
+                    <DatePicker value={dayjs(modifiedEvent.end)} placeholder={selectedEvent.end} onChange={(e) => {setModifiedEvent({...modifiedEvent, end: e.$d, start: e.$d < modifiedEvent.start ? e.$d : modifiedEvent.start})}} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
                 </>)
             }
         }
