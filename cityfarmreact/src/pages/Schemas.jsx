@@ -11,7 +11,7 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import TableFooter from '@mui/material/TableFooter';
 import Paper from '@mui/material/Paper';
-import { IconButton, Select } from "@mui/material";
+import { IconButton, Select, Backdrop, Alert } from "@mui/material";
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Button from '@mui/material/Button';
@@ -34,14 +34,14 @@ const Schemas = () => {
     const [searchTerm, setSearchTerm] = useState(''); /* The term being search for in the searchbar */
     const [newFields, setNewFields] = useState([{"name": "", "type": "", "required": ""}])
     const [newSchemaName, setNewSchemaName] = useState("");
-    const [editing, setEditing] = useState(false);
+    const [showErr, setShowErr] = useState(false);
+
     const token = getConfig();
 
-    var inputErr = {}
+    var inputErr = {name: true};
 
     useEffect(() => {
-        inputErr['name'] = newSchemaName === ''
-        console.log(inputErr);
+        inputErr['name'] = newSchemaName === '';
     }, [newSchemaName])
 
     function checkIfNewRowNeeded() {
@@ -86,7 +86,7 @@ const Schemas = () => {
     }
 
     const showError = () => {
-        window.alert('Please ensure all required fields are filled.')
+        setShowErr(true);
     }
 
     useEffect (() => {
@@ -117,7 +117,6 @@ const Schemas = () => {
             <TextField error={newSchemaName === ''} required style={{margin: '15px 15px 0 15px'}} placeholder="Species Name" value={newSchemaName} size="small"
                 onChange={(e) => {
                     setNewSchemaName(e.target.value);
-                    setEditing(true);
                 }}
             />
             <Button disableElevation variant="contained" aria-label="add" endIcon={<AddIcon />} style={{maxHeight: '40px', marginTop: '15px'}}
@@ -168,16 +167,16 @@ const Schemas = () => {
                 <TableBody>
                 {newFields.map((field, index) => {
                     field.name && (inputErr[field.name] = 
-                        (field["name"] === '' && editing && index !== newFields.length - 1) ||
-                        (field["type"] === '' && editing && index !== newFields.length - 1) ||
-                        (field["required"] === '' && editing && index !== newFields.length - 1))
+                        (field["name"] === '' && index !== newFields.length - 1) ||
+                        (field["type"] === '' && index !== newFields.length - 1) ||
+                        (field["required"] === '' && index !== newFields.length - 1));
                     return (
                     <TableRow
                         key={index}
                         sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                     >
                     <TableCell component="th" scope="row">
-                        <TextField fullWidth error={field["name"] === '' && editing && index !== newFields.length - 1} required placeholder="Property Name" id="field name" variant="outlined" size="small" value={field["name"]}
+                        <TextField fullWidth error={field["name"] === '' && index !== newFields.length - 1} required placeholder="Property Name" id="field name" variant="outlined" size="small" value={field["name"]}
                             onChange={(e) => {
                                 setNewFields(newFields.map((elem, changeIndex) => {
                                     if (changeIndex === index) {
@@ -188,12 +187,11 @@ const Schemas = () => {
                                     }
                                 }))
                                 checkIfNewRowNeeded();
-                                setEditing(true);
                             }}
                         />
                     </TableCell>
                     <TableCell align="left">
-                        <FormControl fullWidth error={field["type"] === '' && editing && index !== newFields.length - 1} required sx={{ m: 1, minWidth: 120 }} size="small">
+                        <FormControl fullWidth error={field["type"] === '' && index !== newFields.length - 1} required sx={{ m: 1, minWidth: 120 }} size="small">
                             <Select height="10px" value={field["type"] || ''} onChange={(e) => {
                                 setNewFields(newFields.map((elem, changeIndex) => {
                                     if (changeIndex === index) {
@@ -204,7 +202,6 @@ const Schemas = () => {
                                     }
                                 }))
                                 checkIfNewRowNeeded();
-                                setEditing(true);
                             }}>
                                 {Object.entries(classToReadable).map(([javaName, className], index) => 
                                     <MenuItem value={javaName} key={index}>{className}</MenuItem>
@@ -213,7 +210,7 @@ const Schemas = () => {
                         </FormControl>
                     </TableCell>
                     <TableCell align="left">
-                        <FormControl fullWidth error={field["required"] === '' && editing && index !== newFields.length - 1} required sx={{ m: 1, minWidth: 120 }} size="small">
+                        <FormControl fullWidth error={field["required"] === '' && index !== newFields.length - 1} required sx={{ m: 1, minWidth: 120 }} size="small">
                             <Select height="10px" value={field["required"]} onChange={(e) => {
                                 setNewFields(newFields.map((elem, changeIndex) => {
                                     if (changeIndex === index) {
@@ -224,7 +221,6 @@ const Schemas = () => {
                                     }
                                 }))
                                 checkIfNewRowNeeded();
-                                setEditing(true);
                             }}>
                                 <MenuItem value={true}>Yes</MenuItem>
                                 <MenuItem value={false}>No</MenuItem>
@@ -303,6 +299,11 @@ const Schemas = () => {
                 </Grid>
             ))}
         </Grid>
+        {showErr && <Backdrop style={{zIndex: '4'}} open onClick={() => setShowErr(false)}>
+            <Alert severity='warning'>
+                Please ensure all required fields are filled
+            </Alert>
+        </Backdrop>}
     </>)
 }
 

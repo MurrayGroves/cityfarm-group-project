@@ -8,7 +8,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import { FormHelperText, IconButton, Select } from "@mui/material";
+import { FormHelperText, IconButton, Select, Backdrop, Alert } from "@mui/material";
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Button from '@mui/material/Button';
@@ -25,6 +25,8 @@ const AnimalCreator = (props) => {
     const [fieldList, setFieldList] = useState([]);
     const [create, setCreate] = useState(false);
 
+    const [showErr, setShowErr] = useState(false);
+
     const token = getConfig();
 
     const reset = () => {
@@ -33,10 +35,10 @@ const AnimalCreator = (props) => {
         setSchema();
     }
 
-    var inputErr = {}
+    var inputErr = {name: true, type: true, sex: true};
 
     const showError = () => {
-        window.alert('Please ensure all required fields are filled.')
+        setShowErr(true);
     }
 
     const fieldTypeSwitch = (key) => {
@@ -293,7 +295,7 @@ const AnimalCreator = (props) => {
                                     <TableCell key={index}>{fieldList ? fieldTypeSwitch(index) : <p>Loading...</p>}</TableCell>
                                 );
                             })}
-                            <TableCell><TextField size='small' multiline fullWidth rows={2} onChange={(e) => {setNewAnimal({...newAnimal, notes: e.target.value})}}/></TableCell>
+                            <TableCell><TextField size='small' multiline placeholder='Add notes...' fullWidth rows={2} onChange={(e) => {setNewAnimal({...newAnimal, notes: e.target.value})}}/></TableCell>
                         </TableRow>
                     </TableBody>
                 </Table>
@@ -326,6 +328,11 @@ const AnimalCreator = (props) => {
             </div>
             : <></>}</>
         : <Button className='tallButton' variant='contained' endIcon={<AddIcon/>} style={{float: 'right'}} onClick={() => {setCreate(true); props.setOffset(129.6+20)}}>Create</Button>}
+    {showErr && <Backdrop style={{zIndex: '4'}} open onClick={() => setShowErr(false)}>
+        <Alert severity='warning'>
+            Please ensure all required fields are filled
+        </Alert>
+    </Backdrop>}
     </>)
 }
 

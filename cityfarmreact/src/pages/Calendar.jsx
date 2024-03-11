@@ -6,11 +6,11 @@ import "./Calendar.css";
 import Event from "../components/Event";
 import CreateEvent from "../components/CreateEvent";
 import AnimalPopover from "../components/AnimalPopover";
-import CloseIconLight from "../assets/close-512-light.webp";
-import CloseIconDark from "../assets/close-512-dark.webp";
+import Close from '@mui/icons-material/Close';
 import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
-import { IconButton, Button, ButtonGroup, Checkbox, FormControlLabel, FormGroup, useTheme, FormHelperText } from '@mui/material';
+import { IconButton, Button, ButtonGroup, Checkbox, FormControlLabel, FormGroup, useTheme, FormHelperText, Backdrop, Alert } from '@mui/material';
+import AlertTitle from '@mui/material/AlertTitle';
 import EditIcon from '@mui/icons-material/Edit';
 import AddIcon from '@mui/icons-material/Add';
 import Delete from '@mui/icons-material/Delete';
@@ -73,7 +73,7 @@ const Calendar = ({farms}) => {
     const [selectedEvent,setSelectedEvent] = useState("No event selected");
     const [visibleFarms, setVisibleFarms] = useState([farms.WH, farms.HC, farms.SW]);
     const [modifyEvent, setModifyEvent] = useState(false);
-
+    const [showErr, setShowErr] = useState(false);
     const [inputErr, setInputErr] = useState({newTitle: true});
 
     useEffect(() => {
@@ -115,13 +115,12 @@ const Calendar = ({farms}) => {
     }
 
     const showError = () => {
-        window.alert("Please ensure title is not empty.");
+        setShowErr(true);
     }
 
     const handleAddEvent = async() => {
         if (Object.values(inputErr).filter((err) => err === true).length > 0) {
-            showError();
-            return;
+            return showError();
         }
 
         try {
@@ -155,6 +154,20 @@ const Calendar = ({farms}) => {
         console.log(id);
         try {
             await axios.delete(`/events/by_id/${id}`, token);
+        } catch(error) {
+            if (error.response.status === 401) {
+                window.location.href = "/login";
+                return;
+            } else {
+                window.alert(error);
+            }
+        }
+        window.location.reload(false);
+    }
+
+    const handlePatchEvent = async() => {
+        try {
+            window.alert('Patch not implemented yet.'); //patch not implemented
         } catch(error) {
             if (error.response.status === 401) {
                 window.location.href = "/login";
@@ -275,7 +288,7 @@ const Calendar = ({farms}) => {
     }, [])
 
     let dayColour = theme.mode === 'dark' ? '#121212': '#fff'
-    let offRangeColour = theme.mode === 'dark' ? '#ffffff14' : '#f0f0f0';
+    let offRangeColour = theme.mode === 'dark' ? '#ffffff08' : '#f0f0f0';
     let todayColour = theme.mode === 'dark' ? theme.primary.veryDark : theme.primary.light;
     let textColour = theme.mode === 'dark' ? 'white' : 'black';
     let headerColour = theme.mode === 'dark' ? theme.primary.veryDark : theme.primary.light;
@@ -317,7 +330,7 @@ const Calendar = ({farms}) => {
                         <span>
                             {!modifyEvent && <IconButton onClick={()=>{setModifyEvent(true)}}><EditIcon/></IconButton>}
                             <IconButton onClick={() => handleDelEvent()}><Delete/></IconButton>
-                            <IconButton className='closeButton' onClick={() => {setModifyEvent(false); setSelectedEvent("No event selected")}}><img src={theme.mode === 'dark' ? CloseIconDark : CloseIconLight} alt='close button'/></IconButton>
+                            <IconButton onClick={() => {setModifyEvent(false); setSelectedEvent("No event selected")}}><Close/></IconButton>
                         </span>
                     </div>
                     {!modifyEvent ?
@@ -371,7 +384,7 @@ const Calendar = ({farms}) => {
                             <FormControlLabel control={<Checkbox defaultChecked={selectedEvent.allDay} size='small'/>} label="All Day" onChange={(e) => {changeAllDay(!modifiedEvent.allDay, "modify")}}/>
                             <ButtonGroup style={{float: 'right'}}>
                                 <Button variant='contained' color='warning' onClick={()=>{setModifyEvent(false)}}>Discard</Button>
-                                <Button variant='contained' color='success' onClick={()=>{}}>Update</Button>
+                                <Button variant='contained' color='success' onClick={()=>{handlePatchEvent()}}>Update</Button>
                             </ButtonGroup>
                         </div>
                         <div>
@@ -469,6 +482,11 @@ const Calendar = ({farms}) => {
                 </Paper>
             </div>
         </div>
+        {showErr && <Backdrop style={{zIndex: '4'}} open onClick={() => setShowErr(false)}>
+            <Alert severity='warning'>
+                Please ensure event title is not empty
+            </Alert>
+        </Backdrop>}
     </>);
 }
 

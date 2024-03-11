@@ -18,16 +18,6 @@
     margin-top: 0px;
 }
 
-.closeButton {
-    background-color: transparent;
-    width: 32px;
-    height: 32px;
-}
-.closeButton img {
-    width: 24px;
-    height: 24px;
-}
-
 .rbc-day-bg {
     background: var(--day);
 }
@@ -54,6 +44,10 @@
 
 .rbc-month-view {
     border-radius: 5px;
+}
+
+.rbc-month-view :last-child :first-child :first-child {
+    border-radius: 0 0 0 5px;
 }
 
 .rbc-row-bg :last-child {
