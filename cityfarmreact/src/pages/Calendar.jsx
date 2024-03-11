@@ -72,10 +72,10 @@ const Calendar = ({farms}) => {
     const [visibleFarms, setVisibleFarms] = useState([farms.WH, farms.HC, farms.SW]);
     const [modifyEvent, setModifyEvent] = useState(false);
 
-    var inputErr = {}
+    const [inputErr, setInputErr] = useState({newTitle: true});
 
     useEffect(() => {
-        inputErr['newTitle'] = newEvent.title === '';
+        setInputErr({...inputErr, newTitle: newEvent.title === ''});
     }, [newEvent])
 
     useEffect(() =>{
