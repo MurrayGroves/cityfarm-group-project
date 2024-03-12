@@ -24,7 +24,7 @@ const AnimalCreator = (props) => {
     const [schema, setSchema] = useState();
     const [fieldList, setFieldList] = useState([]);
     const [create, setCreate] = useState(false);
-
+    const [inputErr, setInputErr] = useState({});
     const [showErr, setShowErr] = useState(false);
 
     const token = getConfig();
@@ -32,21 +32,24 @@ const AnimalCreator = (props) => {
     const reset = () => {
         setCreate(false);
         setNewAnimal({name: '', type: '', father: '', mother: '', sex: '', alive: true, farm: '', fields: {}, notes: ''})
+        setInputErr({name: true, type: true, sex: true});
         setSchema();
     }
 
-    var inputErr = {name: true, type: true, sex: true};
-
-    const showError = () => {
-        setShowErr(true);
-    }
+    useEffect(() => {
+        setInputErr(prevInputErr => ({...prevInputErr, name: newAnimal.name === ''}));
+        setInputErr(prevInputErr => ({...prevInputErr, type: newAnimal.type === ''}));
+        setInputErr(prevInputErr => ({...prevInputErr, sex: newAnimal.sex === ''}));
+        Object.keys(newAnimal.fields).map((field) => {
+            setInputErr(prevInputErr => ({...prevInputErr, [field]: newAnimal.fields[field] === '' && schema._fields[field]._required}))
+        });
+    }, [newAnimal])
 
     const fieldTypeSwitch = (key) => {
         let field = fieldList[key];
         if (newAnimal.fields[field] === undefined) newAnimal.fields[field] = '';    /* initialise field values to empty strings */
         var error = newAnimal.fields[field] === '' && schema._fields[field]._required;
         const req = schema._fields[field]._required;
-        inputErr[key] = error;
         switch(schema._fields[field]._type) {   /* check the type of the field and display appropriate input method */
             case "java.lang.Boolean":
                 return (
@@ -136,12 +139,6 @@ const AnimalCreator = (props) => {
         };
     }
 
-    useEffect(() => {
-        inputErr['name'] = newAnimal.name === '';
-        inputErr['type'] = newAnimal.type === '';
-        inputErr['sex'] = newAnimal.sex === '';
-    }, [newAnimal])
-
     return (<>
         {create ? <>
             <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '20px'}}>
@@ -195,6 +192,7 @@ const AnimalCreator = (props) => {
                                             setSchema();
                                             props.setOffset(129.6+20);
                                             setFieldList([]);
+                                            setInputErr({});
                                         }}}
                                 />
                             </TableCell>
@@ -307,8 +305,7 @@ const AnimalCreator = (props) => {
                 endIcon={<AddIcon/>}
                 onClick={() => {
                     if (Object.values(inputErr).filter((err) => err === true).length > 0) {
-                        showError();
-                        return;
+                        return setShowErr(true);
                     }
                     (async () => {
                         try {

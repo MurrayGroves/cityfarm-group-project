@@ -114,13 +114,9 @@ const Calendar = ({farms}) => {
         }
     }
 
-    const showError = () => {
-        setShowErr(true);
-    }
-
     const handleAddEvent = async() => {
         if (Object.values(inputErr).filter((err) => err === true).length > 0) {
-            return showError();
+            return setShowErr(true);
         }
 
         try {
@@ -390,7 +386,7 @@ const Calendar = ({farms}) => {
                         <div>
                         <h3>Farms</h3>
                         <FormGroup>
-                            <FormControlLabel control={<Checkbox defaultChecked={selectedEvent.farms.includes(farms.WH)} color={farms.HC} size='small'/>} label="Windmill Hill" onChange={() => setModifiedEvent({...modifiedEvent, farms: modifiedEvent.farms.includes(farms.WH) ? modifiedEvent.farms.filter((farm) => farm !== farms.WH) : modifiedEvent.farms.concat(farms.WH)})}/>
+                            <FormControlLabel control={<Checkbox defaultChecked={selectedEvent.farms.includes(farms.WH)} color={farms.WH} size='small'/>} label="Windmill Hill" onChange={() => setModifiedEvent({...modifiedEvent, farms: modifiedEvent.farms.includes(farms.WH) ? modifiedEvent.farms.filter((farm) => farm !== farms.WH) : modifiedEvent.farms.concat(farms.WH)})}/>
                             <FormControlLabel control={<Checkbox defaultChecked={selectedEvent.farms.includes(farms.HC)} color={farms.HC} size='small'/>} label="Hartcliffe" onChange={()=>setModifiedEvent({...modifiedEvent, farms: modifiedEvent.farms.includes(farms.HC) ? modifiedEvent.farms.filter((farm) => farm !== farms.HC) : modifiedEvent.farms.concat(farms.HC)})}/>
                             <FormControlLabel control={<Checkbox defaultChecked={selectedEvent.farms.includes(farms.SW)} color={farms.SW} size='small'/>} label="St Werburghs" onChange={()=>setModifiedEvent({...modifiedEvent, farms: modifiedEvent.farms.includes(farms.SW) ? modifiedEvent.farms.filter((farm) => farm !== farms.SW) : modifiedEvent.farms.concat(farms.SW)})}/>
                         </FormGroup>

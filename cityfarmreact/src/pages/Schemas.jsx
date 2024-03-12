@@ -38,11 +38,17 @@ const Schemas = () => {
 
     const token = getConfig();
 
-    var inputErr = {name: true};
+    const [inputErr, setInputErr] = useState({});
 
     useEffect(() => {
-        inputErr['name'] = newSchemaName === '';
-    }, [newSchemaName])
+        setInputErr(prevInputErr => ({...prevInputErr, name: newSchemaName === ''}));
+    }, [newSchemaName]);
+
+    useEffect(() => {
+        Object.keys(newFields).map((field, index) => {
+            index !== newFields.length - 1 && setInputErr(prevInputErr => ({...prevInputErr, [index]: (newFields[field].name === '' || newFields[field].type === '' || newFields[field].required === '')}));
+        });
+    }, [newFields]);
 
     function checkIfNewRowNeeded() {
         let changed = false;
@@ -85,10 +91,6 @@ const Schemas = () => {
         }));
     }
 
-    const showError = () => {
-        setShowErr(true);
-    }
-
     useEffect (() => {
         (async () => {
             if (searchTerm === '') {
@@ -114,7 +116,7 @@ const Schemas = () => {
         <h2>Create New Animal Type</h2>
         <TableContainer style={{marginTop: '20px'}} component={Paper}>
         <div style={{marginBottom: '20px', display: 'flex'}}>
-            <TextField error={newSchemaName === ''} required style={{margin: '15px 15px 0 15px'}} placeholder="Species Name" value={newSchemaName} size="small"
+            <TextField error={newSchemaName === ''} required style={{margin: '15px 15px 0 15px'}} label='Name' placeholder="Species Name" value={newSchemaName} size="small"
                 onChange={(e) => {
                     setNewSchemaName(e.target.value);
                 }}
@@ -122,8 +124,7 @@ const Schemas = () => {
             <Button disableElevation variant="contained" aria-label="add" endIcon={<AddIcon />} style={{maxHeight: '40px', marginTop: '15px'}}
                 onClick={() => {
                     if (Object.values(inputErr).filter((err) => err === true).length > 0) {
-                        showError();
-                        return;
+                        return setShowErr(true);
                     }
                     (async () => {
                         newFields.pop();
@@ -166,10 +167,6 @@ const Schemas = () => {
                 </TableHead>
                 <TableBody>
                 {newFields.map((field, index) => {
-                    field.name && (inputErr[field.name] = 
-                        (field["name"] === '' && index !== newFields.length - 1) ||
-                        (field["type"] === '' && index !== newFields.length - 1) ||
-                        (field["required"] === '' && index !== newFields.length - 1));
                     return (
                     <TableRow
                         key={index}
