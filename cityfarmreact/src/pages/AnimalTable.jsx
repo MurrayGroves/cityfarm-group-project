@@ -33,6 +33,7 @@ const AnimalTable = ({farms}) => {
     const [schemas, setSchemas] = useState([]);
     const [selectedSchema, setSelectedSchema] = useState(null);
     const [newAnimal, setNewAnimal] = useState( useState({name: '', type: '', father: '', mother: '', male: true, alive: true, fields: {}}));
+    const [modifyAnimal, setModifyAnimal] = useState({});
 
     const token = getConfig();
 
@@ -109,8 +110,8 @@ const AnimalTable = ({farms}) => {
             id: animal._id,
             name: animal,
             type: animal.type.charAt(0).toUpperCase() + animal.type.slice(1),
-            father: animal.father !== null ? animal : 'Unregistered',
-            mother: animal.mother !== null ? animal : 'Unregistered',
+            father: animal.father !== null ? animal.father : '',
+            mother: animal.mother !== null ? animal.mother : '',
             sex: animal.male ? 'Male' : 'Female',
         }));
 
@@ -143,8 +144,8 @@ const AnimalTable = ({farms}) => {
             id: animal._id,
             name: animal,
             type: animal.type.charAt(0).toUpperCase() + animal.type.slice(1),
-            father: animal.father !== null ? animal : 'Unregistered',
-            mother: animal.mother !== null ? animal : 'Unregistered',
+            father: animal.father !== null ? animal.father : '',
+            mother: animal.mother !== null ? animal.mother : '',
             sex: animal.male ? 'Male' : 'Female',
         }));
         setRows(defaultRows);
@@ -230,51 +231,66 @@ const AnimalTable = ({farms}) => {
             } },
         { field: 'type', headerName: 'Type', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
         { field: 'father', headerName: 'Father', headerClassName: 'grid-header', headerAlign: 'left', flex: 1, editable: true,
-        renderCell:(animal)=>{return animal.value.father?
-             <AnimalPopover key={animal.value.father} animalID={animal.value.father}/> : "Unregistered"}, renderEditCell: (params) => {
+        renderCell:(father)=>{
+            return father.value?
+             <AnimalPopover key={father.value} animalID={father.value}/> : "Unregistered"}, renderEditCell: (params) => {
                 return (
                     <Autocomplete
-                                    style={{width: '100%'}}
-                                    size='medium'
-                                    renderOption={(props, option) => {
-                                        return (
-                                            <li {...props} key={option.id}>
-                                                {option.name}
-                                            </li>
-                                        );
-                                    }}
-                                    renderInput={(params) => <TextField {...params} label="Father"/>}
-                                    isOptionEqualToValue={(option, value) => option.id === value.id}
-                                    getOptionLabel={option => option.name}
-                                    options={
-                                        animalList.filter((animal)=>{return animal.type.toLowerCase() === params.row.type.toLowerCase() && animal.male === true && animal._id !== params.row.id}).map((animal)=>{
-                                            return {id: animal._id, name: animal.name}
-                                        })
-                                    }
+                        style={{width: '100%'}}
+                        size='medium'
+                        renderOption={(props, option) => {
+                            return (
+                                <li {...props} key={option._id}>
+                                    {option.name}
+                                </li>
+                            );
+                        }}
+                        renderInput={(params) => <TextField {...params}/>}
+                        isOptionEqualToValue={(option, value) => option._id === value._id}
+                        getOptionLabel={option => option.name}
+                        options={
+                            animalList.filter((animal)=>{return animal.type.toLowerCase() === params.row.type.toLowerCase() && animal.male === true && animal._id !== params.row.id}).map((animal)=>{
+                                return animal;
+                            })  
+                        }
+                        value={modifyAnimal.father ? modifyAnimal.father : {_id: params.value, name: animalList.find((animal) => {return animal._id === params.value}).name}}
+                        onChange={(_, value) => {
+                            console.log(modifyAnimal)
+                            let current = modifyAnimal;
+                            current.father = value;
+                            setModifyAnimal(current);
+                        }}
                     />
                 );
             }},
         { field: 'mother', headerName: 'Mother', headerClassName: 'grid-header', headerAlign: 'left', flex: 1, editable: true,
-            renderCell:(animal)=>{return animal.value.mother?
-                <AnimalPopover key={animal.value.mother} animalID={animal.value.mother}/> : "Unregistered"}, renderEditCell: (params) => {
+            renderCell:(mother)=>{return mother.value?
+                <AnimalPopover key={mother.value} animalID={mother.value}/> : "Unregistered"}, renderEditCell: (params) => {
                     return (<Autocomplete
                         style={{width: '100%'}}
                         size='medium'
                         renderOption={(props, option) => {
                             return (
-                                <li {...props} key={option.id}>
+                                <li {...props} key={option._id}>
                                     {option.name}
                                 </li>
                             );
                         }}
-                        renderInput={(params) => <TextField {...params} label="Mother"/>}
-                        isOptionEqualToValue={(option, value) => option.id === value.id}
+                        renderInput={(params) => <TextField {...params}/>}
+                        isOptionEqualToValue={(option, value) => option._id === value._id}
                         getOptionLabel={option => option.name}
                         options={
-                            animalList.filter((animal)=>{console.log(animal);return animal.type.toLowerCase() === params.row.type.toLowerCase() && animal.male === false && animal._id !== params.row.id}).map((animal)=>{
-                                return {id: animal._id, name: animal.name}
-                            })
+                            animalList.filter((animal)=>{return animal.type.toLowerCase() === params.row.type.toLowerCase() && animal.male === false && animal._id !== params.row.id}).map((animal)=>{
+                                return animal;
+                            })  
                         }
+                        value={modifyAnimal.mother ? modifyAnimal.mother : {_id: params.value, name: animalList.find((animal) => {return animal._id === params.value}).name}}
+                        onChange={(_, value) => {
+                            console.log(modifyAnimal)
+                            let current = modifyAnimal;
+                            current.mother = value;
+                            setModifyAnimal(current);
+                        }}
                     />)
                 }},
         { field: 'sex', headerName: 'Sex', headerClassName: 'grid-header', headerAlign: 'left', flex: 1, editable: true, renderEditCell: (params) => {
@@ -323,6 +339,9 @@ const AnimalTable = ({farms}) => {
                 flex: 0.1,
                 renderCell: (params) => {
                     return <IconButton onClick={() => {
+                        let obj = animalList.find((animal) => {return animal._id === params.id});
+                        setModifyAnimal(obj);
+                        console.log("MODIFY ANIMAL", modifyAnimal)
                         gridApi.current.startRowEditMode({ id: params.id });
                     }}><EditIcon/></IconButton>
                     
