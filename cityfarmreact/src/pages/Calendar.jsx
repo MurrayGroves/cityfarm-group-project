@@ -9,19 +9,21 @@ import AnimalPopover from "../components/AnimalPopover";
 import Close from '@mui/icons-material/Close';
 import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
-import { IconButton, Button, ButtonGroup, Checkbox, FormControlLabel, FormGroup, useTheme, FormHelperText, Backdrop, Alert } from '@mui/material';
+import {  DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
+import { IconButton, Button, ButtonGroup, Checkbox, FormControlLabel, FormGroup, useTheme, Dialog, FormHelperText, Backdrop, Alert } from '@mui/material';
 import AlertTitle from '@mui/material/AlertTitle';
 import EditIcon from '@mui/icons-material/Edit';
 import AddIcon from '@mui/icons-material/Add';
 import Delete from '@mui/icons-material/Delete';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
+import AssociateAnimal from '../components/AssociateAnimal';
+import { Unstable_Popup as BasePopup } from '@mui/base/Unstable_Popup';
+import { styled } from '@mui/system';
 import axios from '../api/axiosConfig'
+import AssociateEnclosure from '../components/AssociateEnclosure';
 
 import { getConfig } from '../api/getToken';
-
-
-
 
 export const eventsConversion=(events)=>{
     let changed=[]
@@ -43,8 +45,8 @@ export const eventsConversion=(events)=>{
     return changed
 }
 
-
 const Calendar = ({farms}) => {
+  
     const token = getConfig();
     const theme = useTheme().palette;
 
@@ -83,6 +85,23 @@ const Calendar = ({farms}) => {
     useEffect(() =>{
         setModifiedEvent(selectedEvent);
     },[selectedEvent]);
+
+    const setModifiedEventAnimals = (animalList) => {
+        setModifiedEvent({...modifiedEvent, animals: animalList})
+    }
+    const setModifiedEventEnclosures = (enclosures) => {
+        setModifiedEvent({...modifiedEvent, enclosures: enclosures})
+    }
+    const setAddEventEnclosures = (enclosures) => {
+        setNewEvent({...newEvent, enclosures: enclosures})
+    }
+    const setAddEventAnimals = (animalList) => {
+        setNewEvent({...newEvent, animals: animalList})
+    }
+
+    useEffect(() => {
+        console.log(selectedEvent);
+    }, [selectedEvent])
 
     useEffect(() => {
         (async () => {
@@ -242,6 +261,15 @@ const Calendar = ({farms}) => {
             }
         }
     }
+    const [anchor, setAnchor] = React.useState(null);
+    const [openAnimalsPopup ,setOpenAnimalsPopup] = useState(false)
+    const functionopenPopup = (type) => { 
+         if (type === "animals") { setOpenAnimalsPopup(true)} else {setOpenEnclosurePopup(true)}
+    }
+    const functionclosePopup = () => {
+        setOpenAnimalsPopup(false)
+        setOpenEnclosurePopup(false)
+    }
 
     const onRangeChange = useCallback(async (range) => {
         if (range.start !== undefined){ //month or agenda case start and end are the times displayed on the calendar
@@ -282,6 +310,8 @@ const Calendar = ({farms}) => {
             }
         }
     }, [])
+  
+    const [openEnclosurePopup, setOpenEnclosurePopup] = useState(false);
 
     let dayColour = theme.mode === 'dark' ? '#121212': '#fff'
     let offRangeColour = theme.mode === 'dark' ? '#ffffff08' : '#f0f0f0';
@@ -343,19 +373,19 @@ const Calendar = ({farms}) => {
                                 </div>
 
                         }
-                        {selectedEvent.farms.length !== 0 ? <h3>Farms</h3> : <></>}
+                        {selectedEvent.farms.length > 0 ? <h3>Farms</h3> : <></>}
                         {selectedEvent.farms.includes(farms.WH) ? <p>Windmill Hill</p> : <></>}
                         {selectedEvent.farms.includes(farms.HC) ? <p>Hartcliffe</p> : <></>}
                         {selectedEvent.farms.includes(farms.SW) ? <p>St Werburghs</p> : <></>}
-                        {selectedEvent.animals.length !== 0 ? <h3>Animals</h3> : <></>}
+                        {selectedEvent.animals.length > 0 ? <h3>Animals</h3> : <></>}
                         {selectedEvent.animals.map((animalID) => (
-                            <AnimalPopover key={animalID._id} animalID={animalID._id}/>
+                            <AnimalPopover key={animalID._id} animalID={animalID._id}/> // don't know why animalID and enclosure are objects in the map...
                         ))}
-                        {selectedEvent.enclosures.length !== 0 &&
+                        {selectedEvent.enclosures.length > 0 &&
                         <div>
                             <h3>Enclosures</h3>
-                            {selectedEvent.enclosures.map((enclosureName, index) => (
-                                <p key={index}>{enclosureName}</p>
+                            {selectedEvent.enclosures.map((enclosure, index) => (
+                                <p key={index} className='noMarginTop'>{enclosure.name}</p>
                             ))}
                         </div>}
                         {selectedEvent.description !== "" ?
@@ -384,24 +414,40 @@ const Calendar = ({farms}) => {
                             </ButtonGroup>
                         </div>
                         <div>
-                        <h3>Farms</h3>
-                        <FormGroup>
-                            <FormControlLabel control={<Checkbox defaultChecked={selectedEvent.farms.includes(farms.WH)} color={farms.WH} size='small'/>} label="Windmill Hill" onChange={() => setModifiedEvent({...modifiedEvent, farms: modifiedEvent.farms.includes(farms.WH) ? modifiedEvent.farms.filter((farm) => farm !== farms.WH) : modifiedEvent.farms.concat(farms.WH)})}/>
-                            <FormControlLabel control={<Checkbox defaultChecked={selectedEvent.farms.includes(farms.HC)} color={farms.HC} size='small'/>} label="Hartcliffe" onChange={()=>setModifiedEvent({...modifiedEvent, farms: modifiedEvent.farms.includes(farms.HC) ? modifiedEvent.farms.filter((farm) => farm !== farms.HC) : modifiedEvent.farms.concat(farms.HC)})}/>
-                            <FormControlLabel control={<Checkbox defaultChecked={selectedEvent.farms.includes(farms.SW)} color={farms.SW} size='small'/>} label="St Werburghs" onChange={()=>setModifiedEvent({...modifiedEvent, farms: modifiedEvent.farms.includes(farms.SW) ? modifiedEvent.farms.filter((farm) => farm !== farms.SW) : modifiedEvent.farms.concat(farms.SW)})}/>
-                        </FormGroup>
+                            <h3>Farms</h3>
+                            <FormGroup>
+                                <FormControlLabel control={<Checkbox defaultChecked={selectedEvent.farms.includes(farms.WH)} color={farms.WH} size='small'/>} label="Windmill Hill" onChange={() => setModifiedEvent({...modifiedEvent, farms: modifiedEvent.farms.includes(farms.WH) ? modifiedEvent.farms.filter((farm) => farm !== farms.WH) : modifiedEvent.farms.concat(farms.WH)})}/>
+                                <FormControlLabel control={<Checkbox defaultChecked={selectedEvent.farms.includes(farms.HC)} color={farms.HC} size='small'/>} label="Hartcliffe" onChange={()=>setModifiedEvent({...modifiedEvent, farms: modifiedEvent.farms.includes(farms.HC) ? modifiedEvent.farms.filter((farm) => farm !== farms.HC) : modifiedEvent.farms.concat(farms.HC)})}/>
+                                <FormControlLabel control={<Checkbox defaultChecked={selectedEvent.farms.includes(farms.SW)} color={farms.SW} size='small'/>} label="St Werburghs" onChange={()=>setModifiedEvent({...modifiedEvent, farms: modifiedEvent.farms.includes(farms.SW) ? modifiedEvent.farms.filter((farm) => farm !== farms.SW) : modifiedEvent.farms.concat(farms.SW)})}/>
+                            </FormGroup>
                         </div>
                         <h3>Animals</h3>
                         {modifiedEvent.animals.map((animalID) => (
-                            <p><AnimalPopover key={animalID} animalID={animalID} /></p>
+                            <AnimalPopover key={animalID._id} animalID={animalID._id} />
                         ))}{/*Add a way to remove animals from events */}
-                        <Button variant='outlined'>Add Animal</Button> {/* Apply changes to do with associating animals here */}
+                        <Button variant='outlined' onClick={() => {functionopenPopup("animals")}}>Add Animal</Button> 
+                        <div id="AssociateAnimal" style={{textAlign:'center'}}>
+                            <Dialog open={openAnimalsPopup} onClose={functionclosePopup}>
+                            <DialogTitle>Add Animal</DialogTitle>
+                            <DialogContent>
+                            <AssociateAnimal setAnimals={setModifiedEventAnimals}></AssociateAnimal>
+                            </DialogContent>
+                            </Dialog>
+                        </div>
                         <div>
                             <h3>Enclosures</h3>
-                            {modifiedEvent.enclosures.map((enclosureName, index) => (
+                            {modifiedEvent.enclosures.length > 0 ? modifiedEvent.enclosures.map((enclosureName, index) => (
                                 <p key={index}>{enclosureName}</p>
-                            ))}{/*Add a way to remove enclosures from events */}
-                            <Button variant='outlined'>Add Enclosure</Button> {/* idea: make this open the enlcosure  page with a new column of checkboxes. Click on an associate enlcosure(s) button would then pass a list of enclosure names to the calendar to be placed in a field*/}
+                            )): <></>}{/*Add a way to remove enclosures from events */}
+                            <Button variant='outlined' onClick={() => {functionopenPopup("enclosures")}}>Add Enclosure</Button> {/* idea: make this open the enlcosure  page with a new column of checkboxes. Click on an associate enlcosure(s) button would then pass a list of enclosure names to the calendar to be placed in a field*/}
+                            <div id="AssociateEnclosure" style={{textAlign:'center'}}>
+                                <Dialog open={openEnclosurePopup} onClose={functionclosePopup}>
+                                <DialogTitle>Add Enclosure</DialogTitle>
+                                <DialogContent>
+                                <AssociateEnclosure setEnclosures={setModifiedEventEnclosures}></AssociateEnclosure>
+                                </DialogContent>
+                                </Dialog>
+                            </div>
                         </div>
                         <div>
                             <h3>Description</h3>
@@ -452,16 +498,32 @@ const Calendar = ({farms}) => {
                     <div>
                         <h3>Animals</h3>
                         {newEvent.animals.map((animalID) => (
-                            <p><AnimalPopover key={animalID} animalID={animalID} /></p>
+                            <AnimalPopover key={animalID} animalID={animalID} />
                         ))}
-                        <Button variant='outlined'>Add Animal</Button> {/* idea: make this open the animal table page with a new column of checkboxes. Click on an associate animal(s) button would then pass a list of animal id to the calendar to the new event state. This could be re used in the modification of events.  */}
+                        <Button variant='outlined' onClick={() => {functionopenPopup("animals")}}>Add Animal</Button> {/* idea: make this open the animal table page with a new column of checkboxes. Click on an associate animal(s) button would then pass a list of animal id to the calendar to the new event state. This could be re used in the modification of events.  */}
+                        <div id="AssociateAnimal" style={{textAlign:'center'}}>
+                            <Dialog open={openAnimalsPopup} onClose={functionclosePopup}>
+                            <DialogTitle>Add Animal</DialogTitle>
+                            <DialogContent>
+                            <AssociateAnimal setAnimals={setAddEventAnimals}></AssociateAnimal>
+                            </DialogContent>
+                            </Dialog>
+                        </div>
                     </div>
                     <div>
                         <h3>Enclosures</h3>
                         {newEvent.enclosures.map((enclosureName, index) => (
                             <p key={index}>{enclosureName}</p>
                         ))}{/*Add a way to remove enclosures from events */}
-                        <Button variant='outlined'>Add Enclosure</Button> {/* idea: make this open the enlcosure  page with a new column of checkboxes. Click on an associate enlcosure(s) button would then pass a list of enclosure names to the calendar to be placed in a field*/}
+                        <Button variant='outlined' onClick={() => {functionopenPopup("enclosures")}}>Add Enclosure</Button> {/* idea: make this open the enlcosure  page with a new column of checkboxes. Click on an associate enlcosure(s) button would then pass a list of enclosure names to the calendar to be placed in a field*/}
+                        <div id="AssociateEnclosure" style={{textAlign:'center'}}>
+                            <Dialog open={openEnclosurePopup} onClose={functionclosePopup}>
+                            <DialogTitle>Add Enclosure</DialogTitle>
+                            <DialogContent>
+                            <AssociateEnclosure setEnclosures={setAddEventEnclosures}></AssociateEnclosure>
+                            </DialogContent>
+                            </Dialog>
+                        </div>
                     </div>
                     <div>
                         <h3>Description</h3>
@@ -487,4 +549,6 @@ const Calendar = ({farms}) => {
 }
 
 export default Calendar;
+
+
 
