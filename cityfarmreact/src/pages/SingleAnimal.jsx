@@ -16,20 +16,22 @@ const SingleAnimal = (props) => {
     const farms = props.farms;
 
     const { animalID } = useParams();
+
     const [relEvents,setRelEvents] = useState([])
     const [chosenAnimal, setChosenAnimal] = useState({name: 'Loading...', type: 'Loading...'});
     const [selectedEvent,setSelectedEvent] = useState("No event selected");
-    const [fieldsList,setFieldsList]=useState([])
+    const [schema, setSchema] = useState();
+    const [children,setChildren] = useState([])
 
     const token = getConfig();
 
     function readableFarm(farm) {
         switch(farm) {
-            case "WH": return "Windmill Hill";
-            case "HC": return "Hartcliffe";
-            case "SW": return "St Werburghs";
-            case '': return "None";
-            default: return "Loading...";
+            case "WH": return <span>Windmill Hill</span>;
+            case "HC": return <span>Hartcliffe</span>;
+            case "SW": return <span>St Werburghs</span>;
+            case '': return <span>None</span>;
+            default: return <span>Loading...</span>;
         }
     }
 
@@ -38,22 +40,57 @@ const SingleAnimal = (props) => {
             try {
                 const response = await axios.get(`/animals/by_id/${animalID}`, token);
                 setChosenAnimal(response.data);
-                console.log(chosenAnimal)
+
                 const events = await axios.get(`/events/by_animal/${animalID}`, token)
                 setRelEvents(eventsConversion(events.data))
 
             } catch (error) {
                 if (error.response.status === 401) {
-                    window.location.href = "/login";
+                    // window.location.href = "/login";
                     return;
                 } else {
                     window.alert(error);
                 }
             }
-
         })();
     }, [animalID]);
 
+    useEffect(()=>{
+        let kids =[];
+        let animals = [];
+        (async () => {
+            try {
+                const response = await axios.get(`/animals`,token);
+                animals=response.data
+                if (chosenAnimal.sex!=='c') {
+
+                    if (chosenAnimal.sex === 'm') {
+
+                        for (let a of animals) {
+                            if (a.father === chosenAnimal._id) {
+                                kids.push(a._id)
+                            }
+                        }
+                    } else {
+                        for (let a of animals) {
+                            if (a.mother === chosenAnimal._id) {
+                                kids.push(a._id)
+                            }
+                        }
+                    }
+
+                    setChildren(kids)
+                }
+            } catch (error) {
+                if (error.response.status === 401) {
+                    // window.location.href = "/login";
+                    return;
+                } else {
+                    window.alert(error);
+                }
+            };
+        })()
+        },[animalID])
     const eventsConversion=(events)=>{
         let changed=[]
         for (let i=0;i<events.length;i++){
@@ -70,52 +107,89 @@ const SingleAnimal = (props) => {
                 }
             )
         }
-        return changed
+        return changed;
     }
 
     const handleEventClick=(event)=>{
         setSelectedEvent(event)
     }
 
-    useEffect(()=>{
-        if (chosenAnimal.fields){
-            let fields =[]
-            for (const [key,value] of Object.entries(chosenAnimal.fields)){
-
-                let elem1=key
-                let elem2=value
-                if (typeof(value) == "boolean"){
-                    if (value){elem2 = "true"
-                    }else {elem2 = "false"}
+    function getSchema() {
+        (async () => {
+            try {
+                const response = await axios.get(`/schemas/by_name/${chosenAnimal.type}`, token);
+                setSchema(response.data.pop());
+            } catch (error) {
+                if (error.response.status === 401) {
+                    window.location.href = "/login";
+                    return;
+                } else {
+                    window.alert(error);
                 }
-                fields.push([elem1,elem2])
-            }setFieldsList(fields)
-        }
+            }
+        })()
+    }
 
-    },[animalID]);
+    useEffect(() => {
+        chosenAnimal.type !== 'Loading...' && getSchema();
+    }, [chosenAnimal]);
+
+    const fieldTypeSwitch = (name, value) => {
+        if (schema && value !== '') {
+            switch(schema._fields[name]._type) {
+                case "java.lang.Boolean":
+                    return <span key={name}>{name.charAt(0).toUpperCase() + name.slice(1)}: {value ? 'Yes' : 'No'}</span>;
+                case "java.lang.String":
+                    return <span key={name}>{name.charAt(0).toUpperCase() + name.slice(1)}: {value}</span>;
+                case "java.lang.Integer":
+                    return <span key={name}>{name.charAt(0).toUpperCase() + name.slice(1)}: {value}</span>;
+                case "java.lang.Double":
+                    return <span key={name}>{name.charAt(0).toUpperCase() + name.slice(1)}: {value}</span>;
+                case "java.time.ZonedDateTime":
+                    return <span key={name}>{name.charAt(0).toUpperCase() + name.slice(1)}: {new Date(value).toLocaleDateString()}</span>;
+                default:
+                    return <></>;
+            }
+        }
+    }
 
     return<>
         <h1>{chosenAnimal.name}</h1>
-        Sex: {chosenAnimal.sex === undefined ? 'Loading...' : (chosenAnimal.sex === 'f' ? 'Female' : (chosenAnimal.sex === 'm' ? 'Male' : 'Castrated'))}<br/>
-        Species: {chosenAnimal.type.charAt(0).toUpperCase() + chosenAnimal.type.slice(1)}<br/>
-        <span style={{display: 'flex'}}>
+        <div>Sex: {chosenAnimal.sex === undefined ? <span>Loading...</span> : (chosenAnimal.sex === 'f' ? <span>Female</span> : (chosenAnimal.sex === 'm' ? <span>Male</span> : <span>Castrated</span>))}</div>
+        <div>Species: {chosenAnimal.type.charAt(0).toUpperCase() + chosenAnimal.type.slice(1)}</div>
+        <div style={{display: 'flex'}}>
             <span style={{marginRight: '0.5em'}}>Father:</span>
             {chosenAnimal.father ?
                 <AnimalPopover key={chosenAnimal.father} animalID={chosenAnimal.father}/>
-            : 'Unregistered'}
-        </span>
-        <span style={{display: 'flex'}}>
+            : <span>Unregistered</span>}
+        </div>
+        <div style={{display: 'flex'}}>
             <span style={{marginRight: '0.5em'}}>Mother:</span>
             {chosenAnimal.mother ? 
                 <AnimalPopover key={chosenAnimal.mother} animalID={chosenAnimal.mother}/>
-            : 'Unregistered'}
-        </span>
-        Farm: {readableFarm(chosenAnimal.farm)}<br/>
-        Custom fields:<br/>
-        {fieldsList.map((field)=>{
-            return (<>{field[0]} : {field[1]}<br/></>)
-        })
-        }
+            : <span>Unregistered</span>}
+        </div>
+        <div>
+            Farm: {readableFarm(chosenAnimal.farm)}
+        </div>
+        <div>
+            {chosenAnimal.notes && `Notes: ${chosenAnimal.notes}`}
+        </div>
+        {chosenAnimal.fields && Object.entries(chosenAnimal.fields).map(([name, value]) => {
+            return fieldTypeSwitch(name, value);
+        })}
+        <br/>
+        {
+            Array.isArray(children) && children.length > 0 && (
+            <div>
+                Children:
+                {children.map((animal, index) => {
+                    return (<AnimalPopover key={animal} animalID={animal} />);
+                })}
+            </div>
+        )}
+
+
         <div>
             {relEvents.length !== 0 ? <h2>Linked Events</h2> : <></>}
             {relEvents.map((event, index) => {

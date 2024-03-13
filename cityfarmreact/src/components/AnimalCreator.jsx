@@ -8,7 +8,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import { FormHelperText, IconButton, Select } from "@mui/material";
+import { FormHelperText, IconButton, Select, Backdrop, Alert } from "@mui/material";
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Button from '@mui/material/Button';
@@ -17,31 +17,41 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-
 import { getConfig } from '../api/getToken';
 
 const AnimalCreator = (props) => {
-    const [newAnimal, setNewAnimal] = useState({name: '', type: '', father: '', mother: '', sex: '', alive: true, farm: '', fields: {}});
+    const [newAnimal, setNewAnimal] = useState({name: '', type: '', father: '', mother: '', sex: '', alive: true, farm: '', fields: {}, notes: ''});
     const [schema, setSchema] = useState();
     const [fieldList, setFieldList] = useState([]);
     const [create, setCreate] = useState(false);
+
+    const [showErr, setShowErr] = useState(false);
 
     const token = getConfig();
 
     const reset = () => {
         setCreate(false);
-        setNewAnimal({name: '', type: '', father: '', mother: '', sex: '', alive: true, farm: '', fields: {}})
+        setNewAnimal({name: '', type: '', father: '', mother: '', sex: '', alive: true, farm: '', fields: {}, notes: ''})
         setSchema();
+    }
+
+    var inputErr = {name: true, type: true, sex: true};
+
+    const showError = () => {
+        setShowErr(true);
     }
 
     const fieldTypeSwitch = (key) => {
         let field = fieldList[key];
-        if(newAnimal.fields[field] === undefined) {newAnimal.fields[field] = ''}; {/* initialise field values to enpty strings */}
-        switch(schema._fields[field]._type) { /* check the type of the field and display appropriate input method */
+        if (newAnimal.fields[field] === undefined) newAnimal.fields[field] = '';    /* initialise field values to empty strings */
+        var error = newAnimal.fields[field] === '' && schema._fields[field]._required;
+        const req = schema._fields[field]._required;
+        inputErr[key] = error;
+        switch(schema._fields[field]._type) {   /* check the type of the field and display appropriate input method */
             case "java.lang.Boolean":
                 return (
-                    <FormControl error={newAnimal.fields[field] === '' && schema._fields[field]._required} required={schema._fields[field]._required} sx={{width: '100%'}}>
-                    <FormHelperText style={{marginLeft: '5px'}}>{schema._fields[field]._required ? 'Required' : 'Not Required'}</FormHelperText>
+                    <FormControl error={error} required={req} sx={{width: '100%'}}>
+                    <FormHelperText style={{margin: '0 0 2.5px 5px'}}>{req ? 'Required' : 'Not Required'}</FormHelperText>
                     <Select
                         value={newAnimal.fields[field] !== undefined ? newAnimal.fields[field] : ''}
                         size='small'
@@ -59,8 +69,8 @@ const AnimalCreator = (props) => {
                 );
             case "java.lang.String":
                 return (
-                    <FormControl error={newAnimal.fields[field] === '' && schema._fields[field]._required} required={schema._fields[field]._required} sx={{width: '100%'}}>
-                    <FormHelperText style={{marginLeft: '5px'}}>{schema._fields[field]._required ? 'Required' : 'Not Required'}</FormHelperText>
+                    <FormControl error={error} required={req} sx={{width: '100%'}}>
+                    <FormHelperText style={{margin: '0 0 2.5px 5px'}}>{req ? 'Required' : 'Not Required'}</FormHelperText>
                     <TextField
                         fullWidth
                         size='small'
@@ -75,8 +85,8 @@ const AnimalCreator = (props) => {
                 );
             case "java.lang.Integer":
                 return (
-                    <FormControl error={newAnimal.fields[field] === '' && schema._fields[field]._required} required={schema._fields[field]._required} sx={{width: '100%'}}>
-                    <FormHelperText style={{marginLeft: '5px'}}>{schema._fields[field]._required ? 'Required' : 'Not Required'}</FormHelperText>
+                    <FormControl error={error} required={req} sx={{width: '100%'}}>
+                    <FormHelperText style={{margin: '0 0 2.5px 5px'}}>{req ? 'Required' : 'Not Required'}</FormHelperText>
                     <TextField
                         type='number'
                         fullWidth
@@ -92,8 +102,8 @@ const AnimalCreator = (props) => {
                 );
             case "java.lang.Double":
                 return (
-                    <FormControl error={newAnimal.fields[field] === '' && schema._fields[field]._required} required={schema._fields[field]._required} sx={{width: '100%'}}>
-                    <FormHelperText style={{marginLeft: '5px'}}>{schema._fields[field]._required ? 'Required' : 'Not Required'}</FormHelperText>
+                    <FormControl error={error} required={req} sx={{width: '100%'}}>
+                    <FormHelperText style={{margin: '0 0 2.5px 5px'}}>{req ? 'Required' : 'Not Required'}</FormHelperText>
                     <TextField
                         type='number'
                         fullWidth
@@ -109,8 +119,8 @@ const AnimalCreator = (props) => {
                 );
             case "java.time.ZonedDateTime":
                 return (
-                    <FormControl error={newAnimal.fields[field] === '' && schema._fields[field]._required} required={schema._fields[field]._required} sx={{width: '100%'}}>
-                    <FormHelperText style={{marginLeft: '5px'}}>{schema._fields[field]._required ? 'Required' : 'Not Required'}</FormHelperText>
+                    <FormControl error={error} required={req} sx={{width: '100%'}}>
+                    <FormHelperText style={{margin: '0 0 2.5px 5px'}}>{req ? 'Required' : 'Not Required'}</FormHelperText>
                     <DatePicker
                         onChange={(e) => {
                             let newFields = newAnimal.fields;
@@ -127,8 +137,10 @@ const AnimalCreator = (props) => {
     }
 
     useEffect(() => {
-        console.log(newAnimal);
-    },[newAnimal])
+        inputErr['name'] = newAnimal.name === '';
+        inputErr['type'] = newAnimal.type === '';
+        inputErr['sex'] = newAnimal.sex === '';
+    }, [newAnimal])
 
     return (<>
         {create ? <>
@@ -148,7 +160,15 @@ const AnimalCreator = (props) => {
                     <TableBody>
                         <TableRow>
                             <TableCell>
-                                <TextField fullWidth error={newAnimal.name === ''} required size='small' onChange={(e)=>{setNewAnimal({...newAnimal, name: e.target.value})}} label='Name'/>
+                                <TextField
+                                    fullWidth
+                                    error={newAnimal.name === ''}
+                                    required
+                                    size='small'
+                                    onChange={(e)=>{
+                                        setNewAnimal({...newAnimal, name: e.target.value});
+                                    }}
+                                    label='Name'/>
                             </TableCell>
                             <TableCell>
                                 <Autocomplete
@@ -171,7 +191,7 @@ const AnimalCreator = (props) => {
                                             props.setOffset(129.6+20+152.5+20);
                                             setFieldList(Object.keys(tempSchema._fields));
                                         } else {
-                                            setNewAnimal({...newAnimal, type: '', fields: {}});
+                                            setNewAnimal({...newAnimal, type: '', fields: {}, notes: ''});
                                             setSchema();
                                             props.setOffset(129.6+20);
                                             setFieldList([]);
@@ -195,7 +215,9 @@ const AnimalCreator = (props) => {
                                             return {id: animal._id, name: animal.name}
                                         })
                                     }
-                                    onChange={(e, v)=>{v ? setNewAnimal({...newAnimal, father: v.id}) : setNewAnimal({...newAnimal, father: ''})}}
+                                    onChange={(e, v) => {
+                                        v ? setNewAnimal({...newAnimal, father: v.id}) : setNewAnimal({...newAnimal, father: ''});
+                                    }}
                                 />
                             </TableCell>
                             <TableCell>
@@ -215,11 +237,24 @@ const AnimalCreator = (props) => {
                                             return {id: animal._id, name: animal.name}
                                         })
                                     }
-                                    onChange={(e, v)=>{v ? setNewAnimal({...newAnimal, mother: v.id}) : setNewAnimal({...newAnimal, mother: ''})}}
+                                    onChange={(e, v) => {
+                                        v ? setNewAnimal({...newAnimal, mother: v.id}) : setNewAnimal({...newAnimal, mother: ''})
+                                    }}
                                 />
                             </TableCell>
                             <TableCell>
-                                <TextField select fullWidth error={newAnimal.sex === ''} required label='Sex' value={newAnimal.sex} size='small' onChange={(e) => {setNewAnimal({...newAnimal, sex: e.target.value})}}>
+                                <TextField
+                                    select
+                                    fullWidth
+                                    error={newAnimal.sex === ''}
+                                    required
+                                    label='Sex'
+                                    value={newAnimal.sex}
+                                    size='small'
+                                    onChange={(e) => {
+                                        setNewAnimal({...newAnimal, sex: e.target.value});
+                                    }}
+                                >
                                     <MenuItem value={'f'}>Female</MenuItem>  
                                     <MenuItem value={'m'}>Male</MenuItem>
                                     <MenuItem value={'c'}>Castrated</MenuItem>
@@ -245,22 +280,22 @@ const AnimalCreator = (props) => {
                 <Table>
                     <TableHead>
                         <TableRow>
-                            <TableCell style={{width: `${100/(Object.keys(schema._fields).length + 1)}%`}}>Property Name</TableCell>
                             {Object.keys(schema._fields).map((field, index) => {
                                 return (
                                 <TableCell key={index} style={{width: `${100/(Object.keys(schema._fields).length + 1)}%`}}>{field.charAt(0).toUpperCase() + field.slice(1)}</TableCell>
                                 );
                             })}
+                            <TableCell style={{width: `${100/(Object.keys(schema._fields).length + 1)}%`}}>Notes</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
                         <TableRow>
-                            <TableCell variant='head'>Property Value</TableCell>
                             {Object.keys(schema._fields).map((_, index) => {
                                 return (
                                     <TableCell key={index}>{fieldList ? fieldTypeSwitch(index) : <p>Loading...</p>}</TableCell>
                                 );
                             })}
+                            <TableCell><TextField size='small' multiline placeholder='Add notes...' fullWidth rows={2} onChange={(e) => {setNewAnimal({...newAnimal, notes: e.target.value})}}/></TableCell>
                         </TableRow>
                     </TableBody>
                 </Table>
@@ -270,18 +305,34 @@ const AnimalCreator = (props) => {
                 variant="contained"
                 aria-label="add"
                 endIcon={<AddIcon/>}
-                onClick={async() => {
-                    try {
-                        await axios.post(`/animals/create`, newAnimal, token)
-                    } catch(error) {
-                        window.alert(error);
+                onClick={() => {
+                    if (Object.values(inputErr).filter((err) => err === true).length > 0) {
+                        showError();
+                        return;
                     }
-                    window.location.reload(false);
+                    (async () => {
+                        try {
+                            await axios.post(`/animals/create`, newAnimal, token)
+                        } catch(error) {
+                            if (error.response.status === 401) {
+                                window.location.href = "/login";
+                                return;
+                            } else {
+                                window.alert(error);
+                            }
+                        }
+                        window.location.reload(false);
+                    })()
                 }}
             >Create</Button>
             </div>
             : <></>}</>
         : <Button className='tallButton' variant='contained' endIcon={<AddIcon/>} style={{float: 'right'}} onClick={() => {setCreate(true); props.setOffset(129.6+20)}}>Create</Button>}
+        <Backdrop style={{zIndex: '4', background: '#000000AA'}} open={showErr} onClick={() => setShowErr(false)}>
+            <Alert severity='warning'>
+                Please ensure all required fields are filled
+            </Alert>
+        </Backdrop>
     </>)
 }
 

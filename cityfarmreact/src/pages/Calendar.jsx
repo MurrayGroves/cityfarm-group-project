@@ -6,11 +6,14 @@ import "./Calendar.css";
 import Event from "../components/Event";
 import CreateEvent from "../components/CreateEvent";
 import AnimalPopover from "../components/AnimalPopover";
-import CloseIconLight from "../assets/close-512-light.webp";
-import CloseIconDark from "../assets/close-512-dark.webp";
+import Close from '@mui/icons-material/Close';
 import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
-import { IconButton, Button, ButtonGroup, Checkbox, FormControlLabel, FormGroup, useTheme } from '@mui/material';
+import { IconButton, Button, ButtonGroup, Checkbox, FormControlLabel, FormGroup, useTheme, FormHelperText, Backdrop, Alert } from '@mui/material';
+import AlertTitle from '@mui/material/AlertTitle';
+import EditIcon from '@mui/icons-material/Edit';
+import AddIcon from '@mui/icons-material/Add';
+import Delete from '@mui/icons-material/Delete';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import axios from '../api/axiosConfig'
@@ -25,7 +28,8 @@ export const eventsConversion=(events)=>{
     for (let i=0;i<events.length;i++){
         changed.push(
             {
-                title : events[i].event.title,
+                _id: events[i].event._id,
+                title: events[i].event.title,
                 allDay: events[i].event.allDay,
                 start: new  Date(events[i].start),
                 end: new  Date(events[i].end),
@@ -36,7 +40,6 @@ export const eventsConversion=(events)=>{
             }
         )
     }
-    console.log(changed)
     return changed
 }
 
@@ -70,6 +73,12 @@ const Calendar = ({farms}) => {
     const [selectedEvent,setSelectedEvent] = useState("No event selected");
     const [visibleFarms, setVisibleFarms] = useState([farms.WH, farms.HC, farms.SW]);
     const [modifyEvent, setModifyEvent] = useState(false);
+    const [showErr, setShowErr] = useState(false);
+    const [inputErr, setInputErr] = useState({newTitle: true});
+
+    useEffect(() => {
+        setInputErr({...inputErr, newTitle: newEvent.title === ''});
+    }, [newEvent])
 
     useEffect(() =>{
         setModifiedEvent(selectedEvent);
@@ -86,7 +95,12 @@ const Calendar = ({farms}) => {
                 const response = await axios.get(`/events`, {params: {from: start.toISOString(), to: end.toISOString()}, ...token});
                 setAllEvents(eventsConversion(response.data));
             } catch (error) {
-                window.alert(error);
+                if (error.response.status === 401) {
+                    window.location.href = "/login";
+                    return;
+                } else {
+                    window.alert(error);
+                }
             }
         })();
     },[]);
@@ -100,8 +114,29 @@ const Calendar = ({farms}) => {
         }
     }
 
-    const handleAddEvent = () => {
-        setAllEvents([...allEvents, newEvent]); /*Adds the new event to the list of allEvents} */
+    const showError = () => {
+        setShowErr(true);
+    }
+
+    const handleAddEvent = async() => {
+        if (Object.values(inputErr).filter((err) => err === true).length > 0) {
+            return showError();
+        }
+
+        try {
+            await axios.post(`/events/create/once`, newEvent, token);
+        } catch(error) {
+            if (error.response.status === 401) {
+                window.location.href = "/login";
+                return;
+            } else {
+                window.alert(error);
+            }
+        }
+
+        window.location.reload(false);
+
+        //setAllEvents([...allEvents, newEvent]); /*Adds the new event to the list of allEvents} */
         setNewEvent({
             title: "",
             allDay: true,
@@ -112,7 +147,36 @@ const Calendar = ({farms}) => {
             description: "",
             enclosures: []
         });
-        console.log(allEvents, newEvent);
+    }
+
+    const handleDelEvent = async() => {
+        let id = selectedEvent._id;
+        console.log(id);
+        try {
+            await axios.delete(`/events/by_id/${id}`, token);
+        } catch(error) {
+            if (error.response.status === 401) {
+                window.location.href = "/login";
+                return;
+            } else {
+                window.alert(error);
+            }
+        }
+        window.location.reload(false);
+    }
+
+    const handlePatchEvent = async() => {
+        try {
+            window.alert('Patch not implemented yet.'); //patch not implemented
+        } catch(error) {
+            if (error.response.status === 401) {
+                window.location.href = "/login";
+                return;
+            } else {
+                window.alert(error);
+            }
+        }
+        window.location.reload(false);
     }
 
     const changeAllDay = (isAllDay, type) => {
@@ -124,7 +188,6 @@ const Calendar = ({farms}) => {
     }
 
     const eventStyleGetter = (event) => {
-        //console.log(event)
         var colour1 = event.farms.includes(farms.WH) ? theme.WH.main : (event.farms.includes(farms.HC) ? theme.HC.main : theme.SW.main);
         var colour2 = event.farms.includes(farms.HC) ? (event.farms.includes(farms.WH) ? theme.HC.main : (event.farms.includes(farms.SW) ? theme.SW.main : theme.SW.main)) : theme.SW.main;
         const offset = 0;
@@ -152,25 +215,33 @@ const Calendar = ({farms}) => {
         if (type === "add") {
             if (isShown){
                 return(<>
-                    <DateTimePicker value={dayjs(newEvent.start)} onChange={(e) => {setNewEvent({...newEvent, start: e.$d})}} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
-                    <DateTimePicker value={dayjs(newEvent.end)} onChange={(e) => {setNewEvent({...newEvent, end: e.$d})}} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
+                    <FormHelperText>Start</FormHelperText>
+                    <DateTimePicker value={dayjs(newEvent.start)} onChange={(e) => {setNewEvent({...newEvent, start: e.$d, end: newEvent.end < e.$d ? e.$d : newEvent.end})}} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
+                    <FormHelperText>End</FormHelperText>
+                    <DateTimePicker value={dayjs(newEvent.end)} onChange={(e) => {setNewEvent({...newEvent, end: e.$d, start: e.$d < newEvent.start ? e.$d : newEvent.start})}} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
                 </>)
             } else {
                 return(<>
-                    <DatePicker value={dayjs(newEvent.start)} onChange={(e) => {setNewEvent({...newEvent, start: e.$d})}} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
-                    <DatePicker value={dayjs(newEvent.end)} onChange={(e) => {setNewEvent({...newEvent, end: e.$d})}} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
+                    <FormHelperText>Start</FormHelperText>
+                    <DatePicker value={dayjs(newEvent.start)} onChange={(e) => {setNewEvent({...newEvent, start: e.$d, end: newEvent.end < e.$d ? e.$d : newEvent.end})}} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
+                    <FormHelperText>End</FormHelperText>
+                    <DatePicker value={dayjs(newEvent.end)} onChange={(e) => {setNewEvent({...newEvent, end: e.$d, start: e.$d < newEvent.start ? e.$d : newEvent.start})}} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
                 </>)
             }
         } else {
             if (isShown) {
                 return(<>
-                    <DateTimePicker value={dayjs(modifiedEvent.start)} placeholder={selectedEvent.start} onChange={(e) => {setModifiedEvent({...modifiedEvent, start: e.$d})}} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
-                    <DateTimePicker value={dayjs(modifiedEvent.end)} placeholder={selectedEvent.end} onChange={(e) => {setModifiedEvent({...modifiedEvent, end: e.$d})}} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
+                    <FormHelperText>Start</FormHelperText>
+                    <DateTimePicker value={dayjs(modifiedEvent.start)} placeholder={selectedEvent.start} onChange={(e) => {setModifiedEvent({...modifiedEvent, start: e.$d, end: modifiedEvent.end < e.$d ? e.$d : modifiedEvent.end})}} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
+                    <FormHelperText>End</FormHelperText>
+                    <DateTimePicker value={dayjs(modifiedEvent.end)} placeholder={selectedEvent.end} onChange={(e) => {setModifiedEvent({...modifiedEvent, end: e.$d, start: e.$d < modifiedEvent.start ? e.$d : modifiedEvent.start})}} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
                 </>)
             } else {
                 return(<>
-                    <DatePicker value={dayjs(modifiedEvent.start)} placeholder={selectedEvent.start} onChange={(e) => {setModifiedEvent({...modifiedEvent, start: e.$d})}} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
-                    <DatePicker value={dayjs(modifiedEvent.end)} placeholder={selectedEvent.end} onChange={(e) => {setModifiedEvent({...modifiedEvent, end: e.$d})}} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
+                    <FormHelperText>Start</FormHelperText>
+                    <DatePicker value={dayjs(modifiedEvent.start)} placeholder={selectedEvent.start} onChange={(e) => {setModifiedEvent({...modifiedEvent, start: e.$d, end: modifiedEvent.end < e.$d ? e.$d : modifiedEvent.end})}} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
+                    <FormHelperText>End</FormHelperText>
+                    <DatePicker value={dayjs(modifiedEvent.end)} placeholder={selectedEvent.end} onChange={(e) => {setModifiedEvent({...modifiedEvent, end: e.$d, start: e.$d < modifiedEvent.start ? e.$d : modifiedEvent.start})}} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
                 </>)
             }
         }
@@ -214,20 +285,24 @@ const Calendar = ({farms}) => {
                 }
             }
         }
-      }, [])
+    }, [])
 
-    let offRangeColour = theme.mode === 'dark' ? 'black' : '#f0f0f0';
+    let dayColour = theme.mode === 'dark' ? '#121212': '#fff'
+    let offRangeColour = theme.mode === 'dark' ? '#ffffff08' : '#f0f0f0';
     let todayColour = theme.mode === 'dark' ? theme.primary.veryDark : theme.primary.light;
-    let text = theme.mode === 'dark' ? 'white' : 'black';
+    let textColour = theme.mode === 'dark' ? 'white' : 'black';
+    let headerColour = theme.mode === 'dark' ? theme.primary.veryDark : theme.primary.light;
 
     return (<>
         <div style={{display: 'flex', justifyContent: 'space-between'}}>
             <h1>Calendar</h1>
-            <FormGroup style={{width: '400px'}} row>
-                <FormControlLabel control={<Checkbox defaultChecked color={farms.WH} size='small'/>} label="Windmill Hill" onChange={() => updateVisibleFarms(farms.WH)}/>
-                <FormControlLabel control={<Checkbox defaultChecked color={farms.HC} size='small'/>} label="Hartcliffe" onChange={() => updateVisibleFarms(farms.HC)}/>
-                <FormControlLabel control={<Checkbox defaultChecked color={farms.SW} size='small'/>} label="St Werburghs" onChange={() => updateVisibleFarms(farms.SW)}/>
-            </FormGroup>
+            <Paper elevation={3} style={{height: '48px', marginTop: '21.44px', padding: '6px 0 0 10px', width: '400px'}}>
+                <FormGroup row>
+                    <FormControlLabel control={<Checkbox defaultChecked color={farms.WH} size='small'/>} label="Windmill Hill" onChange={() => updateVisibleFarms(farms.WH)}/>
+                    <FormControlLabel control={<Checkbox defaultChecked color={farms.HC} size='small'/>} label="Hartcliffe" onChange={() => updateVisibleFarms(farms.HC)}/>
+                    <FormControlLabel control={<Checkbox defaultChecked color={farms.SW} size='small'/>} label="St Werburghs" onChange={() => updateVisibleFarms(farms.SW)}/>
+                </FormGroup>
+            </Paper>
         </div>
         <div style={{ display: "flex", justifyContent: "left", height: "calc(100% - 91px)"}}>
             <Paper elevation={3} style={{height: '100%', width: "calc(100% - 420px)", padding: '15px', marginRight: '20px'}}>
@@ -237,7 +312,7 @@ const Calendar = ({farms}) => {
                     events={allEvents}
                     startAccessor="start"
                     endAccessor="end"
-                    style={{'--off-range': offRangeColour, '--today': todayColour, '--text': text}}
+                    style={{'--day': dayColour, '--off-range': offRangeColour, '--today': todayColour, '--text': textColour, '--header': headerColour}}
                     showMultiDayTimes
                     onSelectEvent={setSelectedEvent}
                     eventPropGetter={eventStyleGetter}
@@ -252,12 +327,15 @@ const Calendar = ({farms}) => {
                 <Paper elevation={3} style={{position: 'relative', width: '400px', margin: '0 0 20px 0', padding: '10px'}}>
                     <div style={{display: "flex", justifyContent: "space-between"}}>
                         <h2 className='boxTitle'>Selected Event</h2>
-                        <IconButton className='closeButton' onClick={() => {setModifyEvent(false); setSelectedEvent("No event selected")}}><img src={theme.mode === 'dark' ? CloseIconDark : CloseIconLight} alt='close button'/></IconButton>
+                        <span>
+                            {!modifyEvent && <IconButton onClick={()=>{setModifyEvent(true)}}><EditIcon/></IconButton>}
+                            <IconButton onClick={() => handleDelEvent()}><Delete/></IconButton>
+                            <IconButton onClick={() => {setModifyEvent(false); setSelectedEvent("No event selected")}}><Close/></IconButton>
+                        </span>
                     </div>
                     {!modifyEvent ?
                     <div>
-                        <h2>{selectedEvent.title}</h2>
-                        <Button style={{float: 'right', position: 'relative', bottom: '36px'}} variant='outlined' onClick={()=>{setModifyEvent(true)}}>Edit</Button>
+                        <h2 className='noMarginTop'>{selectedEvent.title}</h2>
                         {
                             selectedEvent.allDay ?
                                 <div>
@@ -265,7 +343,7 @@ const Calendar = ({farms}) => {
                                 </div>
                                 :
                                 <div>
-                                    <p>{selectedEvent.start.toLocaleString([], {year: '2-digit', month: '2-digit', day: '2-digit', hour: '2-digit', minute:'2-digit'})} - {selectedEvent.start.toLocaleDateString() === selectedEvent.end.toLocaleDateString() ? selectedEvent.end.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}): selectedEvent.end.toLocaleString([], {year: '2-digit', month: '2-digit', day: '2-digit', hour: '2-digit', minute:'2-digit'})}</p>
+                                    <p>{selectedEvent.start.toLocaleString([], {year: '2-digit', month: '2-digit', day: '2-digit', hour: '2-digit', minute:'2-digit'})} - {selectedEvent.start.toLocaleDateString() === selectedEvent.end.toLocaleDateString() ? selectedEvent.end.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : selectedEvent.end.toLocaleString([], {year: '2-digit', month: '2-digit', day: '2-digit', hour: '2-digit', minute:'2-digit'})}</p>
                                 </div>
 
                         }
@@ -293,6 +371,7 @@ const Calendar = ({farms}) => {
                     :
                     <div className='modifyEvent'>
                         <TextField
+                            error={modifiedEvent.title === ''}
                             fullWidth
                             size='small'
                             placeholder={selectedEvent.title}
@@ -305,7 +384,7 @@ const Calendar = ({farms}) => {
                             <FormControlLabel control={<Checkbox defaultChecked={selectedEvent.allDay} size='small'/>} label="All Day" onChange={(e) => {changeAllDay(!modifiedEvent.allDay, "modify")}}/>
                             <ButtonGroup style={{float: 'right'}}>
                                 <Button variant='contained' color='warning' onClick={()=>{setModifyEvent(false)}}>Discard</Button>
-                                <Button variant='contained' color='success' onClick={()=>{}}>Update</Button>
+                                <Button variant='contained' color='success' onClick={()=>{handlePatchEvent()}}>Update</Button>
                             </ButtonGroup>
                         </div>
                         <div>
@@ -334,7 +413,7 @@ const Calendar = ({farms}) => {
                                 fullWidth
                                 size='small'
                                 multiline
-                                rows={2}
+                                rows={3}
                                 placeholder='Enter Description'
                                 value={modifiedEvent.description}
                                 onChange={(e) => {setModifiedEvent({...modifiedEvent, description: e.target.value})}}
@@ -350,6 +429,7 @@ const Calendar = ({farms}) => {
                     <h2 className='boxTitle'>Create New Event</h2>
                     <div>
                         <TextField
+                            error={newEvent.title === ''}
                             size='small'
                             fullWidth
                             placeholder="Add Title"
@@ -362,7 +442,7 @@ const Calendar = ({farms}) => {
 
                     <div style={{marginTop: "10px"}}>
                         <FormControlLabel control={<Checkbox defaultChecked size='small'/>} label="All Day" onChange={() => changeAllDay(!newEvent.allDay, "add")}/>
-                        <Button variant='outlined' style={{float: "right"}} onClick={()=>handleAddEvent()}>Create</Button>
+                        <Button variant='contained' style={{float: "right"}} onClick={()=>handleAddEvent()} endIcon={<AddIcon/>}>Create</Button>
                     </div>
 
                     <div style={{marginTop: "10px"}}>
@@ -393,7 +473,7 @@ const Calendar = ({farms}) => {
                             fullWidth
                             size='small'
                             multiline
-                            rows={2}
+                            rows={3}
                             placeholder='Enter Description'
                             value={newEvent.description}
                             onChange={(e) => {setNewEvent({...newEvent, description: e.target.value})}}
@@ -402,6 +482,11 @@ const Calendar = ({farms}) => {
                 </Paper>
             </div>
         </div>
+        <Backdrop style={{zIndex: '4', background: '#000000AA'}} open={showErr} onClick={() => setShowErr(false)}>
+            <Alert severity='warning'>
+                Please ensure event title is not empty
+            </Alert>
+        </Backdrop>
     </>);
 }
 
