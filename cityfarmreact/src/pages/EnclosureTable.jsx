@@ -10,7 +10,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import Button from '@mui/material/Button';
 import { diff } from "deep-object-diff";
 import AnimalPopover from "../components/AnimalPopover";
-import AnimalCreator from "../components/AnimalCreator";
+import EnclosureCreator from "../components/EnclosureCreator";
 import { getConfig } from '../api/getToken';
 
 const EnclosureTable = ({farms}) => {
@@ -132,7 +132,6 @@ const EnclosureTable = ({farms}) => {
         </TableContainer>
         <Button style={{float: 'right'}} aria-label="edit" onClick={() => setEditMode(true)} variant='contained' endIcon={<EditIcon/>}>Edit</Button>
         <EnclosureCreator/>
-        <EnclosureCreatorCreator/>
     </>)
 }
 
