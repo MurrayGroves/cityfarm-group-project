@@ -9,24 +9,51 @@ import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
 import AnimalCreator from "../components/AnimalCreator";
 
+import { getConfig } from '../api/getToken';
+
 const AnimalTable = ({farms}) => {
     const [animalList, setAnimalList] = useState([]); /* The State for the list of animals. The initial state is [] */
     const [searchTerm, setSearchTerm] = useState(''); /* The term being searched for in the searchbar */
-    
-    const [farm, setFarm] = useState(Object.keys(farms)[0]);
+    const [schemaList, setSchemaList] = useState([]);
 
-    //useEffect(displayAll,[clear])
+    const [farm, setFarm] = useState(null);
+
+    const token = getConfig();
 
     function displayAll() {
         (async () => {
             try {
-                const response = await axios.get(`/animals`);
+                const response = await axios.get(`/animals`, {params: {farm: farm}, ...token});
                 setAnimalList(response.data);
             } catch (error) {
-                window.alert(error);
+                console.log(error);
+                if (error.response.status === 401) {
+                    window.location.href = "/login";
+                    return;
+                } else {
+                    window.alert(error);
+                }
+            };
+        })()
+    }
+
+    function getSchemas() {
+        (async () => {
+            try {
+                const response = await axios.get(`/schemas`, token);
+                setSchemaList(response.data.reverse());
+            } catch (error) {
+                if (error.response.status === 401) {
+                    window.location.href = "/login";
+                    return;
+                } else {
+                    window.alert(error);
+                }
             }
         })()
     }
+
+    useEffect(getSchemas, []);
 
     useEffect(() => {
         (async () => {
@@ -35,39 +62,53 @@ const AnimalTable = ({farms}) => {
                 return;
             }
             try {
-                const response = await axios.get(`/animals/by_name/${searchTerm}`);
+                const response = await axios.get(`/animals/by_name/${searchTerm}`, {params: {farm: farm}, ...token});
                 setAnimalList(response.data);
             } catch (error) {
-                window.alert(error);
+                if (error.response.status === 401) {
+                    window.location.href = "/login";
+                    return;
+                } else {
+                    window.alert(error);
+                }
             }
         })()
-    },[searchTerm])
-
-    useEffect(() => {
-        //setAnimalList(animalList.filter((animal)=>{animal.farms.includes(farm)}))
-    },[farm])
+    },[searchTerm, farm])
 
     const rows = animalList.map((animal) => ({
         id: animal._id,
         name: animal,
-        type: animal.type.charAt(0).toUpperCase() + animal.type.slice(1),
+        type: animal,
         father: animal.father !== null ? animal : 'Unregistered',
         mother: animal.mother !== null ? animal : 'Unregistered',
-        sex: animal.male ? 'Male' : 'Female',
+        sex: animal.sex === 'f' ? 'Female' : (animal.sex === 'm' ? 'Male' : 'Castrated'),
     }));
 
     const cols = [
         { field: 'name', headerName: 'Name', headerClassName: 'grid-header', headerAlign: 'left', flex: 1,
             renderCell: (animal) => {return <AnimalPopover animalID={animal.value._id}/>} },
-        { field: 'type', headerName: 'Type', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
+        { field: 'type', headerName: 'Type', headerClassName: 'grid-header', headerAlign: 'left', flex: 1,
+            renderCell: (animal) => {
+                let exists = false;
+                schemaList.forEach(schema => {
+                    if(schema._name === animal.value.type) {
+                        exists = true;
+                    }
+                });
+                return exists 
+                    ? <p>{animal.value.type.charAt(0).toUpperCase() + animal.value.type.slice(1)}</p>
+                    : <p style={{color: 'red'}}>{animal.value.type.charAt(0).toUpperCase() + animal.value.type.slice(1)}</p>
+            }},
         { field: 'father', headerName: 'Father', headerClassName: 'grid-header', headerAlign: 'left', flex: 1,
-        renderCell:(animal)=>{return animal.value.father?
-             <AnimalPopover key={animal.value.father} animalID={animal.value.father}/> : "Unregistered"}},
+            renderCell: (animal) => {return animal.value.father?
+                <AnimalPopover key={animal.value.father} animalID={animal.value.father}/> : "Unregistered"}},
         { field: 'mother', headerName: 'Mother', headerClassName: 'grid-header', headerAlign: 'left', flex: 1,
-            renderCell:(animal)=>{return animal.value.mother?
+            renderCell: (animal) => {return animal.value.mother?
                 <AnimalPopover key={animal.value.mother} animalID={animal.value.mother}/> : "Unregistered"}},
         { field: 'sex', headerName: 'Sex', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
     ];
+
+    const [creatorOffset, setCreatorOffset] = useState(36.5+20);
 
     return(<>
         <h1>Livestock</h1>
@@ -80,10 +121,10 @@ const AnimalTable = ({farms}) => {
             ></TextField>
             <FarmTabs farms={farms} selectedFarm={farm} setSelectedFarm={setFarm}/>
         </span>
-        <Paper style={{height: 'calc(100% - 525px)', marginBottom: '20px'}}>
-            <DataGrid style={{fontSize: '1rem'}} checkboxSelection columns={cols} rows={rows}/>
+        <Paper style={{height: `calc(100vh - (170.88px + ${creatorOffset}px))`, marginBottom: '20px'}}>
+            <DataGrid style={{fontSize: '1rem'}} columns={cols} rows={rows}/>
         </Paper>
-        <AnimalCreator animalList={animalList}/>
+        <AnimalCreator animalList={animalList} schemaList={schemaList} setOffset={setCreatorOffset} farms={farms}/>
     </>)
 }
 
