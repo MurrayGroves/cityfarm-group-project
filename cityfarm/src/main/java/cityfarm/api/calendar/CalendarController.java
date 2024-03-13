@@ -11,6 +11,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -144,6 +145,41 @@ public class CalendarController {
         eventRepository.save(newEvent);
 
         return ResponseEntity.ok().body(newEvent);
+    }
+
+    @PatchMapping("/api/events/by_id/{id}/update")
+    public ResponseEntity<String> update_event(@PathVariable String id, @RequestBody CreateEventOnceRequest eventReq) {
+        Event event = eventRepository.findEventById(id);
+
+        if (event == null) {
+            return ResponseEntity.status(404).build();
+        }
+
+        List<Enclosure> enclosures = new ArrayList<>();
+        for (String enclosure: eventReq.enclosures) {
+            Enclosure enc = enclosureRepository.findEnclosureById(enclosure);
+            enclosures.add(enc);
+        }
+
+        List<AnimalCustom> animals = new ArrayList<>();
+        for (String animal: eventReq.animals) {
+            AnimalCustom anm = animalRepository.findAnimalById(animal);
+            animals.add(anm);
+        }
+
+        event.start = eventReq.start;
+        event.end = eventReq.end;
+        event.allDay = eventReq.allDay;
+        event.title = eventReq.title;
+        event.description = eventReq.description;
+        event.enclosures = enclosures;
+        event.animals = animals;
+        event.farms = eventReq.farms;
+
+        eventRepository.save(event);
+
+        String location = String.format("/api/events/by_id/{id}/%s", event.get_id());
+        return ResponseEntity.created(URI.create(location)).body(event.get_id());
     }
 
 }
