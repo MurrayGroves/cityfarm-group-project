@@ -46,7 +46,7 @@ const SingleAnimal = (props) => {
 
             } catch (error) {
                 if (error.response.status === 401) {
-                    // window.location.href = "/login";
+                    window.location.href = "/login";
                     return;
                 } else {
                     window.alert(error);
@@ -56,41 +56,48 @@ const SingleAnimal = (props) => {
     }, [animalID]);
 
     useEffect(()=>{
+
         let kids =[];
         let animals = [];
         (async () => {
             try {
                 const response = await axios.get(`/animals`,token);
                 animals=response.data
+
                 if (chosenAnimal.sex!=='c') {
 
                     if (chosenAnimal.sex === 'm') {
 
                         for (let a of animals) {
                             if (a.father === chosenAnimal._id) {
+
                                 kids.push(a._id)
                             }
                         }
                     } else {
+
                         for (let a of animals) {
+
                             if (a.mother === chosenAnimal._id) {
+
                                 kids.push(a._id)
                             }
                         }
                     }
 
                     setChildren(kids)
+
                 }
             } catch (error) {
                 if (error.response.status === 401) {
-                    // window.location.href = "/login";
+                    window.location.href = "/login";
                     return;
                 } else {
                     window.alert(error);
                 }
             };
         })()
-        },[animalID])
+        },[chosenAnimal])
     const eventsConversion=(events)=>{
         let changed=[]
         for (let i=0;i<events.length;i++){
@@ -138,15 +145,15 @@ const SingleAnimal = (props) => {
         if (schema && value !== '') {
             switch(schema._fields[name]._type) {
                 case "java.lang.Boolean":
-                    return <span key={name}>{name.charAt(0).toUpperCase() + name.slice(1)}: {value ? 'Yes' : 'No'}</span>;
+                    return <span key={name}><b>{name.charAt(0).toUpperCase() + name.slice(1)}:</b> {value ? 'Yes' : 'No'}</span>;
                 case "java.lang.String":
-                    return <span key={name}>{name.charAt(0).toUpperCase() + name.slice(1)}: {value}</span>;
+                    return <span key={name}><b>{name.charAt(0).toUpperCase() + name.slice(1)}:</b> {value}</span>;
                 case "java.lang.Integer":
-                    return <span key={name}>{name.charAt(0).toUpperCase() + name.slice(1)}: {value}</span>;
+                    return <span key={name}><b>{name.charAt(0).toUpperCase() + name.slice(1)}:</b> {value}</span>;
                 case "java.lang.Double":
-                    return <span key={name}>{name.charAt(0).toUpperCase() + name.slice(1)}: {value}</span>;
+                    return <span key={name}><b>{name.charAt(0).toUpperCase() + name.slice(1)}: </b>{value}</span>;
                 case "java.time.ZonedDateTime":
-                    return <span key={name}>{name.charAt(0).toUpperCase() + name.slice(1)}: {new Date(value).toLocaleDateString()}</span>;
+                    return <span key={name}><b>{name.charAt(0).toUpperCase() + name.slice(1)}: </b>{new Date(value).toLocaleDateString()}</span>;
                 default:
                     return <></>;
             }
@@ -155,22 +162,22 @@ const SingleAnimal = (props) => {
 
     return<>
         <h1>{chosenAnimal.name}</h1>
-        <div>Sex: {chosenAnimal.sex === undefined ? <span>Loading...</span> : (chosenAnimal.sex === 'f' ? <span>Female</span> : (chosenAnimal.sex === 'm' ? <span>Male</span> : <span>Castrated</span>))}</div>
-        <div>Species: {chosenAnimal.type.charAt(0).toUpperCase() + chosenAnimal.type.slice(1)}</div>
+        <div><b>Sex:</b> {chosenAnimal.sex === undefined ? <span>Loading...</span> : (chosenAnimal.sex === 'f' ? <span>Female</span> : (chosenAnimal.sex === 'm' ? <span>Male</span> : <span>Castrated</span>))}</div>
+        <div><b>Species:</b> {chosenAnimal.type.charAt(0).toUpperCase() + chosenAnimal.type.slice(1)}</div>
         <div style={{display: 'flex'}}>
-            <span style={{marginRight: '0.5em'}}>Father:</span>
+            <span style={{marginRight: '0.5em'}}><b>Father:</b></span>
             {chosenAnimal.father ?
                 <AnimalPopover key={chosenAnimal.father} animalID={chosenAnimal.father}/>
             : <span>Unregistered</span>}
         </div>
         <div style={{display: 'flex'}}>
-            <span style={{marginRight: '0.5em'}}>Mother:</span>
+            <span style={{marginRight: '0.5em'}}><b>Mother:</b></span>
             {chosenAnimal.mother ? 
                 <AnimalPopover key={chosenAnimal.mother} animalID={chosenAnimal.mother}/>
             : <span>Unregistered</span>}
         </div>
         <div>
-            Farm: {readableFarm(chosenAnimal.farm)}
+            <b>Farm:</b> {readableFarm(chosenAnimal.farm)}
         </div>
         <div>
             {chosenAnimal.notes && `Notes: ${chosenAnimal.notes}`}
@@ -179,10 +186,11 @@ const SingleAnimal = (props) => {
             return fieldTypeSwitch(name, value);
         })}
         <br/>
+        <br/>
         {
             Array.isArray(children) && children.length > 0 && (
             <div>
-                Children:
+                <b>Children:</b>
                 {children.map((animal, index) => {
                     return (<AnimalPopover key={animal} animalID={animal} />);
                 })}
