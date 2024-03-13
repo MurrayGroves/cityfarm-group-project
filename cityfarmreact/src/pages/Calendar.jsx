@@ -100,7 +100,8 @@ const Calendar = () => {
     }
     const setAddEventEnclosures = (enclosures) => {
         console.log(enclosures)
-        setNewEvent({...modifiedEvent, enclosures: enclosures})
+        setNewEvent({...newEvent, enclosures: enclosures})
+        console.log(newEvent.enclosures)
     }
     const setAddEventAnimals = (animalList) => {
         setNewEvent({...newEvent, animals: animalList})
@@ -340,8 +341,8 @@ const Calendar = () => {
                         {selectedEvent.enclosures.length !== 0 &&
                         <div>
                             <h3>Enclosures</h3>
-                            {selectedEvent.enclosures.map((enclosureName, index) => (
-                                <p key={index}>{enclosureName}</p>
+                            {selectedEvent.enclosures.map((enclosureName) => (
+                                <p>{enclosureName}</p>
                             ))}
                         </div>}
                         {selectedEvent.description !== "" ?
@@ -390,9 +391,9 @@ const Calendar = () => {
                         </div>
                         <div>
                             <h3>Enclosures</h3>
-                            {modifiedEvent.enclosures.map((enclosureName, index) => (
-                                <p key={index}>{enclosureName}</p>
-                            ))}{/*Add a way to remove enclosures from events */}
+                            {modifiedEvent.enclosures.length !== 0 ? modifiedEvent.enclosures.map((enclosureName) => (
+                                <p>{enclosureName}</p>
+                            )): <></>}{/*Add a way to remove enclosures from events */}
                             <Button variant='outlined' onClick={() => {functionopenPopup("enclosures")}} color='tertiary'>Add Enclosure</Button> {/* idea: make this open the enlcosure  page with a new column of checkboxes. Click on an associate enlcosure(s) button would then pass a list of enclosure names to the calendar to be placed in a field*/}
                         <div id="AssociateEnclosure" style={{textAlign:'center'}}>
                         <Dialog open={openEnclosurePopup} onClose={functionclosePopup}>
@@ -462,9 +463,9 @@ const Calendar = () => {
                 </div>
                 <div>
                     <h3>Enclosures</h3>
-                    {newEvent.enclosures.map((enclosureName, index) => (
-                        <p key={index}>{enclosureName}</p>
-                    ))}{/*Add a way to remove enclosures from events */}
+                    {newEvent.enclosures.length !== 0 ? newEvent.enclosures.map((enclosureName) => (
+                        <p>{enclosureName}</p>
+                    )):<></>}{/*Add a way to remove enclosures from events */}
                     <Button variant='outlined' color='tertiary' onClick={() => {functionopenPopup("enclosures")}}>Add Enclosure</Button> {/* idea: make this open the enlcosure  page with a new column of checkboxes. Click on an associate enlcosure(s) button would then pass a list of enclosure names to the calendar to be placed in a field*/}
                     <div id="AssociateEnclosure" style={{textAlign:'center'}}>
                         <Dialog open={openEnclosurePopup} onClose={functionclosePopup}>
@@ -497,4 +498,6 @@ const Calendar = () => {
 }
 
 export default Calendar;
+
+
 
