@@ -105,7 +105,9 @@ const Calendar = () => {
     }
     const setAddEventAnimals = (animalList) => {
         setNewEvent({...newEvent, animals: animalList})
+        console.log(newEvent);
     }
+
     useEffect(() => {
         (async () => {
             try {
@@ -336,7 +338,7 @@ const Calendar = () => {
                         {selectedEvent.farms.includes(SW) ? <p>St Werberghs</p> : <></>}
                         {selectedEvent.animals.length !== 0 ? <h3>Animals</h3> : <></>}
                         {selectedEvent.animals.map((animalID) => (
-                            <AnimalPopover key={animalID._id} animalID={animalID._id}/>
+                            <AnimalPopover key={animalID} animalID={animalID}/>
                         ))}
                         {selectedEvent.enclosures.length !== 0 &&
                         <div>

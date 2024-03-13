@@ -44,7 +44,7 @@ const AssociateAnimal = (props) => {
     },[searchTerm])
     const rows = animalList.map((animal) => ({
         id: animal._id,
-        name: animal.name,
+        name: animal,
         type: animal.type,
         sex: animal.male ? 'Male' : 'Female',
     }));
