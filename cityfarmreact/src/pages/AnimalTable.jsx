@@ -174,7 +174,7 @@ const AnimalTable = ({farms}) => {
                     <FormControl sx={{width: '100%'}}>
                     <TextField
                         fullWidth
-                        placeholder={params.value}
+                        defaultValue={params.value}
                         onChange={(e) => {
                             gridApi.current.setEditCellValue({id: params.id, field: params.field, value: e.target.value});
                         }}
@@ -187,7 +187,7 @@ const AnimalTable = ({farms}) => {
                     <TextField
                         type='number'
                         fullWidth
-                        placeholder={params.value}
+                        defaultValue={params.value}
                         onChange={(e) => {
                             gridApi.current.setEditCellValue({id: params.id, field: params.field, value: e.target.value});
                         }}
@@ -200,7 +200,7 @@ const AnimalTable = ({farms}) => {
                     <TextField
                         type='number'
                         fullWidth
-                        placeholder={params.value}
+                        defaultValue={params.value}
                         onChange={(e) => {
                             gridApi.current.setEditCellValue({id: params.id, field: params.field, value: e.target.value});
                         }}
@@ -304,14 +304,20 @@ const AnimalTable = ({farms}) => {
                         </li>
                     );
                 }}
-                renderInput={(params) => <TextField {...params} label="Sex"/>}
+                renderInput={(params) => <TextField {...params}/>}
                 isOptionEqualToValue={(option, value) => option.id === value.id}
                 getOptionLabel={option => option.name}
+                value={modifyAnimal.sex ? {id: ["Male", "Female", "Castrated"].indexOf(modifyAnimal.sex), name: modifyAnimal.sex} : {id: ["Male", "Female", "Castrated"].indexOf(params.value), name: params.value}}
+                onChange={(_, value) => {
+                    let current = modifyAnimal;
+                    modifyAnimal.sex = value.name;
+                    setModifyAnimal(current);
+                }}
                 options={
                     [
-                        {id: 1, name: "Male"},
-                        {id: 2, name: "Female"},
-                        {id: 3, name: "Castrated"}
+                        {id: 0, name: "Male"},
+                        {id: 1, name: "Female"},
+                        {id: 2, name: "Castrated"}
                     ]
                 }
             />)
@@ -341,7 +347,6 @@ const AnimalTable = ({farms}) => {
                     return <IconButton onClick={() => {
                         let obj = animalList.find((animal) => {return animal._id === params.id});
                         setModifyAnimal(obj);
-                        console.log("MODIFY ANIMAL", modifyAnimal)
                         gridApi.current.startRowEditMode({ id: params.id });
                     }}><EditIcon/></IconButton>
                     
