@@ -79,8 +79,8 @@ const Home = ({farms}) => {
                 {e.enclosures.length !== 0 &&
                     <div>
                         <h3>Enclosures</h3>
-                        {e.enclosures.map((enclosureName, index) => (
-                            <p key={index}>{enclosureName}</p>
+                        {e.enclosures.map((enclosure, index) => (
+                            <p key={index}>{enclosure.name}</p>
                         ))}
                     </div>}
                 {e.description !== "" ?
