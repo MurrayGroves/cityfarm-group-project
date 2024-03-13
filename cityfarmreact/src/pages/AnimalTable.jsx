@@ -96,8 +96,8 @@ const AnimalTable = ({farms}) => {
                     }
                 });
                 return exists 
-                    ? <p>{animal.value.type.charAt(0).toUpperCase() + animal.value.type.slice(1)}</p>
-                    : <p style={{color: 'red'}}>{animal.value.type.charAt(0).toUpperCase() + animal.value.type.slice(1)}</p>
+                    ? <p>{animal.value.type}</p>
+                    : <p style={{color: 'red'}}>{animal.value.type}</p>
             }},
         { field: 'father', headerName: 'Father', headerClassName: 'grid-header', headerAlign: 'left', flex: 1,
             renderCell: (animal) => {return animal.value.father?

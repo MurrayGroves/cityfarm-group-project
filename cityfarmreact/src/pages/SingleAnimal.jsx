@@ -163,7 +163,7 @@ const SingleAnimal = (props) => {
     return<>
         <h1>{chosenAnimal.name}</h1>
         <div><b>Sex:</b> {chosenAnimal.sex === undefined ? <span>Loading...</span> : (chosenAnimal.sex === 'f' ? <span>Female</span> : (chosenAnimal.sex === 'm' ? <span>Male</span> : <span>Castrated</span>))}</div>
-        <div><b>Species:</b> {chosenAnimal.type.charAt(0).toUpperCase() + chosenAnimal.type.slice(1)}</div>
+        <div><b>Species:</b> {chosenAnimal.type}</div>
         <div style={{display: 'flex'}}>
             <span style={{marginRight: '0.5em'}}><b>Father:</b></span>
             {chosenAnimal.father ?
@@ -180,7 +180,7 @@ const SingleAnimal = (props) => {
             <b>Farm:</b> {readableFarm(chosenAnimal.farm)}
         </div>
         <div>
-            {chosenAnimal.notes && `Notes: ${chosenAnimal.notes}`}
+            {chosenAnimal.notes && <span><b>Notes: </b>{chosenAnimal.notes}</span>}
         </div>
         {chosenAnimal.fields && Object.entries(chosenAnimal.fields).map(([name, value]) => {
             return fieldTypeSwitch(name, value);
