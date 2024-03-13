@@ -8,22 +8,33 @@ import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
 import {Button} from "@mui/material";
 
+import { getConfig } from '../api/getToken';
+
 const AssociateAnimal = (props) => {
     const [linkedAnimals, setLinkedAnimals] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [animalList, setAnimalList] = useState([]);
+
+    const token = getConfig();
     
     useEffect(() => {console.log(linkedAnimals)},[linkedAnimals])
+
     const linkAnimals = () => {
         props.setAnimals(linkedAnimals)
     }
+    
     function displayAll() {
         (async () => {
             try {
-                const response = await axios.get(`/animals`);
+                const response = await axios.get(`/animals`, token);
                 setAnimalList(response.data);
             } catch (error) {
-                window.alert(error);
+                if (error.response.status === 401) {
+                    window.location.href = "/login";
+                    return;
+                } else {
+                    window.alert(error);
+                }
             }
         })()
     }
@@ -34,10 +45,15 @@ const AssociateAnimal = (props) => {
                 return;
             }
             try {
-                const response = await axios.get(`/animals/by_name/${searchTerm}`);
+                const response = await axios.get(`/animals/by_name/${searchTerm}`, token);
                 setAnimalList(response.data);
             } catch (error) {
-                window.alert(error);
+                if (error.response.status === 401) {
+                    window.location.href = "/login";
+                    return;
+                } else {
+                    window.alert(error);
+                }
             }
         })()
     },[searchTerm])

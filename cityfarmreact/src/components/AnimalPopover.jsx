@@ -41,7 +41,12 @@ const AnimalPopover = (props) => {
             const response = await axios.get(`/animals/by_id/${props.animalID}`, token);
             setChosenAnimal(response.data);
         } catch (error) {
-            window.alert(error);
+            if (error.response.status === 401) {
+                window.location.href = "/login";
+                return;
+            } else {
+                window.alert(error);
+            }
         }})()
     }, [props.animalID]);
 
