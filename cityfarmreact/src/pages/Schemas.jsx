@@ -118,7 +118,7 @@ const Schemas = () => {
         <div style={{marginBottom: '20px', display: 'flex'}}>
             <TextField error={newSchemaName === ''} required style={{margin: '15px 15px 0 15px'}} label='Name' placeholder="Species Name" value={newSchemaName} size="small"
                 onChange={(e) => {
-                    setNewSchemaName(e.target.value);
+                    setNewSchemaName(e.target.value.charAt(0).toUpperCase() + e.target.value.slice(1));
                 }}
             />
             <Button disableElevation variant="contained" aria-label="add" endIcon={<AddIcon />} style={{maxHeight: '40px', marginTop: '15px'}}

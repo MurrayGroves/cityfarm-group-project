@@ -41,7 +41,12 @@ const AnimalPopover = (props) => {
             const response = await axios.get(`/animals/by_id/${props.animalID}`, token);
             setChosenAnimal(response.data);
         } catch (error) {
-            window.alert(error);
+            if (error.response.status === 401) {
+                window.location.href = "/login";
+                return;
+            } else {
+                window.alert(error);
+            }
         }})()
     }, [props.animalID]);
 
@@ -104,7 +109,7 @@ const AnimalPopover = (props) => {
                 disableRestoreFocus
             >
                 <Typography sx={{ p: 1, whiteSpace: 'pre-line' }}>
-                    {`Type: ${chosenAnimal.type ? chosenAnimal.type.charAt(0).toUpperCase() + chosenAnimal.type.slice(1) : 'Loading...'}`}<br/>
+                    {`Type: ${chosenAnimal.type ? chosenAnimal.type : 'Loading...'}`}<br/>
                     {`Father: ${animalFather}`}<br/>
                     {`Mother: ${animalMother}`}<br/>
                     {`Sex: ${chosenAnimal.sex === 'f' ? 'Female' : (chosenAnimal.sex === 'm' ? 'Male' : 'Castrated')}`}

@@ -77,7 +77,7 @@ const AnimalCreator = (props) => {
                     <TextField
                         fullWidth
                         size='small'
-                        placeholder={field[0].toUpperCase() + field.slice(1)}
+                        placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
                         onChange={(e) => {
                             let newFields = newAnimal.fields;
                             newFields[field] = e.target.value;
@@ -94,7 +94,7 @@ const AnimalCreator = (props) => {
                         type='number'
                         fullWidth
                         size='small'
-                        placeholder={field[0].toUpperCase() + field.slice(1)}
+                        placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
                         onChange={(e) => {
                             let newFields = newAnimal.fields;
                             newFields[field] = e.target.value;
@@ -111,7 +111,7 @@ const AnimalCreator = (props) => {
                         type='number'
                         fullWidth
                         size='small'
-                        placeholder={field[0].toUpperCase() + field.slice(1)}
+                        placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
                         onChange={(e) => {
                             let newFields = newAnimal.fields;
                             newFields[field] = e.target.value;
@@ -172,13 +172,13 @@ const AnimalCreator = (props) => {
                                     renderOption={(props, option) => {
                                         return (
                                             <li {...props} key={option._name}>
-                                                {option._name.charAt(0).toUpperCase() + option._name.slice(1)}
+                                                {option._name}
                                             </li>
                                         );
                                     }}
                                     isOptionEqualToValue={(option, value) => option._name === value._name}
                                     renderInput={(params) => <TextField {...params} fullWidth error={newAnimal.type === ''} required size='small' label="Type"/>}
-                                    getOptionLabel={option => option._name.charAt(0).toUpperCase() + option._name.slice(1)}
+                                    getOptionLabel={option => option._name}
                                     options={props.schemaList}
                                     onChange={(e, v) => {
                                         if(v) {

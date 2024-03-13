@@ -8,22 +8,31 @@ import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
 import {Button} from "@mui/material";
 
+import { getConfig } from '../api/getToken';
+
 const AssociateEnclosure = (props) => {
     const [linkedEnclosures, setLinkedEnclosures] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [enclosureList, setEnclosureList] = useState([]);
+
+    const token = getConfig();
+
     const linkEnclosures = () => {
-        console.log(linkedEnclosures)
         props.setEnclosures(linkedEnclosures)
     }
 
     function displayAll() {
         (async () => {
             try {
-                const response = await axios.get(`/enclosures`);
+                const response = await axios.get(`/enclosures`, token);
                 setEnclosureList(response.data);
             } catch (error) {
-                window.alert(error);
+                if (error.response.status === 401) {
+                    window.location.href = "/login";
+                    return;
+                } else {
+                    window.alert(error);
+                }
             }
         })()
     }
@@ -35,10 +44,15 @@ const AssociateEnclosure = (props) => {
                 return;
             }
             try {
-                const response = await axios.get(`/enclosures/by_name/${searchTerm}`);
+                const response = await axios.get(`/enclosures/by_name/${searchTerm}`, token);
                 setEnclosureList(response.data);
             } catch (error) {
-                window.alert(error);
+                if (error.response.status === 401) {
+                    window.location.href = "/login";
+                    return;
+                } else {
+                    window.alert(error);
+                }
             }
         })()
     },[searchTerm])
@@ -76,7 +90,6 @@ const AssociateEnclosure = (props) => {
         <DataGrid checkboxSelection columns={cols}
          rows={rows} disableRowSelectionOnClick
          onRowSelectionModelChange={(ids) => {
-            console.log(ids)
             setLinkedEnclosures(ids)}}/>
         </Paper>
         <Button variant='outlined' style={{float: "right"}} onClick={() => {linkEnclosures()}}>Link to Event</Button>

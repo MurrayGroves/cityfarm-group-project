@@ -100,10 +100,6 @@ const Calendar = ({farms}) => {
     }
 
     useEffect(() => {
-        console.log(selectedEvent);
-    }, [selectedEvent])
-
-    useEffect(() => {
         (async () => {
             try {
                 const start = new Date()
@@ -124,12 +120,12 @@ const Calendar = ({farms}) => {
         })();
     },[]);
 
-    const removeAnimal = (animalID, type) => {
+    const removeAnimal = (oldAnimal, type) => {
         if (type === "add"){
 
         }
         else {
-            setModifiedEvent({...modifiedEvent, animals: modifiedEvent.animals.filter((animal) => animal !== animalID)})
+            setModifiedEvent({...modifiedEvent, animals: modifiedEvent.animals.filter((animal) => animal !== oldAnimal)})
         }
     }
 
@@ -166,7 +162,6 @@ const Calendar = ({farms}) => {
 
     const handleDelEvent = async() => {
         let id = selectedEvent._id;
-        console.log(id);
         try {
             await axios.delete(`/events/by_id/${id}`, token);
         } catch(error) {
@@ -378,8 +373,8 @@ const Calendar = ({farms}) => {
                         {selectedEvent.farms.includes(farms.HC) ? <p>Hartcliffe</p> : <></>}
                         {selectedEvent.farms.includes(farms.SW) ? <p>St Werburghs</p> : <></>}
                         {selectedEvent.animals.length > 0 ? <h3>Animals</h3> : <></>}
-                        {selectedEvent.animals.map((animalID) => (
-                            <AnimalPopover key={animalID._id} animalID={animalID._id}/> // don't know why animalID and enclosure are objects in the map...
+                        {selectedEvent.animals.map((animal) => (
+                            <AnimalPopover key={animal._id} animalID={animal._id}/>
                         ))}
                         {selectedEvent.enclosures.length > 0 &&
                         <div>
@@ -423,7 +418,7 @@ const Calendar = ({farms}) => {
                         </div>
                         <h3>Animals</h3>
                         {modifiedEvent.animals.map((animalID) => (
-                            <AnimalPopover key={animalID._id} animalID={animalID._id} />
+                            <AnimalPopover key={animalID} animalID={animalID} />
                         ))}{/*Add a way to remove animals from events */}
                         <Button variant='outlined' onClick={() => {functionopenPopup("animals")}}>Add Animal</Button> 
                         <div id="AssociateAnimal" style={{textAlign:'center'}}>
@@ -436,9 +431,9 @@ const Calendar = ({farms}) => {
                         </div>
                         <div>
                             <h3>Enclosures</h3>
-                            {modifiedEvent.enclosures.length > 0 ? modifiedEvent.enclosures.map((enclosureName, index) => (
+                            {modifiedEvent.enclosures.map((enclosureName, index) => (
                                 <p key={index}>{enclosureName}</p>
-                            )): <></>}{/*Add a way to remove enclosures from events */}
+                            ))}{/*Add a way to remove enclosures from events */}
                             <Button variant='outlined' onClick={() => {functionopenPopup("enclosures")}}>Add Enclosure</Button> {/* idea: make this open the enlcosure  page with a new column of checkboxes. Click on an associate enlcosure(s) button would then pass a list of enclosure names to the calendar to be placed in a field*/}
                             <div id="AssociateEnclosure" style={{textAlign:'center'}}>
                                 <Dialog open={openEnclosurePopup} onClose={functionclosePopup}>
