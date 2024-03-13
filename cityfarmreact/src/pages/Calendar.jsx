@@ -100,6 +100,10 @@ const Calendar = ({farms}) => {
     }
 
     useEffect(() => {
+        console.log(selectedEvent);
+    }, [selectedEvent])
+
+    useEffect(() => {
         (async () => {
             try {
                 const start = new Date()
@@ -369,19 +373,19 @@ const Calendar = ({farms}) => {
                                 </div>
 
                         }
-                        {selectedEvent.farms.length !== 0 ? <h3>Farms</h3> : <></>}
+                        {selectedEvent.farms.length > 0 ? <h3>Farms</h3> : <></>}
                         {selectedEvent.farms.includes(farms.WH) ? <p>Windmill Hill</p> : <></>}
                         {selectedEvent.farms.includes(farms.HC) ? <p>Hartcliffe</p> : <></>}
                         {selectedEvent.farms.includes(farms.SW) ? <p>St Werburghs</p> : <></>}
-                        {selectedEvent.animals.length !== 0 ? <h3>Animals</h3> : <></>}
+                        {selectedEvent.animals.length > 0 ? <h3>Animals</h3> : <></>}
                         {selectedEvent.animals.map((animalID) => (
-                            <AnimalPopover key={animalID} animalID={animalID}/>
+                            <AnimalPopover key={animalID._id} animalID={animalID._id}/> // don't know why animalID and enclosure are objects in the map...
                         ))}
-                        {selectedEvent.enclosures.length !== 0 &&
+                        {selectedEvent.enclosures.length > 0 &&
                         <div>
                             <h3>Enclosures</h3>
-                            {selectedEvent.enclosures.map((enclosureName) => (
-                                <p>{enclosureName}</p>
+                            {selectedEvent.enclosures.map((enclosure, index) => (
+                                <p key={index} className='noMarginTop'>{enclosure.name}</p>
                             ))}
                         </div>}
                         {selectedEvent.description !== "" ?
@@ -410,16 +414,16 @@ const Calendar = ({farms}) => {
                             </ButtonGroup>
                         </div>
                         <div>
-                        <h3>Farms</h3>
-                        <FormGroup>
-                            <FormControlLabel control={<Checkbox defaultChecked={selectedEvent.farms.includes(farms.WH)} color={farms.WH} size='small'/>} label="Windmill Hill" onChange={() => setModifiedEvent({...modifiedEvent, farms: modifiedEvent.farms.includes(farms.WH) ? modifiedEvent.farms.filter((farm) => farm !== farms.WH) : modifiedEvent.farms.concat(farms.WH)})}/>
-                            <FormControlLabel control={<Checkbox defaultChecked={selectedEvent.farms.includes(farms.HC)} color={farms.HC} size='small'/>} label="Hartcliffe" onChange={()=>setModifiedEvent({...modifiedEvent, farms: modifiedEvent.farms.includes(farms.HC) ? modifiedEvent.farms.filter((farm) => farm !== farms.HC) : modifiedEvent.farms.concat(farms.HC)})}/>
-                            <FormControlLabel control={<Checkbox defaultChecked={selectedEvent.farms.includes(farms.SW)} color={farms.SW} size='small'/>} label="St Werburghs" onChange={()=>setModifiedEvent({...modifiedEvent, farms: modifiedEvent.farms.includes(farms.SW) ? modifiedEvent.farms.filter((farm) => farm !== farms.SW) : modifiedEvent.farms.concat(farms.SW)})}/>
-                        </FormGroup>
+                            <h3>Farms</h3>
+                            <FormGroup>
+                                <FormControlLabel control={<Checkbox defaultChecked={selectedEvent.farms.includes(farms.WH)} color={farms.WH} size='small'/>} label="Windmill Hill" onChange={() => setModifiedEvent({...modifiedEvent, farms: modifiedEvent.farms.includes(farms.WH) ? modifiedEvent.farms.filter((farm) => farm !== farms.WH) : modifiedEvent.farms.concat(farms.WH)})}/>
+                                <FormControlLabel control={<Checkbox defaultChecked={selectedEvent.farms.includes(farms.HC)} color={farms.HC} size='small'/>} label="Hartcliffe" onChange={()=>setModifiedEvent({...modifiedEvent, farms: modifiedEvent.farms.includes(farms.HC) ? modifiedEvent.farms.filter((farm) => farm !== farms.HC) : modifiedEvent.farms.concat(farms.HC)})}/>
+                                <FormControlLabel control={<Checkbox defaultChecked={selectedEvent.farms.includes(farms.SW)} color={farms.SW} size='small'/>} label="St Werburghs" onChange={()=>setModifiedEvent({...modifiedEvent, farms: modifiedEvent.farms.includes(farms.SW) ? modifiedEvent.farms.filter((farm) => farm !== farms.SW) : modifiedEvent.farms.concat(farms.SW)})}/>
+                            </FormGroup>
                         </div>
                         <h3>Animals</h3>
                         {modifiedEvent.animals.map((animalID) => (
-                            <p><AnimalPopover key={animalID._id} animalID={animalID._id} /></p>
+                            <AnimalPopover key={animalID._id} animalID={animalID._id} />
                         ))}{/*Add a way to remove animals from events */}
                         <Button variant='outlined' onClick={() => {functionopenPopup("animals")}}>Add Animal</Button> 
                         <div id="AssociateAnimal" style={{textAlign:'center'}}>
@@ -433,10 +437,10 @@ const Calendar = ({farms}) => {
                         </div>
                         <div>
                             <h3>Enclosures</h3>
-                            {modifiedEvent.enclosures.length !== 0 ? modifiedEvent.enclosures.map((enclosureName) => (
-                                <p>{enclosureName}</p>
+                            {modifiedEvent.enclosures.length > 0 ? modifiedEvent.enclosures.map((enclosureName, index) => (
+                                <p key={index}>{enclosureName}</p>
                             )): <></>}{/*Add a way to remove enclosures from events */}
-                            <Button variant='outlined' onClick={() => {functionopenPopup("enclosures")}} color='tertiary'>Add Enclosure</Button> {/* idea: make this open the enlcosure  page with a new column of checkboxes. Click on an associate enlcosure(s) button would then pass a list of enclosure names to the calendar to be placed in a field*/}
+                            <Button variant='outlined' onClick={() => {functionopenPopup("enclosures")}}>Add Enclosure</Button> {/* idea: make this open the enlcosure  page with a new column of checkboxes. Click on an associate enlcosure(s) button would then pass a list of enclosure names to the calendar to be placed in a field*/}
                             <div id="AssociateEnclosure" style={{textAlign:'center'}}>
                                 <Dialog open={openEnclosurePopup} onClose={functionclosePopup}>
                                 <DialogTitle>Add Enclosure</DialogTitle>
@@ -496,9 +500,9 @@ const Calendar = ({farms}) => {
                     <div>
                         <h3>Animals</h3>
                         {newEvent.animals.map((animalID) => (
-                            <p><AnimalPopover key={animalID} animalID={animalID} /></p>
+                            <AnimalPopover key={animalID} animalID={animalID} />
                         ))}
-                        <Button variant='outlined'>Add Animal</Button> {/* idea: make this open the animal table page with a new column of checkboxes. Click on an associate animal(s) button would then pass a list of animal id to the calendar to the new event state. This could be re used in the modification of events.  */}
+                        <Button variant='outlined' onClick={() => {functionopenPopup("animals")}}>Add Animal</Button> {/* idea: make this open the animal table page with a new column of checkboxes. Click on an associate animal(s) button would then pass a list of animal id to the calendar to the new event state. This could be re used in the modification of events.  */}
                         <div id="AssociateAnimal" style={{textAlign:'center'}}>
                             <Dialog open={openAnimalsPopup} onClose={functionclosePopup}>
                             <DialogTitle>Add Animal</DialogTitle>
@@ -514,7 +518,7 @@ const Calendar = ({farms}) => {
                         {newEvent.enclosures.map((enclosureName, index) => (
                             <p key={index}>{enclosureName}</p>
                         ))}{/*Add a way to remove enclosures from events */}
-                        <Button variant='outlined'>Add Enclosure</Button> {/* idea: make this open the enlcosure  page with a new column of checkboxes. Click on an associate enlcosure(s) button would then pass a list of enclosure names to the calendar to be placed in a field*/}
+                        <Button variant='outlined' onClick={() => {functionopenPopup("enclosures")}}>Add Enclosure</Button> {/* idea: make this open the enlcosure  page with a new column of checkboxes. Click on an associate enlcosure(s) button would then pass a list of enclosure names to the calendar to be placed in a field*/}
                         <div id="AssociateEnclosure" style={{textAlign:'center'}}>
                             <Dialog open={openEnclosurePopup} onClose={functionclosePopup}>
                             <DialogTitle>Add Enclosure</DialogTitle>

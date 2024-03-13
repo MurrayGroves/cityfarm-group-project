@@ -8,7 +8,6 @@ import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
 import {Button} from "@mui/material";
 
-
 const AssociateEnclosure = (props) => {
     const [linkedEnclosures, setLinkedEnclosures] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
@@ -80,7 +79,7 @@ const AssociateEnclosure = (props) => {
             console.log(ids)
             setLinkedEnclosures(ids)}}/>
         </Paper>
-        <Button variant='outlined' color='tertiary' style={{float: "right"}} onClick={() => {linkEnclosures()}}>Link to Event</Button>
+        <Button variant='outlined' style={{float: "right"}} onClick={() => {linkEnclosures()}}>Link to Event</Button>
         </div>
     )
 } 

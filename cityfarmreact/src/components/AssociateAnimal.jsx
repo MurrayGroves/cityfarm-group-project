@@ -8,12 +8,11 @@ import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
 import {Button} from "@mui/material";
 
-const WH = "WH", HC = "HC", SW = "SW";
 const AssociateAnimal = (props) => {
     const [linkedAnimals, setLinkedAnimals] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [animalList, setAnimalList] = useState([]);
-    const [farm, setFarm] = useState([WH,HC,SW]);
+    
     useEffect(() => {console.log(linkedAnimals)},[linkedAnimals])
     const linkAnimals = () => {
         props.setAnimals(linkedAnimals)
@@ -42,6 +41,7 @@ const AssociateAnimal = (props) => {
             }
         })()
     },[searchTerm])
+
     const rows = animalList.map((animal) => ({
         id: animal._id,
         name: animal,
@@ -70,7 +70,7 @@ const AssociateAnimal = (props) => {
          onRowSelectionModelChange={(ids) => {
             setLinkedAnimals(ids)}}/>
         </Paper>
-        <Button variant='outlined' color='tertiary' style={{float: "right"}} onClick={() => {linkAnimals()}}>Link to Event</Button>
+        <Button variant='outlined' style={{float: "right"}} onClick={() => {linkAnimals()}}>Link to Event</Button>
         </div>
     )
 
