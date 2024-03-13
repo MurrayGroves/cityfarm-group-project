@@ -431,7 +431,6 @@ const Calendar = ({farms}) => {
                             <DialogTitle>Add Animal</DialogTitle>
                             <DialogContent>
                             <AssociateAnimal setAnimals={setModifiedEventAnimals}></AssociateAnimal>
-                            <DialogContentText>Test</DialogContentText>
                             </DialogContent>
                             </Dialog>
                         </div>
@@ -446,7 +445,6 @@ const Calendar = ({farms}) => {
                                 <DialogTitle>Add Enclosure</DialogTitle>
                                 <DialogContent>
                                 <AssociateEnclosure setEnclosures={setModifiedEventEnclosures}></AssociateEnclosure>
-                                <DialogContentText>Test</DialogContentText>
                                 </DialogContent>
                                 </Dialog>
                             </div>
@@ -508,7 +506,6 @@ const Calendar = ({farms}) => {
                             <DialogTitle>Add Animal</DialogTitle>
                             <DialogContent>
                             <AssociateAnimal setAnimals={setAddEventAnimals}></AssociateAnimal>
-                            <DialogContentText>Test</DialogContentText>
                             </DialogContent>
                             </Dialog>
                         </div>
@@ -524,7 +521,6 @@ const Calendar = ({farms}) => {
                             <DialogTitle>Add Enclosure</DialogTitle>
                             <DialogContent>
                             <AssociateEnclosure setEnclosures={setAddEventEnclosures}></AssociateEnclosure>
-                            <DialogContentText>Test</DialogContentText>
                             </DialogContent>
                             </Dialog>
                         </div>
