@@ -34,7 +34,7 @@ public class EventOnce extends Event {
 
     @Override
     public List<EventInstance> occurencesBetween(@NonNull ZonedDateTime from, @NonNull ZonedDateTime to) {
-        if (from.isBefore(start) || to.isAfter(end)) {
+        if (from.isBefore(start) && to.isAfter(end)) {
             return List.of(new EventInstance(start, end, this));
         } else {
             return List.of();

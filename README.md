@@ -15,19 +15,19 @@ The stakeholders of this project are the livestock manager and livestock assista
 
 # User Stories
 
-The livestock manager of three city farms would like a system that automates the input of specific dates and relevant animal data into a calendar, so that they can spend time managing other areas of their work. They would like to move their newly bred pigs to windmill hill city farm but they are not sure whether there is enough space within their pens and this is urgent so they can't wait for a response due to having too many pigs within our own current pens. So they need a way to quickly check if there is capacity at their chosen farm and if not where else could they put this pig. Our project solves this scenario by providing an interface for viewing capacities for different farms and enclosures, allowing the livestock manager to check capacities quickly before moving an animal.
+As a livestock manager, I want to view animal capacities at different farms, so that I can quickly check if there's space before moving an animal. (This avoids overcrowding and ensures animal welfare.)
 
-The livestock manager would also like to change the current vaccine choice for cows to a more up to date one so they would need to know how that would affect the timelines of how often the animals get a jab since the schedule is very tight. This can be accommplished through our web app by allowing the user to create a new reocurring event for this new vaccine so that reminders are given accurately when the animals need to get a jab.
+As a livestock manager, I want to create recurring vaccination events for new vaccines, so that I can keep track of updated schedules. (This ensures animal health and avoids missed vaccinations.)
 
-The chef within St Werburgh's needs to able to quickly see when the chicken lay eggs and how many are expected each week so they can update my weekly supply order on the fly easily. The web app will allow them to see when the next batch of eggs are expected and how many.
+As a chef, I want to see upcoming egg production forecasts, so that I can adjust my weekly supply orders. (This reduces waste and ensures fresh ingredients.)
 
-The livestock manager manages both St Werburgh's and Windmill Hill will need to be able to integrate both of the animal calendars within one so that they don't need to keep switching between the two because otherwise they could just resort to using paper and my head instead of the calendar. Eventually, the web app will have implementation to see all of the events for both farms and the event will have the associated farm attached.
+As a livestock manager, I want to see a combined calendar for all farms, so that I can avoid switching between them. (This saves time and simplifies animal management.)
 
-The events coordinator for the city farm will want to able to see when a goat will arrive into windmill hill since they have planned a goat-themed event for 3 weeks time and are worried that the innoculation slots for the goats will cut it slim so they need to know how much leeway the animals have before moving. With our web app, they can view all of the dates associated with the goats and are able to plan events accordingly.
+As an event coordinator, I want to view goat arrival dates, so that I can plan events around their inoculations. (This ensures animal health and avoids scheduling conflicts.)
 
-An animal breeder for a city farm outside of the 3 city farm trust would like to trade two chickens for a rooster with St werburghs so the city farm app will need to be able to quickly update the database within itself in order to maintain a constant balance and make sure it's protected so there's no dupulicate removal or addition to the database in case two people change the numbers at once.
+As an animal breeder, I want to securely trade animals with other farms within the app, so that I can facilitate collaboration and resource sharing.
 
-There is a powercut at the farm and the livestock manager wants to do an inventory of all the animals to check they're all okay with the powercut so they have got the webapp up on my phone and are using it to check all the pen levels; so the webapp must always be up to date in terms of its database and must be phone compatible because desktops can't be used in this situation.
+As a livestock manager, I want to access animal data and inventory on my phone during power outages, so that I can ensure animal well-being even when computers are unavailable.
 
 # Project Structure 
 ## Spring boot
