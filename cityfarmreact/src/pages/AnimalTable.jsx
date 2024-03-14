@@ -10,6 +10,7 @@ import TextField from '@mui/material/TextField';
 import AnimalCreator from "../components/AnimalCreator";
 
 import { getConfig } from '../api/getToken';
+import Button from "@mui/material/Button";
 
 const AnimalTable = ({farms}) => {
     const [animalList, setAnimalList] = useState([]); /* The State for the list of animals. The initial state is [] */
@@ -17,7 +18,7 @@ const AnimalTable = ({farms}) => {
     const [schemaList, setSchemaList] = useState([]);
 
     const [farm, setFarm] = useState(null);
-
+    const [selectedAnimals,setSelectedAnimals]=useState([])
     const token = getConfig();
 
     function displayAll() {
@@ -53,6 +54,15 @@ const AnimalTable = ({farms}) => {
         })()
     }
 
+    function farmMove(ids,farm){
+        for (let a of ids){
+            //THIS WILL BE AN API CALL
+            console.log('animal id: ',a,' to farm: ',farm)
+        }
+    }
+    function farmMoveButton(ids,farm){
+        return <Button onClick={farmMove(ids,farm)}> Move to {farm}</Button>
+    }
     useEffect(getSchemas, []);
 
     useEffect(() => {
@@ -74,6 +84,7 @@ const AnimalTable = ({farms}) => {
             }
         })()
     },[searchTerm, farm])
+
 
     const rows = animalList.map((animal) => ({
         id: animal._id,
@@ -110,6 +121,9 @@ const AnimalTable = ({farms}) => {
 
     const [creatorOffset, setCreatorOffset] = useState(36.5+20);
 
+
+
+
     return(<>
         <h1>Livestock</h1>
         <span style={{display: 'flex', justifyContent: 'space-between', height: '60px'}}>
@@ -122,9 +136,21 @@ const AnimalTable = ({farms}) => {
             <FarmTabs farms={farms} selectedFarm={farm} setSelectedFarm={setFarm}/>
         </span>
         <Paper style={{height: `calc(100vh - (170.88px + ${creatorOffset}px))`, marginBottom: '20px'}}>
-            <DataGrid style={{fontSize: '1rem'}} columns={cols} rows={rows}/>
+            <DataGrid style={{fontSize: '1rem'}} checkboxSelection
+                      columns={cols} rows={rows} disableRowSelectionOnClick
+                      onRowSelectionModelChange={(ids) => {
+                          setSelectedAnimals(ids)}}/>
         </Paper>
         <AnimalCreator animalList={animalList} schemaList={schemaList} setOffset={setCreatorOffset} farms={farms}/>
+        <>{
+            selectedAnimals.length>0 ? {
+                farms.map((farm)=>({
+                  return (<>{farmMoveButton(selectedAnimals,farm)}</>)
+                }))
+                }
+                : 'cant edit'
+        }
+        </>
     </>)
 }
 
