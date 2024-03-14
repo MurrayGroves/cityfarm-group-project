@@ -164,8 +164,8 @@ const AnimalTable = ({farms}) => {
         console.log("OLD ANIMAL", old_animal)
         console.log(animalList)
         let animal = {...old_animal};
-        animal.father = modifyAnimal.father ? modifyAnimal.father._id : old_animal.father;
-        animal.mother = modifyAnimal.mother ? modifyAnimal.mother._id : old_animal.mother;
+        animal.father = modifyAnimal.father ? modifyAnimal.father._id ? modifyAnimal.father._id : modifyAnimal.father : old_animal.father;
+        animal.mother = modifyAnimal.mother ? modifyAnimal.mother._id ? modifyAnimal.mother._id : modifyAnimal.mother : old_animal.mother;
         animal.name = modifyAnimal.name ? modifyAnimal.name : old_animal.name;
         animal.sex = modifyAnimal.sex ? modifyAnimal.sex : old_animal.male ? "Male" : "Female";
 
@@ -177,7 +177,7 @@ const AnimalTable = ({farms}) => {
         console.log(animal);
     }
 
-    const fieldTypeSwitch = (type, params, field_name) => {
+    const fieldTypeSwitch = (type, params) => {
         switch(type) { /* check the type of the field and display appropriate input method */
             case "java.lang.Boolean":
                 return (
@@ -185,6 +185,9 @@ const AnimalTable = ({farms}) => {
                     <Select
                         value={params.value}
                         onChange={(e) => {
+                            let current = {...modifyAnimal};
+                            current.fields[params.field] = e.target.value;
+                            setModifyAnimal(current);
                             gridApi.current.setEditCellValue({id: params.id, field: params.field, value: e.target.value});
                         }}
                     >
@@ -201,6 +204,9 @@ const AnimalTable = ({farms}) => {
                         fullWidth
                         defaultValue={params.value}
                         onChange={(e) => {
+                            let current = {...modifyAnimal};
+                            current.fields[params.field] = e.target.value;
+                            setModifyAnimal(current);
                             gridApi.current.setEditCellValue({id: params.id, field: params.field, value: e.target.value});
                         }}
                     />
@@ -214,6 +220,9 @@ const AnimalTable = ({farms}) => {
                         fullWidth
                         defaultValue={params.value}
                         onChange={(e) => {
+                            let current = {...modifyAnimal};
+                            current.fields[params.field] = e.target.value;
+                            setModifyAnimal(current);
                             gridApi.current.setEditCellValue({id: params.id, field: params.field, value: e.target.value});
                         }}
                     />
@@ -227,6 +236,9 @@ const AnimalTable = ({farms}) => {
                         fullWidth
                         defaultValue={params.value}
                         onChange={(e) => {
+                            let current = {...modifyAnimal};
+                            current.fields[params.field] = e.target.value;
+                            setModifyAnimal(current);
                             gridApi.current.setEditCellValue({id: params.id, field: params.field, value: e.target.value});
                         }}
                     />
@@ -237,6 +249,9 @@ const AnimalTable = ({farms}) => {
                     <FormControl sx={{width: '100%'}}>
                     <DatePicker
                         onChange={(e) => {
+                            let current = {...modifyAnimal};
+                            current.fields[params.field] = e.target.value;
+                            setModifyAnimal(current);
                             gridApi.current.setEditCellValue({id: params.id, field: params.field, value: e.target.value});
                         }}
                         slotProps={{textField: {fullWidth: true}}}
