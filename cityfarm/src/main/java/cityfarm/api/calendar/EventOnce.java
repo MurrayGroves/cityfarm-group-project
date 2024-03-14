@@ -19,9 +19,6 @@ import java.util.UUID;
 @JsonTypeName("once")
 @Document("events")
 public class EventOnce extends Event {
-    @Id
-    private final String id;
-
     @Override
     public String get_id() {
         return id;

@@ -86,10 +86,6 @@ const Calendar = ({farms}) => {
         selectedEvent && setModifiedEvent({...selectedEvent, animals: selectedEvent.animals.map(animal => animal._id), enclosures: selectedEvent.enclosures.map(enclosure => enclosure._id)});
     },[selectedEvent]);
 
-    useEffect(() => {
-        console.log(modifiedEvent);
-    }, [modifiedEvent]);
-
     const setModifiedEventAnimals = (animalList) => {
         setModifiedEvent({...modifiedEvent, animals: animalList})
     }
@@ -182,8 +178,6 @@ const Calendar = ({farms}) => {
     const handlePatchEvent = async() => {
         try {
             const response = await axios.patch(`/events/by_id/${modifiedEvent._id}/update`, modifiedEvent, token);
-            console.log(response.data);
-            window.location.reload(false);
         } catch(error) {
             if (error.response.status === 401) {
                 window.location.href = "/login";

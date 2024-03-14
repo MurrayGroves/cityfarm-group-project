@@ -6,6 +6,7 @@ import cityfarm.api.schemas.AnimalSchema;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.mongodb.lang.NonNull;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.lang.Nullable;
 import org.springframework.data.mongodb.core.mapping.*;
@@ -43,7 +44,9 @@ public abstract class Event {
     public ZonedDateTime start;
     public ZonedDateTime end;
 
-    @Nullable private String id;
+    @Id
+    @Nullable
+    public String id;
 
     public abstract String get_id();
 

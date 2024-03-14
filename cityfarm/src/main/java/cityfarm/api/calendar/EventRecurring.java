@@ -18,9 +18,6 @@ public class EventRecurring extends Event {
 
     private final Duration delay;
 
-    @Id
-    private final String id;
-
     @Override
     public String get_id() {
         return id;
