@@ -14,6 +14,8 @@ import MenuItem from '@mui/material/MenuItem';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
 import EditIcon from '@mui/icons-material/Edit';
+import DoneIcon from '@mui/icons-material/Done';
+import ClearIcon from '@mui/icons-material/Clear';
 
 import AnimalCreator from "../components/AnimalCreator";
 
@@ -34,6 +36,7 @@ const AnimalTable = ({farms}) => {
     const [selectedSchema, setSelectedSchema] = useState(null);
     const [newAnimal, setNewAnimal] = useState( useState({name: '', type: '', father: '', mother: '', male: true, alive: true, fields: {}}));
     const [modifyAnimal, setModifyAnimal] = useState({});
+    const [editingRow, setEditingRow] = useState(null);
 
     const token = getConfig();
 
@@ -152,7 +155,29 @@ const AnimalTable = ({farms}) => {
     }, [animalList])
 
 
-    const fieldTypeSwitch = (type, params) => {
+    function saveAnimal(animal_id) {
+        console.log("Saving animals")
+        let row = gridApi.current.getRow(animal_id)
+        console.log(row);
+        console.log(modifyAnimal)
+        let old_animal = animalList.find((animal) => {return animal._id === animal_id});
+        console.log("OLD ANIMAL", old_animal)
+        console.log(animalList)
+        let animal = {...old_animal};
+        animal.father = modifyAnimal.father ? modifyAnimal.father._id : old_animal.father;
+        animal.mother = modifyAnimal.mother ? modifyAnimal.mother._id : old_animal.mother;
+        animal.name = modifyAnimal.name ? modifyAnimal.name : old_animal.name;
+        animal.sex = modifyAnimal.sex ? modifyAnimal.sex : old_animal.male ? "Male" : "Female";
+
+        animal.fields = {};
+        for (let key in old_animal.fields) {
+            animal.fields[key] = animal.fields[key] ? animal.fields[key] : old_animal.fields[key];
+        }
+
+        console.log(animal);
+    }
+
+    const fieldTypeSwitch = (type, params, field_name) => {
         switch(type) { /* check the type of the field and display appropriate input method */
             case "java.lang.Boolean":
                 return (
@@ -227,7 +252,18 @@ const AnimalTable = ({farms}) => {
         { field: 'name', headerName: 'Name', headerClassName: 'grid-header', headerAlign: 'left', flex: 1, editable: true,
             renderCell: (animal) => {return <AnimalPopover animalID={animal.value._id}/>}, renderEditCell: (params) => {
                 params.value = params.value.name;
-                return fieldTypeSwitch("java.lang.String", params);
+                return <FormControl sx={{width: '100%'}}>
+                    <TextField
+                        fullWidth
+                        defaultValue={params.value}
+                        onChange={(e) => {
+                            let current = {...modifyAnimal};
+                            current.name = e.target.value;
+                            setModifyAnimal(current);
+                            gridApi.current.setEditCellValue({id: params.id, field: params.field, value: e.target.value});
+                        }}
+                    />
+                </FormControl>
             } },
         { field: 'type', headerName: 'Type', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
         { field: 'father', headerName: 'Father', headerClassName: 'grid-header', headerAlign: 'left', flex: 1, editable: true,
@@ -256,9 +292,10 @@ const AnimalTable = ({farms}) => {
                         value={modifyAnimal.father ? modifyAnimal.father : {_id: params.value, name: animalList.find((animal) => {return animal._id === params.value}).name}}
                         onChange={(_, value) => {
                             console.log(modifyAnimal)
-                            let current = modifyAnimal;
+                            let current = {...modifyAnimal};
                             current.father = value;
                             setModifyAnimal(current);
+                            gridApi.current.setEditCellValue({id: params.id, field: params.field, value: value._id});
                         }}
                     />
                 );
@@ -284,12 +321,12 @@ const AnimalTable = ({farms}) => {
                                 return animal;
                             })  
                         }
-                        value={modifyAnimal.mother ? modifyAnimal.mother : {_id: params.value, name: animalList.find((animal) => {return animal._id === params.value}).name}}
+                        value={{_id: params.value, name: animalList.find((animal) => {return animal._id === params.value}).name}}
                         onChange={(_, value) => {
-                            console.log(modifyAnimal)
-                            let current = modifyAnimal;
+                            var current = {...modifyAnimal};
                             current.mother = value;
                             setModifyAnimal(current);
+                            gridApi.current.setEditCellValue({id: params.id, field: params.field, value: value._id});
                         }}
                     />)
                 }},
@@ -309,9 +346,10 @@ const AnimalTable = ({farms}) => {
                 getOptionLabel={option => option.name}
                 value={modifyAnimal.sex ? {id: ["Male", "Female", "Castrated"].indexOf(modifyAnimal.sex), name: modifyAnimal.sex} : {id: ["Male", "Female", "Castrated"].indexOf(params.value), name: params.value}}
                 onChange={(_, value) => {
-                    let current = modifyAnimal;
-                    modifyAnimal.sex = value.name;
+                    let current = {...modifyAnimal};
+                    current.sex = value.name;
                     setModifyAnimal(current);
+                    gridApi.current.setEditCellValue(value);
                 }}
                 options={
                     [
@@ -337,19 +375,37 @@ const AnimalTable = ({farms}) => {
             <FarmTabs farms={farms} selectedFarm={farm} setSelectedFarm={setFarm}/>
         </span>
         <Paper style={{height: 'calc(100% - 525px)', marginBottom: '20px'}}>
-            <DataGrid apiRef={gridApi} isCellEditable={() => true} disableRowSelectionOnClick filterModel={filterModel} style={{fontSize: '1rem'}} checkboxSelection columns={[...cols, {
+            <DataGrid editMode="row" apiRef={gridApi} isCellEditable={() => true} disableRowSelectionOnClick filterModel={filterModel} style={{fontSize: '1rem'}} checkboxSelection columns={[...cols, {
                 field: 'edit',
                 headerName: 'Edit',
                 headerClassName: 'grid-header',
                 headerAlign: 'right',
-                flex: 0.1,
+                flex: 0.2,
                 renderCell: (params) => {
-                    return <IconButton onClick={() => {
-                        let obj = animalList.find((animal) => {return animal._id === params.id});
-                        setModifyAnimal(obj);
-                        gridApi.current.startRowEditMode({ id: params.id });
-                    }}><EditIcon/></IconButton>
-                    
+                    return editingRow === params.row.id ?
+                        <div display='flex'>
+                            <IconButton sx={{padding:'0px'}} onClick={() => {
+                                saveAnimal(params.row.id);
+                            }}>
+                                <DoneIcon sx={{color: 'green', padding:'0px'}}/>
+                            </IconButton>
+
+                            <IconButton sx={{padding: '0px'}} onClick={() => {
+                                gridApi.current.stopRowEditMode({id: params.row.id, ignoreModifications: true});
+                                setEditingRow(null);
+                            }}>
+                                <ClearIcon sx={{color: 'red', padding: '0px'}}/>
+                            </IconButton>
+                        </div>
+                    :
+                        <IconButton onClick={() => {
+                            let obj = animalList.find((animal) => {return animal._id === params.row.id});
+                            setModifyAnimal(obj);
+                            gridApi.current.startRowEditMode({ id: params.row.id });
+                            setEditingRow(params.row.id);
+                        }}>
+                            <EditIcon/>
+                        </IconButton>   
                 }
             }]} rows={rows} onCellClick={(params, event, details) => {
                 if (params.field === 'type') {
