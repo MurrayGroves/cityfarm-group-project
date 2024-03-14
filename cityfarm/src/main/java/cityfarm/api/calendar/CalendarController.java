@@ -176,9 +176,11 @@ public class CalendarController {
         event.animals = animals;
         event.farms = eventReq.farms;
 
+        System.out.println(event);
+
         eventRepository.save(event);
 
-        String location = String.format("/api/events/by_id/{id}/%s", event.get_id());
+        String location = String.format("/api/events/by_id/%s", event.get_id());
         return ResponseEntity.created(URI.create(location)).body(event.get_id());
     }
 

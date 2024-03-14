@@ -83,7 +83,7 @@ const Calendar = ({farms}) => {
     }, [newEvent]);
 
     useEffect(() =>{
-        setModifiedEvent(selectedEvent);
+        selectedEvent && setModifiedEvent({...selectedEvent, animals: selectedEvent.animals.map(animal => animal._id), enclosures: selectedEvent.enclosures.map(enclosure => enclosure._id)});
     },[selectedEvent]);
 
     useEffect(() => {
@@ -425,7 +425,7 @@ const Calendar = ({farms}) => {
                         <div>
                             <h3>Animals</h3>
                             {modifiedEvent.animals.map((animal) => (
-                                <AnimalPopover key={animal._id} animalID={animal._id} />
+                                <AnimalPopover key={animal} animalID={animal} />
                             ))}{/*Add a way to remove animals from events */}
                             <Button variant='outlined' onClick={() => {functionopenPopup("animals")}}>Add Animal</Button> 
                             <div id="AssociateAnimal" style={{textAlign:'center'}}>
@@ -440,7 +440,7 @@ const Calendar = ({farms}) => {
                         <div>
                             <h3>Enclosures</h3>
                             {modifiedEvent.enclosures.map((enclosure, index) => (
-                                <p key={index}>{enclosure.name}</p>
+                                <p key={index}>{enclosure}</p>
                             ))}{/*Add a way to remove enclosures from events */}
                             <Button variant='outlined' onClick={() => {functionopenPopup("enclosures")}}>Add Enclosure</Button> {/* idea: make this open the enlcosure  page with a new column of checkboxes. Click on an associate enlcosure(s) button would then pass a list of enclosure names to the calendar to be placed in a field*/}
                             <div id="AssociateEnclosure" style={{textAlign:'center'}}>
