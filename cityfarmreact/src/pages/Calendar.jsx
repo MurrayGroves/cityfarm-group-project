@@ -9,7 +9,7 @@ import AnimalPopover from "../components/AnimalPopover";
 import Close from '@mui/icons-material/Close';
 import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
-import {  DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
+import {  DialogActions, DialogContent, DialogContentText, DialogTitle, ToggleButton, ToggleButtonGroup } from "@mui/material";
 import { IconButton, Button, ButtonGroup, Checkbox, FormControlLabel, FormGroup, useTheme, Dialog, FormHelperText, Backdrop, Alert } from '@mui/material';
 import AlertTitle from '@mui/material/AlertTitle';
 import EditIcon from '@mui/icons-material/Edit';
@@ -24,6 +24,7 @@ import axios from '../api/axiosConfig'
 import AssociateEnclosure from '../components/AssociateEnclosure';
 
 import { getConfig } from '../api/getToken';
+import { Check } from '@mui/icons-material';
 
 export const eventsConversion=(events)=>{
     let changed=[]
@@ -77,9 +78,11 @@ const Calendar = ({farms}) => {
     const [modifyEvent, setModifyEvent] = useState(false);
     const [showErr, setShowErr] = useState(false);
     const [inputErr, setInputErr] = useState({newTitle: true});
+    const [recurring, setRecurring] = useState(false);
 
     useEffect(() => {
         setInputErr({...inputErr, newTitle: newEvent.title === ''});
+        console.log(newEvent);
     }, [newEvent])
 
     useEffect(() =>{
@@ -98,6 +101,18 @@ const Calendar = ({farms}) => {
     const setAddEventAnimals = (animalList) => {
         setNewEvent({...newEvent, animals: animalList})
     }
+    
+    const changeAllDay = (isAllDay, type) => {
+        type === "add" ? setNewEvent({...newEvent, allDay: isAllDay}) : setModifiedEvent({...modifiedEvent, allDay: isAllDay})
+    }
+
+    const changeRecurring = (isRecurring, type) => {
+        type === "add" && setRecurring(isRecurring);
+    }
+
+    useEffect(() => {
+        recurring ? setNewEvent({...newEvent, firstStart: newEvent.start, firstEnd: newEvent.end, delay: 'P1D', finalEnd: null, start: null, end: null}) : newEvent.firstEnd && setNewEvent({...newEvent, end: newEvent.firstEnd, start: newEvent.firstStart, firstStart: null, firstEnd: null, delay: null, finalEnd: null})
+    }, [recurring])
 
     useEffect(() => {
         (async () => {
@@ -135,7 +150,8 @@ const Calendar = ({farms}) => {
         }
 
         try {
-            await axios.post(`/events/create/once`, newEvent, token);
+            recurring ? await axios.post(`/events/create/recurring`, newEvent, token)
+                      : await axios.post(`/events/create/once`, newEvent, token)
         } catch(error) {
             if (error.response.status === 401) {
                 window.location.href = "/login";
@@ -144,10 +160,7 @@ const Calendar = ({farms}) => {
                 window.alert(error);
             }
         }
-
-        window.location.reload(false);
-
-        //setAllEvents([...allEvents, newEvent]); /*Adds the new event to the list of allEvents} */
+        
         setNewEvent({
             title: "",
             allDay: true,
@@ -158,6 +171,8 @@ const Calendar = ({farms}) => {
             description: "",
             enclosures: []
         });
+        
+        window.location.reload(false);
     }
 
     const handleDelEvent = async() => {
@@ -186,11 +201,7 @@ const Calendar = ({farms}) => {
                 window.alert(error);
             }
         }
-        window.location.reload(false);
-    }
-
-    const changeAllDay = (isAllDay, type) => {
-        type === "add" ? setNewEvent({...newEvent, allDay: isAllDay}) : setModifiedEvent({...modifiedEvent, allDay: isAllDay})
+        //window.location.reload(false);
     }
 
     const updateVisibleFarms = (selected) => {
@@ -226,32 +237,32 @@ const Calendar = ({farms}) => {
             if (isShown){
                 return(<>
                     <FormHelperText>Start</FormHelperText>
-                    <DateTimePicker value={dayjs(newEvent.start)} onChange={(e) => {setNewEvent({...newEvent, start: e.$d, end: newEvent.end < e.$d ? e.$d : newEvent.end})}} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
+                    <DateTimePicker value={recurring ? dayjs(newEvent.firstStart) : dayjs(newEvent.start)} onChange={(e) => {setNewEvent({...newEvent, start: e.$d, end: newEvent.end < e.$d ? e.$d : newEvent.end})}} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
                     <FormHelperText>End</FormHelperText>
-                    <DateTimePicker value={dayjs(newEvent.end)} onChange={(e) => {setNewEvent({...newEvent, end: e.$d, start: e.$d < newEvent.start ? e.$d : newEvent.start})}} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
+                    <DateTimePicker value={recurring ? dayjs(newEvent.firstEnd) : dayjs(newEvent.end)} onChange={(e) => {setNewEvent({...newEvent, end: e.$d, start: e.$d < newEvent.start ? e.$d : newEvent.start})}} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
                 </>)
             } else {
                 return(<>
                     <FormHelperText>Start</FormHelperText>
-                    <DatePicker value={dayjs(newEvent.start)} onChange={(e) => {setNewEvent({...newEvent, start: e.$d, end: newEvent.end < e.$d ? e.$d : newEvent.end})}} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
+                    <DatePicker value={recurring ? dayjs(newEvent.firstStart) : dayjs(newEvent.start)} onChange={(e) => {setNewEvent({...newEvent, start: e.$d, end: newEvent.end < e.$d ? e.$d : newEvent.end})}} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
                     <FormHelperText>End</FormHelperText>
-                    <DatePicker value={dayjs(newEvent.end)} onChange={(e) => {setNewEvent({...newEvent, end: e.$d, start: e.$d < newEvent.start ? e.$d : newEvent.start})}} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
+                    <DatePicker value={recurring ? dayjs(newEvent.firstEnd) : dayjs(newEvent.end)} onChange={(e) => {setNewEvent({...newEvent, end: e.$d, start: e.$d < newEvent.start ? e.$d : newEvent.start})}} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
                 </>)
             }
         } else {
             if (isShown) {
                 return(<>
                     <FormHelperText>Start</FormHelperText>
-                    <DateTimePicker value={dayjs(modifiedEvent.start)} placeholder={selectedEvent.start} onChange={(e) => {setModifiedEvent({...modifiedEvent, start: e.$d, end: modifiedEvent.end < e.$d ? e.$d : modifiedEvent.end})}} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
+                    <DateTimePicker value={recurring ? dayjs(modifiedEvent.firstStart) : dayjs(modifiedEvent.start)} placeholder={selectedEvent.start} onChange={(e) => {setModifiedEvent({...modifiedEvent, start: e.$d, end: modifiedEvent.end < e.$d ? e.$d : modifiedEvent.end})}} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
                     <FormHelperText>End</FormHelperText>
-                    <DateTimePicker value={dayjs(modifiedEvent.end)} placeholder={selectedEvent.end} onChange={(e) => {setModifiedEvent({...modifiedEvent, end: e.$d, start: e.$d < modifiedEvent.start ? e.$d : modifiedEvent.start})}} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
+                    <DateTimePicker value={recurring ? dayjs(modifiedEvent.firstEnd) : dayjs(modifiedEvent.end)} placeholder={selectedEvent.end} onChange={(e) => {setModifiedEvent({...modifiedEvent, end: e.$d, start: e.$d < modifiedEvent.start ? e.$d : modifiedEvent.start})}} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
                 </>)
             } else {
                 return(<>
                     <FormHelperText>Start</FormHelperText>
-                    <DatePicker value={dayjs(modifiedEvent.start)} placeholder={selectedEvent.start} onChange={(e) => {setModifiedEvent({...modifiedEvent, start: e.$d, end: modifiedEvent.end < e.$d ? e.$d : modifiedEvent.end})}} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
+                    <DatePicker value={recurring ? dayjs(modifiedEvent.firstStart) : dayjs(modifiedEvent.start)} placeholder={selectedEvent.start} onChange={(e) => {setModifiedEvent({...modifiedEvent, start: e.$d, end: modifiedEvent.end < e.$d ? e.$d : modifiedEvent.end})}} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
                     <FormHelperText>End</FormHelperText>
-                    <DatePicker value={dayjs(modifiedEvent.end)} placeholder={selectedEvent.end} onChange={(e) => {setModifiedEvent({...modifiedEvent, end: e.$d, start: e.$d < modifiedEvent.start ? e.$d : modifiedEvent.start})}} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
+                    <DatePicker value={recurring ? dayjs(modifiedEvent.firstEnd) : dayjs(modifiedEvent.end)} placeholder={selectedEvent.end} onChange={(e) => {setModifiedEvent({...modifiedEvent, end: e.$d, start: e.$d < modifiedEvent.start ? e.$d : modifiedEvent.start})}} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
                 </>)
             }
         }
@@ -477,12 +488,27 @@ const Calendar = ({farms}) => {
                         {showingTime(!newEvent.allDay,"add")}
                     </div>
 
-                    <div style={{marginTop: "10px"}}>
+                    <div className='smallMarginTop'>
                         <FormControlLabel control={<Checkbox defaultChecked size='small'/>} label="All Day" onChange={() => changeAllDay(!newEvent.allDay, "add")}/>
+                        <FormControlLabel control={<Checkbox size='small'/>} label="Recurring" onChange={() => changeRecurring(!recurring, "add")} />
                         <Button variant='contained' style={{float: "right"}} onClick={()=>handleAddEvent()} endIcon={<AddIcon/>}>Create</Button>
                     </div>
-
-                    <div style={{marginTop: "10px"}}>
+                    {recurring && (
+                    <div className='smallMarginTop'>
+                        <ToggleButtonGroup
+                            fullWidth
+                            orientation='horizontal'
+                            value={newEvent.delay}
+                            exclusive
+                            onChange={(e) => setNewEvent({...newEvent, delay: e.target.value})}
+                        >
+                            <ToggleButton value='P1D'>Daily</ToggleButton>
+                            <ToggleButton value='P7D'>Weekly</ToggleButton>
+                            <ToggleButton value='P28D'>Monthly</ToggleButton>
+                            <ToggleButton value='P265D'>Yearly</ToggleButton>
+                        </ToggleButtonGroup>
+                    </div>)}
+                    <div className='smallMarginTop'>
                         <h3>Farms</h3>
                         <FormGroup>
                             <FormControlLabel control={<Checkbox color={farms.WH} size='small'/>} label="Windmill Hill" onChange={() => setNewEvent({...newEvent, farms: newEvent.farms.includes(farms.WH) ? newEvent.farms.filter((farm) => farm !== farms.WH) : newEvent.farms.concat(farms.WH)})}/>
