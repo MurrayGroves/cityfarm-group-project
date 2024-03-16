@@ -408,8 +408,6 @@ const AnimalTable = ({farms}) => {
                 getOptionLabel={option => option.name}
                 value={{id: ["Male", "Female", "Castrated"].indexOf(params.value), name: params.value}}
                 onChange={(_, value) => {
-                    console.log("VALUE", value)
-                    console.log("MODIFY ANIMAL", modifyAnimal)
                     let current = {...modifyAnimal};
                     current.sex = value.name;
                     setModifyAnimal(current);
@@ -440,7 +438,7 @@ const AnimalTable = ({farms}) => {
             ></TextField>
             <FarmTabs farms={farms} selectedFarm={farm} setSelectedFarm={setFarm}/>
         </span>
-        <Paper style={{height: `calc(100vh - (170.88px + ${creatorOffset}px))`, marginBottom: '20px'}}>
+        <Paper style={{height: `calc(100vh - (190.88px + ${creatorOffset}px))`, marginBottom: '0.5%'}}>
             <DataGrid editMode="row" apiRef={gridApi} disableRowSelectionOnClick filterModel={filterModel} style={{fontSize: '1rem'}} checkboxSelection
                 columns={[...cols, {
                     field: 'edit',
@@ -506,7 +504,7 @@ const AnimalTable = ({farms}) => {
                 }}
             />
         </Paper>
-        <div style={{marginTop: '1%', display: 'flex'}}>            
+        <div style={{marginTop: '0%', display: 'flex'}}>            
             <Button variant="contained" onClick={() => {
                 setFilterModel({items: []});
                 setSelectedSchema(null);
