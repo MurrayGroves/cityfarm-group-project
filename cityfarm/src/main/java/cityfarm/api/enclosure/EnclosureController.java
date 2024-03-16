@@ -6,6 +6,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.boot.actuate.autoconfigure.observation.ObservationProperties;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpHeaders;
 
@@ -38,8 +39,16 @@ public class EnclosureController {
     }
 
     @GetMapping("/api/enclosures")
-    public ResponseEntity<List<Enclosure>> get_enclosures() {
-        return ResponseEntity.ok().body(enclosureRepository.findAll());
+    public ResponseEntity<List<Enclosure>> get_enclosures(@RequestParam("farm") @Nullable String farm) {
+        List<Enclosure> enclosures = enclosureRepository.findAll();
+        if (farm != null) {
+            enclosures = enclosures
+                    .stream()
+                    .filter((enclosure) -> enclosure.farm.equals(farm))
+                    .toList();
+        }
+
+        return ResponseEntity.ok().body(enclosures);
     }
 
     @GetMapping("/api/enclosures/by_id/{id}")
@@ -54,10 +63,16 @@ public class EnclosureController {
     }
 
     @GetMapping("/api/enclosures/by_name/{name}")
-    public ResponseEntity<List<Enclosure>> get_enclosure_by_name(@PathVariable String name) {
-        List<Enclosure> enclosure = enclosureRepositoryCustom.findEnclosureByName(name);
+    public ResponseEntity<List<Enclosure>> get_enclosure_by_name(@PathVariable String name, @RequestParam("farm") @Nullable String farm) {
+        List<Enclosure> enclosures = enclosureRepositoryCustom.findEnclosureByName(name);
+        if (farm != null) {
+            enclosures = enclosures
+                    .stream()
+                    .filter((enclosure) -> enclosure.farm.equals(farm))
+                    .toList();
+        }
 
-        return ResponseEntity.ok().body(enclosure);
+        return ResponseEntity.ok().body(enclosures);
     }
 
     @PatchMapping("/api/enclosures/by_id/{id}/holding")

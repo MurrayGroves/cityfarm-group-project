@@ -1,0 +1,10 @@
+.events-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: left; /* This will space out the boxes evenly */
+}
+
+.event-box {
+    margin: 10px;
+    padding: 10px;
+}

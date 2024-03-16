@@ -34,7 +34,7 @@ public class EventOnce extends Event {
 
     @Override
     public List<EventInstance> occurencesBetween(@NonNull ZonedDateTime from, @NonNull ZonedDateTime to) {
-        if (from.isBefore(start) || to.isAfter(end)) {
+        if (from.isBefore(start) && to.isAfter(end)) {
             return List.of(new EventInstance(start, end, this));
         } else {
             return List.of();
@@ -43,16 +43,16 @@ public class EventOnce extends Event {
 
     @JsonCreator
     @PersistenceCreator
-    public EventOnce(@JsonProperty("start") @NonNull ZonedDateTime start, @JsonProperty("end") @Nullable ZonedDateTime end, @JsonProperty("all_day") @NonNull Boolean all_day,
+    public EventOnce(@JsonProperty("start") @NonNull ZonedDateTime start, @JsonProperty("end") @Nullable ZonedDateTime end, @JsonProperty("allDay") @NonNull Boolean allDay,
                      @JsonProperty("title") @NonNull String title, @JsonProperty("description") @Nullable String description, @JsonProperty("_id") @Nullable String id,
                      @JsonProperty("enclosures") @Nullable List<Enclosure> enclosures, @JsonProperty("animals") @Nullable List<AnimalCustom> animals, @JsonProperty("farms") @Nullable List<String> farms, @JsonProperty("people") @Nullable List<String> attachedPeople) {
-        if (end == null && !all_day) {
+        if (end == null && !allDay) {
             throw new IllegalArgumentException("If end isn't present, the event must be marked as all day");
         }
         
         this.start = start;
         this.end = end;
-        this.all_day = all_day;
+        this.allDay = allDay;
         this.title = title;
         this.description = description;
         this.enclosures = enclosures;

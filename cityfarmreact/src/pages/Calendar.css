@@ -11,27 +11,53 @@
 }
 
 .boxTitle {
-    margin: 0 0 10px 0;
+    margin: 0 0 20px 0;
 }
 
-.closeButton {
-    background-color: transparent;
-    width: 32px;
-    height: 32px;
-}
-.closeButton img {
-    width: 24px;
-    height: 24px;
+.noMarginTop {
+    margin-top: 0px;
 }
 
-h2 {
-    margin: 0;
+.rbc-day-bg {
+    background: var(--day);
 }
 
-h3 {
-    margin-bottom: 10px;
+.rbc-off-range-bg {
+    background: var(--off-range);
 }
 
-p {
-    margin: 5px 0;
+.rbc-today {
+    background: var(--today);
+}
+
+.rbc-toolbar button {
+    color: var(--text);
+}
+
+.rbc-toolbar button.rbc-active {
+    color: black;
+}
+
+.rbc-header {
+    background: var(--header);
+}
+
+.rbc-month-view {
+    border-radius: 5px;
+}
+
+.rbc-month-view :last-child :first-child :first-child {
+    border-radius: 0 0 0 5px;
+}
+
+.rbc-row-bg :last-child {
+    border-radius: 0 0 5px 0;
+}
+
+.rbc-month-header :last-child{
+    border-radius: 0 5px 0 0;
+}
+
+.rbc-month-header :first-child {
+    border-radius: 5px 0 0 0;
 }

@@ -15,6 +15,8 @@ import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -30,11 +32,15 @@ public class AnimalSchema {
     @NonNull
     private final Map<String, SchemaValue> fields;
 
+    @NonNull
+    private boolean hidden;
+
     @JsonCreator
     @PersistenceCreator
     public AnimalSchema(@NonNull String name, @NonNull Map<String, SchemaValue> fields) {
         this.name = name;
         this.fields = fields;
+        this.hidden = false;
     }
 
     public String get_name() {
@@ -43,6 +49,14 @@ public class AnimalSchema {
 
     public Map<String, SchemaValue> get_fields() {
         return this.fields;
+    }
+
+    public Boolean get_hidden() {
+        return this.hidden;
+    }
+
+    public void set_hidden(Boolean hidden) {
+        this.hidden = hidden;
     }
 
     public AnimalCustom new_animal(@NonNull AnimalCreateRequest animalReq) {
@@ -59,7 +73,11 @@ public class AnimalSchema {
             try {
                 mapper.treeToValue(field.getValue(), this.fields.get(field_name).get_type());
             } catch (JsonProcessingException e) {
-                throw new IllegalArgumentException(String.format("`%s` is not of type %s", field_name, this.fields.get(field_name).get_type()));
+                try {
+                    ZonedDateTime.parse(field.getValue().asText(), DateTimeFormatter.ISO_DATE_TIME);
+                } catch (DateTimeParseException p) {
+                    throw new IllegalArgumentException(String.format("`%s` is not of type %s", field_name, this.fields.get(field_name).get_type()));
+                }
             }
         });
 

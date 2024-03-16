@@ -35,11 +35,18 @@ public class EnclosureGeneric {
     public String notes;
 
     /**
+     * String to denote the farm the enclosure is at
+     */
+    @NonNull
+    public String farm;
+
+    /**
      * Create new enclosure with no animals, and irrelevant capacity
      */
-    public EnclosureGeneric(@NonNull String name) {
+    public EnclosureGeneric(@NonNull String name, @NonNull String farm) {
         this.holding = new HashMap<>();
         this.name = name;
+        this.farm = farm;
     }
 
     /**
@@ -47,10 +54,11 @@ public class EnclosureGeneric {
      * @param capacities sets the {@link EnclosureGeneric#capacities capacities} field
      * @param holding sets the {@link EnclosureGeneric#holding holding} field, initialising it as empty if null
      */
-    public EnclosureGeneric(@NonNull String name, @Nullable HashMap<String, Integer> capacities, @Nullable HashMap<String, Set<AnimalCustom>> holding, @Nullable String notes) {
+    public EnclosureGeneric(@NonNull String name, @Nullable HashMap<String, Integer> capacities, @Nullable HashMap<String, Set<AnimalCustom>> holding, @Nullable String notes, @NonNull String farm) {
         this.capacities = capacities;
         this.holding = Objects.requireNonNullElse(holding, new HashMap<>());
         this.name = name;
         this.notes = notes;
+        this.farm = farm;
     }
 }

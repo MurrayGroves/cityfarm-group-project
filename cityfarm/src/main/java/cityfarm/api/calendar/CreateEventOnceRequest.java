@@ -16,7 +16,7 @@ public class CreateEventOnceRequest {
 
     public List<String> people;
 
-    public Boolean all_day;
+    public Boolean allDay;
 
     public ZonedDateTime start;
 

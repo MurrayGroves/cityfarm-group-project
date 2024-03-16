@@ -6,7 +6,6 @@ import './AnimalPopover.css'
 import axios from "../api/axiosConfig";
 import { useState, useEffect } from 'react';
 import { useTheme } from '@mui/material/styles';
-
 import { getConfig } from '../api/getToken';
 
 const aExamples = [
@@ -17,6 +16,7 @@ const aExamples = [
 
 const AnimalPopover = (props) => {
     const colour = useTheme().palette.mode === 'light' ? 'black' : 'white';
+    const hoverColour = '#f1f1f1';
 
     const [anchorEl, setAnchorEl] = useState(null);
     const [chosenAnimal, setChosenAnimal] = useState(aExamples[0]);
@@ -41,7 +41,12 @@ const AnimalPopover = (props) => {
             const response = await axios.get(`/animals/by_id/${props.animalID}`, token);
             setChosenAnimal(response.data);
         } catch (error) {
-            window.alert(error);
+            if (error.response.status === 401) {
+                window.location.href = "/login";
+                return;
+            } else {
+                window.alert(error);
+            }
         }})()
     }, [props.animalID]);
 
@@ -83,9 +88,9 @@ const AnimalPopover = (props) => {
                 aria-haspopup="true"
                 onMouseEnter={handlePopoverOpen}
                 onMouseLeave={handlePopoverClose}
-                style={{display: 'inline-block', margin: '2.5px 0'}}
+                style={{display: 'inline-block'}}
             >
-                <Link style={{color: colour}} to={`/single-animal/${chosenAnimal._id}`}>{chosenAnimal.name}</Link>
+                <Link className='animalLink' style={{'--colour': colour, '--hoverColour': hoverColour}} to={`/single-animal/${chosenAnimal._id}`}>{chosenAnimal.name}</Link>
             </Typography>
             <Popover
                 id="mouse-over-popover"
@@ -104,10 +109,10 @@ const AnimalPopover = (props) => {
                 disableRestoreFocus
             >
                 <Typography sx={{ p: 1, whiteSpace: 'pre-line' }}>
-                    {`Type: ${chosenAnimal.type}`}<br/>
+                    {`Type: ${chosenAnimal.type ? chosenAnimal.type : 'Loading...'}`}<br/>
                     {`Father: ${animalFather}`}<br/>
                     {`Mother: ${animalMother}`}<br/>
-                    {chosenAnimal.male ? 'Sex: Male' : 'Sex: Female'}
+                    {`Sex: ${chosenAnimal.sex === 'f' ? 'Female' : (chosenAnimal.sex === 'm' ? 'Male' : 'Castrated')}`}
                 </Typography>
             </Popover>
         </div>

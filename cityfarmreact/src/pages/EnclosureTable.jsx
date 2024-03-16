@@ -17,17 +17,14 @@ const EnclosureTable = ({farms}) => {
     const [searchTerm, setSearchTerm] = useState(''); /* The term being search for in the searchbar */
     const [editMode, setEditMode] = useState(false); /* Whether edit mode is on. Initial state is false */
 
-
-
     const token = getConfig();
 
-    //useEffect(displayAll,[clear]);
-    const [farm, setFarm] = useState(Object.keys(farms)[0]);
+    const [farm, setFarm] = useState(null);
 
     function displayAll() {
         (async () => {
             try {
-                const response = await axios.get(`/enclosures`, token);
+                const response = await axios.get(`/enclosures`, {params: {farm: farm}, ...token});
                 setEnclosureList(response.data);
             } catch (error) {
                 if (error.response.status === 401) {
@@ -47,7 +44,7 @@ const EnclosureTable = ({farms}) => {
                 return;
             }
             try {
-                const response = await axios.get(`/enclosures/by_name/${searchTerm}`, token);
+                const response = await axios.get(`/enclosures/by_name/${searchTerm}`, {params: {farm: farm}, ...token});
                 setEnclosureList(response.data);
             } catch (error) {
                 if (error.response.status === 401) {
@@ -58,7 +55,7 @@ const EnclosureTable = ({farms}) => {
                 }
             }
         })()
-    },[searchTerm])
+    },[searchTerm, farm])
 
     const cols =  [
         { field: 'name', editable: true, headerName: 'Name', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
@@ -91,24 +88,21 @@ const EnclosureTable = ({farms}) => {
             ></TextField>
             <FarmTabs farms={farms} selectedFarm={farm} setSelectedFarm={setFarm}/>
         </span>
-        <TableContainer component={Paper} style={{marginBottom: '20px'}}>
-            <DataGrid rows={rows} columns={cols} 
-            isCellEditable = {() => editMode} 
-            // onCellEditStop = {(params: GridCellParams, event) => {
+        <TableContainer component={Paper} style={{marginBottom: '20px', height: 'calc(100vh - (40px + 36.5px + 60px + 48px + (2*21.44px))'}}>
+            <DataGrid rows={rows} columns={cols}
+            style={{fontSize: '1rem'}}
+            isCellEditable={() => editMode}
+            // editMode="row"
+            // onCellEditStop = {(params, event) => {
                 
-            //     setEditMode(!editMode);
             // }}
             processRowUpdate = {(newVal, oldVal) => {
-                console.log("it gets here")
-                const result = diff(oldVal, newVal);
-                console.log(result);
+                if (newVal.name === oldVal.name) { return newVal; }
                 const newName = newVal.name;
-                console.log(newName);
                 const _id = oldVal.id;
-                console.log(_id);
-                (async() =>{
+                (async() => {
                     try{
-                        const response = await axios.patch(`/enclosures/by_id/${_id}/name/${newName}`, token)
+                        const response = await axios.patch(`/enclosures/by_id/${_id}/name/${newName}`, null, token)
                         console.log(response);
                         window.location.reload(false);
                     } catch (error) {

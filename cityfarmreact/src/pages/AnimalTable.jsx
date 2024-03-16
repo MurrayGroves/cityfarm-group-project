@@ -28,8 +28,9 @@ import Autocomplete from '@mui/material/Autocomplete';
 const AnimalTable = ({farms}) => {
     const [animalList, setAnimalList] = useState([]); /* The State for the list of animals. The initial state is [] */
     const [searchTerm, setSearchTerm] = useState(''); /* The term being searched for in the searchbar */
-    
-    const [farm, setFarm] = useState(Object.keys(farms)[0]);
+    const [schemaList, setSchemaList] = useState([]);
+
+    const [farm, setFarm] = useState(null);
 
     const [filterModel, setFilterModel] = useState({items: []});
     const [schemas, setSchemas] = useState([]);
@@ -45,7 +46,7 @@ const AnimalTable = ({farms}) => {
     function displayAll() {
         (async () => {
             try {
-                const response = await axios.get(`/animals`, token);
+                const response = await axios.get(`/animals`, {params: {farm: farm}, ...token});
                 setAnimalList(response.data);
             } catch (error) {
                 console.log(error);
@@ -59,6 +60,24 @@ const AnimalTable = ({farms}) => {
         })()
     }
 
+    function getSchemas() {
+        (async () => {
+            try {
+                const response = await axios.get(`/schemas`, token);
+                setSchemaList(response.data.reverse());
+            } catch (error) {
+                if (error.response.status === 401) {
+                    window.location.href = "/login";
+                    return;
+                } else {
+                    window.alert(error);
+                }
+            }
+        })()
+    }
+
+    useEffect(getSchemas, []);
+
     useEffect(() => {
         (async () => {
             if (searchTerm === '') {
@@ -66,7 +85,7 @@ const AnimalTable = ({farms}) => {
                 return;
             }
             try {
-                const response = await axios.get(`/animals/by_name/${searchTerm}`, token);
+                const response = await axios.get(`/animals/by_name/${searchTerm}`, {params: {farm: farm}, ...token});
                 setAnimalList(response.data);
             } catch (error) {
                 if (error.response.status === 401) {
@@ -77,7 +96,7 @@ const AnimalTable = ({farms}) => {
                 }
             }
         })()
-    },[searchTerm])
+    },[searchTerm, farm])
 
     useEffect(() => {
         (async () => {
@@ -115,7 +134,7 @@ const AnimalTable = ({farms}) => {
             type: animal.type.charAt(0).toUpperCase() + animal.type.slice(1),
             father: animal.father !== null ? animal.father : '',
             mother: animal.mother !== null ? animal.mother : '',
-            sex: animal.male ? 'Male' : 'Female',
+            sex: animal.sex ? sexToDisplay[animal.sex] : animal.sex,
         }));
 
         let newRows = [];
@@ -149,7 +168,7 @@ const AnimalTable = ({farms}) => {
             type: animal.type.charAt(0).toUpperCase() + animal.type.slice(1),
             father: animal.father !== null ? animal.father : '',
             mother: animal.mother !== null ? animal.mother : '',
-            sex: animal.male ? 'Male' : 'Female',
+            sex: animal.sex ? sexToDisplay[animal.sex] : animal.sex,
         }));
         setRows(defaultRows);
     }, [animalList])
@@ -164,14 +183,29 @@ const AnimalTable = ({farms}) => {
         animal.father = modifyAnimal.father ? modifyAnimal.father._id ? modifyAnimal.father._id : modifyAnimal.father : old_animal.father;
         animal.mother = modifyAnimal.mother ? modifyAnimal.mother._id ? modifyAnimal.mother._id : modifyAnimal.mother : old_animal.mother;
         animal.name = modifyAnimal.name ? modifyAnimal.name : old_animal.name;
-        animal.sex = modifyAnimal.sex ? modifyAnimal.sex : old_animal.male ? "Male" : "Female";
+
+        animal.sex = modifyAnimal.sex ? displayToSex[modifyAnimal.sex] : old_animal.sex;
 
         animal.fields = {};
         for (let key in old_animal.fields) {
             animal.fields[key] = animal.fields[key] ? animal.fields[key] : old_animal.fields[key];
         }
 
-        axios.patch(`/animals/by_id/${animal_id}`, animal, token).then(displayAll);
+        if (old_animal !== modifyAnimal) {
+            axios.patch(`/animals/by_id/${animal_id}`, animal, token).then(displayAll);
+        }
+    }
+
+    const sexToDisplay = {
+        "m": "Male",
+        "f": "Female",
+        "c": "Castrated"
+    };
+
+    const displayToSex = {
+        "Male": "m",
+        "Female": "f",
+        "Castrated": "c"
     }
 
     const fieldTypeSwitch = (type, params) => {
@@ -277,7 +311,19 @@ const AnimalTable = ({farms}) => {
                     />
                 </FormControl>
             } },
-        { field: 'type', headerName: 'Type', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
+        { field: 'type', headerName: 'Type', headerClassName: 'grid-header', headerAlign: 'left', flex: 1,
+            renderCell: (cell) => {
+                let exists = false;
+                schemaList.forEach(schema => {
+                    if(schema._name === cell.value) {
+                        exists = true;
+                    }
+                });
+                return exists 
+                    ? <p>{cell.value}</p>
+                    : <p style={{color: 'red'}}>{cell.value}</p>
+            }
+        },
         { field: 'father', headerName: 'Father', headerClassName: 'grid-header', headerAlign: 'left', flex: 1, editable: true,
         renderCell:(father)=>{
             return father.value?
@@ -299,9 +345,9 @@ const AnimalTable = ({farms}) => {
                         isOptionEqualToValue={(option, value) => option._id === value._id}
                         getOptionLabel={option => option.name}
                         options={
-                            animalList.filter((animal)=>{return animal.type.toLowerCase() === params.row.type.toLowerCase() && animal.male === true && animal._id !== params.row.id}).map((animal)=>{
-                                return animal;
-                            })  
+                            animalList.filter((animal)=>{
+                                return animal.type.toLowerCase() === params.row.type.toLowerCase() && animal.sex !== "f" && animal._id !== params.row.id
+                            }) 
                         }
                         value={{_id: params.value, name: initial_name}}
                         onChange={(_, value) => {
@@ -333,9 +379,9 @@ const AnimalTable = ({farms}) => {
                         isOptionEqualToValue={(option, value) => option._id === value._id}
                         getOptionLabel={option => option.name}
                         options={
-                            animalList.filter((animal)=>{return animal.type.toLowerCase() === params.row.type.toLowerCase() && animal.male === false && animal._id !== params.row.id}).map((animal)=>{
-                                return animal;
-                            })  
+                            animalList.filter((animal)=>{
+                                return animal.type.toLowerCase() === params.row.type.toLowerCase() && animal.sex === "f" && animal._id !== params.row.id
+                            })
                         }
                         value={{_id: params.value, name: initial_name}}
                         onChange={(_, value) => {
@@ -360,12 +406,14 @@ const AnimalTable = ({farms}) => {
                 renderInput={(params) => <TextField {...params}/>}
                 isOptionEqualToValue={(option, value) => option.id === value.id}
                 getOptionLabel={option => option.name}
-                value={modifyAnimal.sex ? {id: ["Male", "Female", "Castrated"].indexOf(modifyAnimal.sex), name: modifyAnimal.sex} : {id: ["Male", "Female", "Castrated"].indexOf(params.value), name: params.value}}
+                value={{id: ["Male", "Female", "Castrated"].indexOf(params.value), name: params.value}}
                 onChange={(_, value) => {
+                    console.log("VALUE", value)
+                    console.log("MODIFY ANIMAL", modifyAnimal)
                     let current = {...modifyAnimal};
                     current.sex = value.name;
                     setModifyAnimal(current);
-                    gridApi.current.setEditCellValue(value);
+                    gridApi.current.setEditCellValue({id: params.id, field: params.field, value: value.name});
                 }}
                 options={
                     [
@@ -379,6 +427,8 @@ const AnimalTable = ({farms}) => {
     ];
     const [cols, setCols] = useState(defaultCols);
 
+    const [creatorOffset, setCreatorOffset] = useState(36.5+20);
+
     return(<>
         <h1>Livestock</h1>
         <span style={{display: 'flex', justifyContent: 'space-between', height: '60px'}}>
@@ -390,7 +440,7 @@ const AnimalTable = ({farms}) => {
             ></TextField>
             <FarmTabs farms={farms} selectedFarm={farm} setSelectedFarm={setFarm}/>
         </span>
-        <Paper style={{height: 'calc(100% - 525px)', marginBottom: '20px'}}>
+        <Paper style={{height: `calc(100vh - (170.88px + ${creatorOffset}px))`, marginBottom: '20px'}}>
             <DataGrid editMode="row" apiRef={gridApi} disableRowSelectionOnClick filterModel={filterModel} style={{fontSize: '1rem'}} checkboxSelection
                 columns={[...cols, {
                     field: 'edit',
@@ -463,7 +513,7 @@ const AnimalTable = ({farms}) => {
             }}>Clear Filter</Button>
             {selectedSchema ? <p style={{marginLeft: '1%'}}>Currently filtering to show {selectedSchema._name}s</p> : <></>}
         </div>
-        <AnimalCreator animalList={animalList}/>
+        <AnimalCreator animalList={animalList} schemaList={schemaList} setOffset={setCreatorOffset} farms={farms}/>
     </>)
 }
 
