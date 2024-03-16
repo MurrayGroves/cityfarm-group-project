@@ -127,7 +127,7 @@ const AnimalTable = ({farms}) => {
                 }
                 let animal = animalList.find((animal) => {return animal._id === newRow.id});
                 for (let key in schema._fields) {
-                    newRow[key] = animal.fields[key];
+                    newRow[key] = typeof animal.fields[key] === typeof false ? animal.fields[key] ? "Yes" : "No" : animal.fields[key];
                 }
             }
        
@@ -156,13 +156,10 @@ const AnimalTable = ({farms}) => {
 
 
     function saveAnimal(animal_id) {
-        console.log("Saving animals")
         let row = gridApi.current.getRow(animal_id)
         console.log(row);
         console.log(modifyAnimal)
         let old_animal = animalList.find((animal) => {return animal._id === animal_id});
-        console.log("OLD ANIMAL", old_animal)
-        console.log(animalList)
         let animal = {...old_animal};
         animal.father = modifyAnimal.father ? modifyAnimal.father._id ? modifyAnimal.father._id : modifyAnimal.father : old_animal.father;
         animal.mother = modifyAnimal.mother ? modifyAnimal.mother._id ? modifyAnimal.mother._id : modifyAnimal.mother : old_animal.mother;
@@ -174,7 +171,7 @@ const AnimalTable = ({farms}) => {
             animal.fields[key] = animal.fields[key] ? animal.fields[key] : old_animal.fields[key];
         }
 
-        console.log(animal);
+        axios.patch(`/animals/by_id/${animal_id}`, animal, token).then(displayAll);
     }
 
     const fieldTypeSwitch = (type, params) => {
@@ -285,6 +282,8 @@ const AnimalTable = ({farms}) => {
         renderCell:(father)=>{
             return father.value?
              <AnimalPopover key={father.value} animalID={father.value}/> : "Unregistered"}, renderEditCell: (params) => {
+                let initial_animal = animalList.find((animal) => {return animal._id === params.value});
+                let initial_name = initial_animal ? initial_animal.name : 'Unregistered';
                 return (
                     <Autocomplete
                         style={{width: '100%'}}
@@ -304,7 +303,7 @@ const AnimalTable = ({farms}) => {
                                 return animal;
                             })  
                         }
-                        value={modifyAnimal.father ? modifyAnimal.father : {_id: params.value, name: animalList.find((animal) => {return animal._id === params.value}).name}}
+                        value={{_id: params.value, name: initial_name}}
                         onChange={(_, value) => {
                             console.log(modifyAnimal)
                             let current = {...modifyAnimal};
@@ -318,6 +317,8 @@ const AnimalTable = ({farms}) => {
         { field: 'mother', headerName: 'Mother', headerClassName: 'grid-header', headerAlign: 'left', flex: 1, editable: true,
             renderCell:(mother)=>{return mother.value?
                 <AnimalPopover key={mother.value} animalID={mother.value}/> : "Unregistered"}, renderEditCell: (params) => {
+                    let initial_animal = animalList.find((animal) => {return animal._id === params.value});
+                    let initial_name = initial_animal ? initial_animal.name : 'Unregistered';
                     return (<Autocomplete
                         style={{width: '100%'}}
                         size='medium'
@@ -336,7 +337,7 @@ const AnimalTable = ({farms}) => {
                                 return animal;
                             })  
                         }
-                        value={{_id: params.value, name: animalList.find((animal) => {return animal._id === params.value}).name}}
+                        value={{_id: params.value, name: initial_name}}
                         onChange={(_, value) => {
                             var current = {...modifyAnimal};
                             current.mother = value;
@@ -390,55 +391,70 @@ const AnimalTable = ({farms}) => {
             <FarmTabs farms={farms} selectedFarm={farm} setSelectedFarm={setFarm}/>
         </span>
         <Paper style={{height: 'calc(100% - 525px)', marginBottom: '20px'}}>
-            <DataGrid editMode="row" apiRef={gridApi} isCellEditable={() => true} disableRowSelectionOnClick filterModel={filterModel} style={{fontSize: '1rem'}} checkboxSelection columns={[...cols, {
-                field: 'edit',
-                headerName: 'Edit',
-                headerClassName: 'grid-header',
-                headerAlign: 'right',
-                flex: 0.2,
-                renderCell: (params) => {
-                    return editingRow === params.row.id ?
-                        <div display='flex'>
-                            <IconButton sx={{padding:'0px'}} onClick={() => {
-                                saveAnimal(params.row.id);
-                            }}>
-                                <DoneIcon sx={{color: 'green', padding:'0px'}}/>
-                            </IconButton>
+            <DataGrid editMode="row" apiRef={gridApi} disableRowSelectionOnClick filterModel={filterModel} style={{fontSize: '1rem'}} checkboxSelection
+                columns={[...cols, {
+                    field: 'edit',
+                    headerName: 'Edit',
+                    headerClassName: 'grid-header',
+                    headerAlign: 'right',
+                    flex: 0.2,
+                    renderCell: (params) => {
+                        return editingRow === params.row.id ?
+                            <div display='flex'>
+                                <IconButton sx={{padding:'0px'}} onClick={() => {
+                                    saveAnimal(params.row.id);
+                                    gridApi.current.stopRowEditMode({id: params.row.id});
+                                    setEditingRow(null);
+                                }}>
+                                    <DoneIcon sx={{color: 'green', padding:'0px'}}/>
+                                </IconButton>
 
-                            <IconButton sx={{padding: '0px'}} onClick={() => {
-                                gridApi.current.stopRowEditMode({id: params.row.id, ignoreModifications: true});
-                                setEditingRow(null);
+                                <IconButton sx={{padding: '0px'}} onClick={() => {
+                                    gridApi.current.stopRowEditMode({id: params.row.id, ignoreModifications: true});
+                                    setEditingRow(null);
+                                }}>
+                                    <ClearIcon sx={{color: 'red', padding: '0px'}}/>
+                                </IconButton>
+                            </div>
+                        :
+                            <IconButton onClick={() => {
+                                let obj = animalList.find((animal) => {return animal._id === params.row.id});
+                                setModifyAnimal(obj);
+                                gridApi.current.startRowEditMode({ id: params.row.id });
+                                setEditingRow(params.row.id);
                             }}>
-                                <ClearIcon sx={{color: 'red', padding: '0px'}}/>
-                            </IconButton>
-                        </div>
-                    :
-                        <IconButton onClick={() => {
-                            let obj = animalList.find((animal) => {return animal._id === params.row.id});
-                            setModifyAnimal(obj);
-                            gridApi.current.startRowEditMode({ id: params.row.id });
-                            setEditingRow(params.row.id);
-                        }}>
-                            <EditIcon/>
-                        </IconButton>   
-                }
-            }]} rows={rows} onCellClick={(params, event, details) => {
-                if (params.field === 'type') {
-                    setFilterModel({
-                        items: [
-                         {
-                          id: 1,
-                          field: "type",
-                          operator: "contains",
-                          value: params.value,
-                         },
-                        ]
-                    })
+                                <EditIcon/>
+                            </IconButton>   
+                    }
+                }]}
+                rows={rows} onCellClick={(params, event, details) => {
+                    if (params.field === 'type') {
+                        setFilterModel({
+                            items: [
+                            {
+                            id: 1,
+                            field: "type",
+                            operator: "contains",
+                            value: params.value,
+                            },
+                            ]
+                        })
 
-                    let schema = schemas.find((schema) => {return schema._name.toLowerCase() === params.value.toLowerCase()});
-                    setSelectedSchema(schema);
-                }
-            }}/>
+                        let schema = schemas.find((schema) => {return schema._name.toLowerCase() === params.value.toLowerCase()});
+                        setSelectedSchema(schema);
+                    }
+                }}
+
+                onRowEditStop={(params, e) => {
+                    saveAnimal(params.row.id);
+                    setEditingRow(null);
+                }}
+                onRowEditStart={(params, e) => {
+                    setEditingRow(params.row.id);
+                    let obj = animalList.find((animal) => {return animal._id === params.row.id});
+                    setModifyAnimal(obj);
+                }}
+            />
         </Paper>
         <div style={{marginTop: '1%', display: 'flex'}}>            
             <Button variant="contained" onClick={() => {

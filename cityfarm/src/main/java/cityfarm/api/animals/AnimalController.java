@@ -91,7 +91,7 @@ public class AnimalController {
         return ResponseEntity.created(URI.create(location)).body(animal.get_id());
     }
 
-    @PatchMapping("/api/animals/by_id/{id}/update")
+    @PatchMapping("/api/animals/by_id/{id}")
     public ResponseEntity<String> update_animal(@PathVariable String id, @RequestBody AnimalCreateRequest animalReq) {
         AnimalCustom animal = animalRepository.findAnimalById(id);
 
