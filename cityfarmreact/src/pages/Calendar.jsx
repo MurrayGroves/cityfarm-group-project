@@ -18,8 +18,6 @@ import Delete from '@mui/icons-material/Delete';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import AssociateAnimal from '../components/AssociateAnimal';
-import { Unstable_Popup as BasePopup } from '@mui/base/Unstable_Popup';
-import { styled } from '@mui/system';
 import axios from '../api/axiosConfig'
 import AssociateEnclosure from '../components/AssociateEnclosure';
 
@@ -119,15 +117,6 @@ const Calendar = ({farms}) => {
             }
         })();
     },[]);
-
-    const removeAnimal = (oldAnimal, type) => {
-        if (type === "add"){
-
-        }
-        else {
-            setModifiedEvent({...modifiedEvent, animals: modifiedEvent.animals.filter((animal) => animal !== oldAnimal)})
-        }
-    }
 
     const handleAddEvent = async() => {
         if (Object.values(inputErr).filter((err) => err === true).length > 0) {
@@ -257,9 +246,10 @@ const Calendar = ({farms}) => {
         }
     }
     const [anchor, setAnchor] = React.useState(null);
-    const [openAnimalsPopup ,setOpenAnimalsPopup] = useState(false)
+    const [openAnimalsPopup, setOpenAnimalsPopup] = useState(false)
+
     const functionopenPopup = (type) => { 
-         if (type === "animals") { setOpenAnimalsPopup(true)} else {setOpenEnclosurePopup(true)}
+         if (type === "animals") {setOpenAnimalsPopup(true)} else {setOpenEnclosurePopup(true)}
     }
     const functionclosePopup = () => {
         setOpenAnimalsPopup(false)
@@ -341,9 +331,6 @@ const Calendar = ({farms}) => {
                 />
             </Paper>
             <div style={{width: "400px"}}>
-
-                {/*<Event selectedEvent={selectedEvent} setSelectedEvent={setSelectedEvent}/>*/}
-
                 { selectedEvent !== "" ?
                 <Paper elevation={3} style={{position: 'relative', width: '400px', margin: '0 0 20px 0', padding: '10px'}}>
                     <div style={{display: "flex", justifyContent: "space-between"}}>
@@ -355,7 +342,7 @@ const Calendar = ({farms}) => {
                         </span>
                     </div>
                     {!modifyEvent ?
-                    <div>
+                    <div className='selectedEvent'>
                         <h2 className='noMarginTop'>{selectedEvent.title}</h2>
                         {
                             selectedEvent.allDay ?
@@ -411,38 +398,37 @@ const Calendar = ({farms}) => {
                         <div>
                             <h3>Farms</h3>
                             <FormGroup>
-                                <FormControlLabel control={<Checkbox defaultChecked={selectedEvent.farms.includes(farms.WH)} color={farms.WH} size='small'/>} label="Windmill Hill" onChange={() => setModifiedEvent({...modifiedEvent, farms: modifiedEvent.farms.includes(farms.WH) ? modifiedEvent.farms.filter((farm) => farm !== farms.WH) : modifiedEvent.farms.concat(farms.WH)})}/>
-                                <FormControlLabel control={<Checkbox defaultChecked={selectedEvent.farms.includes(farms.HC)} color={farms.HC} size='small'/>} label="Hartcliffe" onChange={()=>setModifiedEvent({...modifiedEvent, farms: modifiedEvent.farms.includes(farms.HC) ? modifiedEvent.farms.filter((farm) => farm !== farms.HC) : modifiedEvent.farms.concat(farms.HC)})}/>
-                                <FormControlLabel control={<Checkbox defaultChecked={selectedEvent.farms.includes(farms.SW)} color={farms.SW} size='small'/>} label="St Werburghs" onChange={()=>setModifiedEvent({...modifiedEvent, farms: modifiedEvent.farms.includes(farms.SW) ? modifiedEvent.farms.filter((farm) => farm !== farms.SW) : modifiedEvent.farms.concat(farms.SW)})}/>
+                                <FormControlLabel control={<Checkbox checked={modifiedEvent.farms.includes(farms.WH)} color={farms.WH} size='small'/>} label="Windmill Hill" onChange={() => setModifiedEvent({...modifiedEvent, farms: modifiedEvent.farms.includes(farms.WH) ? modifiedEvent.farms.filter((farm) => farm !== farms.WH) : modifiedEvent.farms.concat(farms.WH)})}/>
+                                <FormControlLabel control={<Checkbox checked={modifiedEvent.farms.includes(farms.HC)} color={farms.HC} size='small'/>} label="Hartcliffe" onChange={() => setModifiedEvent({...modifiedEvent, farms: modifiedEvent.farms.includes(farms.HC) ? modifiedEvent.farms.filter((farm) => farm !== farms.HC) : modifiedEvent.farms.concat(farms.HC)})}/>
+                                <FormControlLabel control={<Checkbox checked={modifiedEvent.farms.includes(farms.SW)} color={farms.SW} size='small'/>} label="St Werburghs" onChange={() => setModifiedEvent({...modifiedEvent, farms: modifiedEvent.farms.includes(farms.SW) ? modifiedEvent.farms.filter((farm) => farm !== farms.SW) : modifiedEvent.farms.concat(farms.SW)})}/>
                             </FormGroup>
                         </div>
                         <div>
-                            <h3>Animals</h3>
-                            {modifiedEvent.animals.map((animal) => (
-                                <AnimalPopover key={animal} animalID={animal} />
-                            ))}{/*Add a way to remove animals from events */}
-                            <Button variant='outlined' onClick={() => {functionopenPopup("animals")}}>Add Animal</Button> 
+                            <span style={{display: 'flex'}}><h3>Animals</h3><IconButton style={{height: '40px', margin: '12.5px 0 0 5px'}} onClick={() => {functionopenPopup("animals")}}><AddIcon color='primary'/></IconButton></span>
+                            {modifiedEvent.animals.map((animal) => {
+                                return (<AnimalPopover key={animal} animalID={animal} />)}
+                            )}{/*Add a way to remove animals from events */}
                             <div id="AssociateAnimal" style={{textAlign:'center'}}>
                                 <Dialog open={openAnimalsPopup} onClose={functionclosePopup}>
-                                <DialogTitle>Add Animal</DialogTitle>
-                                <DialogContent>
-                                <AssociateAnimal setAnimals={setModifiedEventAnimals}></AssociateAnimal>
-                                </DialogContent>
+                                    <DialogTitle>Add Animal</DialogTitle>
+                                    <DialogContent>
+                                        <AssociateAnimal setAnimals={setModifiedEventAnimals} animals={modifiedEvent.animals} close={functionclosePopup}></AssociateAnimal>
+                                    </DialogContent>
                                 </Dialog>
                             </div>
                         </div>
                         <div>
-                            <h3>Enclosures</h3>
+                            <span style={{display: 'flex'}}><h3>Enclosures</h3><IconButton style={{height: '40px', margin: '12.5px 0 0 5px'}} onClick={() => {functionopenPopup("enclosures")}}><AddIcon color='primary'/></IconButton></span>
                             {modifiedEvent.enclosures.map((enclosure, index) => (
                                 <p key={index}>{enclosure}</p>
                             ))}{/*Add a way to remove enclosures from events */}
-                            <Button variant='outlined' onClick={() => {functionopenPopup("enclosures")}}>Add Enclosure</Button> {/* idea: make this open the enlcosure  page with a new column of checkboxes. Click on an associate enlcosure(s) button would then pass a list of enclosure names to the calendar to be placed in a field*/}
+                            {/* idea: make this open the enlcosure  page with a new column of checkboxes. Click on an associate enlcosure(s) button would then pass a list of enclosure names to the calendar to be placed in a field*/}
                             <div id="AssociateEnclosure" style={{textAlign:'center'}}>
                                 <Dialog open={openEnclosurePopup} onClose={functionclosePopup}>
-                                <DialogTitle>Add Enclosure</DialogTitle>
-                                <DialogContent>
-                                <AssociateEnclosure setEnclosures={setModifiedEventEnclosures}></AssociateEnclosure>
-                                </DialogContent>
+                                    <DialogTitle>Add Enclosure</DialogTitle>
+                                    <DialogContent>
+                                        <AssociateEnclosure enclosures={modifiedEvent.enclosures} setEnclosures={setModifiedEventEnclosures} close={functionclosePopup}></AssociateEnclosure>
+                                    </DialogContent>
                                 </Dialog>
                             </div>
                         </div>
@@ -460,10 +446,7 @@ const Calendar = ({farms}) => {
                         </div>
                     </div>}
                 </Paper>
-                : <></>}
-
-                {/*<CreateEvent setEvent={setNewEvent} handleAddEvent={handleAddEvent}/>*/}
-
+                :
                 <Paper elevation={3} style={{width: '400px', margin: '0 0 20px 0', padding: '10px'}}>
                     <h2 className='boxTitle'>Create New Event</h2>
                     <div>
@@ -493,32 +476,32 @@ const Calendar = ({farms}) => {
                         </FormGroup>
                     </div>
                     <div>
-                        <h3>Animals</h3>
+                        <span style={{display: 'flex'}}><h3>Animals</h3><IconButton style={{height: '40px', margin: '12px 0 0 5px'}} onClick={() => {functionopenPopup("animals")}}><AddIcon color='primary'/></IconButton></span>
+                        {/* idea: make this open the animal table page with a new column of checkboxes. Click on an associate animal(s) button would then pass a list of animal id to the calendar to the new event state. This could be re used in the modification of events.  */}
                         {newEvent.animals.map((animalID) => (
                             <AnimalPopover key={animalID} animalID={animalID} />
                         ))}
-                        <Button variant='outlined' onClick={() => {functionopenPopup("animals")}}>Add Animal</Button> {/* idea: make this open the animal table page with a new column of checkboxes. Click on an associate animal(s) button would then pass a list of animal id to the calendar to the new event state. This could be re used in the modification of events.  */}
                         <div id="AssociateAnimal" style={{textAlign:'center'}}>
                             <Dialog open={openAnimalsPopup} onClose={functionclosePopup}>
-                            <DialogTitle>Add Animal</DialogTitle>
-                            <DialogContent>
-                            <AssociateAnimal setAnimals={setAddEventAnimals}></AssociateAnimal>
-                            </DialogContent>
+                                <DialogTitle>Add Animal</DialogTitle>
+                                <DialogContent>
+                                    <AssociateAnimal setAnimals={setAddEventAnimals} animals={newEvent.animals} close={functionclosePopup}></AssociateAnimal>
+                                </DialogContent>
                             </Dialog>
                         </div>
                     </div>
                     <div>
-                        <h3>Enclosures</h3>
+                        <span style={{display: 'flex'}}><h3>Enclosures</h3><IconButton style={{height: '40px', margin: '12.5px 0 0 5px'}} onClick={() => {functionopenPopup("enclosures")}}><AddIcon color='primary'/></IconButton></span>
                         {newEvent.enclosures.map((enclosureName, index) => (
                             <p key={index}>{enclosureName}</p>
                         ))}{/*Add a way to remove enclosures from events */}
-                        <Button variant='outlined' onClick={() => {functionopenPopup("enclosures")}}>Add Enclosure</Button> {/* idea: make this open the enlcosure  page with a new column of checkboxes. Click on an associate enlcosure(s) button would then pass a list of enclosure names to the calendar to be placed in a field*/}
+                        {/* idea: make this open the enlcosure  page with a new column of checkboxes. Click on an associate enlcosure(s) button would then pass a list of enclosure names to the calendar to be placed in a field*/}
                         <div id="AssociateEnclosure" style={{textAlign:'center'}}>
                             <Dialog open={openEnclosurePopup} onClose={functionclosePopup}>
-                            <DialogTitle>Add Enclosure</DialogTitle>
-                            <DialogContent>
-                            <AssociateEnclosure setEnclosures={setAddEventEnclosures}></AssociateEnclosure>
-                            </DialogContent>
+                                <DialogTitle>Add Enclosure</DialogTitle>
+                                <DialogContent>
+                                    <AssociateEnclosure enclosures={newEvent.enclosures} setEnclosures={setAddEventEnclosures} close={functionclosePopup}></AssociateEnclosure>
+                                </DialogContent>
                             </Dialog>
                         </div>
                     </div>
@@ -534,7 +517,7 @@ const Calendar = ({farms}) => {
                             onChange={(e) => {setNewEvent({...newEvent, description: e.target.value})}}
                         />
                     </div>
-                </Paper>
+                </Paper>}
             </div>
         </div>
         <Backdrop style={{zIndex: '4', background: '#000000AA'}} open={showErr} onClick={() => setShowErr(false)}>

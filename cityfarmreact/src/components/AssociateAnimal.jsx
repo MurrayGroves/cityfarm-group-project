@@ -14,14 +14,19 @@ const AssociateAnimal = (props) => {
     const [linkedAnimals, setLinkedAnimals] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [animalList, setAnimalList] = useState([]);
+    const [changed, setChanged] = useState(false);
 
     const token = getConfig();
-    
-    useEffect(() => {console.log(linkedAnimals)},[linkedAnimals])
 
-    const linkAnimals = () => {
-        props.setAnimals(linkedAnimals)
-    }
+    useEffect(() => {
+        setLinkedAnimals(props.animals);
+        console.log('getting animals', props.animals);
+    }, [])
+    
+    useEffect(() => {
+        changed && props.setAnimals(linkedAnimals);
+        console.log('setting animals', linkedAnimals);
+    }, [linkedAnimals])
     
     function displayAll() {
         (async () => {
@@ -38,6 +43,7 @@ const AssociateAnimal = (props) => {
             }
         })()
     }
+    
     useEffect(() => {
         (async () => {
             if (searchTerm === '') {
@@ -62,7 +68,7 @@ const AssociateAnimal = (props) => {
         id: animal._id,
         name: animal,
         type: animal.type,
-        sex: animal.male ? 'Male' : 'Female',
+        sex: animal.sex === 'f' ? 'Female' : animal.sex === 'm' ? 'Male' : 'Castrated',
     }));
     const cols = [
         { field: 'name', headerName: 'Name', headerClassName: 'grid-header', headerAlign: 'left', flex: 1,
@@ -73,20 +79,28 @@ const AssociateAnimal = (props) => {
 
     return (
         <div>
-        <TextField
-        size='small'
-        placeholder='Search'
-        style={{margin: '0 20px 20px 0'}}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        ></TextField>
-        {/*<FarmTabs selectedFarm={farm} setSelectedFarm={setFarm}/>*/}
-        <Paper style={{ marginBottom: '20px'}}>
-        <DataGrid checkboxSelection columns={cols}
-         rows={rows} disableRowSelectionOnClick
-         onRowSelectionModelChange={(ids) => {
-            setLinkedAnimals(ids)}}/>
-        </Paper>
-        <Button variant='outlined' style={{float: "right"}} onClick={() => {linkAnimals()}}>Link to Event</Button>
+            <TextField
+                size='small'
+                placeholder='Search'
+                style={{margin: '0 20px 20px 0'}}
+                onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            <Paper elevation={3} style={{ marginBottom: '20px'}}>
+                <DataGrid
+                    autoHeight
+                    style={{width: '552px'}}
+                    checkboxSelection
+                    columns={cols}
+                    rows={rows}
+                    disableRowSelectionOnClick
+                    rowSelectionModel={linkedAnimals}
+                    onRowSelectionModelChange={(ids) => {
+                        (changed || linkedAnimals.length < 1) && setLinkedAnimals(ids);
+                        setChanged(true);
+                    }}
+                />
+            </Paper>
+            <Button variant='outlined' style={{float: "right"}} onClick={() => {props.close()}}>Close</Button>
         </div>
     )
 
