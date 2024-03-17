@@ -20,7 +20,7 @@ import ClearIcon from '@mui/icons-material/Clear';
 import AnimalCreator from "../components/AnimalCreator";
 
 import { getConfig } from '../api/getToken';
-import Button from "@mui/material/Button";
+
 import { Link } from "react-router-dom";
 import { set } from "date-fns";
 import { FormControlLabel, FormGroup, FormControl, FormHelperText, IconButton } from "@mui/material";
@@ -80,9 +80,28 @@ const AnimalTable = ({farms}) => {
 
     function farmMove(ids,farm){
         for (let a of ids){
-            //THIS WILL BE AN API CALL
-            console.log('animal id: ',a,' to farm: ',farm)
+            let animal;
+            (async () => {
+                try {
+                    const response = await axios.get(`/animals/by_id/${a}`,token);
+                    animal=response.data
+                    animal.farm=farm[0]
+                    await axios.patch(`/animals/by_id/${a}`, animal, token).then(displayAll)
+                } catch (error) {
+
+                    if (error.response.status === 401) {
+                        window.location.href = "/login";
+                        return;
+                    } else {
+                        window.alert(error);
+                    }
+                };
+            })()
+
+
+
         }
+
     }
     function farmMoveButton(ids,farm){
         return <Button onClick={() =>farmMove(ids,farm)}> Move to {Object.entries(farm)[0][1]} </Button>
@@ -110,7 +129,7 @@ const AnimalTable = ({farms}) => {
     },[searchTerm, farm])
 
 
-useEffect(() => {
+    useEffect(() => {
         (async () => {
             try {
                 const response = await axios.get(`/schemas`, token);
@@ -438,10 +457,6 @@ useEffect(() => {
     const [cols, setCols] = useState(defaultCols);
 
     const [creatorOffset, setCreatorOffset] = useState(36.5+20);
-
-
-    console.log("Type of farms:", typeof farms);
-    console.log("Value of farms:", farms);
 
     return(<>
         <h1>Livestock</h1>
