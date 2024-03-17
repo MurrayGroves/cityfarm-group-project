@@ -25,6 +25,7 @@ import { Link } from "react-router-dom";
 import { set } from "date-fns";
 import { FormControlLabel, FormGroup, FormControl, FormHelperText, IconButton } from "@mui/material";
 import Autocomplete from '@mui/material/Autocomplete';
+import FarmMoveButton from "../components/FarmMoveButton";
 
 const AnimalTable = ({farms}) => {
     const [animalList, setAnimalList] = useState([]); /* The State for the list of animals. The initial state is [] */
@@ -78,34 +79,7 @@ const AnimalTable = ({farms}) => {
         })()
     }
 
-    function farmMove(ids,farm){
-        for (let a of ids){
-            let animal;
-            (async () => {
-                try {
-                    const response = await axios.get(`/animals/by_id/${a}`,token);
-                    animal=response.data
-                    animal.farm=farm[0]
-                    await axios.patch(`/animals/by_id/${a}`, animal, token).then(displayAll)
-                } catch (error) {
 
-                    if (error.response.status === 401) {
-                        window.location.href = "/login";
-                        return;
-                    } else {
-                        window.alert(error);
-                    }
-                };
-            })()
-
-
-
-        }
-
-    }
-    function farmMoveButton(ids,farm){
-        return <Button onClick={() =>farmMove(ids,farm)}> Move to {Object.entries(farm)[0][1]} </Button>
-    }
     useEffect(getSchemas, []);
 
     useEffect(() => {
@@ -549,11 +523,12 @@ const AnimalTable = ({farms}) => {
             selectedAnimals.length > 0 ? (
                 Object.entries(farms).map((farm) => (
                         <React.Fragment key={farm}>
-                            {farmMoveButton(selectedAnimals, farm)}
+                            <FarmMoveButton farm={farm} ids={selectedAnimals}/>
                         </React.Fragment>
                     ))
                 ) :  ''
         }
+
         </>
     </>)
 }
