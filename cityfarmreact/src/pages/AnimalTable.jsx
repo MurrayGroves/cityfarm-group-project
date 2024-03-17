@@ -61,7 +61,7 @@ const AnimalTable = ({farms}) => {
         }
     }
     function farmMoveButton(ids,farm){
-        return <Button onClick={farmMove(ids,farm)}> Move to {farm}</Button>
+        return <Button onClick={() =>farmMove(ids,farm)}> Move to {Object.entries(farm)[0][1]} </Button>
     }
     useEffect(getSchemas, []);
 
@@ -122,7 +122,8 @@ const AnimalTable = ({farms}) => {
     const [creatorOffset, setCreatorOffset] = useState(36.5+20);
 
 
-
+    console.log("Type of farms:", typeof farms);
+    console.log("Value of farms:", farms);
 
     return(<>
         <h1>Livestock</h1>
@@ -143,12 +144,13 @@ const AnimalTable = ({farms}) => {
         </Paper>
         <AnimalCreator animalList={animalList} schemaList={schemaList} setOffset={setCreatorOffset} farms={farms}/>
         <>{
-            selectedAnimals.length>0 ? {
-                farms.map((farm)=>({
-                  return (<>{farmMoveButton(selectedAnimals,farm)}</>)
-                }))
-                }
-                : 'cant edit'
+            selectedAnimals.length > 0 ? (
+                Object.entries(farms).map((farm) => (
+                        <React.Fragment key={farm}>
+                            {farmMoveButton(selectedAnimals, farm)}
+                        </React.Fragment>
+                    ))
+                ) :  ''
         }
         </>
     </>)
