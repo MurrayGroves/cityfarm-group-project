@@ -270,7 +270,7 @@ const AnimalCreator = (props) => {
                     </TableBody>
                 </Table>
             </TableContainer>
-            <Button className='tallButton' variant='contained' endIcon={<DeleteIcon/>} onClick={() => {reset(); props.setOffset(36.5+20)}}>Discard</Button>
+            <Button className='tallButton' variant='contained' color='warning' endIcon={<DeleteIcon/>} onClick={() => {reset(); props.setOffset(36.5+20)}}>Discard</Button>
             </div>
             {schema ?
             <div style={{display: 'flex', justifyContent: 'space-between'}}>
@@ -302,6 +302,7 @@ const AnimalCreator = (props) => {
                 className='tallButton'
                 variant="contained"
                 aria-label="add"
+                color='success'
                 endIcon={<AddIcon/>}
                 onClick={() => {
                     if (Object.values(inputErr).filter((err) => err === true).length > 0) {
