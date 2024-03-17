@@ -14,12 +14,19 @@ const AssociateEnclosure = (props) => {
     const [linkedEnclosures, setLinkedEnclosures] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [enclosureList, setEnclosureList] = useState([]);
+    const [changed, setChanged] = useState(false);
 
     const token = getConfig();
 
-    const linkEnclosures = () => {
-        props.setEnclosures(linkedEnclosures)
-    }
+    useEffect(() => {
+        setLinkedEnclosures(props.enclosures);
+        console.log('getting enclosures', props.enclosures);
+    }, [])
+    
+    useEffect(() => {
+        changed && props.setEnclosures(linkedEnclosures);
+        console.log('setting enclosures', linkedEnclosures);
+    }, [linkedEnclosures])
 
     function displayAll() {
         (async () => {
@@ -79,20 +86,29 @@ const AssociateEnclosure = (props) => {
 
     return (
         <div>
-        <TextField
-        size='small'
-        placeholder='Search'
-        style={{margin: '0 20px 20px 0'}}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        ></TextField>
+            <TextField
+                size='small'
+                placeholder='Search'
+                style={{margin: '0 20px 20px 0'}}
+                onChange={(e) => setSearchTerm(e.target.value)}
+            />
         {/*<FarmTabs selectedFarm={farm} setSelectedFarm={setFarm}/>*/}
-        <Paper style={{ marginBottom: '20px'}}>
-        <DataGrid checkboxSelection columns={cols}
-         rows={rows} disableRowSelectionOnClick
-         onRowSelectionModelChange={(ids) => {
-            setLinkedEnclosures(ids)}}/>
-        </Paper>
-        <Button variant='outlined' style={{float: "right"}} onClick={() => {linkEnclosures()}}>Link to Event</Button>
+            <Paper elevation={3} style={{ marginBottom: '20px'}}>
+                <DataGrid
+                    autoHeight
+                    style={{width: '552px'}}
+                    checkboxSelection
+                    columns={cols}
+                    rows={rows}
+                    disableRowSelectionOnClick
+                    rowSelectionModel={linkedEnclosures}
+                    onRowSelectionModelChange={(ids) => {
+                        (changed || linkedEnclosures.length < 1) && setLinkedEnclosures(ids);
+                        setChanged(true);
+                    }}
+                />
+            </Paper>
+            <Button variant='outlined' style={{float: "right"}} onClick={() => {props.close()}}>Close</Button>
         </div>
     )
 } 

@@ -8,7 +8,6 @@ import AnimalPopover from "../components/AnimalPopover";
 import CloseIcon from "../assets/close-512-light.webp";
 import Paper from "@mui/material/Paper";
 import SelectedEvent from "../components/SelectedEvent";
-
 import { getConfig } from '../api/getToken';
 
 const SingleAnimal = (props) => {

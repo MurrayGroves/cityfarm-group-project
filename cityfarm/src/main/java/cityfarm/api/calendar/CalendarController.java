@@ -178,7 +178,7 @@ public class CalendarController {
 
         eventRepository.save(event);
 
-        String location = String.format("/api/events/by_id/{id}/%s", event.get_id());
+        String location = String.format("/api/events/by_id/%s", event.get_id());
         return ResponseEntity.created(URI.create(location)).body(event.get_id());
     }
 

@@ -141,7 +141,7 @@ const AnimalCreator = (props) => {
 
     return (<>
         {create ? <>
-            <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '20px'}}>
+            <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '20px', marginTop: '0.5%'}}>
             <TableContainer component={Paper} style={{marginRight: '20px'}}>
                 <Table>
                     <TableHead>
@@ -270,7 +270,7 @@ const AnimalCreator = (props) => {
                     </TableBody>
                 </Table>
             </TableContainer>
-            <Button className='tallButton' variant='contained' endIcon={<DeleteIcon/>} onClick={() => {reset(); props.setOffset(36.5+20)}}>Discard</Button>
+            <Button className='tallButton' variant='contained' color='warning' endIcon={<DeleteIcon/>} onClick={() => {reset(); props.setOffset(36.5+20)}}>Discard</Button>
             </div>
             {schema ?
             <div style={{display: 'flex', justifyContent: 'space-between'}}>
@@ -302,6 +302,7 @@ const AnimalCreator = (props) => {
                 className='tallButton'
                 variant="contained"
                 aria-label="add"
+                color='success'
                 endIcon={<AddIcon/>}
                 onClick={() => {
                     if (Object.values(inputErr).filter((err) => err === true).length > 0) {
@@ -324,7 +325,7 @@ const AnimalCreator = (props) => {
             >Create</Button>
             </div>
             : <></>}</>
-        : <Button className='tallButton' variant='contained' endIcon={<AddIcon/>} style={{float: 'right'}} onClick={() => {setCreate(true); props.setOffset(129.6+20)}}>Create</Button>}
+        : <Button className='tallButton' variant='contained' endIcon={<AddIcon/>} style={{float: 'left', marginTop: '0.5%'}} onClick={() => {setCreate(true); props.setOffset(129.6+20)}}>Create</Button>}
         <Backdrop style={{zIndex: '4', background: '#000000AA'}} open={showErr} onClick={() => setShowErr(false)}>
             <Alert severity='warning'>
                 Please ensure all required fields are filled

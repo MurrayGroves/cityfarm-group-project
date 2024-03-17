@@ -18,6 +18,10 @@
     margin-top: 0px;
 }
 
+.modifyEvent p, .selectedEvent p {
+    margin: 0;
+}
+
 .rbc-day-bg {
     background: var(--day);
 }

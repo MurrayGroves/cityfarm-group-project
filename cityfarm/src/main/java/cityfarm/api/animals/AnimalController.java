@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@CrossOrigin(origins = {"http://localhost:3000", "https://cityfarm.murraygrov.es"}, methods = {RequestMethod.GET, RequestMethod.POST})
 public class AnimalController {
     @Autowired
     AnimalRepository animalRepository;
@@ -28,10 +27,6 @@ public class AnimalController {
 
     @Autowired
     MongoTemplate mongoTemplate;
-
-    private final String host_url = "http://localhost:3000";
-
-    HttpHeaders responseHeaders = new HttpHeaders();
 
 
     /**
@@ -110,6 +105,30 @@ public class AnimalController {
 
         String location = String.format("/api/animals/by_id/%s", animal.get_id());
 
+        return ResponseEntity.created(URI.create(location)).body(animal.get_id());
+    }
+
+    @PatchMapping("/api/animals/by_id/{id}")
+    public ResponseEntity<String> update_animal(@PathVariable String id, @RequestBody AnimalCreateRequest animalReq) {
+        AnimalCustom animal = animalRepository.findAnimalById(id);
+
+        if (animal == null) {
+            return ResponseEntity.status(404).build();
+        }
+
+        animal.fields = animalReq.fields;
+        animal.name = animalReq.name;
+        animal.mother = animalReq.mother;
+        animal.father = animalReq.father;
+        animal.breed = animalReq.breed;
+        animal.alive = animalReq.alive;
+        animal.sex = animalReq.sex;
+        animal.dateOfBirth = animalReq.dateOfBirth;
+        animal.notes = animalReq.notes;
+
+        animalRepository.save(animal);
+
+        String location = String.format("/api/animals/by_id/%s", animal.get_id());
         return ResponseEntity.created(URI.create(location)).body(animal.get_id());
     }
 }
