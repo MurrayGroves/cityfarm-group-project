@@ -20,31 +20,12 @@ const EnclosureTable = ({farms}) => {
 
     const token = getConfig();
 
-    const [farm, setFarm] = useState(Object.keys(farms)[0]);
+    const [farm, setFarm] = useState(null);
 
-    useEffect (() => {
-        const displayAll = () => {
-            (async () => {
-                try {
-                    const response = await axios.get(`/enclosures`, token);
-                    setEnclosureList(response.data);
-                } catch (error) {
-                    if (error.response.status === 401) {
-                        window.location.href = "/login";
-                        return;
-                    } else {
-                        window.alert(error);
-                    }
-                }
-            })()
-        }
+    function displayAll() {
         (async () => {
-            if (searchTerm === '') {
-                displayAll();
-                return;
-            }
             try {
-                const response = await axios.get(`/enclosures/by_name/${searchTerm}`, token);
+                const response = await axios.get(`/enclosures`, {params: {farm: farm}, ...token});
                 setEnclosureList(response.data);
             } catch (error) {
                 if (error.response.status === 401) {
@@ -55,7 +36,27 @@ const EnclosureTable = ({farms}) => {
                 }
             }
         })()
-    },[searchTerm, token])
+    }
+
+    useEffect (() => {
+        (async () => {
+            if (searchTerm === '') {
+                displayAll();
+                return;
+            }
+            try {
+                const response = await axios.get(`/enclosures/by_name/${searchTerm}`, {params: {farm: farm}, ...token});
+                setEnclosureList(response.data);
+            } catch (error) {
+                if (error.response.status === 401) {
+                    window.location.href = "/login";
+                    return;
+                } else {
+                    window.alert(error);
+                }
+            }
+        })()
+    },[searchTerm, farm, token])
 
     const cols =  [
         { field: 'name', editable: true, headerName: 'Name', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
@@ -85,8 +86,9 @@ const EnclosureTable = ({farms}) => {
             ></TextField>
             <FarmTabs farms={farms} selectedFarm={farm} setSelectedFarm={setFarm}/>
         </span>
-        <TableContainer component={Paper} style={{marginBottom: '20px'}}>
-            <DataGrid rows={rows} columns={cols} 
+        <TableContainer component={Paper} style={{marginBottom: '20px', height: 'calc(100vh - (40px + 36.5px + 60px + 48px + (2*21.44px))'}}>
+            <DataGrid rows={rows} columns={cols}
+            style={{fontSize: '1rem'}}
             isCellEditable={() => editMode}
             processRowUpdate = {(newVal, oldVal) => {
                 if (newVal.name === oldVal.name) { return newVal; }

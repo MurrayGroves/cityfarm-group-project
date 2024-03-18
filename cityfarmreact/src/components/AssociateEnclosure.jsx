@@ -10,29 +10,29 @@ import {Button} from "@mui/material";
 
 import { getConfig } from '../api/getToken';
 
-const AssociateAnimal = (props) => {
-    const [linkedAnimals, setLinkedAnimals] = useState([]);
+const AssociateEnclosure = (props) => {
+    const [linkedEnclosures, setLinkedEnclosures] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
-    const [animalList, setAnimalList] = useState([]);
+    const [enclosureList, setEnclosureList] = useState([]);
     const [changed, setChanged] = useState(false);
 
     const token = getConfig();
 
     useEffect(() => {
-        setLinkedAnimals(props.animals);
-        console.log('getting animals', props.animals);
+        setLinkedEnclosures(props.enclosures);
+        console.log('getting enclosures', props.enclosures);
     }, [])
     
     useEffect(() => {
-        changed && props.setAnimals(linkedAnimals);
-        console.log('setting animals', linkedAnimals);
-    }, [linkedAnimals])
-    
+        changed && props.setEnclosures(linkedEnclosures);
+        console.log('setting enclosures', linkedEnclosures);
+    }, [linkedEnclosures])
+
     function displayAll() {
         (async () => {
             try {
-                const response = await axios.get(`/animals`, token);
-                setAnimalList(response.data);
+                const response = await axios.get(`/enclosures`, token);
+                setEnclosureList(response.data);
             } catch (error) {
                 if (error.response.status === 401) {
                     window.location.href = "/login";
@@ -43,16 +43,16 @@ const AssociateAnimal = (props) => {
             }
         })()
     }
-    
-    useEffect(() => {
+
+    useEffect (() => {
         (async () => {
             if (searchTerm === '') {
                 displayAll();
                 return;
             }
             try {
-                const response = await axios.get(`/animals/by_name/${searchTerm}`, token);
-                setAnimalList(response.data);
+                const response = await axios.get(`/enclosures/by_name/${searchTerm}`, token);
+                setEnclosureList(response.data);
             } catch (error) {
                 if (error.response.status === 401) {
                     window.location.href = "/login";
@@ -64,18 +64,25 @@ const AssociateAnimal = (props) => {
         })()
     },[searchTerm])
 
-    const rows = animalList.map((animal) => ({
-        id: animal._id,
-        name: animal,
-        type: animal.type,
-        sex: animal.sex === 'f' ? 'Female' : animal.sex === 'm' ? 'Male' : 'Castrated',
-    }));
-    const cols = [
-        { field: 'name', headerName: 'Name', headerClassName: 'grid-header', headerAlign: 'left', flex: 1,
-            renderCell: (animal) => {return <AnimalPopover animalID={animal.value._id}/>} },
-        { field: 'type', headerName: 'Type', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
-        { field: 'sex', headerName: 'Sex', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
-    ];
+    const cols =  [
+        { field: 'name', editable: true, headerName: 'Name', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
+        { field: 'holding', headerName: 'Holding', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
+        { field: 'capacities', headerName: 'Capacities', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
+    ]
+
+    const rows = enclosureList.map((enclosure) => ({
+        id: enclosure._id,
+        name: enclosure.name,
+        holding: Object.keys(enclosure.holding).map((key) => {
+            return (` ${key}:
+            ${Object.keys(enclosure.holding[key]).map((animal) => {
+                return enclosure.holding[key][animal].name
+            })}`)
+        }),
+        capacities: Object.keys(enclosure.capacities).map((key) => {
+            return (` ${key}: ${enclosure.capacities[key]}`)
+        })
+    }))
 
     return (
         <div>
@@ -85,6 +92,7 @@ const AssociateAnimal = (props) => {
                 style={{margin: '0 20px 20px 0'}}
                 onChange={(e) => setSearchTerm(e.target.value)}
             />
+        {/*<FarmTabs selectedFarm={farm} setSelectedFarm={setFarm}/>*/}
             <Paper elevation={3} style={{ marginBottom: '20px'}}>
                 <DataGrid
                     autoHeight
@@ -93,9 +101,9 @@ const AssociateAnimal = (props) => {
                     columns={cols}
                     rows={rows}
                     disableRowSelectionOnClick
-                    rowSelectionModel={linkedAnimals}
+                    rowSelectionModel={linkedEnclosures}
                     onRowSelectionModelChange={(ids) => {
-                        (changed || linkedAnimals.length < 1) && setLinkedAnimals(ids);
+                        (changed || linkedEnclosures.length < 1) && setLinkedEnclosures(ids);
                         setChanged(true);
                     }}
                 />
@@ -103,7 +111,6 @@ const AssociateAnimal = (props) => {
             <Button variant='outlined' style={{float: "right"}} onClick={() => {props.close()}}>Close</Button>
         </div>
     )
+} 
 
-}
-
-export default AssociateAnimal
+export default AssociateEnclosure;

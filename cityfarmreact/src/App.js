@@ -34,45 +34,41 @@ const App = () => {
         SW: "SW"
     }
 
+    const colours = {
+        WH: {
+            main: "#035afc"
+        },
+        HC: {
+            main: "#FF0012"
+        },
+        SW: {
+            main: "#ffb121"
+        },
+        grey: {
+            main: "#888888"
+        },
+        green: {
+            main: "#55DF34"
+        },
+        primary: {
+            main: "#21A9FA",
+            light: "#b4e2fd",
+            dark: "#0480c8",
+            veryDark: "#02304b",
+        }
+    }
+
     const darkTheme = createTheme({
         palette: {
             mode: 'dark',
-            WH: {
-                main: "#035afc"
-            },
-            HC: {
-                main: "#FF0012"
-            },
-            SW: {
-                main: "#E3D026"
-            },
-            grey: {
-                main: "#888888"
-            },
-            primary: {
-                main: '#0085FA'
-            }
+            ...colours
         },
     });
 
     const lightTheme = createTheme({
         palette: {
             mode: 'light',
-            WH: {
-                main: "#035afc"
-            },
-            HC: {
-                main: "#FF0012"
-            },
-            SW: {
-                main: "#E3D026"
-            },
-            grey: {
-                main: "#888888"
-            },
-            primary: {
-                main: '#0085FA'
-            }
+            ...colours
         }
     });
     

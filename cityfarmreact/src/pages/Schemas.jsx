@@ -11,7 +11,7 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import TableFooter from '@mui/material/TableFooter';
 import Paper from '@mui/material/Paper';
-import { IconButton, Select } from "@mui/material";
+import { IconButton, Select, Backdrop, Alert } from "@mui/material";
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Button from '@mui/material/Button';
@@ -34,10 +34,21 @@ const Schemas = () => {
     const [searchTerm, setSearchTerm] = useState(''); /* The term being search for in the searchbar */
     const [newFields, setNewFields] = useState([{"name": "", "type": "", "required": ""}])
     const [newSchemaName, setNewSchemaName] = useState("");
-    
-    const [editing, setEditing] = useState(false);
+    const [showErr, setShowErr] = useState(false);
 
     const token = getConfig();
+
+    const [inputErr, setInputErr] = useState({});
+
+    useEffect(() => {
+        setInputErr(prevInputErr => ({...prevInputErr, name: newSchemaName === ''}));
+    }, [newSchemaName]);
+
+    useEffect(() => {
+        Object.keys(newFields).map((field, index) => {
+            index !== newFields.length - 1 && setInputErr(prevInputErr => ({...prevInputErr, [index]: (newFields[field].name === '' || newFields[field].type === '' || newFields[field].required === '')}));
+        });
+    }, [newFields]);
 
     function checkIfNewRowNeeded() {
         let changed = false;
@@ -104,38 +115,42 @@ const Schemas = () => {
         <h1>Animal Types</h1>
         <h2>Create New Animal Type</h2>
         <TableContainer style={{marginTop: '20px'}} component={Paper}>
-        <div style={{display: 'flex'}}>
-            <TextField error={newSchemaName === '' && editing && newFields.length > 1} required style={{margin: '15px 15px 0 15px'}} placeholder="Species Name" value={newSchemaName} size="small"
+        <div style={{marginBottom: '20px', display: 'flex'}}>
+            <TextField error={newSchemaName === ''} required style={{margin: '15px 15px 0 15px'}} label='Name' placeholder="Species Name" value={newSchemaName} size="small"
                 onChange={(e) => {
-                    setNewSchemaName(e.target.value);
-                    setEditing(true);
+                    setNewSchemaName(e.target.value.charAt(0).toUpperCase() + e.target.value.slice(1));
                 }}
             />
             <Button disableElevation variant="contained" aria-label="add" endIcon={<AddIcon />} style={{maxHeight: '40px', marginTop: '15px'}}
-                onClick={async () => {
-                    newFields.pop();
-                    let fieldsObj = {};
-                    newFields.map((field) => {
-                        fieldsObj = {...fieldsObj,
-                            [field.name]: {
-                                type: field.type,
-                                required: field.required,
+                onClick={() => {
+                    if (Object.values(inputErr).filter((err) => err === true).length > 0) {
+                        return setShowErr(true);
+                    }
+                    (async () => {
+                        newFields.pop();
+                        let fieldsObj = {};
+                        newFields.map((field) => {
+                            fieldsObj = {...fieldsObj,
+                                [field.name]: {
+                                    type: field.type,
+                                    required: field.required,
+                                }
                             }
-                        }
-                        
-                        return null;
-                    });
+                            
+                            return null;
+                        });
 
-                    let request = {
-                        name: newSchemaName,
-                        fields: fieldsObj,
-                    }
-                    try {
-                        await axios.post(`/schemas/create`, request, token);
-                        window.location.reload(false);
-                    } catch(error) {
-                        window.alert(error);
-                    }
+                        let request = {
+                            name: newSchemaName,
+                            fields: fieldsObj,
+                        }
+                        try {
+                            await axios.post(`/schemas/create`, request, token);
+                            window.location.reload(false);
+                        } catch(error) {
+                            window.alert(error);
+                        }
+                    })()
                 }}
             >
                 Create
@@ -151,27 +166,29 @@ const Schemas = () => {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                {newFields.map((field, index) => (
+                {newFields.map((field, index) => {
+                    return (
                     <TableRow
                         key={index}
                         sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                     >
                     <TableCell component="th" scope="row">
-                        <TextField fullWidth error={field["name"] === '' && editing && index !== newFields.length - 1} required placeholder="Property Name" id="field name" variant="outlined" size="small" value={field["name"]} onChange={(e) => {
-                            setNewFields(newFields.map((elem, changeIndex) => {
-                                if (changeIndex === index) {
-                                    elem["name"] = e.target.value;
-                                    return elem;
-                                } else {
-                                    return elem;
-                                }
-                            }))
-                            checkIfNewRowNeeded();
-                            setEditing(true);
-                        }}/>
+                        <TextField fullWidth error={field["name"] === '' && index !== newFields.length - 1} required placeholder="Property Name" id="field name" variant="outlined" size="small" value={field["name"]}
+                            onChange={(e) => {
+                                setNewFields(newFields.map((elem, changeIndex) => {
+                                    if (changeIndex === index) {
+                                        elem["name"] = e.target.value;
+                                        return elem;
+                                    } else {
+                                        return elem;
+                                    }
+                                }))
+                                checkIfNewRowNeeded();
+                            }}
+                        />
                     </TableCell>
                     <TableCell align="left">
-                        <FormControl fullWidth error={field["type"] === '' && editing && index !== newFields.length - 1} required sx={{ m: 1, minWidth: 120 }} size="small">
+                        <FormControl fullWidth error={field["type"] === '' && index !== newFields.length - 1} required sx={{ m: 1, minWidth: 120 }} size="small">
                             <Select height="10px" value={field["type"] || ''} onChange={(e) => {
                                 setNewFields(newFields.map((elem, changeIndex) => {
                                     if (changeIndex === index) {
@@ -182,7 +199,6 @@ const Schemas = () => {
                                     }
                                 }))
                                 checkIfNewRowNeeded();
-                                setEditing(true);
                             }}>
                                 {Object.entries(classToReadable).map(([javaName, className], index) => 
                                     <MenuItem value={javaName} key={index}>{className}</MenuItem>
@@ -191,7 +207,7 @@ const Schemas = () => {
                         </FormControl>
                     </TableCell>
                     <TableCell align="left">
-                        <FormControl fullWidth error={field["required"] === '' && editing && index !== newFields.length - 1} required sx={{ m: 1, minWidth: 120 }} size="small">
+                        <FormControl fullWidth error={field["required"] === '' && index !== newFields.length - 1} required sx={{ m: 1, minWidth: 120 }} size="small">
                             <Select height="10px" value={field["required"]} onChange={(e) => {
                                 setNewFields(newFields.map((elem, changeIndex) => {
                                     if (changeIndex === index) {
@@ -202,7 +218,6 @@ const Schemas = () => {
                                     }
                                 }))
                                 checkIfNewRowNeeded();
-                                setEditing(true);
                             }}>
                                 <MenuItem value={true}>Yes</MenuItem>
                                 <MenuItem value={false}>No</MenuItem>
@@ -219,7 +234,7 @@ const Schemas = () => {
                         }
                     </TableCell>
                     </TableRow>
-                ))}
+                )})}
                 </TableBody>
             </Table>
         </TableContainer>
@@ -281,6 +296,11 @@ const Schemas = () => {
                 </Grid>
             ))}
         </Grid>
+        <Backdrop style={{zIndex: '4', background: '#000000AA'}} open={showErr} onClick={() => setShowErr(false)}>
+            <Alert severity='warning'>
+                Please ensure all required fields are filled
+            </Alert>
+        </Backdrop>
     </>)
 }
 

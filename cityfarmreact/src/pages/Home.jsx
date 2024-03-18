@@ -7,9 +7,9 @@ import { Button } from "@mui/material";
 import AnimalPopover from "../components/AnimalPopover";
 import { eventsConversion } from "./Calendar";
 import { useTheme } from "@mui/material";
+import Paper from '@mui/material/Paper';
 
 const Home = ({farms}) => {
-
     const [events,setEvents] = useState([])
     const token = getConfig();
     const colour = useTheme().palette.mode === 'dark' ? 'white' : 'black';
@@ -25,7 +25,12 @@ const Home = ({farms}) => {
                 const response = await axios.get(`/events`, {params: {from: start.toISOString(), to: end.toISOString()}, ...token});
                 setEvents(eventsConversion(response.data.slice(0, 5)));
             } catch (error) {
-                window.alert(error);
+                if (error.response.status === 401) {
+                    window.location.href = "/login";
+                    return;
+                } else {
+                    window.alert(error);
+                }
             }
         })();
     }, []);
@@ -50,7 +55,7 @@ const Home = ({farms}) => {
         {/*  events are mapped below, same as in selected event with some visual changes*/}
         <div className="events-container">
         {events.map((e)=>(
-            <div className="event-box" key={e.title}>
+            <Paper elevation={3} className="event-box" key={e.title}>
                 <h2>{e.title}</h2>
                 {
                     e.allDay ?
@@ -74,8 +79,8 @@ const Home = ({farms}) => {
                 {e.enclosures.length !== 0 &&
                     <div>
                         <h3>Enclosures</h3>
-                        {e.enclosures.map((enclosureName, index) => (
-                            <p key={index}>{enclosureName}</p>
+                        {e.enclosures.map((enclosure, index) => (
+                            <p key={index}>{enclosure.name}</p>
                         ))}
                     </div>}
                 {e.description !== "" ?
@@ -83,7 +88,7 @@ const Home = ({farms}) => {
                         <h3>Description</h3>
                         {e.description}
                     </div> : <></>}
-            </div>
+            </Paper>
         ))}
         </div>
     </>)

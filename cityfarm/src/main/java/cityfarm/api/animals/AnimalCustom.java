@@ -63,7 +63,7 @@ public class AnimalCustom implements AnimalUnique {
      * Boolean that identifies the sex of an animal (true for male, false for female)
      */
     @NonNull
-    public Boolean male;
+    public String sex;
     /**
      * Date of Birth of the animal (date of hatching for birds)
      */
@@ -83,7 +83,7 @@ public class AnimalCustom implements AnimalUnique {
 
     @PersistenceCreator
     @JsonCreator
-    public AnimalCustom(@JsonProperty("type") @NonNull AnimalSchema schema, @Nullable String id, @Nullable JsonNode fields, @JsonProperty("name") @Nullable String name, @Nullable String mother, @Nullable String father, @Nullable String breed, @NonNull Boolean alive, @NonNull Boolean male, @Nullable ZonedDateTime dateOfBirth, @Nullable String notes, @NonNull String farm) {
+    public AnimalCustom(@JsonProperty("type") @NonNull AnimalSchema schema, @Nullable String id, @Nullable JsonNode fields, @JsonProperty("name") @Nullable String name, @Nullable String mother, @Nullable String father, @Nullable String breed, @NonNull Boolean alive, @NonNull String sex, @Nullable ZonedDateTime dateOfBirth, @Nullable String notes, @NonNull String farm) {
         this.schema = schema;
         this.type = schema.get_name();
         this.name = name;
@@ -91,11 +91,12 @@ public class AnimalCustom implements AnimalUnique {
         this.father = father;
         this.breed = breed;
         this.alive = Objects.requireNonNullElse(alive, true);
-        this.male = male;
+        this.sex = sex;
         this.dateOfBirth = dateOfBirth;
         this.id = id;
         this.fields = Objects.requireNonNullElse(fields, JsonNodeFactory.instance.objectNode());
         this.farm = farm;
+        this.notes = notes;
     }
 
     public AnimalCustom(@NonNull AnimalSchema schema, @NonNull AnimalCreateRequest animalReq) {
@@ -108,9 +109,10 @@ public class AnimalCustom implements AnimalUnique {
         this.father = animalReq.father;
         this.breed = animalReq.father;
         this.alive = Objects.requireNonNullElse(animalReq.alive, true);
-        this.male = animalReq.male;
+        this.sex = animalReq.sex;
         this.dateOfBirth = animalReq.dateOfBirth;
         this.farm = animalReq.farm;
+        this.notes = animalReq.notes;
     }
 
     @Override

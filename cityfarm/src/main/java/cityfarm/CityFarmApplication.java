@@ -16,18 +16,4 @@ public class CityFarmApplication {
     public static void main(String[] args) {
         SpringApplication.run(CityFarmApplication.class, args);
     }
-
-    @GetMapping("/")
-    public String home() {
-        return "index";
-    }
-
-    /*
-    @GetMapping("/animals")
-    public  String animals(Model model){
-        AnimalController james = new AnimalController();
-        model.addAttribute("animals",james.get_animals());
-        return"animals";
-    }
-    */
 }
