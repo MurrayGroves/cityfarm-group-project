@@ -22,23 +22,22 @@ const EnclosureTable = ({farms}) => {
 
     const [farm, setFarm] = useState(Object.keys(farms)[0]);
 
-    function displayAll() {
-        (async () => {
-            try {
-                const response = await axios.get(`/enclosures`, token);
-                setEnclosureList(response.data);
-            } catch (error) {
-                if (error.response.status === 401) {
-                    window.location.href = "/login";
-                    return;
-                } else {
-                    window.alert(error);
-                }
-            }
-        })()
-    }
-
     useEffect (() => {
+        const displayAll = () => {
+            (async () => {
+                try {
+                    const response = await axios.get(`/enclosures`, token);
+                    setEnclosureList(response.data);
+                } catch (error) {
+                    if (error.response.status === 401) {
+                        window.location.href = "/login";
+                        return;
+                    } else {
+                        window.alert(error);
+                    }
+                }
+            })()
+        }
         (async () => {
             if (searchTerm === '') {
                 displayAll();
@@ -56,20 +55,7 @@ const EnclosureTable = ({farms}) => {
                 }
             }
         })()
-    },[searchTerm])
-
-    // function searchAnimal(animalID) {
-    //     (async() =>{
-    //         try{
-    //             const response = await axios.get(`/animals/by_id/${animalID}`)
-    //             console.log(response);
-    //             return response;
-    //         }catch (error){
-    //             window.alert(error);
-    //             return null;
-    //         }
-    //     })();
-    // }
+    },[searchTerm, token])
 
     const cols =  [
         { field: 'name', editable: true, headerName: 'Name', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
@@ -80,10 +66,8 @@ const EnclosureTable = ({farms}) => {
     const rows = enclosureList.map((enclosure) => ({
         id: enclosure._id,
         name: enclosure.name,
-        holding: Object.keys(enclosure.holding).map((key) => {
-            return (`${Object.keys(enclosure.holding[key]).map((animal) => {
-                return enclosure.holding[key][animal].name
-            })}`)
+        holding: enclosure.holding.map((animal) => {
+            return (`${animal.name}`)
         }),
         capacities: Object.keys(enclosure.capacities).map((key) => {
             return (` ${key}: ${enclosure.capacities[key]}`)
@@ -104,10 +88,6 @@ const EnclosureTable = ({farms}) => {
         <TableContainer component={Paper} style={{marginBottom: '20px'}}>
             <DataGrid rows={rows} columns={cols} 
             isCellEditable={() => editMode}
-            // editMode="row"
-            // onCellEditStop = {(params, event) => {
-                
-            // }}
             processRowUpdate = {(newVal, oldVal) => {
                 if (newVal.name === oldVal.name) { return newVal; }
                 const newName = newVal.name;

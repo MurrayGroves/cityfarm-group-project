@@ -17,46 +17,29 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import FieldSelector from './FieldSelector';
+import AssociateAnimal from '../components/AssociateAnimal';
+import { Unstable_Popup as BasePopup } from '@mui/base/Unstable_Popup';
+import { styled } from '@mui/system';
+import {  DialogActions, DialogContent, DialogContentText, DialogTitle, Dialog } from "@mui/material";
 
 const EnclosureCreator = (props) => {
-    const [newEnclosure, setNewEnclosure] = useState({name: '', holding: {}, capacities: {}});
+    const [newEnclosure, setNewEnclosure] = useState({name: '', holding: [], capacities: {}});
     const [create, setCreate] = useState(false);
+    const [anchor, setAnchor] = React.useState(null);
+    const [openAnimalsPopup ,setOpenAnimalsPopup] = useState(false)
 
-    // const fieldTypeSwitch = (field) => {
-    //     newAnimal.fields[field] = '' ;
-    //     switch(schema._fields[field]._type) {
-    //         case "java.lang.Boolean":
-    //             return (
-    //             <Select
-    //                 style={{width: '100%'}}
-    //                 value={newAnimal.fields[field]}
-    //                 onChange={(e)=>{let tempNewAnimal = newAnimal; tempNewAnimal.fields[field] = e.target.value; setNewAnimal(tempNewAnimal);}}>
-    //                 <MenuItem value={true}>Yes</MenuItem>
-    //                 <MenuItem value={false}>No</MenuItem>
-    //             </Select>
-    //             );
-    //         case "java.lang.String":
-    //             return <TextField/>
-    //         case "java.lang.Integer":
-    //             return <TextField/>
-    //         case "java.lang.Double":
-    //             return <TextField/>
-    //         case "java.time.ZonedDateTime":
-    //             return (
-    //             <DatePicker slotProps={{textField: {fullWidth: true}}}/>
-    //             )
-    //         default:
-    //             return <></>;
-    //     };
-    // }
+    const setNewEnclosureAnimals = (animalList) => {
+        setNewEnclosure({...newEnclosure, holding: animalList})
+    }
 
-    useEffect(() => {
-        console.log(newAnimal);
-    },[newAnimal]);
+    const reset = () => {
+        setCreate(false);
+        setNewEnclosure({name: '', holding: [], capacities: {}})
+    }
+
+    // useEffect(() => {
+    //     console.log(newEnclosure);
+    // },[newEnclosure]);
 
     return (<>
         {create ? <>
@@ -72,61 +55,31 @@ const EnclosureCreator = (props) => {
                     </TableHead>
                     <TableBody>
                         <TableRow>
-                            <TableCell>
+                            <TableCell> {/* Table cell for name of enclosure */}
                                 <TextField 
                                     style={{width: '100%'}} 
-                                    onChange={(e)=>{setNewEnclosure({...newAnimal, name: e.target.value})}} label='Name'
+                                    onChange={(e)=>{setNewEnclosure({...newEnclosure, name: e.target.value})}} label='Name'
                                 />
-                            </TableCell> /* Table cell for name of enclosure */
-                            <TableCell>
-                                <Autocomplete
-                                    style={{width: '100%'}}
-                                    size='medium'
-                                    renderOption={(props, option) => {
-                                        return (
-                                            <li {...props} key={option.id}>
-                                                {option.name}
-                                            </li>
-                                        );
-                                    }}
-                                    renderInput={(params) => <TextField {...params} label="Holding"/>}
-                                    isOptionEqualToValue={(option, value) => option.id === value.id}
-                                    getOptionLabel={option => option.name}
-                                    options={
-                                        props.animalList.filter((animal)=>{return animal.type === newAnimal.type && animal.male === true}).map((animal)=>{
-                                            return {id: animal._id, name: animal.name}
-                                        })
-                                    }
-                                    onChange={(e, v)=>{v ? setNewAnimal({...newAnimal, father: v.id}) : setNewAnimal({...newAnimal, father: ''})}}
-                                />
+                            </TableCell> 
+                            <TableCell> {/* Table cell for animals in enclosure */}
+                                <Button variant='outlined' onClick={() => {setOpenAnimalsPopup(true)}}>Add Animals</Button> 
+                                <div id="AssociateAnimal" style={{textAlign:'center'}}>
+                                    <Dialog open={openAnimalsPopup} onClose={setOpenAnimalsPopup(false)}>
+                                    <DialogTitle>Add Animal</DialogTitle>
+                                    <DialogContent>
+                                    <AssociateAnimal setAnimals={setNewEnclosureAnimals}></AssociateAnimal>
+                                    </DialogContent>
+                                    </Dialog>
+                                </div>
                             </TableCell>
-                            <TableCell>
-                                <Autocomplete
-                                    style={{width: '100%'}}
-                                    size='medium'
-                                    renderOption={(props, option) => {
-                                        return (
-                                            <li {...props} key={option.id}>
-                                                {option.name}
-                                            </li>
-                                        );
-                                    }}
-                                    renderInput={(params) => <TextField {...params} label="Capacities"/>}
-                                    isOptionEqualToValue={(option, value) => option.id === value.id}
-                                    getOptionLabel={option => option.name}
-                                    options={
-                                        props.animalList.filter((animal)=>{return animal.type === newAnimal.type && animal.male !== true}).map((animal)=>{
-                                            return {id: animal._id, name: animal.name}
-                                        })
-                                    }
-                                    onChange={(e, v)=>{v ? setNewAnimal({...newAnimal, mother: v.id}) : setNewAnimal({...newAnimal, mother: ''})}}
-                                />
+                            <TableCell> {/* Table cell for capacities */}
+                                <Button variant='outlined' >Capacities</Button> 
                             </TableCell>
                         </TableRow>
                     </TableBody>
                 </Table>
             </TableContainer>
-            <Button className='tallButton' variant='contained' endIcon={<DeleteIcon/>} onClick={() => setCreate(false)}>Discard</Button>
+            <Button className='tallButton' variant='contained' endIcon={<DeleteIcon/>} onClick={() => {reset(); props.setOffset(36.5+20)}}>Discard</Button>
             </div>
             <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '20px'}}>
             <Button
