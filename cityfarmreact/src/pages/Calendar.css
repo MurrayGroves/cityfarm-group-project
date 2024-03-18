@@ -18,6 +18,10 @@
     margin-top: 0px;
 }
 
+.smallMarginTop {
+    margin-top: 10px;
+}
+
 .modifyEvent p, .selectedEvent p {
     margin: 0;
 }

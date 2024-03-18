@@ -62,6 +62,6 @@ public class EventOnce extends Event {
     @Override
     public String toString() {
         return String.format("Start: %s\nEnd: %s\nAllDay: %s\nTitle: %s\nDescription: %s\nEnclosures: %s\nAnimals: %s\nFarms: %s\nID: %s\n",
-                start.toString(), end.toString(), allDay.toString(), title, description, enclosures.toString(), animals.toString(), farms.toString(), get_id());
+                start, end, allDay, title, description, enclosures, animals, farms, get_id());
     }
 }

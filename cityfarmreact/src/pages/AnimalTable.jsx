@@ -443,16 +443,18 @@ const AnimalTable = ({farms}) => {
             ></TextField>
             <FarmTabs farms={farms} selectedFarm={farm} setSelectedFarm={setFarm}/>
         </span>
-        <Paper style={{height: `calc(100vh - (190.88px + ${creatorOffset}px))`, marginBottom: '0.5%'}}>
+        <Paper style={{height: `calc(100vh - (210.88px + ${creatorOffset}px))`, marginBottom: '10px'}}>
             <DataGrid editMode="row" apiRef={gridApi} disableRowSelectionOnClick filterModel={filterModel} style={{fontSize: '1rem'}} checkboxSelection
                       onRowSelectionModelChange={(ids) => {
                           setSelectedAnimals(ids)}}
                       columns={[...cols, {
                     field: 'edit',
-                    headerName: 'Edit',
+                    headerName: '',
+                    disableColumnMenu: true,
+                    sortable: false,
                     headerClassName: 'grid-header',
                     headerAlign: 'right',
-                    flex: 0.2,
+                    flex: 0.225,
                     renderCell: (params) => {
                         return editingRow === params.row.id ?
                             <div display='flex'>
@@ -511,12 +513,12 @@ const AnimalTable = ({farms}) => {
                 }}
             />
         </Paper>
-        <div style={{marginTop: '0%', display: 'flex'}}>
+        <div style={{marginTop: '0', display: 'flex'}}>            
             <Button variant="contained" onClick={() => {
                 setFilterModel({items: []});
                 setSelectedSchema(null);
             }}>Clear Filter</Button>
-            {selectedSchema ? <p style={{marginLeft: '1%'}}>Currently filtering to show {selectedSchema._name}s</p> : <></>}
+            {selectedSchema ? <p style={{marginLeft: '15px'}}>Currently filtering to show {selectedSchema._name}s</p> : <></>}
         </div>
         <AnimalCreator animalList={animalList} schemaList={schemaList} setOffset={setCreatorOffset} farms={farms}/>
         <>{

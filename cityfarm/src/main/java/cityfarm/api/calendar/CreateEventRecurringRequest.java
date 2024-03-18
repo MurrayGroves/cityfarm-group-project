@@ -19,7 +19,7 @@ public class CreateEventRecurringRequest {
 
     public Boolean allDay;
 
-    public ZonedDateTime start;
+    public ZonedDateTime firstStart;
 
     public ZonedDateTime end;
 

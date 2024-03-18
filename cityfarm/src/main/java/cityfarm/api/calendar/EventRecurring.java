@@ -14,7 +14,11 @@ import java.time.*;
 import java.util.*;
 
 public class EventRecurring extends Event {
+    private final ZonedDateTime firstStart;
+
     private final ZonedDateTime firstEnd;
+
+    private final ZonedDateTime finalEnd;
 
     private final Duration delay;
 
@@ -27,10 +31,10 @@ public class EventRecurring extends Event {
     public List<EventInstance> nextOccurences(@Nullable ZonedDateTime from, @Nullable Integer num) {
         List<EventInstance> events = new ArrayList<>();
 
-        from = Objects.requireNonNullElse(from, start);
-        ZonedDateTime currentDatetime = start;
+        from = Objects.requireNonNullElse(from, firstStart);
+        ZonedDateTime currentDatetime = firstStart;
 
-        Duration delta = Duration.between(start, firstEnd);
+        Duration delta = Duration.between(firstStart, firstEnd);
 
         while (currentDatetime.isBefore(from)) {
             currentDatetime = currentDatetime.plus(delay);
@@ -47,30 +51,49 @@ public class EventRecurring extends Event {
 
     @Override
     public List<EventInstance> occurencesBetween(@Nullable ZonedDateTime from, @Nullable ZonedDateTime to) {
-        return null;
+        List<EventInstance> events = new ArrayList<>();
+
+        from = Objects.requireNonNullElse(from, firstStart);
+        to = Objects.requireNonNullElse(to, finalEnd);
+
+        ZonedDateTime currentDatetime = firstStart;
+
+        Duration delta = Duration.between(firstStart, firstEnd);
+
+        while (currentDatetime.isBefore(from)) {
+            currentDatetime = currentDatetime.plus(delay);
+        }
+
+        while (currentDatetime.isBefore(to)) {
+            EventInstance event = new EventInstance(currentDatetime, currentDatetime.plus(delta), this);
+            events.add(event);
+            currentDatetime = currentDatetime.plus(delay);
+        }
+
+        return events;
     }
 
     public EventRecurring(@NonNull ZonedDateTime firstStart,  @NonNull ZonedDateTime firstEnd, @NonNull Duration delay, ZonedDateTime finalEnd, @Nullable String id) {
-        this.start = firstStart;
+        this.firstStart = firstStart;
         this.firstEnd = firstEnd;
-        this.end = Objects.requireNonNullElse(finalEnd, ZonedDateTime.parse("292278994-08-17T07:12:55.805Z"));
+        this.finalEnd = Objects.requireNonNullElse(finalEnd, ZonedDateTime.parse("2050-08-17T07:12:55.805Z"));
         this.delay = delay;
         this.id = Objects.requireNonNullElseGet(id, () -> UUID.randomUUID().toString());
     }
 
     @JsonCreator
     @PersistenceCreator
-    public EventRecurring(@JsonProperty("first_start") @NonNull ZonedDateTime firstStart, @JsonProperty("first_end") @Nullable ZonedDateTime firstEnd, @JsonProperty("allDay") @NonNull Boolean allDay,
+    public EventRecurring(@JsonProperty("firstStart") @NonNull ZonedDateTime firstStart, @JsonProperty("firstEnd") @Nullable ZonedDateTime firstEnd, @JsonProperty("allDay") @NonNull Boolean allDay,
                           @JsonProperty("title") @NonNull String title, @JsonProperty("description") @Nullable String description,
                           @JsonProperty("enclosures") @Nullable List<Enclosure> enclosures, @JsonProperty("animals") @Nullable List<AnimalCustom> animals, @JsonProperty("farms") @Nullable List<String> farms, @JsonProperty("people") @Nullable List<String> attachedPeople,
-                          @JsonProperty("final_end") @Nullable ZonedDateTime finalEnd, @JsonProperty("delay") @NonNull Duration delay, @JsonProperty("_id") @Nullable String id) {
+                          @JsonProperty("finalEnd") @Nullable ZonedDateTime finalEnd, @JsonProperty("delay") @NonNull Duration delay, @JsonProperty("_id") @Nullable String id) {
         if (end == null && !allDay) {
             throw new IllegalArgumentException("If end isn't present, the event must be marked as all day");
         }
 
-        this.start = firstStart;
+        this.firstStart = firstStart;
         this.firstEnd = firstEnd;
-        this.end = Objects.requireNonNullElse(finalEnd, ZonedDateTime.parse("292278994-08-17T07:12:55.805Z"));
+        this.finalEnd = Objects.requireNonNullElse(finalEnd, ZonedDateTime.parse("2050-08-17T07:12:55.805Z"));
         this.delay = delay;
         this.id = Objects.requireNonNullElseGet(id, () -> UUID.randomUUID().toString());
         this.allDay = allDay;
@@ -80,5 +103,11 @@ public class EventRecurring extends Event {
         this.animals = animals;
         this.farms = farms;
         this.attachedPeople = attachedPeople;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Start: %s\nEnd: %s\nFinalEnd: %s\nDelay: %s\nAllDay: %s\nTitle: %s\nDescription: %s\nEnclosures: %s\nAnimals: %s\nFarms: %s\nID: %s\n",
+                firstStart, firstEnd, finalEnd, delay, allDay, title, description, enclosures, animals, farms, get_id());
     }
 }
