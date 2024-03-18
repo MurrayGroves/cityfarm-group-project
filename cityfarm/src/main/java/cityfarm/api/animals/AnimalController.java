@@ -125,6 +125,7 @@ public class AnimalController {
         animal.sex = animalReq.sex;
         animal.dateOfBirth = animalReq.dateOfBirth;
         animal.notes = animalReq.notes;
+        animal.farm = animalReq.farm;
 
         animalRepository.save(animal);
 
