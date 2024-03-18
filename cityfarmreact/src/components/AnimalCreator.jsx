@@ -141,7 +141,7 @@ const AnimalCreator = (props) => {
 
     return (<>
         {create ? <>
-            <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '20px', marginTop: '0.5%'}}>
+            <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: schema ? '10px' : '0', marginTop: '10px'}}>
             <TableContainer component={Paper} style={{marginRight: '20px'}}>
                 <Table>
                     <TableHead>
@@ -185,7 +185,7 @@ const AnimalCreator = (props) => {
                                             setNewAnimal({...newAnimal, type: v._name, fields: {}});
                                             let tempSchema = props.schemaList.filter((schema) => schema._name === v._name).pop();
                                             setSchema(tempSchema);
-                                            props.setOffset(129.6+20+152.5+20);
+                                            props.setOffset(129.6+20+152.5+10);
                                             setFieldList(Object.keys(tempSchema._fields));
                                         } else {
                                             setNewAnimal({...newAnimal, type: '', fields: {}, notes: ''});
@@ -325,7 +325,7 @@ const AnimalCreator = (props) => {
             >Create</Button>
             </div>
             : <></>}</>
-        : <Button className='tallButton' variant='contained' endIcon={<AddIcon/>} style={{float: 'left', marginTop: '0.5%'}} onClick={() => {setCreate(true); props.setOffset(129.6+20)}}>Create</Button>}
+        : <Button className='tallButton' variant='contained' endIcon={<AddIcon/>} style={{float: 'left', marginTop: '10px'}} onClick={() => {setCreate(true); props.setOffset(129.6+20)}}>Create</Button>}
         <Backdrop style={{zIndex: '4', background: '#000000AA'}} open={showErr} onClick={() => setShowErr(false)}>
             <Alert severity='warning'>
                 Please ensure all required fields are filled

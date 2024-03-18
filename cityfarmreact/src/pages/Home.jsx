@@ -21,7 +21,6 @@ const Home = ({farms}) => {
                 const start = new Date()
                 const end =  new Date()
                 end.setMonth(end.getMonth()+2)
-                console.log(start,end)
                 const response = await axios.get(`/events`, {params: {from: start.toISOString(), to: end.toISOString()}, ...token});
                 setEvents(eventsConversion(response.data.slice(0, 5)));
             } catch (error) {
@@ -54,8 +53,8 @@ const Home = ({farms}) => {
         {events.length > 0 && <h2>Upcoming Events</h2>}
         {/*  events are mapped below, same as in selected event with some visual changes*/}
         <div className="events-container">
-        {events.map((e)=>(
-            <Paper elevation={3} className="event-box" key={e.title}>
+        {events.map((e, index)=>(
+            <Paper elevation={3} className="event-box" key={index}>
                 <h2>{e.title}</h2>
                 {
                     e.allDay ?
