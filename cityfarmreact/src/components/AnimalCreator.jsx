@@ -19,6 +19,8 @@ import Autocomplete from '@mui/material/Autocomplete';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { getConfig } from '../api/getToken';
 
+import { FindOrCreateEvent } from './FindOrCreateEvent';
+
 const AnimalCreator = (props) => {
     const [newAnimal, setNewAnimal] = useState({name: '', type: '', father: '', mother: '', sex: '', alive: true, farm: '', fields: {}, notes: ''});
     const [schema, setSchema] = useState();
@@ -133,6 +135,10 @@ const AnimalCreator = (props) => {
                         slotProps={{textField: {fullWidth: true, size: 'small'}}}
                     />
                     </FormControl>
+                )
+            case "cityfarm.api.calendar.EventRef":
+                return (
+                    <FindOrCreateEvent farms={props.farms}/>
                 )
             default:
                 return <></>;
