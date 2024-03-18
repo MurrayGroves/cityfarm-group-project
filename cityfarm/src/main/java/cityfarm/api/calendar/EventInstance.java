@@ -14,4 +14,9 @@ public class EventInstance {
         this.end = end;
         this.event = event;
     }
+
+    @Override
+    public String toString() {
+        return String.format("Start: %s\nEnd: %s\nEvent:\n%s\n", this.start, this.end, this.event);
+    }
 }

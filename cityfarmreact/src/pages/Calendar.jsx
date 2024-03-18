@@ -22,7 +22,6 @@ import axios from '../api/axiosConfig'
 import AssociateEnclosure from '../components/AssociateEnclosure';
 
 import { getConfig } from '../api/getToken';
-import { Check } from '@mui/icons-material';
 
 export const eventsConversion=(events)=>{
     let changed=[]
@@ -80,6 +79,7 @@ const Calendar = ({farms}) => {
 
     useEffect(() => {
         setInputErr({...inputErr, newTitle: newEvent.title === ''});
+        console.log(newEvent);
     }, [newEvent]);
 
     useEffect(() =>{
@@ -108,7 +108,9 @@ const Calendar = ({farms}) => {
     }
 
     useEffect(() => {
-        recurring ? setNewEvent({...newEvent, firstStart: newEvent.start, firstEnd: newEvent.end, delay: 'P1D', finalEnd: null, start: null, end: null}) : newEvent.firstEnd && setNewEvent({...newEvent, end: newEvent.firstEnd, start: newEvent.firstStart, firstStart: null, firstEnd: null, delay: null, finalEnd: null})
+        recurring ?
+            setNewEvent({...newEvent, firstStart: newEvent.start, firstEnd: newEvent.end, delay: 'P1D', finalEnd: null, start: null, end: null})
+            : newEvent.firstStart && setNewEvent({...newEvent, end: newEvent.firstEnd, start: newEvent.firstStart, firstStart: null, firstEnd: null, delay: null, finalEnd: null})
     }, [recurring])
 
     useEffect(() => {
@@ -225,16 +227,49 @@ const Calendar = ({farms}) => {
             if (isShown){
                 return(<>
                     <FormHelperText>Start</FormHelperText>
-                    <DateTimePicker value={recurring ? dayjs(newEvent.firstStart) : dayjs(newEvent.start)} onChange={(e) => {setNewEvent({...newEvent, start: e.$d, end: newEvent.end < e.$d ? e.$d : newEvent.end})}} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
+                    <DateTimePicker
+                        value={recurring ? dayjs(newEvent.firstStart) : dayjs(newEvent.start)}
+                        onChange={(e) => {
+                            recurring ?
+                                setNewEvent({...newEvent, firstStart: e.$d, firstEnd: newEvent.firstEnd < e.$d ? e.$d : newEvent.firstEnd})
+                                : setNewEvent({...newEvent, start: e.$d, end: newEvent.end < e.$d ? e.$d : newEvent.end})
+                        }}
+                        slotProps={{textField: {fullWidth: true, size: 'small'}}}
+                    />
                     <FormHelperText>End</FormHelperText>
-                    <DateTimePicker value={recurring ? dayjs(newEvent.firstEnd) : dayjs(newEvent.end)} onChange={(e) => {setNewEvent({...newEvent, end: e.$d, start: e.$d < newEvent.start ? e.$d : newEvent.start})}} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
+                    <DateTimePicker
+                        value={recurring ? dayjs(newEvent.firstEnd) : dayjs(newEvent.end)}
+                        onChange={(e) => {
+                            recurring ?
+                                setNewEvent({...newEvent, firstEnd: e.$d, firstStart: e.$d < newEvent.firstStart ? e.$d : newEvent.firstStart})
+                                : setNewEvent({...newEvent, end: e.$d, start: e.$d < newEvent.start ? e.$d : newEvent.start})
+                        }}
+                        slotProps={{textField: {fullWidth: true, size: 'small'}}}
+                    />
                 </>)
             } else {
                 return(<>
                     <FormHelperText>Start</FormHelperText>
-                    <DatePicker value={recurring ? dayjs(newEvent.firstStart) : dayjs(newEvent.start)} onChange={(e) => {setNewEvent({...newEvent, start: e.$d, end: newEvent.end < e.$d ? e.$d : newEvent.end})}} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
+                    <DatePicker
+                        value={recurring ? dayjs(newEvent.firstStart) : dayjs(newEvent.start)}
+                        onChange={(e) => {
+                            console.log('date changed');
+                            recurring ?
+                                setNewEvent({...newEvent, firstStart: e.$d, firstEnd: newEvent.firstEnd < e.$d ? e.$d : newEvent.firstEnd})
+                                : setNewEvent({...newEvent, start: e.$d, end: newEvent.end < e.$d ? e.$d : newEvent.end})
+                        }}
+                        slotProps={{textField: {fullWidth: true, size: 'small'}}}
+                    />
                     <FormHelperText>End</FormHelperText>
-                    <DatePicker value={recurring ? dayjs(newEvent.firstEnd) : dayjs(newEvent.end)} onChange={(e) => {setNewEvent({...newEvent, end: e.$d, start: e.$d < newEvent.start ? e.$d : newEvent.start})}} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
+                    <DatePicker
+                        value={recurring ? dayjs(newEvent.firstEnd) : dayjs(newEvent.end)}
+                        onChange={(e) => {
+                            recurring ?
+                                setNewEvent({...newEvent, firstEnd: e.$d, firstStart: e.$d < newEvent.firstStart ? e.$d : newEvent.firstStart})
+                                : setNewEvent({...newEvent, end: e.$d, start: e.$d < newEvent.start ? e.$d : newEvent.start})
+                        }}
+                        slotProps={{textField: {fullWidth: true, size: 'small'}}}
+                    />
                 </>)
             }
         } else {

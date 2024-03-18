@@ -140,7 +140,7 @@ public class CalendarController {
             animals.add(anm);
         }
 
-        EventRecurring newEvent = new EventRecurring(event.start, event.firstEnd, event.allDay, event.title, event.description, enclosures, animals, event.farms, event.people, event.end, event.delay, null);
+        EventRecurring newEvent = new EventRecurring(event.firstStart, event.firstEnd, event.allDay, event.title, event.description, enclosures, animals, event.farms, event.people, event.end, event.delay, null);
 
         eventRepository.save(newEvent);
 
