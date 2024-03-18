@@ -521,7 +521,7 @@ const AnimalTable = ({farms}) => {
             {selectedSchema ? <p style={{marginLeft: '15px'}}>Currently filtering to show {selectedSchema._name}s</p> : <></>}
         </div>
         <AnimalCreator animalList={animalList} schemaList={schemaList} setOffset={setCreatorOffset} farms={farms}/>
-        <>{
+        <div className="fmButtons">{
             selectedAnimals.length > 0 ? (
                 Object.entries(farms).map((farm) => (
                         <React.Fragment key={farm}>
@@ -531,7 +531,7 @@ const AnimalTable = ({farms}) => {
                 ) :  ''
         }
 
-        </>
+        </div>
     </>)
 }
 

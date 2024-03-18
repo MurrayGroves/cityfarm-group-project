@@ -16,3 +16,18 @@
     width: 24px;
     height: 24px;
 }
+
+.children{
+    position: absolute;
+    top: 12.5%;
+    left: 15%;
+}
+
+.farmButtons{
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 12.5%;
+    left: 22%;
+
+}

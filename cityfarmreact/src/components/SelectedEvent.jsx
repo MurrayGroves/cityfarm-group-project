@@ -37,7 +37,9 @@ const SelectedEvent = (props) => {
           {event.farms.includes(farms.WH) && <p>Windmill Hill</p>}
           {event.farms.includes(farms.HC) && <p>Hartcliffe</p>}
           {event.farms.includes(farms.SW) && <p>St Werberghs</p>}
+            {event.description? <><br/> {event.description} </>: ''}
           {event.animals.length !== 0 && <h3>Animals</h3>}
+
           {event.animals.map((animal) => (
               <AnimalPopover key={animal._id} animalID={animal._id}/>
           ))}

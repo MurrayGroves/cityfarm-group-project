@@ -22,3 +22,8 @@
 .table-shadow a:hover {
     color: grey;
 }
+
+.fmButtons{
+    display: flex;
+    flex-direction: row;
+}

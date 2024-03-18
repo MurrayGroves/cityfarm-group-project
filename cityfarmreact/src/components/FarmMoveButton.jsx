@@ -2,7 +2,7 @@ import Button from "@mui/material/Button";
 import React from "react";
 import axios from "../api/axiosConfig";
 import {getConfig} from "../api/getToken";
-
+import "./FarmMoveButton.css"
 const FarmMoveButton = (props) => {
     const token = getConfig();
 
@@ -33,7 +33,9 @@ const FarmMoveButton = (props) => {
         }
 
     }
-    return <Button onClick={() =>farmMove(props.ids,props.farm)}> Move to {Object.entries(props.farm)[0][1]} </Button>
+    return (<div className="fButton">
+        <Button onClick={() =>farmMove(props.ids,props.farm)} variant="contained"> Move to {Object.entries(props.farm)[0][1]} </Button>
+</div>)
 }
 
 export default FarmMoveButton
