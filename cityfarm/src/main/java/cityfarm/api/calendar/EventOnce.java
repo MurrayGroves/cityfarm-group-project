@@ -19,9 +19,6 @@ import java.util.UUID;
 @JsonTypeName("once")
 @Document("events")
 public class EventOnce extends Event {
-    @Id
-    private final String id;
-
     @Override
     public String get_id() {
         return id;
@@ -60,5 +57,11 @@ public class EventOnce extends Event {
         this.farms = farms;
         this.attachedPeople = attachedPeople;
         this.id = Objects.requireNonNullElseGet(id, () -> UUID.randomUUID().toString());
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Start: %s\nEnd: %s\nAllDay: %s\nTitle: %s\nDescription: %s\nEnclosures: %s\nAnimals: %s\nFarms: %s\nID: %s\n",
+                start.toString(), end.toString(), allDay.toString(), title, description, enclosures.toString(), animals.toString(), farms.toString(), get_id());
     }
 }
