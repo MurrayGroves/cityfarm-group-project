@@ -20,10 +20,12 @@ import ClearIcon from '@mui/icons-material/Clear';
 import AnimalCreator from "../components/AnimalCreator";
 
 import { getConfig } from '../api/getToken';
+
 import { Link } from "react-router-dom";
 import { set } from "date-fns";
 import { FormControlLabel, FormGroup, FormControl, FormHelperText, IconButton } from "@mui/material";
 import Autocomplete from '@mui/material/Autocomplete';
+import FarmMoveButton from "../components/FarmMoveButton";
 
 const AnimalTable = ({farms}) => {
     const [animalList, setAnimalList] = useState([]); /* The State for the list of animals. The initial state is [] */
@@ -39,6 +41,7 @@ const AnimalTable = ({farms}) => {
     const [modifyAnimal, setModifyAnimal] = useState({});
     const [editingRow, setEditingRow] = useState(null);
 
+    const [selectedAnimals,setSelectedAnimals]=useState([])
     const token = getConfig();
 
     const gridApi = useGridApiRef();
@@ -76,6 +79,7 @@ const AnimalTable = ({farms}) => {
         })()
     }
 
+
     useEffect(getSchemas, []);
 
     useEffect(() => {
@@ -97,6 +101,7 @@ const AnimalTable = ({farms}) => {
             }
         })()
     },[searchTerm, farm])
+
 
     useEffect(() => {
         (async () => {
@@ -125,7 +130,7 @@ const AnimalTable = ({farms}) => {
                 }});
             }
         }
- 
+
         setCols(newCols);
 
         const defaultRows = animalList.map((animal) => ({
@@ -149,7 +154,7 @@ const AnimalTable = ({farms}) => {
                     newRow[key] = typeof animal.fields[key] === typeof false ? animal.fields[key] ? "Yes" : "No" : animal.fields[key];
                 }
             }
-       
+
             newRows.push(newRow);
         }
         setRows(newRows);
@@ -347,7 +352,7 @@ const AnimalTable = ({farms}) => {
                         options={
                             animalList.filter((animal)=>{
                                 return animal.type.toLowerCase() === params.row.type.toLowerCase() && animal.sex !== "f" && animal._id !== params.row.id
-                            }) 
+                            })
                         }
                         value={{_id: params.value, name: initial_name}}
                         onChange={(_, value) => {
@@ -440,7 +445,9 @@ const AnimalTable = ({farms}) => {
         </span>
         <Paper style={{height: `calc(100vh - (190.88px + ${creatorOffset}px))`, marginBottom: '0.5%'}}>
             <DataGrid editMode="row" apiRef={gridApi} disableRowSelectionOnClick filterModel={filterModel} style={{fontSize: '1rem'}} checkboxSelection
-                columns={[...cols, {
+                      onRowSelectionModelChange={(ids) => {
+                          setSelectedAnimals(ids)}}
+                      columns={[...cols, {
                     field: 'edit',
                     headerName: 'Edit',
                     headerClassName: 'grid-header',
@@ -472,7 +479,7 @@ const AnimalTable = ({farms}) => {
                                 setEditingRow(params.row.id);
                             }}>
                                 <EditIcon/>
-                            </IconButton>   
+                            </IconButton>
                     }
                 }]}
                 rows={rows} onCellClick={(params, event, details) => {
@@ -504,7 +511,7 @@ const AnimalTable = ({farms}) => {
                 }}
             />
         </Paper>
-        <div style={{marginTop: '0%', display: 'flex'}}>            
+        <div style={{marginTop: '0%', display: 'flex'}}>
             <Button variant="contained" onClick={() => {
                 setFilterModel({items: []});
                 setSelectedSchema(null);
@@ -512,6 +519,17 @@ const AnimalTable = ({farms}) => {
             {selectedSchema ? <p style={{marginLeft: '1%'}}>Currently filtering to show {selectedSchema._name}s</p> : <></>}
         </div>
         <AnimalCreator animalList={animalList} schemaList={schemaList} setOffset={setCreatorOffset} farms={farms}/>
+        <>{
+            selectedAnimals.length > 0 ? (
+                Object.entries(farms).map((farm) => (
+                        <React.Fragment key={farm}>
+                            <FarmMoveButton farm={farm} ids={selectedAnimals}/>
+                        </React.Fragment>
+                    ))
+                ) :  ''
+        }
+
+        </>
     </>)
 }
 

@@ -9,6 +9,7 @@ import CloseIcon from "../assets/close-512-light.webp";
 import Paper from "@mui/material/Paper";
 import SelectedEvent from "../components/SelectedEvent";
 import { getConfig } from '../api/getToken';
+import FarmMoveButton from "../components/FarmMoveButton";
 
 const SingleAnimal = (props) => {
 
@@ -195,6 +196,15 @@ const SingleAnimal = (props) => {
                 })}
             </div>
         )}
+        <div>
+
+            {Object.entries(farms).map((farm) => (
+                <React.Fragment key={farm}>
+
+                    <FarmMoveButton farm={farm} ids={[chosenAnimal._id]  }/>
+                </React.Fragment>
+            ))}
+        </div>
 
 
         <div>
