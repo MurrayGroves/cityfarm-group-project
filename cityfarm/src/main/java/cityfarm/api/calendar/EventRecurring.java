@@ -76,7 +76,7 @@ public class EventRecurring extends Event {
     public EventRecurring(@NonNull ZonedDateTime firstStart,  @NonNull ZonedDateTime firstEnd, @NonNull Duration delay, ZonedDateTime finalEnd, @Nullable String id) {
         this.firstStart = firstStart;
         this.firstEnd = firstEnd;
-        this.finalEnd = Objects.requireNonNullElse(finalEnd, ZonedDateTime.parse("2050-08-17T07:12:55.805Z"));
+        this.finalEnd = Objects.requireNonNullElse(finalEnd, ZonedDateTime.parse("2999-12-31T23:59:59.999Z"));
         this.delay = delay;
         this.id = Objects.requireNonNullElseGet(id, () -> UUID.randomUUID().toString());
     }
@@ -93,7 +93,7 @@ public class EventRecurring extends Event {
 
         this.firstStart = firstStart;
         this.firstEnd = firstEnd;
-        this.finalEnd = Objects.requireNonNullElse(finalEnd, ZonedDateTime.parse("2050-08-17T07:12:55.805Z"));
+        this.finalEnd = Objects.requireNonNullElse(finalEnd, ZonedDateTime.parse("2999-12-31T23:59:59.999Z"));
         this.delay = delay;
         this.id = Objects.requireNonNullElseGet(id, () -> UUID.randomUUID().toString());
         this.allDay = allDay;

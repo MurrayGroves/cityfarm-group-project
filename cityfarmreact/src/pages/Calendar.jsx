@@ -191,7 +191,7 @@ const Calendar = ({farms}) => {
                 window.alert(error);
             }
         }
-        //window.location.reload(false);
+        window.location.reload(false);
     }
 
     const updateVisibleFarms = (selected) => {
@@ -523,8 +523,8 @@ const Calendar = ({farms}) => {
                         >
                             <ToggleButton value='P1D'>Daily</ToggleButton>
                             <ToggleButton value='P7D'>Weekly</ToggleButton>
-                            <ToggleButton value='P28D'>Monthly</ToggleButton>
-                            <ToggleButton value='P265D'>Yearly</ToggleButton>
+                            <ToggleButton value='P30D'>Monthly</ToggleButton>
+                            <ToggleButton value='P365D'>Yearly</ToggleButton>
                         </ToggleButtonGroup>
                     </div>)}
                     <div className='smallMarginTop'>

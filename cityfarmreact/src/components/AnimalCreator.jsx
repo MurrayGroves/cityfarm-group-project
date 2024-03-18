@@ -142,7 +142,8 @@ const AnimalCreator = (props) => {
     return (<>
         {create ? <>
             <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: schema ? '10px' : '0', marginTop: '10px'}}>
-            <TableContainer component={Paper} style={{marginRight: '20px'}}>
+            <Paper sx={{width: '100%', marginRight: '20px'}} elevation={3}>
+            <TableContainer>
                 <Table>
                     <TableHead>
                         <TableRow>
@@ -270,11 +271,13 @@ const AnimalCreator = (props) => {
                     </TableBody>
                 </Table>
             </TableContainer>
+            </Paper>
             <Button className='tallButton' variant='contained' color='warning' endIcon={<DeleteIcon/>} onClick={() => {reset(); props.setOffset(36.5+20)}}>Discard</Button>
             </div>
             {schema ?
             <div style={{display: 'flex', justifyContent: 'space-between'}}>
-            <TableContainer component={Paper} style={{marginRight: '20px'}}>
+            <Paper sx={{width: '100%', marginRight: '20px'}} elevation={3}>
+            <TableContainer>
                 <Table>
                     <TableHead>
                         <TableRow>
@@ -298,6 +301,7 @@ const AnimalCreator = (props) => {
                     </TableBody>
                 </Table>
             </TableContainer>
+            </Paper>
             <Button
                 className='tallButton'
                 variant="contained"

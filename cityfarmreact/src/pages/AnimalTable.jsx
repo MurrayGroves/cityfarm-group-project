@@ -443,7 +443,7 @@ const AnimalTable = ({farms}) => {
             ></TextField>
             <FarmTabs farms={farms} selectedFarm={farm} setSelectedFarm={setFarm}/>
         </span>
-        <Paper style={{height: `calc(100vh - (210.88px + ${creatorOffset}px))`, marginBottom: '10px'}}>
+        <Paper elevation={3} style={{height: `calc(100vh - (210.88px + ${creatorOffset}px))`, marginBottom: '10px'}}>
             <DataGrid editMode="row" apiRef={gridApi} disableRowSelectionOnClick filterModel={filterModel} style={{fontSize: '1rem'}} checkboxSelection
                       onRowSelectionModelChange={(ids) => {
                           setSelectedAnimals(ids)}}

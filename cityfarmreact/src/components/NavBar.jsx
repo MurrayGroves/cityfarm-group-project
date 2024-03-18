@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import './NavBar.css'
 import {Link} from "react-router-dom";
 import Button from '@mui/material/Button';
@@ -7,11 +7,42 @@ import { useNavigate } from "react-router-dom";
 import question from "../assets/question mark.png"
 import Switch from '@mui/material/Switch';
 import QuestionPopover from "./QuestionPopover";
+import Drawer from '@mui/material/Drawer';
+import Fab from '@mui/material/Fab';
 
 const NavBar = (props) => {
     const navigate = useNavigate();
-    return(
-        <div className="sidebar">
+
+    const [drawerOpen, setDrawerOpen] = useState(false);
+
+    const toggleDrawer = (value) => {
+        setDrawerOpen(value);
+    }
+
+    // only changes between permanent and temporary drawers on page load
+
+    var navWidth = getComputedStyle(document.documentElement).getPropertyValue('--nav-width');
+    navWidth = navWidth.slice(0, navWidth.length - 2);
+
+    return(<>
+        <Fab onClick={() => toggleDrawer(true)}>Open</Fab>
+        <Drawer
+            variant={navWidth > 0 ? 'permanent' : 'temporary'}
+            anchor='left'
+            PaperProps={{className: 'sidebar'}}
+            open={drawerOpen}
+            onClose={() => toggleDrawer(false)}
+            sx={{
+                width: navWidth,
+                flexShrink: 0,
+                '& .MuiDrawer-paper': {
+                    width: navWidth,
+                    boxSizing: 'border-box',
+                    backgroundColor: '#000028',
+                    width: '150px',
+                },
+              }}
+        >
             <Link to="/"> Home </Link>
             <Link to="/calendar"> Calendar </Link>
             <Link to="/animals"> Livestock </Link>
@@ -33,8 +64,8 @@ const NavBar = (props) => {
                 }}
                 endIcon={<LogoutIcon/>}
             >Logout</Button>
-        </div>
-    )
+        </Drawer>
+    </>)
 }
 
 export default NavBar;
