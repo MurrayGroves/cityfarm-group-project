@@ -428,7 +428,7 @@ const Calendar = ({farms, device}) => {
                 <EventDisplay
                     selectedEvent={selectedEvent} setSelectedEvent={setSelectedEvent}
                     modifiedEvent={modifiedEvent} modifyEvent={modifyEvent} setModifiedEvent={setModifiedEvent} setModifiedEventAnimals={setModifiedEventAnimals} setModifiedEventEnclosures={setModifiedEventEnclosures} setModifyEvent={setModifyEvent}
-                    newEvent={newEvent} createEvent={createEvent} setNewEvent={setNewEvent} setAddEventAnimals={setAddEventAnimals} setAddEventEnclosures={setAddEventEnclosures}
+                    newEvent={newEvent} createEvent={true} setNewEvent={setNewEvent} setAddEventAnimals={setAddEventAnimals} setAddEventEnclosures={setAddEventEnclosures}
                     handleAddEvent={handleAddEvent} handleDelEvent={handleDelEvent} handlePatchEvent={handlePatchEvent}
                     showingTime={showingTime} functionopenPopup={functionopenPopup} functionclosePopup={functionclosePopup}
                     openAnimalsPopup={openAnimalsPopup} openEnclosurePopup={openEnclosurePopup}

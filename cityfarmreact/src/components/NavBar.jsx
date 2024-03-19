@@ -10,7 +10,6 @@ import QuestionPopover from "./QuestionPopover";
 import Drawer from '@mui/material/Drawer';
 import Fab from '@mui/material/Fab';
 import MenuIcon from '@mui/icons-material/Menu';
-import { BrowserView, MobileView, isBrowser, isMobile } from 'react-device-detect';
 
 const NavBar = (props) => {
     const navigate = useNavigate();
@@ -22,9 +21,9 @@ const NavBar = (props) => {
     }
     
     return(<>
-        {(props.device === 'mobile' || isMobile) && <Fab sx={{m: 2}} color='primary' onClick={() => toggleDrawer(true)}><MenuIcon/></Fab>}
+        {props.device === 'mobile' && <Fab sx={{m: 2}} color='primary' onClick={() => toggleDrawer(true)}><MenuIcon/></Fab>}
         <Drawer
-            variant={(props.device.slice(0, 7) === 'desktop' && isBrowser) ? 'permanent' : 'temporary'}
+            variant={props.device.slice(0, 7) === 'desktop' ? 'permanent' : 'temporary'}
             anchor='left'
             PaperProps={{className: 'sidebar'}}
             open={drawerOpen}
@@ -32,6 +31,7 @@ const NavBar = (props) => {
             sx={{
                 flexShrink: 0,
                 '& .MuiDrawer-paper': {
+                    backgroundImage: 'none',
                     boxSizing: 'border-box',
                     backgroundColor: '#000028',
                     width: '150px',

@@ -8,7 +8,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import { FormHelperText, IconButton, Select, Backdrop, Alert } from "@mui/material";
+import { FormHelperText, IconButton, Select, Backdrop, Alert, Fab } from "@mui/material";
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Button from '@mui/material/Button';
@@ -34,6 +34,7 @@ const AnimalCreator = (props) => {
         setNewAnimal({name: '', type: '', father: '', mother: '', sex: '', alive: true, farm: '', fields: {}, notes: ''})
         setInputErr({name: true, type: true, sex: true});
         setSchema();
+        props.setOffset(0);
     }
 
     useEffect(() => {
@@ -142,7 +143,7 @@ const AnimalCreator = (props) => {
     return (<>
         {create ? <>
             <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: schema ? '10px' : '0', marginTop: '10px'}}>
-            <Paper sx={{width: '100%', marginRight: '20px'}} elevation={3}>
+            <Paper sx={{width: '100%', marginRight: '10px'}} elevation={3}>
             <TableContainer>
                 <Table>
                     <TableHead>
@@ -157,18 +158,19 @@ const AnimalCreator = (props) => {
                     </TableHead>
                     <TableBody>
                         <TableRow>
-                            <TableCell>
+                            <TableCell sx={{borderBottom: 'none'}}>
                                 <TextField
                                     fullWidth
                                     error={newAnimal.name === ''}
                                     required
                                     size='small'
+                                    value={newAnimal.name}
                                     onChange={(e)=>{
                                         setNewAnimal({...newAnimal, name: e.target.value});
                                     }}
                                     label='Name'/>
                             </TableCell>
-                            <TableCell>
+                            <TableCell sx={{borderBottom: 'none'}}>
                                 <Autocomplete
                                     renderOption={(props, option) => {
                                         return (
@@ -186,18 +188,18 @@ const AnimalCreator = (props) => {
                                             setNewAnimal({...newAnimal, type: v._name, fields: {}});
                                             let tempSchema = props.schemaList.filter((schema) => schema._name === v._name).pop();
                                             setSchema(tempSchema);
-                                            props.setOffset(129.6+20+152.5+10);
+                                            props.setOffset(138.8+152.5+10);
                                             setFieldList(Object.keys(tempSchema._fields));
                                         } else {
                                             setNewAnimal({...newAnimal, type: '', fields: {}, notes: ''});
                                             setSchema();
-                                            props.setOffset(129.6+20);
+                                            props.setOffset(138.8);
                                             setFieldList([]);
                                             setInputErr({});
                                         }}}
                                 />
                             </TableCell>
-                            <TableCell>
+                            <TableCell sx={{borderBottom: 'none'}}>
                                 <Autocomplete
                                     renderOption={(props, option) => {
                                         return (
@@ -219,7 +221,7 @@ const AnimalCreator = (props) => {
                                     }}
                                 />
                             </TableCell>
-                            <TableCell>
+                            <TableCell sx={{borderBottom: 'none'}}>
                                 <Autocomplete
                                     renderOption={(props, option) => {
                                         return (
@@ -241,7 +243,7 @@ const AnimalCreator = (props) => {
                                     }}
                                 />
                             </TableCell>
-                            <TableCell>
+                            <TableCell sx={{borderBottom: 'none'}}>
                                 <TextField
                                     select
                                     fullWidth
@@ -259,7 +261,7 @@ const AnimalCreator = (props) => {
                                     <MenuItem value={'c'}>Castrated</MenuItem>
                                 </TextField>
                             </TableCell>
-                            <TableCell>
+                            <TableCell sx={{borderBottom: 'none'}}>
                                 <TextField select fullWidth label='Farm' value={newAnimal.farm} size='small' onChange={(e) => {setNewAnimal({...newAnimal, farm: e.target.value})}}>
                                     <MenuItem value={''}><em>Empty</em></MenuItem>
                                     <MenuItem value={props.farms.WH}>Windmill Hill</MenuItem>
@@ -272,11 +274,11 @@ const AnimalCreator = (props) => {
                 </Table>
             </TableContainer>
             </Paper>
-            <Button className='tallButton' variant='contained' color='warning' endIcon={<DeleteIcon/>} onClick={() => {reset(); props.setOffset(36.5+20)}}>Discard</Button>
+            <Button className='tallButton' variant='contained' color='warning' endIcon={<DeleteIcon/>} onClick={() => {reset()}}>Discard</Button>
             </div>
             {schema ?
             <div style={{display: 'flex', justifyContent: 'space-between'}}>
-            <Paper sx={{width: '100%', marginRight: '20px'}} elevation={3}>
+            <Paper sx={{width: '100%', marginRight: '10px'}} elevation={3}>
             <TableContainer>
                 <Table>
                     <TableHead>
@@ -293,10 +295,10 @@ const AnimalCreator = (props) => {
                         <TableRow>
                             {Object.keys(schema._fields).map((_, index) => {
                                 return (
-                                    <TableCell key={index}>{fieldList ? fieldTypeSwitch(index) : <p>Loading...</p>}</TableCell>
+                                    <TableCell sx={{borderBottom: 'none'}} key={index}>{fieldList ? fieldTypeSwitch(index) : <p>Loading...</p>}</TableCell>
                                 );
                             })}
-                            <TableCell><TextField size='small' multiline placeholder='Add notes...' fullWidth rows={2} onChange={(e) => {setNewAnimal({...newAnimal, notes: e.target.value})}}/></TableCell>
+                            <TableCell sx={{borderBottom: 'none'}}><TextField size='small' multiline placeholder='Add notes...' fullWidth rows={2} onChange={(e) => {setNewAnimal({...newAnimal, notes: e.target.value})}}/></TableCell>
                         </TableRow>
                     </TableBody>
                 </Table>
@@ -329,7 +331,8 @@ const AnimalCreator = (props) => {
             >Create</Button>
             </div>
             : <></>}</>
-        : <Button className='tallButton' variant='contained' endIcon={<AddIcon/>} style={{float: 'left', marginTop: '10px'}} onClick={() => {setCreate(true); props.setOffset(129.6+20)}}>Create</Button>}
+        :
+        <Fab color='primary' sx={{position: 'absolute', bottom: '60px', right: '15px'}} onClick={() => {setCreate(true); props.device === 'desktopLarge' && props.setOffset(138.8);}}><AddIcon/></Fab>}
         <Backdrop style={{zIndex: '4', background: '#000000AA'}} open={showErr} onClick={() => setShowErr(false)}>
             <Alert severity='warning'>
                 Please ensure all required fields are filled

@@ -21,8 +21,10 @@
   }
 }
 
+/* Hide sidebar for mobile devices */
 @media (pointer: coarse) {
   :root {
+    --device: mobile;
     --nav-width: 0px;
   }
   .Content h1 {
@@ -49,11 +51,11 @@
 a {
   color: var(--colour);
   text-decoration: none;
-  transition: 0.3s;
 }
 
 a:hover {
   color: #888888;
+  transition: 0.3s;
 }
 
 h2 {
