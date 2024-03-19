@@ -409,12 +409,12 @@ const Calendar = ({farms, device}) => {
 
             {/* wrap selected event / create event in a dialog when screen is small */}
             {device !== 'desktopLarge' ?
-            <Dialog open={selectedEvent !== '' || createEvent} onClose={() => {setSelectedEvent(''); setCreateEvent(false); setModifyEvent(false);}}>
+            <Dialog fullWidth maxWidth='xs' open={selectedEvent !== '' || createEvent} onClose={() => {setSelectedEvent(''); setCreateEvent(false); setModifyEvent(false);}}>
                 <DialogContent>
-                    <EventDisplay 
+                    <EventDisplay
                         selectedEvent={selectedEvent} setSelectedEvent={setSelectedEvent}
                         modifiedEvent={modifiedEvent} modifyEvent={modifyEvent} setModifiedEvent={setModifiedEvent} setModifiedEventAnimals={setModifiedEventAnimals} setModifiedEventEnclosures={setModifiedEventEnclosures} setModifyEvent={setModifyEvent}
-                        newEvent={newEvent} setNewEvent={setNewEvent} setAddEventAnimals={setAddEventAnimals} setAddEventEnclosures={setAddEventEnclosures}
+                        newEvent={newEvent} createEvent={createEvent} setNewEvent={setNewEvent} setAddEventAnimals={setAddEventAnimals} setAddEventEnclosures={setAddEventEnclosures}
                         handleAddEvent={handleAddEvent} handleDelEvent={handleDelEvent} handlePatchEvent={handlePatchEvent}
                         showingTime={showingTime} functionopenPopup={functionopenPopup} functionclosePopup={functionclosePopup}
                         openAnimalsPopup={openAnimalsPopup} openEnclosurePopup={openEnclosurePopup}
@@ -424,11 +424,11 @@ const Calendar = ({farms, device}) => {
                 </DialogContent>
             </Dialog>
             :
-            <Paper elevation={3} style={{padding: '10px'}}>
-                <EventDisplay 
+            <Paper elevation={3} style={{padding: '10px', flex: 1}}>
+                <EventDisplay
                     selectedEvent={selectedEvent} setSelectedEvent={setSelectedEvent}
                     modifiedEvent={modifiedEvent} modifyEvent={modifyEvent} setModifiedEvent={setModifiedEvent} setModifiedEventAnimals={setModifiedEventAnimals} setModifiedEventEnclosures={setModifiedEventEnclosures} setModifyEvent={setModifyEvent}
-                    newEvent={newEvent} setNewEvent={setNewEvent} setAddEventAnimals={setAddEventAnimals} setAddEventEnclosures={setAddEventEnclosures}
+                    newEvent={newEvent} createEvent={createEvent} setNewEvent={setNewEvent} setAddEventAnimals={setAddEventAnimals} setAddEventEnclosures={setAddEventEnclosures}
                     handleAddEvent={handleAddEvent} handleDelEvent={handleDelEvent} handlePatchEvent={handlePatchEvent}
                     showingTime={showingTime} functionopenPopup={functionopenPopup} functionclosePopup={functionclosePopup}
                     openAnimalsPopup={openAnimalsPopup} openEnclosurePopup={openEnclosurePopup}

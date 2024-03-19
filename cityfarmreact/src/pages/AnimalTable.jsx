@@ -27,7 +27,7 @@ import { FormControlLabel, FormGroup, FormControl, FormHelperText, IconButton } 
 import Autocomplete from '@mui/material/Autocomplete';
 import FarmMoveButton from "../components/FarmMoveButton";
 
-const AnimalTable = ({farms}) => {
+const AnimalTable = ({farms, device}) => {
     const [animalList, setAnimalList] = useState([]); /* The State for the list of animals. The initial state is [] */
     const [searchTerm, setSearchTerm] = useState(''); /* The term being searched for in the searchbar */
     const [schemaList, setSchemaList] = useState([]);
@@ -440,7 +440,7 @@ const AnimalTable = ({farms}) => {
                 placeholder='Search'
                 style={{margin: '0 20px 20px 0'}}
                 onChange={(e) => setSearchTerm(e.target.value)}
-            ></TextField>
+            />
             <FarmTabs farms={farms} selectedFarm={farm} setSelectedFarm={setFarm}/>
         </span>
         <Paper elevation={3} style={{height: `calc(100vh - (210.88px + ${creatorOffset}px))`, marginBottom: '10px'}}>
@@ -513,8 +513,8 @@ const AnimalTable = ({farms}) => {
                 }}
             />
         </Paper>
-        <div style={{marginTop: '0', display: 'flex'}}>            
-            <Button variant="contained" onClick={() => {
+        <div style={{marginTop: '0', maxHeight: '36.5px', display: 'flex', justifyContent: 'space-between', overflowY: 'visible'}}>
+            <Button sx={{minWidth: '125.9px'}} variant="contained" onClick={() => {
                 setFilterModel({items: []});
                 setSelectedSchema(null);
             }}>Clear Filter</Button>

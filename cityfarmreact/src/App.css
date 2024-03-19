@@ -3,6 +3,13 @@
   --nav-width: 150px;
 }
 
+@media screen and (min-width: 800px) and (max-width: 1250px) {
+  :root {
+    --device: desktopSmall;
+    --nav-width: 150px;
+  }
+}
+
 /* Hide sidebar for small screens */
 @media screen and (max-width: 799px) {
   :root {
@@ -14,10 +21,12 @@
   }
 }
 
-@media screen and (min-width: 800px) and (max-width: 1250px) {
+@media (pointer: coarse) {
   :root {
-    --device: desktopSmall;
-    --nav-width: 150px;
+    --nav-width: 0px;
+  }
+  .Content h1 {
+    margin-left: 80px;
   }
 }
 

@@ -122,7 +122,7 @@ const Schemas = () => {
                     setNewSchemaName(e.target.value.charAt(0).toUpperCase() + e.target.value.slice(1));
                 }}
             />
-            <Button disableElevation variant="contained" aria-label="add" endIcon={<AddIcon />} style={{maxHeight: '40px', marginTop: '15px'}}
+            <Button disableElevation variant="contained" aria-label="add" endIcon={<AddIcon />} style={{maxHeight: '40px', margin: '15px 15px 0 0'}}
                 onClick={() => {
                     if (Object.values(inputErr).filter((err) => err === true).length > 0) {
                         return setShowErr(true);
@@ -160,7 +160,7 @@ const Schemas = () => {
             <Table aria-label="fields table">
                 <TableHead>
                     <TableRow>
-                        <TableCell width='30%'>Property Name</TableCell>
+                        <TableCell sx={{minWidth: '168px'}} width='30%'>Property Name</TableCell>
                         <TableCell width='30%'>Data Type</TableCell>
                         <TableCell width='30%'>Required</TableCell>
                         <TableCell width='10%'/>

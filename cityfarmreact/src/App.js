@@ -118,7 +118,7 @@ const App = () => {
                         <Routes>
                             <Route path="/" element={<Home farms={farms}/>}/>
                             <Route path="/calendar" element={<Calendar farms={farms} device={device}/>}/>
-                            <Route path="/animals" element={<AnimalTable farms={farms}/>}/>
+                            <Route path="/animals" element={<AnimalTable farms={farms} device={device}/>}/>
                             <Route path="/enclosures" element={<EnclosureTable farms={farms}/>}/>
                             <Route path="/schemas" element={<Schemas farms={farms}/>}/>
                             <Route path="/help" element={<Help/>}/>

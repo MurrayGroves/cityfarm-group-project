@@ -1,4 +1,4 @@
-import Tabs from "@mui/material/Tabs";
+import Tabs, {tabsClasses} from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import "./FarmTabs.css";
 import { React, useState } from 'react';
@@ -22,7 +22,17 @@ const FarmTabs = (props) => {
     return (
         <div className="tab-container">
             <ThemeProvider theme={tabTheme}>
-                <Tabs value={props.selectedFarm} onChange={(e, farm)=>{props.setSelectedFarm(farm)}}>
+                <Tabs
+                    variant='scrollable'
+                    scrollButtons='auto'
+                    value={props.selectedFarm}
+                    onChange={(e, farm)=>{props.setSelectedFarm(farm)}}
+                    sx={{
+                        [`& .${tabsClasses.scrollButtons}`]: {
+                          '&.Mui-disabled': { opacity: 0.3 },
+                        },
+                    }}
+                >
                     <Tab value={null} label="All"/>
                     <Tab value={farms.WH} label="Windmill Hill"/>
                     <Tab value={farms.HC} label="Hartcliffe"/>

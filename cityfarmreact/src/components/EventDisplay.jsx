@@ -15,7 +15,7 @@ import AssociateEnclosure from '../components/AssociateEnclosure';
 const EventDisplay = ({
     selectedEvent, setSelectedEvent,
     modifiedEvent, modifyEvent, setModifiedEvent, setModifiedEventAnimals, setModifiedEventEnclosures, setModifyEvent,
-    newEvent, setNewEvent, setAddEventAnimals, setAddEventEnclosures,
+    newEvent, createEvent, setNewEvent, setAddEventAnimals, setAddEventEnclosures,
     handleAddEvent, handleDelEvent, handlePatchEvent,
     showingTime, functionopenPopup, functionclosePopup,
     openAnimalsPopup, openEnclosurePopup,
@@ -24,7 +24,7 @@ const EventDisplay = ({
     }) => {
 
     return (<>
-        <div style={{flex: 1}}>
+        <div>
             { selectedEvent !== "" ?
                 <>
                     <div style={{display: "flex", justifyContent: "space-between"}}>
@@ -142,6 +142,7 @@ const EventDisplay = ({
                 </>
                 :
                 <>
+                {createEvent && <>
                     <h2 className='boxTitle'>Create New Event</h2>
                     <div>
                         <TextField
@@ -157,9 +158,11 @@ const EventDisplay = ({
                     </div>
 
                     <div className='smallMarginTop'>
-                        <FormControlLabel control={<Checkbox checked={newEvent.allDay} size='small'/>} label="All Day" onChange={() => changeAllDay(!newEvent.allDay, "add")}/>
-                        <FormControlLabel control={<Checkbox checked={recurring} size='small'/>} label="Recurring" onChange={() => changeRecurring(!recurring, "add")} />
                         <Button variant='contained' style={{float: "right"}} onClick={()=>handleAddEvent()} endIcon={<AddIcon/>}>Create</Button>
+                        <FormGroup>
+                            <FormControlLabel control={<Checkbox checked={newEvent.allDay} size='small'/>} label="All Day" onChange={() => changeAllDay(!newEvent.allDay, "add")}/>
+                            <FormControlLabel control={<Checkbox checked={recurring} size='small'/>} label="Recurring" onChange={() => changeRecurring(!recurring, "add")} />
+                        </FormGroup>
                     </div>
                     {recurring && (
                     <div className='smallMarginTop'>
@@ -226,7 +229,7 @@ const EventDisplay = ({
                             onChange={(e) => {setNewEvent({...newEvent, description: e.target.value})}}
                         />
                     </div>
-                </>}
+            </>}</>}
         </div>
     </>)
 }
