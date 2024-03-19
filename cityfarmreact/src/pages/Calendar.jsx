@@ -369,6 +369,7 @@ const Calendar = ({farms, device}) => {
                 </>}
             >
             <ConditionalWrapper
+            // only wrap in paper background when not as a dialog
                 condition={device !== 'mobile'}
                 wrapper={children =>
                     <Paper elevation={3} style={{height: '48px', marginTop: '21.44px', padding: '6px 0 0 10px', width: '400px'}}>
@@ -384,6 +385,7 @@ const Calendar = ({farms, device}) => {
             </ConditionalWrapper>
         </div>
         <div style={{ display: "flex", justifyContent: "left", height: "calc(100% - 91px)"}}>
+            {/*
             <ConditionalWrapper
             // wrap the calendar in paper component with space on the right for create event if the viewport is sufficiently wide
                 condition={device === 'desktopLarge'}
@@ -393,7 +395,7 @@ const Calendar = ({farms, device}) => {
                     </Paper>}
             >
             <ConditionalWrapper
-            // wrap the calendar in paper component without space on the right
+            // wrap the calendar in paper component without space on the right if medium sized screen
                 condition={device === 'desktopSmall'}
                 wrapper={children => 
                     <Paper elevation={3} style={{height: '100%', width: '100%', padding: '15px'}}>
@@ -401,6 +403,7 @@ const Calendar = ({farms, device}) => {
                     </Paper>
                 }
             >
+            */}
                 <BigCalendar
                     culture='en-gb'
                     localizer={dayjsLocalizer(dayjs)}
@@ -413,15 +416,17 @@ const Calendar = ({farms, device}) => {
                     eventPropGetter={eventStyleGetter}
                     onRangeChange={onRangeChange}
                 />
+            {/*
             </ConditionalWrapper>
+            </ConditionalWrapper>
+            */}
 
-            </ConditionalWrapper>
             {/* wrap selected event / create event in a dialog when screen is small */}
             <ConditionalWrapper
                     condition={device !== 'desktopLarge'}
                     wrapper={children => <>
                         <Dialog open={selectedEvent !== '' || createEvent} onClose={() => {setSelectedEvent(''); setCreateEvent(false); setModifyEvent(false);}}>
-                        <DialogContent sx={{width: '400px'}}>
+                        <DialogContent>
                             {children}
                         </DialogContent>
                         </Dialog>
@@ -429,13 +434,21 @@ const Calendar = ({farms, device}) => {
             >
             <div style={{flex: 1}}>
             { selectedEvent !== "" ?
-                <Paper elevation={3} style={{padding: '10px'}}>
+                <ConditionalWrapper
+                // wrap selectedEvent in paper when displayed alongside calendar
+                    condition={device === 'desktopLarge'}
+                    wrapper={children => 
+                        <Paper elevation={3} style={{padding: '10px'}}>
+                            {children}
+                        </Paper>
+                    }
+                >
                     <div style={{display: "flex", justifyContent: "space-between"}}>
                         <h2 className='boxTitle'>Selected Event</h2>
-                        <span>
-                            {!modifyEvent && <IconButton onClick={()=>{setModifyEvent(true)}}><EditIcon/></IconButton>}
-                            <IconButton onClick={() => handleDelEvent()}><Delete/></IconButton>
-                            <IconButton onClick={() => {setModifyEvent(false); setSelectedEvent("")}}><Close/></IconButton>
+                        <span style={{display: 'flex', justifyContent: 'right'}}>
+                            {!modifyEvent && <IconButton sx={{height: '40px'}} onClick={()=>{setModifyEvent(true)}}><EditIcon/></IconButton>}
+                            <IconButton sx={{height: '40px'}} onClick={() => handleDelEvent()}><Delete/></IconButton>
+                            <IconButton sx={{height: '40px'}} onClick={() => {setModifyEvent(false); setSelectedEvent("")}}><Close/></IconButton>
                         </span>
                     </div>
                     {!modifyEvent ?
@@ -486,7 +499,7 @@ const Calendar = ({farms, device}) => {
                         />
                         {showingTime(!modifiedEvent.allDay,"modify")}
                         <div style={{marginTop: "10px"}}>
-                            <FormControlLabel control={<Checkbox defaultChecked={selectedEvent.allDay} size='small'/>} label="All Day" onChange={(e) => {changeAllDay(!modifiedEvent.allDay, "modify")}}/>
+                            <FormControlLabel control={<Checkbox checked={modifiedEvent.allDay} size='small'/>} label="All Day" onChange={(e) => {changeAllDay(!modifiedEvent.allDay, "modify")}}/>
                             <ButtonGroup style={{float: 'right'}}>
                                 <Button variant='contained' color='warning' onClick={()=>{setModifyEvent(false)}}>Discard</Button>
                                 <Button variant='contained' color='success' onClick={()=>{handlePatchEvent()}}>Update</Button>
@@ -542,9 +555,17 @@ const Calendar = ({farms, device}) => {
                             />
                         </div>
                     </div>}
-                </Paper>
+                </ConditionalWrapper>
                 :
-                <Paper elevation={3} style={{padding: '10px'}}>
+                <ConditionalWrapper
+                // wrap createEvent in paper when displayed alongside calendar
+                    condition={device === 'desktopLarge'}
+                    wrapper={children => 
+                        <Paper elevation={3} style={{padding: '10px'}}>
+                            {children}
+                        </Paper>
+                    }
+                >
                     <h2 className='boxTitle'>Create New Event</h2>
                     <div>
                         <TextField
@@ -582,9 +603,9 @@ const Calendar = ({farms, device}) => {
                     <div className='smallMarginTop'>
                         <h3>Farms</h3>
                         <FormGroup>
-                            <FormControlLabel control={<Checkbox color={farms.WH} size='small'/>} label="Windmill Hill" onChange={() => setNewEvent({...newEvent, farms: newEvent.farms.includes(farms.WH) ? newEvent.farms.filter((farm) => farm !== farms.WH) : newEvent.farms.concat(farms.WH)})}/>
-                            <FormControlLabel control={<Checkbox color={farms.HC} size='small'/>} label="Hartcliffe" onChange={()=>setNewEvent({...newEvent, farms: newEvent.farms.includes(farms.HC) ? newEvent.farms.filter((farm) => farm !== farms.HC) : newEvent.farms.concat(farms.HC)})}/>
-                            <FormControlLabel control={<Checkbox color={farms.SW} size='small'/>} label="St Werburghs" onChange={()=>setNewEvent({...newEvent, farms: newEvent.farms.includes(farms.SW) ? newEvent.farms.filter((farm) => farm !== farms.SW) : newEvent.farms.concat(farms.SW)})}/>
+                            <FormControlLabel control={<Checkbox checked={newEvent.farms.includes(farms.WH)} color={farms.WH} size='small'/>} label="Windmill Hill" onChange={() => setNewEvent({...newEvent, farms: newEvent.farms.includes(farms.WH) ? newEvent.farms.filter((farm) => farm !== farms.WH) : newEvent.farms.concat(farms.WH)})}/>
+                            <FormControlLabel control={<Checkbox checked={newEvent.farms.includes(farms.HC)} color={farms.HC} size='small'/>} label="Hartcliffe" onChange={()=>setNewEvent({...newEvent, farms: newEvent.farms.includes(farms.HC) ? newEvent.farms.filter((farm) => farm !== farms.HC) : newEvent.farms.concat(farms.HC)})}/>
+                            <FormControlLabel control={<Checkbox checked={newEvent.farms.includes(farms.SW)} color={farms.SW} size='small'/>} label="St Werburghs" onChange={()=>setNewEvent({...newEvent, farms: newEvent.farms.includes(farms.SW) ? newEvent.farms.filter((farm) => farm !== farms.SW) : newEvent.farms.concat(farms.SW)})}/>
                         </FormGroup>
                     </div>
                     <div>
@@ -629,12 +650,12 @@ const Calendar = ({farms, device}) => {
                             onChange={(e) => {setNewEvent({...newEvent, description: e.target.value})}}
                         />
                     </div>
-                </Paper>}
+                </ConditionalWrapper>}
             </div>
             </ConditionalWrapper>
         </div>
         {device !== 'desktopLarge' && <Fab style={{position: 'absolute', bottom: '15px', right: '15px'}} color='primary' onClick={() => setCreateEvent(true)}><AddIcon/></Fab>}
-        <Backdrop style={{zIndex: '4', background: '#000000AA'}} open={showErr} onClick={() => setShowErr(false)}>
+        <Backdrop style={{zIndex: '1301', background: '#000000AA'}} open={showErr} onClick={() => setShowErr(false)}>
             <Alert severity='warning'>
                 Please ensure event title is not empty
             </Alert>
