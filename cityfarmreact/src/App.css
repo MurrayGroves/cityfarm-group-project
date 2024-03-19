@@ -1,5 +1,24 @@
 :root {
+  --device: desktopLarge;
   --nav-width: 150px;
+}
+
+/* Hide sidebar for small screens */
+@media screen and (max-width: 700px) {
+  :root {
+    --device: mobile;
+    --nav-width: 0px;
+  }
+  .Content h1 {
+    margin-left: 80px;
+  }
+}
+
+@media screen and (min-width: 700px) and (max-width: 1250px) {
+  :root {
+    --device: desktopSmall;
+    --nav-width: 150px;
+  }
 }
 
 .App {
@@ -18,10 +37,28 @@
   padding: 0 20px 20px 20px;
 }
 
+a {
+  color: var(--colour);
+  text-decoration: none;
+  transition: 0.3s;
+}
 
-/* Hide sidebar for small screens */
-@media screen and (max-width: 700px) {
-  :root {
-    --nav-width: 0;
-  }
+a:hover {
+  color: #888888;
+}
+
+h2 {
+  margin-top: 20px;
+}
+
+h4 {
+  margin: 0;
+}
+
+h3 {
+  margin-bottom: 10px;
+}
+
+p {
+  margin: 5px 0;
 }

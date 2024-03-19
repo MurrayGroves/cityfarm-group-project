@@ -9,6 +9,7 @@ import Switch from '@mui/material/Switch';
 import QuestionPopover from "./QuestionPopover";
 import Drawer from '@mui/material/Drawer';
 import Fab from '@mui/material/Fab';
+import MenuIcon from '@mui/icons-material/Menu';
 
 const NavBar = (props) => {
     const navigate = useNavigate();
@@ -19,24 +20,17 @@ const NavBar = (props) => {
         setDrawerOpen(value);
     }
 
-    // only changes between permanent and temporary drawers on page load
-
-    var navWidth = getComputedStyle(document.documentElement).getPropertyValue('--nav-width');
-    navWidth = navWidth.slice(0, navWidth.length - 2);
-
     return(<>
-        <Fab onClick={() => toggleDrawer(true)}>Open</Fab>
+        {props.device === 'mobile' && <Fab sx={{m: 2}} color='primary' onClick={() => toggleDrawer(true)}><MenuIcon/></Fab>}
         <Drawer
-            variant={navWidth > 0 ? 'permanent' : 'temporary'}
+            variant={props.device.slice(0, 7) === 'desktop' ? 'permanent' : 'temporary'}
             anchor='left'
             PaperProps={{className: 'sidebar'}}
             open={drawerOpen}
             onClose={() => toggleDrawer(false)}
             sx={{
-                width: navWidth,
                 flexShrink: 0,
                 '& .MuiDrawer-paper': {
-                    width: navWidth,
                     boxSizing: 'border-box',
                     backgroundColor: '#000028',
                     width: '150px',

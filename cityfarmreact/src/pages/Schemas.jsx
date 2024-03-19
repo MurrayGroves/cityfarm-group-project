@@ -248,7 +248,7 @@ const Schemas = () => {
                 setSearchTerm(e.target.value);
             }}
         />
-        <Grid container spacing={3} columns={{xs: 1, md: 2}}>
+        <Grid container spacing={3} columns={{xs: 1, lg: 2}}>
             {schemaList.map((schema) => (
                 <Grid item xs={1} key={schema._name}>
                     <div className="schema-card">

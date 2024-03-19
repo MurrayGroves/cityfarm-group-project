@@ -74,6 +74,9 @@ const App = () => {
     
     const [theme, setTheme] = usePersistState('light', 'theme');
     const [msal, setMsal] = useState(null);
+    const [device, setDevice] = useState('');
+
+    useEffect(() => setDevice(getComputedStyle(document.documentElement).getPropertyValue('--device')), [])
 
     const msalConfig = {
         auth: {
@@ -99,6 +102,9 @@ const App = () => {
         return;
     }
 
+    // when window is resized, check if width thresholds have changed
+    window.addEventListener("resize", () => setDevice(getComputedStyle(document.documentElement).getPropertyValue('--device')));
+
     return (
         <ThemeProvider theme={theme === 'dark' ? darkTheme : lightTheme}>
         <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={'en-gb'}>
@@ -107,11 +113,11 @@ const App = () => {
             <Routes>
                 <Route path="/login" element={<Login msal={msal} setMsal={setMsal} />}/>
                 <Route exact path="*" element={<>
-                    <NavBar theme={theme} setTheme={setTheme} msal={msal}/>
+                    <NavBar theme={theme} setTheme={setTheme} msal={msal} device={device}/>
                     <div className='Content'>
                         <Routes>
                             <Route path="/" element={<Home farms={farms}/>}/>
-                            <Route path="/calendar" element={<Calendar farms={farms}/>}/>
+                            <Route path="/calendar" element={<Calendar farms={farms} device={device}/>}/>
                             <Route path="/animals" element={<AnimalTable farms={farms}/>}/>
                             <Route path="/enclosures" element={<EnclosureTable farms={farms}/>}/>
                             <Route path="/schemas" element={<Schemas farms={farms}/>}/>

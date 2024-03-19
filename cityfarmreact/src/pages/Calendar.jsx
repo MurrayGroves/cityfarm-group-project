@@ -9,7 +9,7 @@ import AnimalPopover from "../components/AnimalPopover";
 import Close from '@mui/icons-material/Close';
 import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
-import {  DialogActions, DialogContent, DialogContentText, DialogTitle, ToggleButton, ToggleButtonGroup } from "@mui/material";
+import {  DialogActions, DialogContent, DialogContentText, DialogTitle, Fab, ToggleButton, ToggleButtonGroup } from "@mui/material";
 import { IconButton, Button, ButtonGroup, Checkbox, FormControlLabel, FormGroup, useTheme, Dialog, FormHelperText, Backdrop, Alert } from '@mui/material';
 import AlertTitle from '@mui/material/AlertTitle';
 import EditIcon from '@mui/icons-material/Edit';
@@ -22,6 +22,7 @@ import axios from '../api/axiosConfig'
 import AssociateEnclosure from '../components/AssociateEnclosure';
 
 import { getConfig } from '../api/getToken';
+import { FilterAlt } from '@mui/icons-material';
 
 export const eventsConversion=(events)=>{
     let changed=[]
@@ -43,7 +44,7 @@ export const eventsConversion=(events)=>{
     return changed
 }
 
-const Calendar = ({farms}) => {
+const Calendar = ({farms, device}) => {
   
     const token = getConfig();
     const theme = useTheme().palette;
@@ -79,7 +80,6 @@ const Calendar = ({farms}) => {
 
     useEffect(() => {
         setInputErr({...inputErr, newTitle: newEvent.title === ''});
-        console.log(newEvent);
     }, [newEvent]);
 
     useEffect(() =>{
@@ -292,6 +292,7 @@ const Calendar = ({farms}) => {
     }
     const [anchor, setAnchor] = React.useState(null);
     const [openAnimalsPopup, setOpenAnimalsPopup] = useState(false)
+    const [openEnclosurePopup, setOpenEnclosurePopup] = useState(false);
 
     const functionopenPopup = (type) => { 
          if (type === "animals") {setOpenAnimalsPopup(true)} else {setOpenEnclosurePopup(true)}
@@ -341,7 +342,8 @@ const Calendar = ({farms}) => {
         }
     }, [])
   
-    const [openEnclosurePopup, setOpenEnclosurePopup] = useState(false);
+    const [createEvent, setCreateEvent] = useState(false);
+    const [filter, setFilter] = useState(false);
 
     let dayColour = theme.mode === 'dark' ? '#121212': '#fff'
     let offRangeColour = theme.mode === 'dark' ? '#ffffff08' : '#f0f0f0';
@@ -349,35 +351,85 @@ const Calendar = ({farms}) => {
     let textColour = theme.mode === 'dark' ? 'white' : 'black';
     let headerColour = theme.mode === 'dark' ? theme.primary.veryDark : theme.primary.light;
 
+    const ConditionalWrapper = ({condition, wrapper, children}) => condition ? wrapper(children) : children;
+
     return (<>
         <div style={{display: 'flex', justifyContent: 'space-between'}}>
             <h1>Calendar</h1>
-            <Paper elevation={3} style={{height: '48px', marginTop: '21.44px', padding: '6px 0 0 10px', width: '400px'}}>
-                <FormGroup row>
-                    <FormControlLabel control={<Checkbox defaultChecked color={farms.WH} size='small'/>} label="Windmill Hill" onChange={() => updateVisibleFarms(farms.WH)}/>
-                    <FormControlLabel control={<Checkbox defaultChecked color={farms.HC} size='small'/>} label="Hartcliffe" onChange={() => updateVisibleFarms(farms.HC)}/>
-                    <FormControlLabel control={<Checkbox defaultChecked color={farms.SW} size='small'/>} label="St Werburghs" onChange={() => updateVisibleFarms(farms.SW)}/>
+            <ConditionalWrapper
+            // wrap filters in dialog and button when on mobile
+                condition={device === 'mobile'}
+                wrapper={children => <>
+                    <Button variant='contained' sx={{height: '40px', mt: '24px'}} label='Filter' onClick={() => setFilter(true)} endIcon={<FilterAlt/>}>Filter</Button>
+                    <Dialog open={filter} onClose={() => setFilter(false)}>
+                    <DialogContent>
+                        {children}
+                    </DialogContent>
+                    </Dialog>
+                </>}
+            >
+            <ConditionalWrapper
+                condition={device !== 'mobile'}
+                wrapper={children =>
+                    <Paper elevation={3} style={{height: '48px', marginTop: '21.44px', padding: '6px 0 0 10px', width: '400px'}}>
+                        {children}
+                    </Paper>}
+            >
+                <FormGroup row={device !== 'mobile'}>
+                    <FormControlLabel control={<Checkbox checked={visibleFarms.includes(farms.WH)} color={farms.WH} size='small'/>} label="Windmill Hill" onChange={() => updateVisibleFarms(farms.WH)}/>
+                    <FormControlLabel control={<Checkbox checked={visibleFarms.includes(farms.HC)} color={farms.HC} size='small'/>} label="Hartcliffe" onChange={() => updateVisibleFarms(farms.HC)}/>
+                    <FormControlLabel control={<Checkbox checked={visibleFarms.includes(farms.SW)} color={farms.SW} size='small'/>} label="St Werburghs" onChange={() => updateVisibleFarms(farms.SW)}/>
                 </FormGroup>
-            </Paper>
+            </ConditionalWrapper>
+            </ConditionalWrapper>
         </div>
         <div style={{ display: "flex", justifyContent: "left", height: "calc(100% - 91px)"}}>
-            <Paper elevation={3} style={{height: '100%', width: "calc(100% - 420px)", padding: '15px', marginRight: '20px'}}>
+            <ConditionalWrapper
+            // wrap the calendar in paper component with space on the right for create event if the viewport is sufficiently wide
+                condition={device === 'desktopLarge'}
+                wrapper={children =>
+                    <Paper elevation={3} style={{height: '100%', width: "calc(100% - 420px)", padding: '15px', marginRight: '20px'}}>
+                        {children}
+                    </Paper>}
+            >
+            <ConditionalWrapper
+            // wrap the calendar in paper component without space on the right
+                condition={device === 'desktopSmall'}
+                wrapper={children => 
+                    <Paper elevation={3} style={{height: '100%', width: '100%', padding: '15px'}}>
+                        {children}
+                    </Paper>
+                }
+            >
                 <BigCalendar
                     culture='en-gb'
                     localizer={dayjsLocalizer(dayjs)}
                     events={allEvents}
                     startAccessor="start"
                     endAccessor="end"
-                    style={{'--day': dayColour, '--off-range': offRangeColour, '--today': todayColour, '--text': textColour, '--header': headerColour}}
+                    style={{width: '100%', '--day': dayColour, '--off-range': offRangeColour, '--today': todayColour, '--text': textColour, '--header': headerColour}}
                     showMultiDayTimes
                     onSelectEvent={setSelectedEvent}
                     eventPropGetter={eventStyleGetter}
                     onRangeChange={onRangeChange}
                 />
-            </Paper>
-            <div style={{width: "400px"}}>
-                { selectedEvent !== "" ?
-                <Paper elevation={3} style={{position: 'relative', width: '400px', margin: '0 0 20px 0', padding: '10px'}}>
+            </ConditionalWrapper>
+
+            </ConditionalWrapper>
+            {/* wrap selected event / create event in a dialog when screen is small */}
+            <ConditionalWrapper
+                    condition={device !== 'desktopLarge'}
+                    wrapper={children => <>
+                        <Dialog open={selectedEvent !== '' || createEvent} onClose={() => {setSelectedEvent(''); setCreateEvent(false); setModifyEvent(false);}}>
+                        <DialogContent sx={{width: '400px'}}>
+                            {children}
+                        </DialogContent>
+                        </Dialog>
+                    </>}
+            >
+            <div style={{flex: 1}}>
+            { selectedEvent !== "" ?
+                <Paper elevation={3} style={{padding: '10px'}}>
                     <div style={{display: "flex", justifyContent: "space-between"}}>
                         <h2 className='boxTitle'>Selected Event</h2>
                         <span>
@@ -492,7 +544,7 @@ const Calendar = ({farms}) => {
                     </div>}
                 </Paper>
                 :
-                <Paper elevation={3} style={{width: '400px', margin: '0 0 20px 0', padding: '10px'}}>
+                <Paper elevation={3} style={{padding: '10px'}}>
                     <h2 className='boxTitle'>Create New Event</h2>
                     <div>
                         <TextField
@@ -508,8 +560,8 @@ const Calendar = ({farms}) => {
                     </div>
 
                     <div className='smallMarginTop'>
-                        <FormControlLabel control={<Checkbox defaultChecked size='small'/>} label="All Day" onChange={() => changeAllDay(!newEvent.allDay, "add")}/>
-                        <FormControlLabel control={<Checkbox size='small'/>} label="Recurring" onChange={() => changeRecurring(!recurring, "add")} />
+                        <FormControlLabel control={<Checkbox checked={newEvent.allDay} size='small'/>} label="All Day" onChange={() => changeAllDay(!newEvent.allDay, "add")}/>
+                        <FormControlLabel control={<Checkbox checked={recurring} size='small'/>} label="Recurring" onChange={() => changeRecurring(!recurring, "add")} />
                         <Button variant='contained' style={{float: "right"}} onClick={()=>handleAddEvent()} endIcon={<AddIcon/>}>Create</Button>
                     </div>
                     {recurring && (
@@ -579,7 +631,9 @@ const Calendar = ({farms}) => {
                     </div>
                 </Paper>}
             </div>
+            </ConditionalWrapper>
         </div>
+        {device !== 'desktopLarge' && <Fab style={{position: 'absolute', bottom: '15px', right: '15px'}} color='primary' onClick={() => setCreateEvent(true)}><AddIcon/></Fab>}
         <Backdrop style={{zIndex: '4', background: '#000000AA'}} open={showErr} onClick={() => setShowErr(false)}>
             <Alert severity='warning'>
                 Please ensure event title is not empty
