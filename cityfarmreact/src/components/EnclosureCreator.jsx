@@ -19,6 +19,7 @@ import Autocomplete from '@mui/material/Autocomplete';
 import { getConfig } from '../api/getToken';
 
 import AssociateAnimal from '../components/AssociateAnimal';
+import CapacityChanger from '../components/CapacityChanger';
 import { Unstable_Popup as BasePopup } from '@mui/base/Unstable_Popup';
 import { styled } from '@mui/system';
 import {  DialogActions, DialogContent, DialogContentText, DialogTitle, Dialog } from "@mui/material";
@@ -28,6 +29,7 @@ const EnclosureCreator = (props) => {
     const [create, setCreate] = useState(false);
     const [anchor, setAnchor] = React.useState(null);
     const [openAnimalsPopup ,setOpenAnimalsPopup] = useState(false)
+    const [openCapacitiesPopup ,setOpenCapacitiesPopup] = useState(false)
 
     const token = getConfig();
 
@@ -69,13 +71,13 @@ const EnclosureCreator = (props) => {
                                 <Button variant='outlined' onClick={() => {setOpenAnimalsPopup(true)}}>Add Animals</Button> 
                             </TableCell>
                             <TableCell> {/* Table cell for capacities */}
-                                <Button variant='outlined' >Capacities</Button> 
+                                <Button variant='outlined' onClick={() => {setOpenCapacitiesPopup(true)}}>Capacities</Button> 
                             </TableCell>
                         </TableRow>
                     </TableBody>
                 </Table>
             </TableContainer>
-            <Button className='tallButton' variant='contained' endIcon={<DeleteIcon/>} onClick={() => {reset(); props.setOffset(36.5+20)}}>Discard</Button>
+            <Button className='tallButton' variant='contained' endIcon={<DeleteIcon/>} onClick={() => {reset()}}>Discard</Button>
             </div>
             <div id="AssociateAnimal" style={{textAlign:'center'}}>
                 <Dialog open={openAnimalsPopup} onClose={()=>{setOpenAnimalsPopup(false)}}>
@@ -85,6 +87,17 @@ const EnclosureCreator = (props) => {
                     </DialogContent>
                 </Dialog>
             </div>
+
+                {/* WIP */}
+            {/* <div id="CapacityChanger" style={{textAlign:'center'}}>
+                <Dialog open={openCapacitiesPopup} onClose={()=>{setOpenCapacitiesPopup(false)}}>
+                    <DialogTitle>Capacities</DialogTitle>
+                    <DialogContent>
+                        <CapacityChanger close={()=>setOpenCapacitiesPopup(false)}></CapacityChanger>
+                    </DialogContent>
+                </Dialog>
+            </div> */}
+
             <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '20px'}}>
             <Button
             className='tallButton'
