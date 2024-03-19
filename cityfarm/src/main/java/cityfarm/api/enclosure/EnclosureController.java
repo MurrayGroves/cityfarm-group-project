@@ -1,5 +1,7 @@
 package cityfarm.api.enclosure;
 
+import cityfarm.api.animals.AnimalCustom;
+import cityfarm.api.animals.AnimalRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.ResponseEntity;
@@ -7,6 +9,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -19,19 +22,28 @@ public class EnclosureController {
     EnclosureRepositoryCustom enclosureRepositoryCustom;
 
     @Autowired
+    AnimalRepository animalRepository;
+
+    @Autowired
     MongoTemplate mongoTemplate;
 
     //HttpHeaders responseHeaders = new HttpHeaders();
 
     @PostMapping("/api/enclosures/create")
-    public ResponseEntity<Enclosure> create_enclosure(@RequestBody EnclosureGeneric enclosureReq) {
+    public ResponseEntity<Enclosure> create_enclosure(@RequestBody CreateEnclosureRequest enclosure) {
 
-        Enclosure enclosure = new Enclosure(enclosureReq);
+        List<AnimalCustom> holding = new ArrayList<>();
+        for (String animal: enclosure.holding) {
+            AnimalCustom anm = animalRepository.findAnimalById(animal);
+            holding.add(anm);
+        }
 
-        enclosureRepository.save(enclosure);
+        Enclosure new_enclosure = new Enclosure(enclosure.name, enclosure.capacities, holding, enclosure.notes, enclosure.farm);
 
-        String location = String.format("/enclosures/by_id/%s", enclosure.get_id());
-        return ResponseEntity.created(URI.create(location)).body(enclosure);
+        enclosureRepository.save(new_enclosure);
+
+        String location = String.format("/enclosures/by_id/%s", new_enclosure.get_id());
+        return ResponseEntity.created(URI.create(location)).body(new_enclosure);
     }
 
     @GetMapping("/api/enclosures")

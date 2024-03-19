@@ -24,7 +24,7 @@ import { styled } from '@mui/system';
 import {  DialogActions, DialogContent, DialogContentText, DialogTitle, Dialog } from "@mui/material";
 
 const EnclosureCreator = (props) => {
-    const [newEnclosure, setNewEnclosure] = useState({name: '', holding: [], capacities: {}, notes: '', farm: ''});
+    const [newEnclosure, setNewEnclosure] = useState({name: '', holding: {}, capacities: {}, notes: '', farm: ''});
     const [create, setCreate] = useState(false);
     const [anchor, setAnchor] = React.useState(null);
     const [openAnimalsPopup ,setOpenAnimalsPopup] = useState(false)
@@ -32,12 +32,13 @@ const EnclosureCreator = (props) => {
     const token = getConfig();
 
     const setNewEnclosureAnimals = (animalList) => {
+        console.log(animalList);
         setNewEnclosure({...newEnclosure, holding: animalList})
     }
 
     const reset = () => {
         setCreate(false);
-        setNewEnclosure({name: '', holding: [], capacities: {}, notes: '', farm: ''})
+        setNewEnclosure({name: '', holding: {}, capacities: {}, notes: '', farm: ''})
     }
 
     // useEffect(() => {
@@ -46,14 +47,6 @@ const EnclosureCreator = (props) => {
 
     return (<>
         {create ? <>
-            <div id="AssociateAnimal" style={{textAlign:'center'}}>
-                <Dialog open={openAnimalsPopup} onClose={()=>{setOpenAnimalsPopup(false)}}>
-                    <DialogTitle>Add Animal</DialogTitle>
-                    <DialogContent>
-                        <AssociateAnimal setAnimals={setNewEnclosureAnimals} animals={newEnclosure.holding} close={()=>setOpenAnimalsPopup(false)}></AssociateAnimal>
-                    </DialogContent>
-                </Dialog>
-            </div>
             <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '20px'}}>
             <TableContainer component={Paper} style={{marginRight: '20px'}}>
                 <Table>
@@ -73,7 +66,7 @@ const EnclosureCreator = (props) => {
                                 />
                             </TableCell> 
                             <TableCell> {/* Table cell for animals in enclosure */}
-                                <Button variant='outlined' onClick={() => {setOpenAnimalsPopup(true); console.log("it gets here")}}>Add Animals</Button> 
+                                <Button variant='outlined' onClick={() => {setOpenAnimalsPopup(true)}}>Add Animals</Button> 
                             </TableCell>
                             <TableCell> {/* Table cell for capacities */}
                                 <Button variant='outlined' >Capacities</Button> 
@@ -84,6 +77,14 @@ const EnclosureCreator = (props) => {
             </TableContainer>
             <Button className='tallButton' variant='contained' endIcon={<DeleteIcon/>} onClick={() => {reset(); props.setOffset(36.5+20)}}>Discard</Button>
             </div>
+            <div id="AssociateAnimal" style={{textAlign:'center'}}>
+                <Dialog open={openAnimalsPopup} onClose={()=>{setOpenAnimalsPopup(false)}}>
+                    <DialogTitle>Add Animal</DialogTitle>
+                    <DialogContent>
+                        <AssociateAnimal setAnimals={setNewEnclosureAnimals} animals={newEnclosure.holding} close={()=>setOpenAnimalsPopup(false)}></AssociateAnimal>
+                    </DialogContent>
+                </Dialog>
+            </div>
             <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '20px'}}>
             <Button
             className='tallButton'
@@ -91,6 +92,7 @@ const EnclosureCreator = (props) => {
             aria-label="add"
             endIcon={<AddIcon/>}
             onClick={() => {
+                //console.log(newEnclosure)
                 (async () => {
                     try {
                         await axios.post(`/enclosures/create`, newEnclosure, token)
