@@ -16,6 +16,7 @@ import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
+import { getConfig } from '../api/getToken';
 
 import AssociateAnimal from '../components/AssociateAnimal';
 import { Unstable_Popup as BasePopup } from '@mui/base/Unstable_Popup';
@@ -23,10 +24,12 @@ import { styled } from '@mui/system';
 import {  DialogActions, DialogContent, DialogContentText, DialogTitle, Dialog } from "@mui/material";
 
 const EnclosureCreator = (props) => {
-    const [newEnclosure, setNewEnclosure] = useState({name: '', holding: [], capacities: {}});
+    const [newEnclosure, setNewEnclosure] = useState({name: '', holding: [], capacities: {}, notes: '', farm: ''});
     const [create, setCreate] = useState(false);
     const [anchor, setAnchor] = React.useState(null);
     const [openAnimalsPopup ,setOpenAnimalsPopup] = useState(false)
+
+    const token = getConfig();
 
     const setNewEnclosureAnimals = (animalList) => {
         setNewEnclosure({...newEnclosure, holding: animalList})
@@ -34,7 +37,7 @@ const EnclosureCreator = (props) => {
 
     const reset = () => {
         setCreate(false);
-        setNewEnclosure({name: '', holding: [], capacities: {}})
+        setNewEnclosure({name: '', holding: [], capacities: {}, notes: '', farm: ''})
     }
 
     // useEffect(() => {
@@ -43,6 +46,14 @@ const EnclosureCreator = (props) => {
 
     return (<>
         {create ? <>
+            <div id="AssociateAnimal" style={{textAlign:'center'}}>
+                <Dialog open={openAnimalsPopup} onClose={setOpenAnimalsPopup(false)}>
+                    <DialogTitle>Add Animal</DialogTitle>
+                    <DialogContent>
+                        <AssociateAnimal setAnimals={setNewEnclosureAnimals} animals={newEnclosure.holding} close={setOpenAnimalsPopup(false)}></AssociateAnimal>
+                    </DialogContent>
+                </Dialog>
+            </div>
             <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '20px'}}>
             <TableContainer component={Paper} style={{marginRight: '20px'}}>
                 <Table>
@@ -62,15 +73,7 @@ const EnclosureCreator = (props) => {
                                 />
                             </TableCell> 
                             <TableCell> {/* Table cell for animals in enclosure */}
-                                <Button variant='outlined' onClick={() => {setOpenAnimalsPopup(true)}}>Add Animals</Button> 
-                                <div id="AssociateAnimal" style={{textAlign:'center'}}>
-                                    <Dialog open={openAnimalsPopup} onClose={setOpenAnimalsPopup(false)}>
-                                    <DialogTitle>Add Animal</DialogTitle>
-                                    <DialogContent>
-                                    <AssociateAnimal setAnimals={setNewEnclosureAnimals}></AssociateAnimal>
-                                    </DialogContent>
-                                    </Dialog>
-                                </div>
+                                <Button variant='outlined' onClick={() => {setOpenAnimalsPopup(true); console.log("it gets here")}}>Add Animals</Button> 
                             </TableCell>
                             <TableCell> {/* Table cell for capacities */}
                                 <Button variant='outlined' >Capacities</Button> 
@@ -87,17 +90,20 @@ const EnclosureCreator = (props) => {
             variant="contained"
             aria-label="add"
             endIcon={<AddIcon/>}
-            onClick={async() => {
-                try{
-                    await axios.post(`/enclosures/create`, newEnclosure,
-                    { crossdomain: true, headers: {
-                        "Access-Control-Allow-Origin": 'http://localhost:3000',
-                        "Access-Control-Allow-Credentials": true
-                    }})
-                } catch(error) {
-                    window.alert(error);
-                }
-                window.location.reload(false);
+            onClick={() => {
+                (async () => {
+                    try {
+                        await axios.post(`/enclosures/create`, newEnclosure, token)
+                    } catch(error) {
+                        if (error.response.status === 401) {
+                            window.location.href = "/login";
+                            return;
+                        } else {
+                            window.alert(error);
+                        }
+                    }
+                    window.location.reload(false);
+                })()
             }}
             >Create</Button>
             </div>
