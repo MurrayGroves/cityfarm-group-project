@@ -56,7 +56,7 @@ const EnclosureTable = ({farms}) => {
                 }
             }
         })()
-    },[searchTerm, farm, token])
+    },[searchTerm, farm])
 
     const cols =  [
         { field: 'name', editable: true, headerName: 'Name', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },

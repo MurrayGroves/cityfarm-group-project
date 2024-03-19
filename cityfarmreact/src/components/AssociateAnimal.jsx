@@ -45,6 +45,7 @@ const AssociateAnimal = (props) => {
     }
     
     useEffect(() => {
+        console.log("searching for", searchTerm)
         (async () => {
             if (searchTerm === '') {
                 displayAll();

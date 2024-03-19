@@ -47,10 +47,10 @@ const EnclosureCreator = (props) => {
     return (<>
         {create ? <>
             <div id="AssociateAnimal" style={{textAlign:'center'}}>
-                <Dialog open={openAnimalsPopup} onClose={setOpenAnimalsPopup(false)}>
+                <Dialog open={openAnimalsPopup} onClose={()=>{setOpenAnimalsPopup(false)}}>
                     <DialogTitle>Add Animal</DialogTitle>
                     <DialogContent>
-                        <AssociateAnimal setAnimals={setNewEnclosureAnimals} animals={newEnclosure.holding} close={setOpenAnimalsPopup(false)}></AssociateAnimal>
+                        <AssociateAnimal setAnimals={setNewEnclosureAnimals} animals={newEnclosure.holding} close={()=>setOpenAnimalsPopup(false)}></AssociateAnimal>
                     </DialogContent>
                 </Dialog>
             </div>
