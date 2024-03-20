@@ -2,10 +2,13 @@ import Button from "@mui/material/Button";
 import React from "react";
 import axios from "../api/axiosConfig";
 import {getConfig} from "../api/getToken";
+import "./FarmMoveButton.css"
+import {useTheme} from "@mui/material";
 
 const FarmMoveButton = (props) => {
     const token = getConfig();
-
+    const theme = useTheme().palette;
+    let buttonColor = 'primary'
     function farmMove(ids,farm){
         for (let a of ids){
             let animal;
@@ -16,6 +19,7 @@ const FarmMoveButton = (props) => {
                     animal=response.data
                     animal.farm=farm[0]
                     await axios.patch(`/animals/by_id/${a}`, animal, token)
+                    window.location.reload()
 
                 } catch (error) {
 
@@ -33,7 +37,25 @@ const FarmMoveButton = (props) => {
         }
 
     }
-    return <Button onClick={() =>farmMove(props.ids,props.farm)}> Move to {Object.entries(props.farm)[0][1]} </Button>
+
+    switch (props.farm[0]) {
+        case 'WH':
+            buttonColor='WH'
+            break;
+        case 'HC':
+            buttonColor='HC'
+            break;
+        case 'SW':
+            buttonColor='SW'
+            break;
+        default:
+    }
+
+    return (<div className="fButton">
+        <Button onClick={() =>farmMove(props.ids,props.farm)} variant="contained" color={buttonColor}>
+            Move to {Object.entries(props.farm)[0][1]}
+        </Button>
+</div>)
 }
 
 export default FarmMoveButton

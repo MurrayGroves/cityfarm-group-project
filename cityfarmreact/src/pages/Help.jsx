@@ -12,12 +12,14 @@ export const liveData = <>
     This table displays all the animals, each one has 5 main attributes, father, mother, name, type and sex.
     This can be searched by name using the search bar at the top. Each name in the table is clickable and will take you to a single animal viewpage that
     will displays more information about the animl, including further fields and any related events with that animal.{'\n'}
+    To move an animal's fields, select it on the grid and then press the move farm buttons below the table.
     The add animal button adds an animal where you can selected the types from the ones defined in the animal types page and all the fields can be assigned.
 </>
 export const encData = <>
-Every enclosure has animals assigned to it, you can give it specific events which will affect all the animals within it.
+    Every enclosure has animals assigned to it.{/* you can give it specific events which will affect all the animals within it.*/}
 Click on an enclosure to expand it, you can edit them by clicking the edit button then pressing a field.
 </>
+
 export const typeData = <>
     This displays a page to create custom animal types, in case any new animals are to be added,
     once the type name is filled out, any number of properties can be added that pertain to that animal. Once an animal type is added,
@@ -25,8 +27,10 @@ export const typeData = <>
 </>
 export const singleData = <>
     This is the page for viewing a single animal, below you can see the upcoming events pertaining
-    to it as well as more information about it such as tb inoculation status if it's a cow. In order to change what farm this animal belongs to,
-    press the change farm button on the right.
+    to it as well as more information about it such as tb inoculation status if it's a cow.
+    {'\n'}In order to change what farm this animal belongs to,
+    press the change farm button on the right. In order to see more events,
+    click on the text that says linked event, each event name is clickable to see it as a normal selected event.
 </>
 
 const Help = () => {

@@ -536,7 +536,7 @@ const AnimalTable = ({farms, device}) => {
         </Dialog>
         :
         <>{create && <AnimalCreator animalList={animalList} schemaList={schemaList} setOffset={setCreatorOffset} setCreate={setCreate} farms={farms} device={device}/>}</>}
-        <>{
+        <div className="fmButtons">{
             selectedAnimals.length > 0 ? (
                 Object.entries(farms).map((farm) => (
                         <React.Fragment key={farm}>
@@ -544,7 +544,7 @@ const AnimalTable = ({farms, device}) => {
                         </React.Fragment>
                     )))
             :  ''}
-        </>
+        </div>
     </>)
 }
 

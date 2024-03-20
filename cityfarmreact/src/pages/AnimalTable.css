@@ -23,6 +23,11 @@
     color: grey;
 }
 
+.fmButtons{
+    display: flex;
+    flex-direction: row;
+}
+  
 ul {
     padding-left: 5px;
 }
