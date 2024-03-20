@@ -8,6 +8,7 @@ import AnimalPopover from "../components/AnimalPopover";
 import { eventsConversion } from "./Calendar";
 import { useTheme } from "@mui/material";
 import Paper from '@mui/material/Paper';
+import Grid from '@mui/material/Grid';
 
 const Home = ({farms}) => {
     const [events,setEvents] = useState([])
@@ -52,9 +53,10 @@ const Home = ({farms}) => {
         <br/>
         {events.length > 0 && <h2>Upcoming Events</h2>}
         {/*  events are mapped below, same as in selected event with some visual changes*/}
-        <div className="events-container">
+        <Grid container spacing={3} columns={{xs: 1, md: 2, lg: 3, xl: 4 }}>
         {events.map((e, index)=>(
-            <Paper elevation={3} className="event-box" key={index}>
+            <Grid item xs={1} key={index}>
+            <Paper elevation={3} className="event-box">
                 <h2>{e.title}</h2>
                 {
                     e.allDay ?
@@ -88,8 +90,9 @@ const Home = ({farms}) => {
                         {e.description}
                     </div> : <></>}
             </Paper>
+            </Grid>
         ))}
-        </div>
+        </Grid>
     </>)
 }
 export default Home
