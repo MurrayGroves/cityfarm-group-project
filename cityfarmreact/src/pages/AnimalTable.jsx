@@ -3,7 +3,7 @@ import axios from '../api/axiosConfig'
 import FarmTabs from "../components/FarmTabs";
 import AnimalPopover from "../components/AnimalPopover";
 import "./AnimalTable.css";
-import { DataGrid, useGridApiRef } from '@mui/x-data-grid';
+import { DataGrid, useGridApiRef, GridPagination } from '@mui/x-data-grid';
 import TableContainer from '@mui/material/TableContainer';
 import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
@@ -12,10 +12,11 @@ import Switch from '@mui/material/Switch';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-
+import Fab from '@mui/material/Fab';
 import EditIcon from '@mui/icons-material/Edit';
 import DoneIcon from '@mui/icons-material/Done';
 import ClearIcon from '@mui/icons-material/Clear';
+import AddIcon from '@mui/icons-material/Add';
 
 import AnimalCreator from "../components/AnimalCreator";
 
@@ -23,11 +24,11 @@ import { getConfig } from '../api/getToken';
 
 import { Link } from "react-router-dom";
 import { set } from "date-fns";
-import { FormControlLabel, FormGroup, FormControl, FormHelperText, IconButton } from "@mui/material";
+import { FormControlLabel, FormGroup, FormControl, FormHelperText, IconButton, Divider, Grid, Dialog, DialogContent } from "@mui/material";
 import Autocomplete from '@mui/material/Autocomplete';
 import FarmMoveButton from "../components/FarmMoveButton";
 
-const AnimalTable = ({farms}) => {
+const AnimalTable = ({farms, device}) => {
     const [animalList, setAnimalList] = useState([]); /* The State for the list of animals. The initial state is [] */
     const [searchTerm, setSearchTerm] = useState(''); /* The term being searched for in the searchbar */
     const [schemaList, setSchemaList] = useState([]);
@@ -41,7 +42,9 @@ const AnimalTable = ({farms}) => {
     const [modifyAnimal, setModifyAnimal] = useState({});
     const [editingRow, setEditingRow] = useState(null);
 
-    const [selectedAnimals,setSelectedAnimals]=useState([])
+    const [create, setCreate] = useState(false);
+
+    const [selectedAnimals, setSelectedAnimals] = useState([])
     const token = getConfig();
 
     const gridApi = useGridApiRef();
@@ -430,7 +433,7 @@ const AnimalTable = ({farms}) => {
     ];
     const [cols, setCols] = useState(defaultCols);
 
-    const [creatorOffset, setCreatorOffset] = useState(36.5+20);
+    const [creatorOffset, setCreatorOffset] = useState(0);
 
     return(<>
         <h1>Livestock</h1>
@@ -440,14 +443,25 @@ const AnimalTable = ({farms}) => {
                 placeholder='Search'
                 style={{margin: '0 20px 20px 0'}}
                 onChange={(e) => setSearchTerm(e.target.value)}
-            ></TextField>
+            />
             <FarmTabs farms={farms} selectedFarm={farm} setSelectedFarm={setFarm}/>
         </span>
-        <Paper style={{height: `calc(100vh - (210.88px + ${creatorOffset}px))`, marginBottom: '10px'}}>
+        <Paper elevation={3} style={{height: `calc(100vh - (170.88px + ${device === 'desktopLarge' ? creatorOffset : 0}px))`}}>
             <DataGrid editMode="row" apiRef={gridApi} disableRowSelectionOnClick filterModel={filterModel} style={{fontSize: '1rem'}} checkboxSelection
-                      onRowSelectionModelChange={(ids) => {
-                          setSelectedAnimals(ids)}}
-                      columns={[...cols, {
+                slots={{
+                    footer: CustomFooter
+                }}
+                slotProps={{
+                    footer: {
+                        setFilterModel,
+                        selectedSchema,
+                        setSelectedSchema
+                    }
+                }}
+                onRowSelectionModelChange={(ids) => {
+                    setSelectedAnimals(ids)
+                }}
+                columns={[...cols, {
                     field: 'edit',
                     headerName: '',
                     disableColumnMenu: true,
@@ -513,25 +527,40 @@ const AnimalTable = ({farms}) => {
                 }}
             />
         </Paper>
-        <div style={{marginTop: '0', display: 'flex'}}>            
-            <Button variant="contained" onClick={() => {
-                setFilterModel({items: []});
-                setSelectedSchema(null);
-            }}>Clear Filter</Button>
-            {selectedSchema ? <p style={{marginLeft: '15px'}}>Currently filtering to show {selectedSchema._name}s</p> : <></>}
-        </div>
-        <AnimalCreator animalList={animalList} schemaList={schemaList} setOffset={setCreatorOffset} farms={farms}/>
+        <Fab color='primary' sx={{position: 'absolute', top: '16px', right: '16px'}} onClick={() => {setCreate(true); device === 'desktopLarge' && setCreatorOffset(138.8);}}><AddIcon/></Fab>
+        {device === 'mobile' ?
+        <Dialog fullWidth maxWidth='xl' open={create} onClose={() => setCreate(false)}>
+            <DialogContent>
+                <AnimalCreator animalList={animalList} schemaList={schemaList} setOffset={setCreatorOffset} setCreate={setCreate} farms={farms} device={device}/>
+            </DialogContent>
+        </Dialog>
+        :
+        <>{create && <AnimalCreator animalList={animalList} schemaList={schemaList} setOffset={setCreatorOffset} setCreate={setCreate} farms={farms} device={device}/>}</>}
         <>{
             selectedAnimals.length > 0 ? (
                 Object.entries(farms).map((farm) => (
                         <React.Fragment key={farm}>
                             <FarmMoveButton farm={farm} ids={selectedAnimals}/>
                         </React.Fragment>
-                    ))
-                ) :  ''
-        }
-
+                    )))
+            :  ''}
         </>
+    </>)
+}
+
+const CustomFooter = ({setFilterModel, selectedSchema, setSelectedSchema}) => {
+    return (<>
+        <Divider/>
+        <div style={{maxHeight: '56.5px', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+            <span style={{display: 'flex', alignItems: 'center'}}>
+            <Button sx={{minWidth: '125.9px', margin: '10px'}} variant="contained" onClick={() => {
+                setFilterModel({items: []});
+                setSelectedSchema(null);
+            }}>Clear Filter</Button>
+            {selectedSchema ? <p style={{margin: '10px 15px 10px 5px'}}>Showing {selectedSchema._name}s</p> : <></>}
+            </span>
+            <GridPagination/>
+        </div>
     </>)
 }
 

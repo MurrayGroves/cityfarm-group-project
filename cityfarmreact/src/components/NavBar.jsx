@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import './NavBar.css'
 import {Link} from "react-router-dom";
 import Button from '@mui/material/Button';
@@ -7,11 +7,37 @@ import { useNavigate } from "react-router-dom";
 import question from "../assets/question mark.png"
 import Switch from '@mui/material/Switch';
 import QuestionPopover from "./QuestionPopover";
+import Drawer from '@mui/material/Drawer';
+import Fab from '@mui/material/Fab';
+import MenuIcon from '@mui/icons-material/Menu';
 
 const NavBar = (props) => {
     const navigate = useNavigate();
-    return(
-        <div className="sidebar">
+
+    const [drawerOpen, setDrawerOpen] = useState(false);
+
+    const toggleDrawer = (value) => {
+        setDrawerOpen(value);
+    }
+    
+    return(<>
+        {props.device === 'mobile' && <Fab sx={{m: 2}} color='primary' onClick={() => toggleDrawer(true)}><MenuIcon/></Fab>}
+        <Drawer
+            variant={props.device.slice(0, 7) === 'desktop' ? 'permanent' : 'temporary'}
+            anchor='left'
+            PaperProps={{className: 'sidebar'}}
+            open={drawerOpen}
+            onClose={() => toggleDrawer(false)}
+            sx={{
+                flexShrink: 0,
+                '& .MuiDrawer-paper': {
+                    backgroundImage: 'none',
+                    boxSizing: 'border-box',
+                    backgroundColor: '#000028',
+                    width: '150px',
+                },
+              }}
+        >
             <Link to="/"> Home </Link>
             <Link to="/calendar"> Calendar </Link>
             <Link to="/animals"> Livestock </Link>
@@ -33,8 +59,8 @@ const NavBar = (props) => {
                 }}
                 endIcon={<LogoutIcon/>}
             >Logout</Button>
-        </div>
-    )
+        </Drawer>
+    </>)
 }
 
 export default NavBar;
