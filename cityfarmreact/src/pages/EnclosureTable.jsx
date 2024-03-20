@@ -60,16 +60,21 @@ const EnclosureTable = ({farms}) => {
 
     const cols =  [
         { field: 'name', editable: true, headerName: 'Name', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
-        { field: 'holding', headerName: 'Holding', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
+        { field: 'holding', headerName: 'Holding', headerClassName: 'grid-header', headerAlign: 'left', flex: 1, renderCell: (animalList) => {
+            console.log(animalList.value);
+            return (<ul>
+                {animalList.value.map(animal => <li><AnimalPopover key={animal._id} animalID={animal._id}/></li>)}
+                </ul>)
+        }},
         { field: 'capacities', headerName: 'Capacities', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
     ]
+
+    console.log(enclosureList)
 
     const rows = enclosureList.map((enclosure) => ({
         id: enclosure._id,
         name: enclosure.name,
-        holding: enclosure.holding.map((animal) => {
-            return (`${animal.name}`)
-        }),
+        holding: enclosure.holding,
         capacities: Object.keys(enclosure.capacities).map((key) => {
             return (` ${key}: ${enclosure.capacities[key]}`)
         })

@@ -22,3 +22,7 @@
 .table-shadow a:hover {
     color: grey;
 }
+
+ul {
+    padding-left: 5px;
+}
