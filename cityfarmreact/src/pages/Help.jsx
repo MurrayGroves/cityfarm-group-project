@@ -19,6 +19,7 @@ export const encData = <>
     Every enclosure has animals assigned to it.{/* you can give it specific events which will affect all the animals within it.*/}
 Click on an enclosure to expand it, you can edit them by clicking the edit button then pressing a field.
 </>
+
 export const typeData = <>
     This displays a page to create custom animal types, in case any new animals are to be added,
     once the type name is filled out, any number of properties can be added that pertain to that animal. Once an animal type is added,
