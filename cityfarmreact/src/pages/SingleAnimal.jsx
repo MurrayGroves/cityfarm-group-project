@@ -250,7 +250,7 @@ const SingleAnimal = (props) => {
 
 
         <div>
-            {relEvents.length !== 0 ? <h2 onClick={()=>setEventAll(!eventsAll)}>Linked Events</h2> : <></>}
+            {relEvents.length !== 0 ? <h2 onClick={()=>setEventAll(!eventsAll)}>Linked Event, click for more</h2> : <></>}
 
                 <div className="events-container">
                     {!eventsAll ? <>
