@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from '../api/axiosConfig';
 import { getConfig } from '../api/getToken';
-import { Paper } from '@mui/material';
+import { Paper, List, ListItem, Divider, ListItemButton, ListItemIcon, ListItemText, Checkbox } from '@mui/material';
 import { EventPopover } from './EventPopover';
 
 export const FindEvent = (props) => {
@@ -22,6 +22,8 @@ export const FindEvent = (props) => {
         description: "",
         enclosures: []
     });
+    const [anchorEl, setAnchorEl] = useState(null);
+    const [mousedEvent, setMousedEvent] = useState(null);
 
     useEffect(() => {
         let to = new Date();
@@ -47,23 +49,40 @@ export const FindEvent = (props) => {
         return <div>Error: {error.message}</div>;
     }
 
+    console.log("Re-rendering")
+
     return (
         <Paper>
-            <h1>Find Event</h1>
-            <div>
-                {events.map((event) => {
-                    return (
-                        <div key={event.event._id} onClick={() => {
-                            setSelectedEvent(event);
-                            setShowing(true);
-                        }}>
-                            <h2>{event.event.title}</h2>
-                            <p>{event.event.description}</p>
-                        </div>
-                    )
-                })}
-            </div>
-            {showing ? <EventPopover farms={farms} eventID={selectedEvent.event._id} /> : null}
+            <List>
+            {events.map((event) => {
+                return (
+                    <>
+                    <ListItem alignItems="flex-start" style={{'width': '40%', textAlign: 'left'}} key={event.event._id}
+                    onMouseEnter={(e) => {
+                        setMousedEvent(event);
+                        setShowing(true);
+                        setAnchorEl(e.currentTarget);
+                    }}
+                    onMouseLeave={() => {
+                        setShowing(false);
+                        setAnchorEl(null);
+                    }}
+                    >
+                        <ListItemButton onClick={()=>setSelectedEvent(event)} dense style={{flex: '0.1'}}>
+                            <ListItemIcon>
+                                <Checkbox
+                                edge="start"
+                                checked={selectedEvent === event}
+                                />
+                            </ListItemIcon>
+                        </ListItemButton>
+                        <ListItemText style={{flex: '1'}} primary={event.event.title} secondary={new Date(event.event.start).toLocaleDateString()} />
+                    </ListItem>
+                    <Divider component="li"/></>
+                )
+            })}
+            {showing ? <EventPopover anchorEl={anchorEl} farms={farms} eventID={mousedEvent.event._id} /> : null}
+            </List>
         </Paper>
     )
 }

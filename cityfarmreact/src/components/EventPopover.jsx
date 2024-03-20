@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import axios from '../api/axiosConfig';
 import { getConfig } from '../api/getToken';
 
-import { Paper } from '@mui/material';
+import { Paper, Popover } from '@mui/material';
 
 import AnimalPopover from './AnimalPopover';
 
@@ -26,18 +26,31 @@ export const EventPopover = (props) => {
             });
     }, [props.eventID]);
 
-    if (loading) {
-        return <Paper>Loading...</Paper>;
-    }
 
     if (error) {
         return <Paper>Error: {error.message}</Paper>;
     }
 
+    const open = Boolean(props.anchorEl);
+
     return (
-        <Paper>
-            <Paper elevation={3} style={{position: 'relative', width: '400px', margin: '0 0 20px 0', padding: '10px'}}>
-                    <div className='event'>
+        <Popover
+            id="mouse-over-popover"
+            sx={{pointerEvents: 'none', width: '70%'}}
+            anchorEl={props.anchorEl}
+            open={open}
+            anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+            }}
+            transformOrigin={{
+                vertical: 'top',
+                horizontal: 'left',
+            }}
+            disableRestoreFocus
+        >
+            {loading ? <Paper>Loading...</Paper> :
+                    <div className='event' style={{margin: '10%', width: '12vw'}}>
                         <h2 className='noMarginTop'>{event.title}</h2>
                         {
                             event.allDay ?
@@ -71,7 +84,6 @@ export const EventPopover = (props) => {
                             {event.description}
                         </div> : <></>}
                     </div>
-                </Paper>
-        </Paper>
+    }</Popover>
     )
 }
