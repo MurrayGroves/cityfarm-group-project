@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from '../api/axiosConfig';
 import { getConfig } from '../api/getToken';
-import { Paper, List, ListItem, Divider, ListItemButton, ListItemIcon, ListItemText, Checkbox } from '@mui/material';
+import { Paper, List, ListItem, Divider, ListItemButton, ListItemIcon, ListItemText, Checkbox, TextField } from '@mui/material';
 import { EventPopover } from './EventPopover';
 
 export const FindEvent = (props) => {
@@ -12,18 +12,10 @@ export const FindEvent = (props) => {
     const [error, setError] = useState(null);
     const [selectedEvent, setSelectedEvent] = useState(null);
     const [showing, setShowing] = useState(false);
-    const [newEvent, setNewEvent] = useState({
-        title: "",
-        allDay: true,
-        start: new Date(),
-        end: new Date(),
-        farms: [],
-        animals: [],
-        description: "",
-        enclosures: []
-    });
     const [anchorEl, setAnchorEl] = useState(null);
     const [mousedEvent, setMousedEvent] = useState(null);
+    const [search, setSearch] = useState('');
+    const [searchResults, setSearchResults] = useState([]);
 
     useEffect(() => {
         let to = new Date();
@@ -39,6 +31,14 @@ export const FindEvent = (props) => {
             });
     }, []);
 
+    useEffect(() => {
+        if (search === '') {
+            setSearchResults(events);
+        } else {
+            setSearchResults(events.filter((event) => event.event.title.toLowerCase().includes(search.toLowerCase())));
+        }
+    }, [search]);
+
 
 
     if (loading) {
@@ -49,12 +49,11 @@ export const FindEvent = (props) => {
         return <div>Error: {error.message}</div>;
     }
 
-    console.log("Re-rendering")
-
     return (
         <Paper>
+            <TextField label="Search" sx={{marginLeft: '4%'}} size="small" value={search} onChange={(e) => setSearch(e.target.value)}/>
             <List>
-            {events.map((event) => {
+            {searchResults.map((event) => {
                 return (
                     <>
                     <ListItem alignItems="flex-start" style={{'width': '40%', textAlign: 'left'}} key={event.event._id}
