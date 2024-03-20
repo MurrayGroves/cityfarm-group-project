@@ -88,7 +88,6 @@ const AssociateAnimal = (props) => {
             <Paper elevation={3} style={{ marginBottom: '20px'}}>
                 <DataGrid
                     autoHeight
-                    style={{width: '552px'}}
                     checkboxSelection
                     columns={cols}
                     rows={rows}

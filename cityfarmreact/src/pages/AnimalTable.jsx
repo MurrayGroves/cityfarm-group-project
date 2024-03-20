@@ -12,10 +12,11 @@ import Switch from '@mui/material/Switch';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-
+import Fab from '@mui/material/Fab';
 import EditIcon from '@mui/icons-material/Edit';
 import DoneIcon from '@mui/icons-material/Done';
 import ClearIcon from '@mui/icons-material/Clear';
+import AddIcon from '@mui/icons-material/Add';
 
 import AnimalCreator from "../components/AnimalCreator";
 
@@ -23,7 +24,7 @@ import { getConfig } from '../api/getToken';
 
 import { Link } from "react-router-dom";
 import { set } from "date-fns";
-import { FormControlLabel, FormGroup, FormControl, FormHelperText, IconButton, Divider, Grid } from "@mui/material";
+import { FormControlLabel, FormGroup, FormControl, FormHelperText, IconButton, Divider, Grid, Dialog, DialogContent } from "@mui/material";
 import Autocomplete from '@mui/material/Autocomplete';
 import FarmMoveButton from "../components/FarmMoveButton";
 
@@ -41,7 +42,9 @@ const AnimalTable = ({farms, device}) => {
     const [modifyAnimal, setModifyAnimal] = useState({});
     const [editingRow, setEditingRow] = useState(null);
 
-    const [selectedAnimals,setSelectedAnimals]=useState([])
+    const [create, setCreate] = useState(false);
+
+    const [selectedAnimals, setSelectedAnimals] = useState([])
     const token = getConfig();
 
     const gridApi = useGridApiRef();
@@ -524,7 +527,15 @@ const AnimalTable = ({farms, device}) => {
                 }}
             />
         </Paper>
-        <AnimalCreator animalList={animalList} schemaList={schemaList} setOffset={setCreatorOffset} farms={farms} device={device}/>
+        <Fab color='primary' sx={{position: 'absolute', top: '16px', right: '16px'}} onClick={() => {setCreate(true); device === 'desktopLarge' && setCreatorOffset(138.8);}}><AddIcon/></Fab>
+        {device === 'mobile' ?
+        <Dialog fullWidth maxWidth='xl' open={create} onClose={() => setCreate(false)}>
+            <DialogContent>
+                <AnimalCreator animalList={animalList} schemaList={schemaList} setOffset={setCreatorOffset} setCreate={setCreate} farms={farms} device={device}/>
+            </DialogContent>
+        </Dialog>
+        :
+        <>{create && <AnimalCreator animalList={animalList} schemaList={schemaList} setOffset={setCreatorOffset} setCreate={setCreate} farms={farms} device={device}/>}</>}
         <>{
             selectedAnimals.length > 0 ? (
                 Object.entries(farms).map((farm) => (

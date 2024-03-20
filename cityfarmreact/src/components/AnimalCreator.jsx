@@ -8,7 +8,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import { FormHelperText, IconButton, Select, Backdrop, Alert, Fab } from "@mui/material";
+import { FormHelperText, Select, Backdrop, Alert } from "@mui/material";
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Button from '@mui/material/Button';
@@ -23,14 +23,13 @@ const AnimalCreator = (props) => {
     const [newAnimal, setNewAnimal] = useState({name: '', type: '', father: '', mother: '', sex: '', alive: true, farm: '', fields: {}, notes: ''});
     const [schema, setSchema] = useState();
     const [fieldList, setFieldList] = useState([]);
-    const [create, setCreate] = useState(false);
     const [inputErr, setInputErr] = useState({});
     const [showErr, setShowErr] = useState(false);
 
     const token = getConfig();
 
     const reset = () => {
-        setCreate(false);
+        props.setCreate(false);
         setNewAnimal({name: '', type: '', father: '', mother: '', sex: '', alive: true, farm: '', fields: {}, notes: ''})
         setInputErr({name: true, type: true, sex: true});
         setSchema();
@@ -141,198 +140,195 @@ const AnimalCreator = (props) => {
     }
 
     return (<>
-        {create ? <>
-            <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: schema ? '10px' : '0', marginTop: '10px'}}>
-            <Paper sx={{width: '100%', marginRight: '10px'}} elevation={3}>
-            <TableContainer>
-                <Table>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell width='16.7%'>Name</TableCell>
-                            <TableCell width='16.7%'>Type</TableCell>
-                            <TableCell width='16.7%'>Father</TableCell>
-                            <TableCell width='16.7%'>Mother</TableCell>
-                            <TableCell width='16.6%'>Sex</TableCell>
-                            <TableCell width='16.6%'>Farm</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        <TableRow>
-                            <TableCell sx={{borderBottom: 'none'}}>
-                                <TextField
-                                    fullWidth
-                                    error={newAnimal.name === ''}
-                                    required
-                                    size='small'
-                                    value={newAnimal.name}
-                                    onChange={(e)=>{
-                                        setNewAnimal({...newAnimal, name: e.target.value});
-                                    }}
-                                    label='Name'/>
-                            </TableCell>
-                            <TableCell sx={{borderBottom: 'none'}}>
-                                <Autocomplete
-                                    renderOption={(props, option) => {
-                                        return (
-                                            <li {...props} key={option._name}>
-                                                {option._name}
-                                            </li>
-                                        );
-                                    }}
-                                    isOptionEqualToValue={(option, value) => option._name === value._name}
-                                    renderInput={(params) => <TextField {...params} fullWidth error={newAnimal.type === ''} required size='small' label="Type"/>}
-                                    getOptionLabel={option => option._name}
-                                    options={props.schemaList}
-                                    onChange={(e, v) => {
-                                        if(v) {
-                                            setNewAnimal({...newAnimal, type: v._name, fields: {}});
-                                            let tempSchema = props.schemaList.filter((schema) => schema._name === v._name).pop();
-                                            setSchema(tempSchema);
-                                            props.setOffset(138.8+152.5+10);
-                                            setFieldList(Object.keys(tempSchema._fields));
-                                        } else {
-                                            setNewAnimal({...newAnimal, type: '', fields: {}, notes: ''});
-                                            setSchema();
-                                            props.setOffset(138.8);
-                                            setFieldList([]);
-                                            setInputErr({});
-                                        }}}
-                                />
-                            </TableCell>
-                            <TableCell sx={{borderBottom: 'none'}}>
-                                <Autocomplete
-                                    renderOption={(props, option) => {
-                                        return (
-                                            <li {...props} key={option.id}>
-                                                {option.name}
-                                            </li>
-                                        );
-                                    }}
-                                    renderInput={(params) => <TextField {...params} fullWidth required={false} size='small' label="Father"/>}
-                                    isOptionEqualToValue={(option, value) => option.id === value.id}
-                                    getOptionLabel={option => option.name}
-                                    options={
-                                        props.animalList.filter((animal)=>{return animal.type === newAnimal.type && animal.sex === 'm'}).map((animal)=>{
-                                            return {id: animal._id, name: animal.name}
-                                        })
-                                    }
-                                    onChange={(e, v) => {
-                                        v ? setNewAnimal({...newAnimal, father: v.id}) : setNewAnimal({...newAnimal, father: ''});
-                                    }}
-                                />
-                            </TableCell>
-                            <TableCell sx={{borderBottom: 'none'}}>
-                                <Autocomplete
-                                    renderOption={(props, option) => {
-                                        return (
-                                            <li {...props} key={option.id}>
-                                                {option.name}
-                                            </li>
-                                        );
-                                    }}
-                                    renderInput={(params) => <TextField {...params} fullWidth required={false} size='small' label="Mother"/>}
-                                    isOptionEqualToValue={(option, value) => option.id === value.id}
-                                    getOptionLabel={option => option.name}
-                                    options={
-                                        props.animalList.filter((animal)=>{return animal.type === newAnimal.type && animal.sex === 'f'}).map((animal)=>{
-                                            return {id: animal._id, name: animal.name}
-                                        })
-                                    }
-                                    onChange={(e, v) => {
-                                        v ? setNewAnimal({...newAnimal, mother: v.id}) : setNewAnimal({...newAnimal, mother: ''})
-                                    }}
-                                />
-                            </TableCell>
-                            <TableCell sx={{borderBottom: 'none'}}>
-                                <TextField
-                                    select
-                                    fullWidth
-                                    error={newAnimal.sex === ''}
-                                    required
-                                    label='Sex'
-                                    value={newAnimal.sex}
-                                    size='small'
-                                    onChange={(e) => {
-                                        setNewAnimal({...newAnimal, sex: e.target.value});
-                                    }}
-                                >
-                                    <MenuItem value={'f'}>Female</MenuItem>  
-                                    <MenuItem value={'m'}>Male</MenuItem>
-                                    <MenuItem value={'c'}>Castrated</MenuItem>
-                                </TextField>
-                            </TableCell>
-                            <TableCell sx={{borderBottom: 'none'}}>
-                                <TextField select fullWidth label='Farm' value={newAnimal.farm} size='small' onChange={(e) => {setNewAnimal({...newAnimal, farm: e.target.value})}}>
-                                    <MenuItem value={''}><em>Empty</em></MenuItem>
-                                    <MenuItem value={props.farms.WH}>Windmill Hill</MenuItem>
-                                    <MenuItem value={props.farms.HC}>Hartcliffe</MenuItem>
-                                    <MenuItem value={props.farms.SW}>St Werburghs</MenuItem>
-                                </TextField>
-                            </TableCell>
-                        </TableRow>
-                    </TableBody>
-                </Table>
-            </TableContainer>
-            </Paper>
-            <Button className='tallButton' variant='contained' color='warning' endIcon={<DeleteIcon/>} onClick={() => {reset()}}>Discard</Button>
-            </div>
-            {schema ?
-            <div style={{display: 'flex', justifyContent: 'space-between'}}>
-            <Paper sx={{width: '100%', marginRight: '10px'}} elevation={3}>
-            <TableContainer>
-                <Table>
-                    <TableHead>
-                        <TableRow>
-                            {Object.keys(schema._fields).map((field, index) => {
-                                return (
-                                <TableCell key={index} style={{width: `${100/(Object.keys(schema._fields).length + 1)}%`}}>{field.charAt(0).toUpperCase() + field.slice(1)}</TableCell>
-                                );
-                            })}
-                            <TableCell style={{width: `${100/(Object.keys(schema._fields).length + 1)}%`}}>Notes</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        <TableRow>
-                            {Object.keys(schema._fields).map((_, index) => {
-                                return (
-                                    <TableCell sx={{borderBottom: 'none'}} key={index}>{fieldList ? fieldTypeSwitch(index) : <p>Loading...</p>}</TableCell>
-                                );
-                            })}
-                            <TableCell sx={{borderBottom: 'none'}}><TextField size='small' multiline placeholder='Add notes...' fullWidth rows={2} onChange={(e) => {setNewAnimal({...newAnimal, notes: e.target.value})}}/></TableCell>
-                        </TableRow>
-                    </TableBody>
-                </Table>
-            </TableContainer>
-            </Paper>
-            <Button
-                className='tallButton'
-                variant="contained"
-                aria-label="add"
-                color='success'
-                endIcon={<AddIcon/>}
-                onClick={() => {
-                    if (Object.values(inputErr).filter((err) => err === true).length > 0) {
-                        return setShowErr(true);
-                    }
-                    (async () => {
-                        try {
-                            await axios.post(`/animals/create`, newAnimal, token)
-                        } catch(error) {
-                            if (error.response.status === 401) {
-                                window.location.href = "/login";
-                                return;
-                            } else {
-                                window.alert(error);
-                            }
+        <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: schema ? '10px' : '0', marginTop: '10px'}}>
+        <Paper sx={{width: '100%', marginRight: '10px'}} elevation={3}>
+        <TableContainer>
+            <Table>
+                <TableHead>
+                    <TableRow>
+                        <TableCell width='16.7%'>Name</TableCell>
+                        <TableCell width='16.7%'>Type</TableCell>
+                        <TableCell width='16.7%'>Father</TableCell>
+                        <TableCell width='16.7%'>Mother</TableCell>
+                        <TableCell width='16.6%'>Sex</TableCell>
+                        <TableCell width='16.6%'>Farm</TableCell>
+                    </TableRow>
+                </TableHead>
+                <TableBody>
+                    <TableRow>
+                        <TableCell sx={{borderBottom: 'none'}}>
+                            <TextField
+                                fullWidth
+                                error={newAnimal.name === ''}
+                                required
+                                size='small'
+                                value={newAnimal.name}
+                                onChange={(e)=>{
+                                    setNewAnimal({...newAnimal, name: e.target.value});
+                                }}
+                                label='Name'/>
+                        </TableCell>
+                        <TableCell sx={{borderBottom: 'none'}}>
+                            <Autocomplete
+                                renderOption={(props, option) => {
+                                    return (
+                                        <li {...props} key={option._name}>
+                                            {option._name}
+                                        </li>
+                                    );
+                                }}
+                                isOptionEqualToValue={(option, value) => option._name === value._name}
+                                renderInput={(params) => <TextField {...params} fullWidth error={newAnimal.type === ''} required size='small' label="Type"/>}
+                                getOptionLabel={option => option._name}
+                                options={props.schemaList}
+                                onChange={(e, v) => {
+                                    if(v) {
+                                        setNewAnimal({...newAnimal, type: v._name, fields: {}});
+                                        let tempSchema = props.schemaList.filter((schema) => schema._name === v._name).pop();
+                                        setSchema(tempSchema);
+                                        props.setOffset(138.8+152.5+10);
+                                        setFieldList(Object.keys(tempSchema._fields));
+                                    } else {
+                                        setNewAnimal({...newAnimal, type: '', fields: {}, notes: ''});
+                                        setSchema();
+                                        props.setOffset(138.8);
+                                        setFieldList([]);
+                                        setInputErr({});
+                                    }}}
+                            />
+                        </TableCell>
+                        <TableCell sx={{borderBottom: 'none'}}>
+                            <Autocomplete
+                                renderOption={(props, option) => {
+                                    return (
+                                        <li {...props} key={option.id}>
+                                            {option.name}
+                                        </li>
+                                    );
+                                }}
+                                renderInput={(params) => <TextField {...params} fullWidth required={false} size='small' label="Father"/>}
+                                isOptionEqualToValue={(option, value) => option.id === value.id}
+                                getOptionLabel={option => option.name}
+                                options={
+                                    props.animalList.filter((animal)=>{return animal.type === newAnimal.type && animal.sex === 'm'}).map((animal)=>{
+                                        return {id: animal._id, name: animal.name}
+                                    })
+                                }
+                                onChange={(e, v) => {
+                                    v ? setNewAnimal({...newAnimal, father: v.id}) : setNewAnimal({...newAnimal, father: ''});
+                                }}
+                            />
+                        </TableCell>
+                        <TableCell sx={{borderBottom: 'none'}}>
+                            <Autocomplete
+                                renderOption={(props, option) => {
+                                    return (
+                                        <li {...props} key={option.id}>
+                                            {option.name}
+                                        </li>
+                                    );
+                                }}
+                                renderInput={(params) => <TextField {...params} fullWidth required={false} size='small' label="Mother"/>}
+                                isOptionEqualToValue={(option, value) => option.id === value.id}
+                                getOptionLabel={option => option.name}
+                                options={
+                                    props.animalList.filter((animal)=>{return animal.type === newAnimal.type && animal.sex === 'f'}).map((animal)=>{
+                                        return {id: animal._id, name: animal.name}
+                                    })
+                                }
+                                onChange={(e, v) => {
+                                    v ? setNewAnimal({...newAnimal, mother: v.id}) : setNewAnimal({...newAnimal, mother: ''})
+                                }}
+                            />
+                        </TableCell>
+                        <TableCell sx={{borderBottom: 'none'}}>
+                            <TextField
+                                select
+                                fullWidth
+                                error={newAnimal.sex === ''}
+                                required
+                                label='Sex'
+                                value={newAnimal.sex}
+                                size='small'
+                                onChange={(e) => {
+                                    setNewAnimal({...newAnimal, sex: e.target.value});
+                                }}
+                            >
+                                <MenuItem value={'f'}>Female</MenuItem>  
+                                <MenuItem value={'m'}>Male</MenuItem>
+                                <MenuItem value={'c'}>Castrated</MenuItem>
+                            </TextField>
+                        </TableCell>
+                        <TableCell sx={{borderBottom: 'none'}}>
+                            <TextField select fullWidth label='Farm' value={newAnimal.farm} size='small' onChange={(e) => {setNewAnimal({...newAnimal, farm: e.target.value})}}>
+                                <MenuItem value={''}><em>Empty</em></MenuItem>
+                                <MenuItem value={props.farms.WH}>Windmill Hill</MenuItem>
+                                <MenuItem value={props.farms.HC}>Hartcliffe</MenuItem>
+                                <MenuItem value={props.farms.SW}>St Werburghs</MenuItem>
+                            </TextField>
+                        </TableCell>
+                    </TableRow>
+                </TableBody>
+            </Table>
+        </TableContainer>
+        </Paper>
+        <Button className='tallButton' variant='contained' color='warning' endIcon={<DeleteIcon/>} onClick={() => {reset()}}>Discard</Button>
+        </div>
+        {schema ?
+        <div style={{display: 'flex', justifyContent: 'space-between'}}>
+        <Paper sx={{width: '100%', marginRight: '10px'}} elevation={3}>
+        <TableContainer>
+            <Table>
+                <TableHead>
+                    <TableRow>
+                        {Object.keys(schema._fields).map((field, index) => {
+                            return (
+                            <TableCell key={index} style={{width: `${100/(Object.keys(schema._fields).length + 1)}%`}}>{field.charAt(0).toUpperCase() + field.slice(1)}</TableCell>
+                            );
+                        })}
+                        <TableCell style={{width: `${100/(Object.keys(schema._fields).length + 1)}%`}}>Notes</TableCell>
+                    </TableRow>
+                </TableHead>
+                <TableBody>
+                    <TableRow>
+                        {Object.keys(schema._fields).map((_, index) => {
+                            return (
+                                <TableCell sx={{borderBottom: 'none'}} key={index}>{fieldList ? fieldTypeSwitch(index) : <p>Loading...</p>}</TableCell>
+                            );
+                        })}
+                        <TableCell sx={{borderBottom: 'none'}}><TextField size='small' multiline placeholder='Add notes...' fullWidth rows={2} onChange={(e) => {setNewAnimal({...newAnimal, notes: e.target.value})}}/></TableCell>
+                    </TableRow>
+                </TableBody>
+            </Table>
+        </TableContainer>
+        </Paper>
+        <Button
+            className='tallButton'
+            variant="contained"
+            aria-label="add"
+            color='success'
+            endIcon={<AddIcon/>}
+            onClick={() => {
+                if (Object.values(inputErr).filter((err) => err === true).length > 0) {
+                    return setShowErr(true);
+                }
+                (async () => {
+                    try {
+                        await axios.post(`/animals/create`, newAnimal, token)
+                    } catch(error) {
+                        if (error.response.status === 401) {
+                            window.location.href = "/login";
+                            return;
+                        } else {
+                            window.alert(error);
                         }
-                        window.location.reload(false);
-                    })()
-                }}
-            >Create</Button>
-            </div>
-            : <></>}</>
-        :
-        <Fab color='primary' sx={{position: 'absolute', bottom: '60px', right: '15px'}} onClick={() => {setCreate(true); props.device === 'desktopLarge' && props.setOffset(138.8);}}><AddIcon/></Fab>}
+                    }
+                    window.location.reload(false);
+                })()
+            }}
+        >Create</Button>
+        </div>
+        : <></>}
         <Backdrop style={{zIndex: '4', background: '#000000AA'}} open={showErr} onClick={() => setShowErr(false)}>
             <Alert severity='warning'>
                 Please ensure all required fields are filled
