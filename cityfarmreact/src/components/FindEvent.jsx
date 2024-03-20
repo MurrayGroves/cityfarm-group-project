@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from '../api/axiosConfig';
 import { getConfig } from '../api/getToken';
-import { Paper, List, ListItem, Divider, ListItemButton, ListItemIcon, ListItemText, Checkbox, TextField } from '@mui/material';
+import { List, ListItem, Divider, ListItemButton, ListItemIcon, ListItemText, Checkbox, TextField, CircularProgress } from '@mui/material';
 import { EventPopover } from './EventPopover';
 
 export const FindEvent = (props) => {
@@ -43,7 +43,7 @@ export const FindEvent = (props) => {
 
 
     if (loading) {
-        return <div>Loading...</div>;
+        return <div><CircularProgress /></div>;
     }
 
     if (error) {
@@ -51,10 +51,10 @@ export const FindEvent = (props) => {
     }
 
     return (
-        <Paper>
+        <div style={props.style}>
             <TextField label="Search" sx={{marginLeft: '4%'}} size="small" value={search} onChange={(e) => setSearch(e.target.value)}/>
-            <List>
-            {searchResults.map((event) => {
+            <List sx={{height: '1%'}}>
+            {searchResults.map((event, index) => {
                 return (
                     <>
                     <ListItem alignItems="flex-start" style={{'width': '40%', textAlign: 'left'}} key={event.event._id}
@@ -78,11 +78,11 @@ export const FindEvent = (props) => {
                         </ListItemButton>
                         <ListItemText style={{flex: '1'}} primary={event.event.title} secondary={new Date(event.event.start).toLocaleDateString()} />
                     </ListItem>
-                    <Divider component="li"/></>
+                    {index === searchResults.length -1 ? <></> :<Divider component="li"/>}</>
                 )
             })}
             {showing ? <EventPopover anchorEl={anchorEl} farms={farms} eventID={mousedEvent.event._id} /> : null}
             </List>
-        </Paper>
+        </div>
     )
 }

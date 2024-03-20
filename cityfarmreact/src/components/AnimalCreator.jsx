@@ -1,21 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import axios from "../api/axiosConfig";
 import './AnimalCreator.css';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
-import { FormHelperText, IconButton, Select, Backdrop, Alert } from "@mui/material";
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import Button from '@mui/material/Button';
-import AddIcon from '@mui/icons-material/Add';
-import DeleteIcon from '@mui/icons-material/Delete';
-import TextField from '@mui/material/TextField';
-import Autocomplete from '@mui/material/Autocomplete';
+
+import {
+        FormHelperText, Select, Backdrop, Alert, Dialog, Table, TableCell, TableBody, TableContainer, TableHead, TableRow,
+        Paper, MenuItem, FormControl, Button, TextField, Autocomplete
+    } from "@mui/material";
+
+import { Add, Delete } from '@mui/icons-material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { getConfig } from '../api/getToken';
 
@@ -28,6 +20,7 @@ const AnimalCreator = (props) => {
     const [create, setCreate] = useState(false);
     const [inputErr, setInputErr] = useState({});
     const [showErr, setShowErr] = useState(false);
+    const [eventDialog, setEventDialog] = useState(null);
 
     const token = getConfig();
 
@@ -122,23 +115,14 @@ const AnimalCreator = (props) => {
                     />
                     </FormControl>
                 );
-            case "java.time.ZonedDateTime":
-                return (
-                    <FormControl error={error} required={req} sx={{width: '100%'}}>
-                    <FormHelperText style={{margin: '0 0 2.5px 5px'}}>{req ? 'Required' : 'Not Required'}</FormHelperText>
-                    <DatePicker
-                        onChange={(e) => {
-                            let newFields = newAnimal.fields;
-                            newFields[field] = e.$d.toISOString();
-                            setNewAnimal({...newAnimal, fields: newFields});
-                        }}
-                        slotProps={{textField: {fullWidth: true, size: 'small'}}}
-                    />
-                    </FormControl>
-                )
             case "cityfarm.api.calendar.EventRef":
                 return (
-                    <FindOrCreateEvent farms={props.farms}/>
+                    <div>
+                    <Button variant="contained" onClick={() => setEventDialog(key)}>Select Event</Button>
+                    <Dialog open={eventDialog === key} onClose={() => setEventDialog(null)}>
+                        <FindOrCreateEvent style={{padding: '1%', width: '30vw', height: '80vh'}} farms={props.farms}/>
+                    </Dialog>
+                    </div>
                 )
             default:
                 return <></>;
@@ -276,40 +260,16 @@ const AnimalCreator = (props) => {
                     </TableBody>
                 </Table>
             </TableContainer>
-            <Button className='tallButton' variant='contained' color='warning' endIcon={<DeleteIcon/>} onClick={() => {reset(); props.setOffset(36.5+20)}}>Discard</Button>
-            </div>
-            {schema ?
-            <div style={{display: 'flex', justifyContent: 'space-between'}}>
-            <TableContainer component={Paper} style={{marginRight: '20px'}}>
-                <Table>
-                    <TableHead>
-                        <TableRow>
-                            {Object.keys(schema._fields).map((field, index) => {
-                                return (
-                                <TableCell key={index} style={{width: `${100/(Object.keys(schema._fields).length + 1)}%`}}>{field.charAt(0).toUpperCase() + field.slice(1)}</TableCell>
-                                );
-                            })}
-                            <TableCell style={{width: `${100/(Object.keys(schema._fields).length + 1)}%`}}>Notes</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        <TableRow>
-                            {Object.keys(schema._fields).map((_, index) => {
-                                return (
-                                    <TableCell key={index}>{fieldList ? fieldTypeSwitch(index) : <p>Loading...</p>}</TableCell>
-                                );
-                            })}
-                            <TableCell><TextField size='small' multiline placeholder='Add notes...' fullWidth rows={2} onChange={(e) => {setNewAnimal({...newAnimal, notes: e.target.value})}}/></TableCell>
-                        </TableRow>
-                    </TableBody>
-                </Table>
-            </TableContainer>
+            <div style={{flex: '1'}}>
+            <Button style={{height: '40%', margin: '5%'}} className='tallButton' variant='contained' color='warning' endIcon={<Delete/>} onClick={() => {reset(); props.setOffset(36.5+20)}}>Discard</Button>
             <Button
                 className='tallButton'
                 variant="contained"
                 aria-label="add"
                 color='success'
-                endIcon={<AddIcon/>}
+                endIcon={<Add/>}
+                style={{height: '40%', margin: '5%'}}
+                disabled={(Object.values(inputErr).filter((err) => {return err === true}).length > 0) ? true : null}
                 onClick={() => {
                     if (Object.values(inputErr).filter((err) => err === true).length > 0) {
                         return setShowErr(true);
@@ -330,8 +290,37 @@ const AnimalCreator = (props) => {
                 }}
             >Create</Button>
             </div>
+            </div>
+            {schema ?
+            <div style={{display: 'flex', justifyContent: 'space-between'}}>
+            <TableContainer component={Paper} style={{marginRight: '20px'}}>
+                <Table>
+                    <TableHead>
+                        <TableRow>
+                            {Object.keys(schema._fields).map((field, index) => {
+                                return (
+                                <TableCell key={index} style={{width: `${100/(Object.keys(schema._fields).length + 1)}%`}}>{field.charAt(0).toUpperCase() + field.slice(1)}</TableCell>
+                                );
+                            })}
+                            <TableCell style={{width: `${100/(Object.keys(schema._fields).length + 1)}%`}}>Notes</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        <TableRow>
+                            {Object.keys(schema._fields).map((key, index) => {
+                                return (
+                                    <TableCell key={index}>{fieldList ? fieldTypeSwitch(index) : <p>Loading...</p>}</TableCell>
+                                );
+                            })}
+                            <TableCell><TextField size='small' multiline placeholder='Add notes...' fullWidth rows={2} onChange={(e) => {setNewAnimal({...newAnimal, notes: e.target.value})}}/></TableCell>
+                        </TableRow>
+                    </TableBody>
+                </Table>
+            </TableContainer>
+
+            </div>
             : <></>}</>
-        : <Button className='tallButton' variant='contained' endIcon={<AddIcon/>} style={{float: 'left', marginTop: '10px'}} onClick={() => {setCreate(true); props.setOffset(129.6+20)}}>Create</Button>}
+        : <Button className='tallButton' variant='contained' endIcon={<Add/>} style={{float: 'left', marginTop: '10px'}} onClick={() => {setCreate(true); props.setOffset(129.6+20)}}>Create</Button>}
         <Backdrop style={{zIndex: '4', background: '#000000AA'}} open={showErr} onClick={() => setShowErr(false)}>
             <Alert severity='warning'>
                 Please ensure all required fields are filled

@@ -20,8 +20,11 @@ import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import AssociateAnimal from './AssociateAnimal';
 import axios from '../api/axiosConfig'
 import AssociateEnclosure from './AssociateEnclosure';
+import { getConfig } from '../api/getToken';
 
 export const EventCreator = (props) => {
+    const farms = props.farms;
+
     const [newEvent,setNewEvent] = useState({
         title: "",
         allDay: true,
@@ -33,6 +36,85 @@ export const EventCreator = (props) => {
         enclosures: []
     })
 
+    const [allEvents,setAllEvents] = useState([]);
+    const [selectedEvent,setSelectedEvent] = useState("");
+    const [visibleFarms, setVisibleFarms] = useState([farms.WH, farms.HC, farms.SW]);
+    const [modifyEvent, setModifyEvent] = useState(false);
+    const [showErr, setShowErr] = useState(false);
+    const [inputErr, setInputErr] = useState({newTitle: true});
+    const [recurring, setRecurring] = useState(false);
+
+    const token = getConfig();
+
+    useEffect(() => {
+        setInputErr({...inputErr, newTitle: newEvent.title === ''});
+        console.log(newEvent);
+    }, [newEvent]);
+
+    const setAddEventEnclosures = (enclosures) => {
+        setNewEvent({...newEvent, enclosures: enclosures})
+    }
+    const setAddEventAnimals = (animalList) => {
+        setNewEvent({...newEvent, animals: animalList})
+    }
+    
+    const changeAllDay = (isAllDay) => {
+        setNewEvent({...newEvent, allDay: isAllDay})
+    }
+
+    const changeRecurring = (isRecurring) => {
+        setRecurring(isRecurring);
+    }
+
+    useEffect(() => {
+        recurring ?
+            setNewEvent({...newEvent, firstStart: newEvent.start, firstEnd: newEvent.end, delay: 'P1D', finalEnd: null, start: null, end: null})
+            : newEvent.firstStart && setNewEvent({...newEvent, end: newEvent.firstEnd, start: newEvent.firstStart, firstStart: null, firstEnd: null, delay: null, finalEnd: null})
+    }, [recurring])
+
+    const [openAnimalsPopup, setOpenAnimalsPopup] = useState(false)
+    const [openEnclosurePopup, setOpenEnclosurePopup] = useState(false);
+
+
+    const functionopenPopup = (type) => { 
+        if (type === "animals") {setOpenAnimalsPopup(true)} else {setOpenEnclosurePopup(true)}
+    }
+    const functionclosePopup = () => {
+        setOpenAnimalsPopup(false)
+        setOpenEnclosurePopup(false)
+    }
+
+
+    const handleAddEvent = async() => {
+        if (Object.values(inputErr).filter((err) => err === true).length > 0) {
+            return setShowErr(true);
+        }
+
+        try {
+            recurring ? await axios.post(`/events/create/recurring`, newEvent, token)
+                      : await axios.post(`/events/create/once`, newEvent, token)
+        } catch(error) {
+            if (error.response.status === 401) {
+                window.location.href = "/login";
+                return;
+            } else {
+                window.alert(error);
+            }
+        }
+        
+        setNewEvent({
+            title: "",
+            allDay: true,
+            start: new Date(),
+            end: new Date(),
+            farms: [],
+            animals: [],
+            description: "",
+            enclosures: []
+        });
+        
+        window.location.reload(false);
+    }
 
     function showingTime(isShown) {
         if (isShown){
@@ -86,7 +168,7 @@ export const EventCreator = (props) => {
     }
 
     return (
-        <Paper elevation={3} style={{width: '400px', margin: '0 0 20px 0', padding: '10px'}}>
+        <div style={{width: '400px', margin: '0 0 20px 0', padding: '10px', ...props.style}}>
             <h2 className='boxTitle'>Create New Event</h2>
             <div>
                 <TextField
@@ -130,36 +212,6 @@ export const EventCreator = (props) => {
                 </FormGroup>
             </div>
             <div>
-                <span style={{display: 'flex'}}><h3>Animals</h3><IconButton style={{height: '40px', margin: '12px 0 0 5px'}} onClick={() => {functionopenPopup("animals")}}><AddIcon color='primary'/></IconButton></span>
-                {/* idea: make this open the animal table page with a new column of checkboxes. Click on an associate animal(s) button would then pass a list of animal id to the calendar to the new event state. This could be re used in the modification of events.  */}
-                {newEvent.animals.map((animalID) => (
-                    <AnimalPopover key={animalID} animalID={animalID} />
-                ))}
-                <div id="AssociateAnimal" style={{textAlign:'center'}}>
-                    <Dialog open={openAnimalsPopup} onClose={functionclosePopup}>
-                        <DialogTitle>Add Animal</DialogTitle>
-                        <DialogContent>
-                            <AssociateAnimal setAnimals={setAddEventAnimals} animals={newEvent.animals} close={functionclosePopup}></AssociateAnimal>
-                        </DialogContent>
-                    </Dialog>
-                </div>
-            </div>
-            <div>
-                <span style={{display: 'flex'}}><h3>Enclosures</h3><IconButton style={{height: '40px', margin: '12.5px 0 0 5px'}} onClick={() => {functionopenPopup("enclosures")}}><AddIcon color='primary'/></IconButton></span>
-                {newEvent.enclosures.map((enclosureName, index) => (
-                    <p key={index}>{enclosureName}</p>
-                ))}{/*Add a way to remove enclosures from events */}
-                {/* idea: make this open the enlcosure  page with a new column of checkboxes. Click on an associate enlcosure(s) button would then pass a list of enclosure names to the calendar to be placed in a field*/}
-                <div id="AssociateEnclosure" style={{textAlign:'center'}}>
-                    <Dialog open={openEnclosurePopup} onClose={functionclosePopup}>
-                        <DialogTitle>Add Enclosure</DialogTitle>
-                        <DialogContent>
-                            <AssociateEnclosure enclosures={newEvent.enclosures} setEnclosures={setAddEventEnclosures} close={functionclosePopup}></AssociateEnclosure>
-                        </DialogContent>
-                    </Dialog>
-                </div>
-            </div>
-            <div>
                 <h3>Description</h3>
                 <TextField
                     fullWidth
@@ -171,6 +223,6 @@ export const EventCreator = (props) => {
                     onChange={(e) => {setNewEvent({...newEvent, description: e.target.value})}}
                 />
             </div>
-        </Paper>
+        </div>
     )
 }

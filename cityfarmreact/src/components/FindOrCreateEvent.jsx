@@ -1,7 +1,7 @@
 import { FindEvent } from './FindEvent';
 import { EventCreator } from './EventCreator';
 import { useState } from 'react';
-import { Switch, Tabs, Tab, CustomTabPanel } from '@mui/material';
+import { Tabs, Tab, Divider } from '@mui/material';
 
 export const FindOrCreateEvent = (props) => {
     const farms = props.farms;
@@ -9,13 +9,13 @@ export const FindOrCreateEvent = (props) => {
     const [finding, setFinding] = useState(1);
 
     return (
-        <div>
-            <h1>Find or Create Event</h1>
+        <div style={props.style}>
             <Tabs value={finding} onChange={(_, value) => setFinding(value)}>
                 <Tab label="Create"/>
                 <Tab label="Find"/>
             </Tabs>
-            {finding === 1 ? <FindEvent farms={farms}/> : <p>hello</p>}
+            <Divider/>
+            {finding === 1 ? <FindEvent farms={farms} style={{marginTop: '1%'}}/> : <EventCreator style={{marginTop: '1%'}} farms={farms}/>}
         </div>
     )
 }
