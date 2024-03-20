@@ -83,6 +83,8 @@ public class EnclosureController {
         return ResponseEntity.ok().body(enclosures);
     }
 
+//    THIS CODE DOESN'T WORK ANY MORE, NEEDS TO BE ADAPTED
+    
 //    @PatchMapping("/api/enclosures/by_id/{id}/holding")
 //    public ResponseEntity<String> set_enclosure_holding(@PathVariable String id, @RequestBody List<AnimalCustom> holding) {
 //        Enclosure enc = enclosureRepository.findEnclosureById(id);

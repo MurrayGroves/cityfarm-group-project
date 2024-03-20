@@ -14,16 +14,6 @@ const CapacityChanger = (props) => {
     const [changed, setChanged] = useState(false);
 
     const token = getConfig();
-
-    // useEffect(() => {
-    //     setLinkedAnimals(props.animals);
-    //     console.log('getting animals', props.animals);
-    // }, [])
-    
-    // useEffect(() => {
-    //     changed && props.setAnimals(linkedAnimals);
-    //     console.log('setting animals', linkedAnimals);
-    // }, [linkedAnimals])
     
     function displayAll() {
         (async () => {

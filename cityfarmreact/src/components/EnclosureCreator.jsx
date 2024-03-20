@@ -43,10 +43,6 @@ const EnclosureCreator = (props) => {
         setNewEnclosure({name: '', holding: {}, capacities: {}, notes: '', farm: ''})
     }
 
-    // useEffect(() => {
-    //     console.log(newEnclosure);
-    // },[newEnclosure]);
-
     return (<>
         {create ? <>
             <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '20px'}}>
@@ -105,7 +101,6 @@ const EnclosureCreator = (props) => {
             aria-label="add"
             endIcon={<AddIcon/>}
             onClick={() => {
-                //console.log(newEnclosure)
                 (async () => {
                     try {
                         await axios.post(`/enclosures/create`, newEnclosure, token)
