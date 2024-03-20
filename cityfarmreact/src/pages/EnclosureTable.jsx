@@ -1,15 +1,16 @@
 import React, {useEffect, useState} from "react";
 import axios from "../api/axiosConfig";
-import "./AnimalTable.css";
+import TextField from '@mui/material/TextField';
+import "../pages/AnimalTable.css";
 import FarmTabs from "../components/FarmTabs";
 import TableContainer from '@mui/material/TableContainer';
-import TextField from '@mui/material/TextField';
-import { DataGrid } from "@mui/x-data-grid";
 import Paper from '@mui/material/Paper';
+import { DataGrid } from "@mui/x-data-grid";
 import EditIcon from '@mui/icons-material/Edit';
 import Button from '@mui/material/Button';
 import { diff } from "deep-object-diff";
-
+import AnimalPopover from "../components/AnimalPopover";
+import EnclosureCreator from "../components/EnclosureCreator";
 import { getConfig } from '../api/getToken';
 
 const EnclosureTable = ({farms}) => {
@@ -66,11 +67,8 @@ const EnclosureTable = ({farms}) => {
     const rows = enclosureList.map((enclosure) => ({
         id: enclosure._id,
         name: enclosure.name,
-        holding: Object.keys(enclosure.holding).map((key) => {
-            return (` ${key}:
-            ${Object.keys(enclosure.holding[key]).map((animal) => {
-                return enclosure.holding[key][animal].name
-            })}`)
+        holding: enclosure.holding.map((animal) => {
+            return (`${animal.name}`)
         }),
         capacities: Object.keys(enclosure.capacities).map((key) => {
             return (` ${key}: ${enclosure.capacities[key]}`)
@@ -92,10 +90,6 @@ const EnclosureTable = ({farms}) => {
             <DataGrid rows={rows} columns={cols}
             style={{fontSize: '1rem'}}
             isCellEditable={() => editMode}
-            // editMode="row"
-            // onCellEditStop = {(params, event) => {
-                
-            // }}
             processRowUpdate = {(newVal, oldVal) => {
                 if (newVal.name === oldVal.name) { return newVal; }
                 const newName = newVal.name;
@@ -119,6 +113,7 @@ const EnclosureTable = ({farms}) => {
             }}/>
         </TableContainer>
         <Button style={{float: 'right'}} aria-label="edit" onClick={() => setEditMode(true)} variant='contained' endIcon={<EditIcon/>}>Edit</Button>
+        <EnclosureCreator/>
     </>)
 }
 
