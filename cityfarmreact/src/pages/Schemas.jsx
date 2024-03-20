@@ -30,7 +30,7 @@ const classToReadable = {
 }
 
 const Schemas = () => {
-    const [schemaList, setSchemaList] = useState([]); /* The State for the list of enclosures. The initial state is [] */
+    const [schemaList, setSchemaList] = useState([]); /* The State for the list of schemas. The initial state is [] */
     const [searchTerm, setSearchTerm] = useState(''); /* The term being search for in the searchbar */
     const [newFields, setNewFields] = useState([{"name": "", "type": "", "required": ""}])
     const [newSchemaName, setNewSchemaName] = useState("");
