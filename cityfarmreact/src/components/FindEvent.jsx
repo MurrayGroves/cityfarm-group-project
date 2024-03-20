@@ -23,6 +23,7 @@ export const FindEvent = (props) => {
         axios.get('/events', {params: {from: new Date().toISOString(), to: to.toISOString()}, ...getConfig()})
             .then((response) => {
                 setEvents(response.data);
+                setSearchResults(response.data);
                 setLoading(false);
             })
             .catch((error) => {
