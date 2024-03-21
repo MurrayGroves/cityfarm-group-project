@@ -239,10 +239,8 @@ const SingleAnimal = (props) => {
             </div>
         )}
         <div className="farmButtons">
-
             {Object.entries(farms).map((farm) => (
                 <React.Fragment key={farm}>
-
                     <FarmMoveButton farm={farm} ids={[chosenAnimal._id]  }/>
                 </React.Fragment>
             ))}

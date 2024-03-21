@@ -41,3 +41,8 @@
     margin: 0;
     padding-left: 5px;
 }
+
+.MuiAlert-action {
+    align-items: flex-end !important;
+    padding-bottom: 8px !important;
+}

@@ -1,32 +1,17 @@
 import React, {useEffect, useState} from "react";
+import { Link } from "react-router-dom";
+import { set } from "date-fns";
 import axios from '../api/axiosConfig'
 import FarmTabs from "../components/FarmTabs";
 import AnimalPopover from "../components/AnimalPopover";
+import AnimalCreator from "../components/AnimalCreator";
+import FarmMoveButton from "../components/FarmMoveButton";
+import { getConfig } from '../api/getToken';
 import "./AnimalTable.css";
 import { DataGrid, useGridApiRef, GridPagination } from '@mui/x-data-grid';
-import TableContainer from '@mui/material/TableContainer';
-import Paper from '@mui/material/Paper';
-import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
-import Switch from '@mui/material/Switch';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import Fab from '@mui/material/Fab';
-import EditIcon from '@mui/icons-material/Edit';
-import DoneIcon from '@mui/icons-material/Done';
-import ClearIcon from '@mui/icons-material/Clear';
-import AddIcon from '@mui/icons-material/Add';
-
-import AnimalCreator from "../components/AnimalCreator";
-
-import { getConfig } from '../api/getToken';
-
-import { Link } from "react-router-dom";
-import { set } from "date-fns";
-import { FormControlLabel, FormGroup, FormControl, FormHelperText, IconButton, Divider, Grid, Dialog, DialogContent } from "@mui/material";
-import Autocomplete from '@mui/material/Autocomplete';
-import FarmMoveButton from "../components/FarmMoveButton";
+import { Autocomplete, Backdrop, TableContainer, Paper, TextField, Button, Select, MenuItem, Fab, FormControlLabel, FormGroup, FormControl, FormHelperText, IconButton, Divider, Grid, Dialog, DialogContent, Alert, AlertTitle } from '@mui/material';
+import { Add as AddIcon, Edit as EditIcon, Delete, Done as DoneIcon, Clear as ClearIcon } from '@mui/icons-material';
 
 const AnimalTable = ({farms, device}) => {
     const [animalList, setAnimalList] = useState([]); /* The State for the list of animals. The initial state is [] */
@@ -42,12 +27,29 @@ const AnimalTable = ({farms, device}) => {
     const [modifyAnimal, setModifyAnimal] = useState({});
     const [editingRow, setEditingRow] = useState(null);
 
+    const [deleteAnimal, setDeleteAnimal] = useState({})
+
     const [create, setCreate] = useState(false);
+    const [del, setDel] = useState(false);
 
     const [selectedAnimals, setSelectedAnimals] = useState([])
     const token = getConfig();
 
     const gridApi = useGridApiRef();
+
+    const handleDelAnimal = (animal) => (async () => {
+        try {
+            const response = await axios.delete(`/animals/by_id/${animal._id}`, token);
+        } catch (error) {
+            if (error.response.status === 401) {
+                window.location.href = "/login";
+                return;
+            } else {
+                window.alert(error);
+            }
+        }
+        window.location.reload(false);
+    })()
 
     function displayAll() {
         (async () => {
@@ -83,7 +85,7 @@ const AnimalTable = ({farms, device}) => {
     }
 
 
-    useEffect(getSchemas, []);
+    useEffect(getSchemas, [animalList]);
 
     useEffect(() => {
         (async () => {
@@ -445,8 +447,11 @@ const AnimalTable = ({farms, device}) => {
             <FarmTabs farms={farms} selectedFarm={farm} setSelectedFarm={setFarm}/>
         </span>
         <div style={{display: 'flex', flexDirection: 'column', height: 'calc(100% - 150.88px)'}}>
-        <Paper elevation={3} style={{flex: 1}}>
-            <DataGrid editMode="row" apiRef={gridApi} disableRowSelectionOnClick filterModel={filterModel} style={{fontSize: '1rem'}} checkboxSelection
+        {/* this flex ain't flexing :( */}
+        <Paper elevation={3} style={{flex: 1, minHeight: '0', minWidth: '0'}}>
+            <DataGrid editMode="row" apiRef={gridApi} disableRowSelectionOnClick filterModel={filterModel} sx={{fontSize: '1rem'}} checkboxSelection
+                paginationMode="server"
+                rowCount={0}
                 slots={{
                     footer: CustomFooter
                 }}
@@ -455,7 +460,7 @@ const AnimalTable = ({farms, device}) => {
                         setFilterModel,
                         selectedSchema,
                         setSelectedSchema,
-                        device,
+                        create,
                         setCreate
                     }
                 }}
@@ -469,10 +474,9 @@ const AnimalTable = ({farms, device}) => {
                     sortable: false,
                     headerClassName: 'grid-header',
                     headerAlign: 'right',
-                    flex: 0.225,
                     renderCell: (params) => {
                         return editingRow === params.row.id ?
-                            <div display='flex'>
+                            <div>
                                 <IconButton sx={{padding:'0px'}} onClick={() => {
                                     saveAnimal(params.row.id);
                                     gridApi.current.stopRowEditMode({id: params.row.id});
@@ -489,6 +493,7 @@ const AnimalTable = ({farms, device}) => {
                                 </IconButton>
                             </div>
                         :
+                            <div>
                             <IconButton onClick={() => {
                                 let obj = animalList.find((animal) => {return animal._id === params.row.id});
                                 setModifyAnimal(obj);
@@ -497,6 +502,14 @@ const AnimalTable = ({farms, device}) => {
                             }}>
                                 <EditIcon/>
                             </IconButton>
+                            <IconButton onClick={() => {
+                                let ani = animalList.find((animal) => {return animal._id === params.row.id});
+                                setDeleteAnimal(ani);
+                                setDel(true);
+                            }}>
+                                <Delete/>
+                            </IconButton>
+                            </div>
                     }
                 }]}
                 rows={rows} onCellClick={(params, event, details) => {
@@ -529,14 +542,13 @@ const AnimalTable = ({farms, device}) => {
             />
         </Paper>
         {device === 'mobile' ?
-        <><Fab color='primary' sx={{position: 'absolute', top: '16px', right: '16px'}} onClick={() => setCreate(true)}><AddIcon/></Fab>
-        <Dialog fullWidth maxWidth='xl' open={create} onClose={() => setCreate(false)}>
-            <DialogContent>
+        <Dialog PaperProps={{sx: {overflow: 'visible'}}} fullWidth maxWidth='xl' open={create} onClose={() => setCreate(false)}>
+            <DialogContent sx={{p: 0}}>
                 <AnimalCreator animalList={animalList} schemaList={schemaList} setCreate={setCreate} farms={farms} device={device}/>
             </DialogContent>
-        </Dialog></>
+        </Dialog>
         :
-        <>{create && <AnimalCreator animalList={animalList} schemaList={schemaList} setCreate={setCreate} farms={farms} device={device}/>}</>}
+        <>{create && <Paper sx={{mt: '10px'}} elevation={3}><AnimalCreator animalList={animalList} schemaList={schemaList} setCreate={setCreate} farms={farms} device={device}/></Paper>}</>}
         <div className="fmButtons">{
             selectedAnimals.length > 0 ? (
                 Object.entries(farms).map((farm) => (
@@ -547,22 +559,33 @@ const AnimalTable = ({farms, device}) => {
             :  ''}
         </div>
         </div>
+        <Backdrop style={{zIndex: '4', background: '#000000AA'}} open={del} onClick={() => {setDel(false);}}>
+            <Alert
+                severity='warning'
+                action={<Button color='warning' variant='contained' onClick={() => handleDelAnimal(deleteAnimal)}>Yes</Button>}
+            >
+                <AlertTitle>Confirmation</AlertTitle>
+                Are you sure you want to delete {deleteAnimal.name}?
+            </Alert>
+        </Backdrop>
     </>)
 }
 
-const CustomFooter = ({setFilterModel, selectedSchema, setSelectedSchema, device, setCreate}) => {
+const CustomFooter = ({setFilterModel, selectedSchema, setSelectedSchema, create, setCreate}) => {
     return (<>
         <Divider/>
-        <div style={{maxHeight: '56.5px', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+        <div style={{maxHeight: '56px', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
             <span style={{display: 'flex', alignItems: 'center'}}>
-            <Button sx={{minWidth: '125.9px', margin: '10px'}} variant="contained" onClick={() => {
+            <Button sx={{width: '125.9px', margin: '10px'}} variant="contained" onClick={() => {
                 setFilterModel({items: []});
                 setSelectedSchema(null);
             }}>Clear Filter</Button>
             {selectedSchema ? <p style={{margin: '10px 15px 10px 5px'}}>Showing {selectedSchema._name}s</p> : <></>}
-            {device !== 'mobile' && <Button variant="contained" color='primary' onClick={() => setCreate(true)} endIcon={<AddIcon/>}>Create</Button>}
             </span>
-            <GridPagination/>
+            {create ?
+            <Button sx={{width: '100px', margin: '10px'}} endIcon={<Delete/>} variant='contained' color='warning' onClick={() => setCreate(false)}>Discard</Button>
+            : <Button sx={{width: '100px', margin: '10px'}} variant="contained" color='primary' onClick={() => setCreate(true)} endIcon={<AddIcon/>}>Create</Button>
+            }
         </div>
     </>)
 }
