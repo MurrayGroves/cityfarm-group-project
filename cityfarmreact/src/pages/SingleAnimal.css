@@ -17,21 +17,21 @@
     height: 100%;
 }
 
-.children{
+.children {
     position: absolute;
-    top: 12.5%;
-    left: 15%;
+    top: 90px;
+    left: 240px;
 }
 
-.farmButtons{
+.farmButtons {
     display: flex;
     flex-direction: column;
     position: absolute;
-    top: 12.5%;
-    left: 22%;
+    top: 85px;
+    left: 380px;
 
 }
 
-.events-container{
+.events-container {
     width : 70%
 }

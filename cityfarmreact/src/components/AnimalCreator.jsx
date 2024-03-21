@@ -7,7 +7,8 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
+import Divider from '@mui/material/Divider';
+import Fab from '@mui/material/Fab';
 import { FormHelperText, Select, Backdrop, Alert } from "@mui/material";
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
@@ -139,8 +140,6 @@ const AnimalCreator = (props) => {
     }
 
     return (<>
-        <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: schema ? '10px' : '0', marginTop: '10px'}}>
-        <Paper sx={{width: '100%', marginRight: '10px'}} elevation={3}>
         <TableContainer>
             <Table>
                 <TableHead>
@@ -268,12 +267,10 @@ const AnimalCreator = (props) => {
                 </TableBody>
             </Table>
         </TableContainer>
-        </Paper>
-        <Button className='tallButton' variant='contained' color='warning' endIcon={<DeleteIcon/>} onClick={() => {reset()}}>Discard</Button>
-        </div>
-        {schema ?
-        <div style={{display: 'flex', justifyContent: 'space-between'}}>
-        <Paper sx={{width: '100%', marginRight: '10px'}} elevation={3}>
+        {schema ? <>
+        <Divider/>
+        <Divider/>
+        <Divider/>
         <TableContainer>
             <Table>
                 <TableHead>
@@ -298,13 +295,9 @@ const AnimalCreator = (props) => {
                 </TableBody>
             </Table>
         </TableContainer>
-        </Paper>
-        <Button
-            className='tallButton'
-            variant="contained"
-            aria-label="add"
+        <Fab
+            sx={props.device === 'mobile' ? {position: 'absolute', bottom: '90px', right: '-10px'} : {position: 'absolute', bottom: '110px', right: '10px'}}
             color='success'
-            endIcon={<AddIcon/>}
             onClick={() => {
                 if (Object.values(inputErr).filter((err) => err === true).length > 0) {
                     return setShowErr(true);
@@ -323,8 +316,7 @@ const AnimalCreator = (props) => {
                     window.location.reload(false);
                 })()
             }}
-        >Create</Button>
-        </div>
+        ><AddIcon/></Fab></>
         : <></>}
         <Backdrop style={{zIndex: '4', background: '#000000AA'}} open={showErr} onClick={() => setShowErr(false)}>
             <Alert severity='warning'>

@@ -19,6 +19,15 @@ const FarmTabs = (props) => {
         }
     }
 
+    function readableFarm(farm) {
+        switch(farm) {
+            case "WH": return 'Windmill Hill';
+            case "HC": return 'Hartcliffe';
+            case "SW": return 'St Werburghs';
+            default: return 'Loading...';
+        }   
+    }
+
     return (
         <div className="tab-container">
             <ThemeProvider theme={tabTheme}>
@@ -33,10 +42,12 @@ const FarmTabs = (props) => {
                         },
                     }}
                 >
+                    {console.log('rerendering')}
                     <Tab value={null} label="All"/>
-                    <Tab value={farms.WH} label="Windmill Hill"/>
+                    {Object.values(farms).map((farm) => <Tab key={farm} value={farm} label={readableFarm(farm)}/>)}
+                    {/*<Tab value={farms.WH} label="Windmill Hill"/>
                     <Tab value={farms.HC} label="Hartcliffe"/>
-                    <Tab value={farms.SW} label="St Werburghs"/>
+                    <Tab value={farms.SW} label="St Werburghs"/>*/}
                 </Tabs>
             </ThemeProvider>
         </div>

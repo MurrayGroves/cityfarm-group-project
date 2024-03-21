@@ -132,4 +132,11 @@ public class AnimalController {
         String location = String.format("/api/animals/by_id/%s", animal.get_id());
         return ResponseEntity.created(URI.create(location)).body(animal.get_id());
     }
+
+    @DeleteMapping("/api/animals/by_id/{id}")
+    public ResponseEntity<String> delete_animal(@PathVariable String id) {
+        animalRepository.deleteById(id);
+
+        return ResponseEntity.ok(id);
+    }
 }
