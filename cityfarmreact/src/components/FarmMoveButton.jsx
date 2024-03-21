@@ -8,7 +8,7 @@ import {useTheme} from "@mui/material";
 const FarmMoveButton = (props) => {
     const token = getConfig();
     const theme = useTheme().palette;
-    let buttonColor = 'primary'
+    let buttonColor;
     function farmMove(ids,farm){
         for (let a of ids){
             let animal;
@@ -49,13 +49,15 @@ const FarmMoveButton = (props) => {
             buttonColor='SW'
             break;
         default:
+            buttonColor='primary'
     }
 
-    return (<div className="fButton">
+    return (
+    <div className="fButton">
         <Button onClick={() =>farmMove(props.ids,props.farm)} variant="contained" color={buttonColor}>
             Move to {Object.entries(props.farm)[0][1]}
         </Button>
-</div>)
+    </div>)
 }
 
 export default FarmMoveButton

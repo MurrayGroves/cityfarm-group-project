@@ -103,7 +103,7 @@ const EventDisplay = ({
                                 return (<AnimalPopover key={animal} animalID={animal} />)}
                             )}{/*Add a way to remove animals from events */}
                             <div id="AssociateAnimal" style={{textAlign:'center'}}>
-                                <Dialog open={openAnimalsPopup} onClose={functionclosePopup}>
+                                <Dialog fullWidth maxWidth='md' open={openAnimalsPopup} onClose={functionclosePopup}>
                                     <DialogTitle>Add Animal</DialogTitle>
                                     <DialogContent>
                                         <AssociateAnimal setAnimals={setModifiedEventAnimals} animals={modifiedEvent.animals} close={functionclosePopup}></AssociateAnimal>
@@ -118,7 +118,7 @@ const EventDisplay = ({
                             ))}{/*Add a way to remove enclosures from events */}
                             {/* idea: make this open the enlcosure  page with a new column of checkboxes. Click on an associate enlcosure(s) button would then pass a list of enclosure names to the calendar to be placed in a field*/}
                             <div id="AssociateEnclosure" style={{textAlign:'center'}}>
-                                <Dialog open={openEnclosurePopup} onClose={functionclosePopup}>
+                                <Dialog fullWidth maxWidth='md' open={openEnclosurePopup} onClose={functionclosePopup}>
                                     <DialogTitle>Add Enclosure</DialogTitle>
                                     <DialogContent>
                                         <AssociateEnclosure enclosures={modifiedEvent.enclosures} setEnclosures={setModifiedEventEnclosures} close={functionclosePopup}></AssociateEnclosure>
@@ -194,7 +194,7 @@ const EventDisplay = ({
                             <AnimalPopover key={animalID} animalID={animalID} />
                         ))}
                         <div id="AssociateAnimal" style={{textAlign:'center'}}>
-                            <Dialog open={openAnimalsPopup} onClose={functionclosePopup}>
+                            <Dialog fullWidth maxWidth='md' open={openAnimalsPopup} onClose={functionclosePopup}>
                                 <DialogTitle>Add Animal</DialogTitle>
                                 <DialogContent>
                                     <AssociateAnimal setAnimals={setAddEventAnimals} animals={newEvent.animals} close={functionclosePopup}></AssociateAnimal>
@@ -209,7 +209,7 @@ const EventDisplay = ({
                         ))}{/*Add a way to remove enclosures from events */}
                         {/* idea: make this open the enlcosure  page with a new column of checkboxes. Click on an associate enlcosure(s) button would then pass a list of enclosure names to the calendar to be placed in a field*/}
                         <div id="AssociateEnclosure" style={{textAlign:'center'}}>
-                            <Dialog open={openEnclosurePopup} onClose={functionclosePopup}>
+                            <Dialog fullWidth maxWidth='md' open={openEnclosurePopup} onClose={functionclosePopup}>
                                 <DialogTitle>Add Enclosure</DialogTitle>
                                 <DialogContent>
                                     <AssociateEnclosure enclosures={newEvent.enclosures} setEnclosures={setAddEventEnclosures} close={functionclosePopup}></AssociateEnclosure>

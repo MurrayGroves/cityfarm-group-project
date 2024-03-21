@@ -33,7 +33,6 @@ const AnimalCreator = (props) => {
         setNewAnimal({name: '', type: '', father: '', mother: '', sex: '', alive: true, farm: '', fields: {}, notes: ''})
         setInputErr({name: true, type: true, sex: true});
         setSchema();
-        props.setOffset(0);
     }
 
     useEffect(() => {
@@ -186,12 +185,10 @@ const AnimalCreator = (props) => {
                                         setNewAnimal({...newAnimal, type: v._name, fields: {}});
                                         let tempSchema = props.schemaList.filter((schema) => schema._name === v._name).pop();
                                         setSchema(tempSchema);
-                                        props.setOffset(138.8+152.5+10);
                                         setFieldList(Object.keys(tempSchema._fields));
                                     } else {
                                         setNewAnimal({...newAnimal, type: '', fields: {}, notes: ''});
                                         setSchema();
-                                        props.setOffset(138.8);
                                         setFieldList([]);
                                         setInputErr({});
                                     }}}
