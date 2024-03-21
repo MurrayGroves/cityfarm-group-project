@@ -304,7 +304,7 @@ const AnimalTable = ({farms, device}) => {
 
     const defaultCols = [
         { field: 'name', headerName: 'Name', headerClassName: 'grid-header', headerAlign: 'left', flex: 1, editable: true,
-            renderCell: (animal) => {return <AnimalPopover animalID={animal.value._id}/>}, renderEditCell: (params) => {
+            renderCell: (animal) => {return (animal.value._id ? <AnimalPopover animalID={animal.value._id}/> : <p>Loading...</p>)}, renderEditCell: (params) => {
                 params.value = params.value.name;
                 return <FormControl sx={{width: '100%'}}>
                     <TextField
@@ -433,8 +433,6 @@ const AnimalTable = ({farms, device}) => {
     ];
     const [cols, setCols] = useState(defaultCols);
 
-    const [creatorOffset, setCreatorOffset] = useState(0);
-
     return(<>
         <h1>Livestock</h1>
         <span style={{display: 'flex', justifyContent: 'space-between', height: '60px'}}>
@@ -446,7 +444,8 @@ const AnimalTable = ({farms, device}) => {
             />
             <FarmTabs farms={farms} selectedFarm={farm} setSelectedFarm={setFarm}/>
         </span>
-        <Paper elevation={3} style={{height: `calc(100vh - (170.88px + ${device === 'desktopLarge' ? creatorOffset : 0}px))`}}>
+        <div style={{display: 'flex', flexDirection: 'column', height: 'calc(100% - 150.88px)'}}>
+        <Paper elevation={3} style={{flex: 1}}>
             <DataGrid editMode="row" apiRef={gridApi} disableRowSelectionOnClick filterModel={filterModel} style={{fontSize: '1rem'}} checkboxSelection
                 slots={{
                     footer: CustomFooter
@@ -455,7 +454,9 @@ const AnimalTable = ({farms, device}) => {
                     footer: {
                         setFilterModel,
                         selectedSchema,
-                        setSelectedSchema
+                        setSelectedSchema,
+                        device,
+                        setCreate
                     }
                 }}
                 onRowSelectionModelChange={(ids) => {
@@ -527,15 +528,15 @@ const AnimalTable = ({farms, device}) => {
                 }}
             />
         </Paper>
-        <Fab color='primary' sx={{position: 'absolute', top: '16px', right: '16px'}} onClick={() => {setCreate(true); device === 'desktopLarge' && setCreatorOffset(138.8);}}><AddIcon/></Fab>
         {device === 'mobile' ?
+        <><Fab color='primary' sx={{position: 'absolute', top: '16px', right: '16px'}} onClick={() => setCreate(true)}><AddIcon/></Fab>
         <Dialog fullWidth maxWidth='xl' open={create} onClose={() => setCreate(false)}>
             <DialogContent>
-                <AnimalCreator animalList={animalList} schemaList={schemaList} setOffset={setCreatorOffset} setCreate={setCreate} farms={farms} device={device}/>
+                <AnimalCreator animalList={animalList} schemaList={schemaList} setCreate={setCreate} farms={farms} device={device}/>
             </DialogContent>
-        </Dialog>
+        </Dialog></>
         :
-        <>{create && <AnimalCreator animalList={animalList} schemaList={schemaList} setOffset={setCreatorOffset} setCreate={setCreate} farms={farms} device={device}/>}</>}
+        <>{create && <AnimalCreator animalList={animalList} schemaList={schemaList} setCreate={setCreate} farms={farms} device={device}/>}</>}
         <div className="fmButtons">{
             selectedAnimals.length > 0 ? (
                 Object.entries(farms).map((farm) => (
@@ -545,10 +546,11 @@ const AnimalTable = ({farms, device}) => {
                     )))
             :  ''}
         </div>
+        </div>
     </>)
 }
 
-const CustomFooter = ({setFilterModel, selectedSchema, setSelectedSchema}) => {
+const CustomFooter = ({setFilterModel, selectedSchema, setSelectedSchema, device, setCreate}) => {
     return (<>
         <Divider/>
         <div style={{maxHeight: '56.5px', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
@@ -558,6 +560,7 @@ const CustomFooter = ({setFilterModel, selectedSchema, setSelectedSchema}) => {
                 setSelectedSchema(null);
             }}>Clear Filter</Button>
             {selectedSchema ? <p style={{margin: '10px 15px 10px 5px'}}>Showing {selectedSchema._name}s</p> : <></>}
+            {device !== 'mobile' && <Button variant="contained" color='primary' onClick={() => setCreate(true)} endIcon={<AddIcon/>}>Create</Button>}
             </span>
             <GridPagination/>
         </div>
