@@ -66,19 +66,16 @@ const AssociateEnclosure = (props) => {
 
     const cols =  [
         { field: 'name', editable: true, headerName: 'Name', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
-        { field: 'holding', headerName: 'Holding', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
+        { field: 'holding', headerName: 'Holding', headerClassName: 'grid-header', headerAlign: 'left', flex: 1, cellClassName: 'scroll-cell',
+            renderCell: (animalList) => <ul>{animalList.value.map(animal => {console.log(animal); return(<li key={animal._id}><AnimalPopover animalID={animal._id}/></li>)})}</ul>
+        },
         { field: 'capacities', headerName: 'Capacities', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
     ]
 
     const rows = enclosureList.map((enclosure) => ({
         id: enclosure._id,
         name: enclosure.name,
-        holding: Object.keys(enclosure.holding).map((key) => {
-            return (` ${key}:
-            ${Object.keys(enclosure.holding[key]).map((animal) => {
-                return enclosure.holding[key][animal].name
-            })}`)
-        }),
+        holding: enclosure.holding,
         capacities: Object.keys(enclosure.capacities).map((key) => {
             return (` ${key}: ${enclosure.capacities[key]}`)
         })
@@ -96,7 +93,6 @@ const AssociateEnclosure = (props) => {
             <Paper elevation={3} style={{ marginBottom: '20px'}}>
                 <DataGrid
                     autoHeight
-                    style={{width: '552px'}}
                     checkboxSelection
                     columns={cols}
                     rows={rows}

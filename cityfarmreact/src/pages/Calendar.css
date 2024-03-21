@@ -69,3 +69,7 @@
 .rbc-month-header :first-child {
     border-radius: 5px 0 0 0;
 }
+
+.rbc-events-container {
+    width: 100% !important;
+}
