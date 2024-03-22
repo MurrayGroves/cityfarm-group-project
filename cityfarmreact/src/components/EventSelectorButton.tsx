@@ -1,4 +1,9 @@
-export const EventSelectorButton = ({currentEventID, setEventID}) => {
+import { Button, Dialog } from "@mui/material";
+import React from "react";
+import { useState } from "react";
+import { FindOrCreateEvent } from "./FindOrCreateEvent";
+
+export const EventSelectorButton = ({farms, key, currentEventID, setEventID}) => {
     const [eventDialog, setEventDialog] = useState(null);
     
     return (
