@@ -1,6 +1,6 @@
 import axios from './axiosConfig'
 
-interface Event {
+export interface Event {
     enclosures: any[],
     animals: any[],
     title: string,
@@ -11,7 +11,7 @@ interface Event {
     id: string
 }
 
-interface EventInstance {
+export interface EventInstance {
     start: Date,
     end: Date,
     event: Event
