@@ -1,31 +1,23 @@
 import React, {useEffect, useState} from "react";
 import axios from '../api/axiosConfig'
-import FarmTabs from "../components/FarmTabs";
-import AnimalPopover from "../components/AnimalPopover";
 import "./AnimalTable.css";
 import { DataGrid, useGridApiRef } from '@mui/x-data-grid';
-import TableContainer from '@mui/material/TableContainer';
-import Paper from '@mui/material/Paper';
-import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
-import Switch from '@mui/material/Switch';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { Paper , TextField, Button, Select, MenuItem, Dialog, FormControl, IconButton, Autocomplete} from '@mui/material/';
 
 import EditIcon from '@mui/icons-material/Edit';
 import DoneIcon from '@mui/icons-material/Done';
 import ClearIcon from '@mui/icons-material/Clear';
+import { Close } from '@mui/icons-material';
 
 import AnimalCreator from "../components/AnimalCreator";
+import { FindOrCreateEvent } from "../components/FindOrCreateEvent";
+import FarmMoveButton from "../components/FarmMoveButton";
+import AnimalPopover from "../components/AnimalPopover";
+import FarmTabs from "../components/FarmTabs";
+import { EventText } from "../components/EventText";
+import { EventSelectorButton } from "../components/EventSelectorButton";
 
 import { getConfig } from '../api/getToken';
-
-import { Link } from "react-router-dom";
-import { set } from "date-fns";
-import { FormControlLabel, FormGroup, FormControl, FormHelperText, IconButton } from "@mui/material";
-import Autocomplete from '@mui/material/Autocomplete';
-import FarmMoveButton from "../components/FarmMoveButton";
 
 const AnimalTable = ({farms}) => {
     const [animalList, setAnimalList] = useState([]); /* The State for the list of animals. The initial state is [] */
@@ -42,6 +34,9 @@ const AnimalTable = ({farms}) => {
     const [editingRow, setEditingRow] = useState(null);
 
     const [selectedAnimals,setSelectedAnimals]=useState([])
+    const [eventDialog, setEventDialog] = useState(null);
+    const [idToEvent, setIdToEvent] = useState({});
+
     const token = getConfig();
 
     const gridApi = useGridApiRef();
@@ -79,6 +74,29 @@ const AnimalTable = ({farms}) => {
         })()
     }
 
+    useEffect(() => {
+        let fetchEvents = [];
+        for (let i = 0; i < animalList.length; i++) {
+            let animal = animalList[i];
+            for (let key in animal.fields) {
+                if (animal.fields[key]._type === "cityfarm.api.calendar.EventRef") {
+                    if (!fetchEvents.includes(animal.fields[key]) && idToEvent[animal.fields[key]] === undefined) {
+                        fetchEvents.push(animal.fields[key]);
+                    }
+                }
+            }
+        }
+
+        fetchEvents.forEach((event) => {
+            axios.get(`/events/by_id/${event}`, token).then((response) => {
+                let newMapping = {...idToEvent};
+                newMapping[event] = response.data;
+                setIdToEvent(newMapping);
+            }).catch((error) => {
+                console.log(error);
+            });
+        });
+    }, [animalList])
 
     useEffect(getSchemas, []);
 
@@ -119,19 +137,32 @@ const AnimalTable = ({farms}) => {
         })()
     }, [])
 
-
-    function calculateColumnsAndRows(schema) {
+    async function calculateColumnsAndRows(schema) {
         let newCols = defaultCols;
 
         if (schema) {
             for (let key in schema._fields) {
-                newCols.push({field: key, headerName: key, headerClassName: 'grid-header', headerAlign: 'left', flex: 1, editable: true, renderEditCell: (params) => {
-                    return fieldTypeSwitch(schema._fields[key]._type, params);
-                }});
+                if (schema._fields[key]._type === "cityfarm.api.calendar.EventRef") {
+                    newCols.push({field: key, headerName: key, headerClassName: 'grid-header', headerAlign: 'left', flex: 1, editable: true, renderEditCell: (params) => {
+                        console.log("key ", params.row[key])
+                        return <EventSelectorButton currentEventID={params.row[key]} setEventID={(eventID) => {
+                            gridApi.current.setEditCellValue({field: key, id: params.id, value: eventID});
+                            let newFields = modifyAnimal.fields;
+                            newFields[key] = eventID;
+                            setModifyAnimal({...modifyAnimal, fields: newFields});
+                        }}/>
+                        
+                    }, renderCell: (params) => {
+                        return <EventText eventID={params.value} farms={farms}/>
+                    }});
+                } else {
+                    newCols.push({field: key, headerName: key, headerClassName: 'grid-header', headerAlign: 'left', flex: 1, editable: true, renderEditCell: (params) => {
+                        return fieldTypeSwitch(schema._fields[key]._type, params);
+                    }});
+                }
             }
         }
 
-        setCols(newCols);
 
         const defaultRows = animalList.map((animal) => ({
             id: animal._id,
@@ -158,6 +189,7 @@ const AnimalTable = ({farms}) => {
             newRows.push(newRow);
         }
         setRows(newRows);
+        setCols(newCols);
     }
 
     useEffect(() => {
@@ -280,20 +312,32 @@ const AnimalTable = ({farms}) => {
                     />
                     </FormControl>
                 );
-            case "java.time.ZonedDateTime":
+            case "cityfarm.api.calendar.EventRef":
                 return (
-                    <FormControl sx={{width: '100%'}}>
-                    <DatePicker
-                        onChange={(e) => {
-                            let current = {...modifyAnimal};
-                            current.fields[params.field] = e.target.value;
-                            setModifyAnimal(current);
-                            gridApi.current.setEditCellValue({id: params.id, field: params.field, value: e.target.value});
-                        }}
-                        slotProps={{textField: {fullWidth: true}}}
-                    />
-                    </FormControl>
-                )
+                    gridApi.current.fields[params.field] === null || gridApi.current.fields[params.field] === '' ?
+                    <div>
+                    <Button variant="contained" onClick={() => setEventDialog(params.field)}>Select Event</Button>
+                    <Dialog open={eventDialog === params.field} onClose={() => setEventDialog(null)}>
+                        <FindOrCreateEvent style={{padding: '1%', width: '30vw', height: '80vh'}} farms={farms} setIdToEvent={(id, event) => {
+                            let newMapping = {...idToEvent};
+                            newMapping[id] = event;
+                            setIdToEvent(newMapping);
+                        }} setEvent={(eventID) => {
+                            let newFields = newAnimal.fields;
+                            newFields[params.field] = eventID;
+                            setNewAnimal({...newAnimal, field: newFields});
+                        }}/>
+                    </Dialog>
+                    </div>
+                    :
+                    <div>
+                        <Button startIcon={<Close/>} variant="outlined" onClick={() => {
+                            let newFields = newAnimal.fields;
+                            newFields[params.field] = '';
+                            setNewAnimal({...newAnimal, field: newFields});                        
+                        }}>{idToEvent[newAnimal.fields[params.field]].event.title}</Button>
+                    </div>
+                );
             default:
                 return <></>;
         };

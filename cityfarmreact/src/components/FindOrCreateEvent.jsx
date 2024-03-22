@@ -15,7 +15,7 @@ export const FindOrCreateEvent = (props) => {
                 <Tab label="Find"/>
             </Tabs>
             <Divider/>
-            {finding === 1 ? <FindEvent farms={farms} style={{marginTop: '1%'}}/> : <EventCreator style={{marginTop: '1%'}} farms={farms}/>}
+            {finding === 1 ? <FindEvent setIdToEvent={props.setIdToEvent} setEvent={props.setEvent} farms={farms} style={{marginTop: '1%'}}/> : <EventCreator style={{marginTop: '1%'}} farms={farms}/>}
         </div>
     )
 }

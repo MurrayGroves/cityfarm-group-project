@@ -7,7 +7,7 @@ import {
         Paper, MenuItem, FormControl, Button, TextField, Autocomplete
     } from "@mui/material";
 
-import { Add, Delete } from '@mui/icons-material';
+import { Add, Delete, Close } from '@mui/icons-material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { getConfig } from '../api/getToken';
 
@@ -21,6 +21,7 @@ const AnimalCreator = (props) => {
     const [inputErr, setInputErr] = useState({});
     const [showErr, setShowErr] = useState(false);
     const [eventDialog, setEventDialog] = useState(null);
+    const [idToEvent, setIdToEvent] = useState({});
 
     const token = getConfig();
 
@@ -36,7 +37,7 @@ const AnimalCreator = (props) => {
         setInputErr(prevInputErr => ({...prevInputErr, type: newAnimal.type === ''}));
         setInputErr(prevInputErr => ({...prevInputErr, sex: newAnimal.sex === ''}));
         Object.keys(newAnimal.fields).map((field) => {
-            setInputErr(prevInputErr => ({...prevInputErr, [field]: newAnimal.fields[field] === '' && schema._fields[field]._required}))
+            setInputErr(prevInputErr => ({...prevInputErr, [field]: (newAnimal.fields[field] === '' || newAnimal.fields[field] === null) && schema._fields[field]._required}))
         });
     }, [newAnimal])
 
@@ -117,11 +118,28 @@ const AnimalCreator = (props) => {
                 );
             case "cityfarm.api.calendar.EventRef":
                 return (
+                    newAnimal.fields[field] === null || newAnimal.fields[field] === '' ?
                     <div>
                     <Button variant="contained" onClick={() => setEventDialog(key)}>Select Event</Button>
                     <Dialog open={eventDialog === key} onClose={() => setEventDialog(null)}>
-                        <FindOrCreateEvent style={{padding: '1%', width: '30vw', height: '80vh'}} farms={props.farms}/>
+                        <FindOrCreateEvent style={{padding: '1%', width: '30vw', height: '80vh'}} farms={props.farms} setIdToEvent={(id, event) => {
+                            let newMapping = {...idToEvent};
+                            newMapping[id] = event;
+                            setIdToEvent(newMapping);
+                        }} setEvent={(eventID) => {
+                            let newFields = newAnimal.fields;
+                            newFields[field] = eventID;
+                            setNewAnimal({...newAnimal, field: newFields});
+                        }}/>
                     </Dialog>
+                    </div>
+                    :
+                    <div>
+                        <Button startIcon={<Close/>} variant="outlined" onClick={() => {
+                            let newFields = newAnimal.fields;
+                            newFields[field] = '';
+                            setNewAnimal({...newAnimal, field: newFields});                        
+                        }}>{idToEvent[newAnimal.fields[field]].event.title}</Button>
                     </div>
                 )
             default:

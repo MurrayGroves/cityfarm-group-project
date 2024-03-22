@@ -41,6 +41,13 @@ export const FindEvent = (props) => {
     }, [search]);
 
 
+    useEffect(() => {
+        if (selectedEvent === null) {
+            return;
+        }
+        props.setEvent(selectedEvent.event._id);
+        props.setIdToEvent(selectedEvent.event._id, selectedEvent);
+    }, [selectedEvent]);
 
     if (loading) {
         return <div><CircularProgress /></div>;
@@ -76,7 +83,7 @@ export const FindEvent = (props) => {
                                 />
                             </ListItemIcon>
                         </ListItemButton>
-                        <ListItemText style={{flex: '1'}} primary={event.event.title} secondary={new Date(event.event.start).toLocaleDateString()} />
+                        <ListItemText onClick={()=>setSelectedEvent(event)} style={{flex: '1'}} primary={event.event.title} secondary={new Date(event.event.start).toLocaleDateString()} />
                     </ListItem>
                     {index === searchResults.length -1 ? <></> :<Divider component="li"/>}</>
                 )
