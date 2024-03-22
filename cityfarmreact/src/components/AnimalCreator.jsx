@@ -11,7 +11,7 @@ import { Add, Delete, Close } from '@mui/icons-material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { getConfig } from '../api/getToken';
 
-import { FindOrCreateEvent } from './FindOrCreateEvent';
+import { FindOrCreateEvent } from './FindOrCreateEvent.tsx';
 
 const AnimalCreator = (props) => {
     const [newAnimal, setNewAnimal] = useState({name: '', type: '', father: '', mother: '', sex: '', alive: true, farm: '', fields: {}, notes: ''});

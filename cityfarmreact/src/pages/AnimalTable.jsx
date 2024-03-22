@@ -10,16 +10,16 @@ import ClearIcon from '@mui/icons-material/Clear';
 import { Close } from '@mui/icons-material';
 
 import AnimalCreator from "../components/AnimalCreator";
-import { FindOrCreateEvent } from "../components/FindOrCreateEvent";
+import { FindOrCreateEvent } from "../components/FindOrCreateEvent.tsx";
 import FarmMoveButton from "../components/FarmMoveButton";
 import AnimalPopover from "../components/AnimalPopover";
 import FarmTabs from "../components/FarmTabs";
 import { EventText } from "../components/EventText";
-import { EventSelectorButton } from "../components/EventSelectorButton";
+import { EventSelectorButton } from "../components/EventSelectorButton.tsx";
 
 import { getConfig } from '../api/getToken';
 
-const AnimalTable = ({farms}) => {
+const AnimalTable = ({farms, cityfarm}) => {
     const [animalList, setAnimalList] = useState([]); /* The State for the list of animals. The initial state is [] */
     const [searchTerm, setSearchTerm] = useState(''); /* The term being searched for in the searchbar */
     const [schemaList, setSchemaList] = useState([]);
@@ -145,9 +145,9 @@ const AnimalTable = ({farms}) => {
                 if (schema._fields[key]._type === "cityfarm.api.calendar.EventRef") {
                     newCols.push({field: key, headerName: key, headerClassName: 'grid-header', headerAlign: 'left', flex: 1, editable: true, renderEditCell: (params) => {
                         console.log("key ", params.row[key])
-                        return <EventSelectorButton currentEventID={params.row[key]} setEventID={(eventID) => {
+                        return <EventSelectorButton style={{margin: '5%'}} farms={farms} cityfarm={cityfarm} currentEventID={params.row[key]} setEventID={(eventID) => {
                             gridApi.current.setEditCellValue({field: key, id: params.id, value: eventID});
-                            let newFields = modifyAnimal.fields;
+                            let newFields = {...modifyAnimal.fields};
                             newFields[key] = eventID;
                             setModifyAnimal({...modifyAnimal, fields: newFields});
                         }}/>

@@ -3,40 +3,36 @@ import axios from '../api/axiosConfig';
 import { getConfig } from '../api/getToken';
 import { List, ListItem, Divider, ListItemButton, ListItemIcon, ListItemText, Checkbox, TextField, CircularProgress } from '@mui/material';
 import { EventPopover } from './EventPopover';
+import { Event } from '../api/events';
+import React from 'react';
+import { CityFarm } from '../api/cityfarm';
 
-export const FindEvent = (props) => {
-    const farms = props.farms;
-
-    const [events, setEvents] = useState([]);
+export const FindEvent = ({style, cityfarm, farms, setEvent}: {style: any, cityfarm: CityFarm, farms: any, setEvent: (string) => void}) => {
+    const [events, setEvents] = useState<Event[]>([]);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const [selectedEvent, setSelectedEvent] = useState(null);
+    const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
     const [showing, setShowing] = useState(false);
-    const [anchorEl, setAnchorEl] = useState(null);
-    const [mousedEvent, setMousedEvent] = useState(null);
+    const [anchorEl, setAnchorEl] = useState<EventTarget | null>(null);
+    const [mousedEvent, setMousedEvent] = useState<Event | null>(null);
     const [search, setSearch] = useState('');
-    const [searchResults, setSearchResults] = useState([]);
+    const [searchResults, setSearchResults] = useState<Event[]>([]);
 
     useEffect(() => {
-        let to = new Date();
-        to.setFullYear(to.getFullYear() + 1);
-        axios.get('/events', {params: {from: new Date().toISOString(), to: to.toISOString()}, ...getConfig()})
-            .then((response) => {
-                setEvents(response.data);
-                setSearchResults(response.data);
+        async function getEvents() {
+            setEvents(await cityfarm.getEvents(true, (events) => {
+                setEvents(events);
+                setSearchResults(events);
                 setLoading(false);
-            })
-            .catch((error) => {
-                setError(error);
-                setLoading(false);
-            });
+            }));
+        }
+        getEvents();
     }, []);
 
     useEffect(() => {
         if (search === '') {
             setSearchResults(events);
         } else {
-            setSearchResults(events.filter((event) => event.event.title.toLowerCase().includes(search.toLowerCase())));
+            setSearchResults(events.filter((event) => event.title.toLowerCase().includes(search.toLowerCase())));
         }
     }, [search]);
 
@@ -45,27 +41,23 @@ export const FindEvent = (props) => {
         if (selectedEvent === null) {
             return;
         }
-        props.setEvent(selectedEvent.event._id);
-        props.setIdToEvent(selectedEvent.event._id, selectedEvent);
+        setEvent(selectedEvent.id);
     }, [selectedEvent]);
 
     if (loading) {
-        return <div><CircularProgress /></div>;
-    }
-
-    if (error) {
-        return <div>Error: {error.message}</div>;
+        return <div style={{height: '80%'}}><CircularProgress style={{position: 'relative', top: '45%', left: '45%', width: '10%', height: '10%'}}/></div>;
     }
 
     return (
-        <div style={props.style}>
+        <div style={style}>
             <TextField label="Search" sx={{marginLeft: '4%'}} size="small" value={search} onChange={(e) => setSearch(e.target.value)}/>
             <List sx={{height: '1%'}}>
             {searchResults.map((event, index) => {
                 return (
                     <>
-                    <ListItem alignItems="flex-start" style={{'width': '40%', textAlign: 'left'}} key={event.event._id}
+                    <ListItem alignItems="flex-start" style={{'width': '40%', textAlign: 'left'}} key={event.id}
                     onMouseEnter={(e) => {
+                        console.log("Event", event)
                         setMousedEvent(event);
                         setShowing(true);
                         setAnchorEl(e.currentTarget);
@@ -83,12 +75,12 @@ export const FindEvent = (props) => {
                                 />
                             </ListItemIcon>
                         </ListItemButton>
-                        <ListItemText onClick={()=>setSelectedEvent(event)} style={{flex: '1'}} primary={event.event.title} secondary={new Date(event.event.start).toLocaleDateString()} />
+                        <ListItemText onClick={()=>setSelectedEvent(event)} style={{flex: '1'}} primary={event.title} secondary={new Date(event.start).toLocaleDateString()} />
                     </ListItem>
                     {index === searchResults.length -1 ? <></> :<Divider component="li"/>}</>
                 )
             })}
-            {showing ? <EventPopover anchorEl={anchorEl} farms={farms} eventID={mousedEvent.event._id} /> : null}
+            {showing && mousedEvent ? <EventPopover anchorEl={anchorEl} farms={farms} eventID={mousedEvent.id} /> : null}
             </List>
         </div>
     )

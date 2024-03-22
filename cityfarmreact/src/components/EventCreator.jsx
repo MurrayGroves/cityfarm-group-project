@@ -4,7 +4,7 @@ import React, {useState, useEffect, useCallback} from 'react';
 import dayjs from 'dayjs';
 import "../pages/Calendar.css";
 import Event from "./Event";
-import CreateEvent from "./FindOrCreateEvent";
+import CreateEvent from "./FindOrCreateEvent.tsx";
 import AnimalPopover from "./AnimalPopover";
 import Close from '@mui/icons-material/Close';
 import Paper from '@mui/material/Paper';
