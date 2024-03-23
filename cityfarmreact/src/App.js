@@ -4,7 +4,7 @@ import '@fontsource/roboto/300.css';
 import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
-import AnimalTable from "./pages/AnimalTable.jsx";
+import AnimalTable from "./pages/AnimalTable.tsx";
 import NavBar from "./components/NavBar.jsx";
 import Calendar from "./pages/Calendar.jsx";
 import EnclosureTable from "./pages/EnclosureTable.jsx";
