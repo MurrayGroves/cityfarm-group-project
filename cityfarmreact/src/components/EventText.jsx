@@ -12,6 +12,7 @@ export const EventText = ({eventID, farms}) => {
     const [anchorEl, setAnchorEl] = useState(null);
 
     useEffect(() => {
+        console.log("EventText: eventID: ", eventID);
         axios.get(`/events/by_id/${eventID}`, getConfig())
             .then((response) => {
                 setEvent(response.data);

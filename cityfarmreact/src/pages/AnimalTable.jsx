@@ -144,16 +144,20 @@ const AnimalTable = ({farms, cityfarm}) => {
             for (let key in schema._fields) {
                 if (schema._fields[key]._type === "cityfarm.api.calendar.EventRef") {
                     newCols.push({field: key, headerName: key, headerClassName: 'grid-header', headerAlign: 'left', flex: 1, editable: true, renderEditCell: (params) => {
-                        console.log("key ", params.row[key])
                         return <EventSelectorButton style={{margin: '5%'}} farms={farms} cityfarm={cityfarm} currentEventID={params.row[key]} setEventID={(eventID) => {
-                            gridApi.current.setEditCellValue({field: key, id: params.id, value: eventID});
-                            let newFields = {...modifyAnimal.fields};
-                            newFields[key] = eventID;
-                            setModifyAnimal({...modifyAnimal, fields: newFields});
+                            console.log("Calling setEventID with ", eventID)
+                            let current = {...modifyAnimal};
+                            if (current.fields === undefined) {
+                                current.fields = {}
+                            }
+                            current.fields[key] = eventID;
+                            setModifyAnimal(current);
+                            gridApi.current.setEditCellValue({id: params.id, field: key, value: eventID});
                         }}/>
                         
                     }, renderCell: (params) => {
-                        return <EventText eventID={params.value} farms={farms}/>
+                        console.log("params.row[key]: ", params.row[key]);
+                        return <EventText eventID={params.row[key] ? params.row[key] : animalList.find((animal) => animal._id === params.row.id).fields[key]} farms={farms}/>
                     }});
                 } else {
                     newCols.push({field: key, headerName: key, headerClassName: 'grid-header', headerAlign: 'left', flex: 1, editable: true, renderEditCell: (params) => {
@@ -193,6 +197,7 @@ const AnimalTable = ({farms, cityfarm}) => {
     }
 
     useEffect(() => {
+        console.log("Recalculating columns and rows", selectedSchema, animalList)
         calculateColumnsAndRows(selectedSchema);
     }, [selectedSchema, animalList])
 
@@ -223,7 +228,7 @@ const AnimalTable = ({farms, cityfarm}) => {
 
         animal.sex = modifyAnimal.sex ? displayToSex[modifyAnimal.sex] : old_animal.sex;
 
-        animal.fields = {};
+        animal.fields = {...modifyAnimal.fields};
         for (let key in old_animal.fields) {
             animal.fields[key] = animal.fields[key] ? animal.fields[key] : old_animal.fields[key];
         }
@@ -311,32 +316,6 @@ const AnimalTable = ({farms, cityfarm}) => {
                         }}
                     />
                     </FormControl>
-                );
-            case "cityfarm.api.calendar.EventRef":
-                return (
-                    gridApi.current.fields[params.field] === null || gridApi.current.fields[params.field] === '' ?
-                    <div>
-                    <Button variant="contained" onClick={() => setEventDialog(params.field)}>Select Event</Button>
-                    <Dialog open={eventDialog === params.field} onClose={() => setEventDialog(null)}>
-                        <FindOrCreateEvent style={{padding: '1%', width: '30vw', height: '80vh'}} farms={farms} setIdToEvent={(id, event) => {
-                            let newMapping = {...idToEvent};
-                            newMapping[id] = event;
-                            setIdToEvent(newMapping);
-                        }} setEvent={(eventID) => {
-                            let newFields = newAnimal.fields;
-                            newFields[params.field] = eventID;
-                            setNewAnimal({...newAnimal, field: newFields});
-                        }}/>
-                    </Dialog>
-                    </div>
-                    :
-                    <div>
-                        <Button startIcon={<Close/>} variant="outlined" onClick={() => {
-                            let newFields = newAnimal.fields;
-                            newFields[params.field] = '';
-                            setNewAnimal({...newAnimal, field: newFields});                        
-                        }}>{idToEvent[newAnimal.fields[params.field]].event.title}</Button>
-                    </div>
                 );
             default:
                 return <></>;
