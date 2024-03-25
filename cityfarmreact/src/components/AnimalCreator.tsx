@@ -14,9 +14,10 @@ import { getConfig } from '../api/getToken.js';
 import { FindOrCreateEvent } from './FindOrCreateEvent.tsx';
 import { CityFarm } from '../api/cityfarm.ts';
 import { Schema, Animal, Sex } from '../api/animals.ts';
+import { EventSelectorButton } from './EventSelectorButton.tsx';
 
 const AnimalCreator = ({farms, cityfarm, setOffset, schemaList, animalList}: {farms: any, cityfarm: CityFarm, setOffset: (number) => void, schemaList: Schema[], animalList: Animal[]}) => {
-    const [newAnimal, setNewAnimal] = useState<Animal>(new Animal({name: '', type: '', father: '', mother: '', sex: '', alive: true, farm: '', fields: {}, notes: ''}));
+    const [newAnimal, setNewAnimal] = useState<any>(new Animal({name: '', type: '', father: '', mother: '', sex: '', alive: true, farm: '', fields: {}, notes: ''}));
     const [schema, setSchema] = useState<Schema | null>();
     const [fieldList, setFieldList] = useState<string[]>([]);
     const [create, setCreate] = useState(false);
@@ -122,25 +123,11 @@ const AnimalCreator = ({farms, cityfarm, setOffset, schemaList, animalList}: {fa
                 );
             case "cityfarm.api.calendar.EventRef":
                 return (
-                    newAnimal.fields[field] === null || newAnimal.fields[field] === '' ?
-                    <div>
-                    <Button variant="contained" onClick={() => setEventDialog(key)}>Select Event</Button>
-                    <Dialog open={eventDialog === key} onClose={() => setEventDialog(null)}>
-                        <FindOrCreateEvent style={{padding: '1%', width: '30vw', height: '80vh'}} farms={farms} cityfarm={cityfarm} setEvent={(eventID) => {
-                            let newFields = newAnimal.fields;
-                            newFields[field] = eventID;
-                            setNewAnimal({...newAnimal, fields: newFields});
-                        }}/>
-                    </Dialog>
-                    </div>
-                    :
-                    <div>
-                        <Button startIcon={<Close/>} variant="outlined" onClick={() => {
-                            let newFields = newAnimal.fields;
-                            newFields[field] = '';
-                            setNewAnimal({...newAnimal, fields: newFields});                        
-                        }}>{idToEvent[newAnimal.fields[field]].event.title}</Button>
-                    </div>
+                    <EventSelectorButton key={key} cityfarm={new CityFarm} farms={farms} currentEventID={newAnimal.fields[field]} setEventID={(eventID) => {
+                        let newFields = newAnimal.fields;
+                        newFields[field] = eventID;
+                        setNewAnimal({...newAnimal, fields: newFields});
+                    }} style={undefined}/>
                 )
             default:
                 return <></>;
@@ -262,21 +249,7 @@ const AnimalCreator = ({farms, cityfarm, setOffset, schemaList, animalList}: {fa
                                     value={newAnimal.sex}
                                     size='small'
                                     onChange={(e) => {
-                                        let sex;
-                                        switch(e.target.value) {
-                                            case 'f':
-                                                sex = Sex.Female;
-                                                break;
-                                            case 'm':
-                                                sex = Sex.Male;
-                                                break;
-                                            case 'c':
-                                                sex = Sex.Castrated;
-                                                break;
-                                            default:
-                                                sex = null;
-                                        };
-                                        setNewAnimal({...newAnimal, sex: sex});
+                                        setNewAnimal({...newAnimal, sex: e.target.value});
                                     }}
                                 >
                                     <MenuItem value={'f'}>Female</MenuItem>  

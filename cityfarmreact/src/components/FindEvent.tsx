@@ -19,11 +19,14 @@ export const FindEvent = ({style, cityfarm, farms, setEvent}: {style: any, cityf
 
     useEffect(() => {
         async function getEvents() {
-            setEvents(await cityfarm.getEvents(true, (events) => {
+            const response = await cityfarm.getEvents(true, (events) => {
                 setEvents(events);
                 setSearchResults(events);
                 setLoading(false);
-            }));
+            });
+            setEvents(response);
+            setSearchResults(response);
+            setLoading(false);
         }
         getEvents();
     }, []);

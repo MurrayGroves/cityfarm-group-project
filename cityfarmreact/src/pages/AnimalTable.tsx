@@ -20,8 +20,9 @@ import { EventSelectorButton } from "../components/EventSelectorButton.tsx";
 import { getConfig } from '../api/getToken.js';
 
 import { Animal, Schema, Sex } from '../api/animals.ts';
+import { CityFarm } from "../api/cityfarm.ts";
 
-const AnimalTable = ({farms, cityfarm}) => {
+const AnimalTable = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
     const [animalList, setAnimalList] = useState<Animal[]>([]); /* The State for the list of animals. The initial state is [] */
     const [searchTerm, setSearchTerm] = useState(''); /* The term being searched for in the searchbar */
     const [schemaList, setSchemaList] = useState<Schema[]>([]);
@@ -46,18 +47,10 @@ const AnimalTable = ({farms, cityfarm}) => {
 
     function displayAll() {
         (async () => {
-            try {
-                const response = await axios.get(`/animals`, {params: {farm: farm}, ...token});
-                setAnimalList(response.data);
-            } catch (error) {
-                console.log(error);
-                if (error.response.status === 401) {
-                    window.location.href = "/login";
-                    return;
-                } else {
-                    window.alert(error);
-                }
-            };
+            const animals = await cityfarm.getAnimals(true, (animals) => {
+                setAnimalList(animals);
+            });
+            setAnimalList(animals);
         })()
     }
 
@@ -104,7 +97,7 @@ const AnimalTable = ({farms, cityfarm}) => {
         (async () => {
             try {
                 const response = await axios.get(`/schemas`, token);
-                setSchemas(response.data);
+                setSchemas(response.data.map((schema) => new Schema(schema)));
             } catch (error) {
                 if (error.response.status === 401) {
                     window.location.href = "/login";
@@ -116,12 +109,12 @@ const AnimalTable = ({farms, cityfarm}) => {
         })()
     }, [])
 
-    async function calculateColumnsAndRows(schema) {
+    async function calculateColumnsAndRows(schema: Schema | null) {
         let newCols = defaultCols;
 
         if (schema) {
-            for (let key in schema._fields) {
-                if (schema._fields[key]._type === "cityfarm.api.calendar.EventRef") {
+            for (let key in schema.fields) {
+                if (schema.fields[key].type === "cityfarm.api.calendar.EventRef") {
                     newCols.push({type: 'singleSelect', field: key, headerName: key, headerClassName: 'grid-header', headerAlign: 'left', flex: 1, editable: true, renderEditCell: (params) => {
                         return <EventSelectorButton key={key} style={{margin: '5%'}} farms={farms} cityfarm={cityfarm} currentEventID={params.row[key]} setEventID={(eventID) => {
                             console.log("Calling setEventID with ", eventID)
@@ -141,7 +134,7 @@ const AnimalTable = ({farms, cityfarm}) => {
                     }});
                 } else {
                     newCols.push({type: 'singleSelect', field: key, headerName: key, headerClassName: 'grid-header', headerAlign: 'left', flex: 1, editable: true, renderEditCell: (params) => {
-                        return fieldTypeSwitch(schema._fields[key]._type, params);
+                        return fieldTypeSwitch(schema.fields[key].type, params);
                     }});
                 }
             }
@@ -154,21 +147,21 @@ const AnimalTable = ({farms, cityfarm}) => {
             type: animal.type.charAt(0).toUpperCase() + animal.type.slice(1),
             father: animal.father !== null ? animal.father : '',
             mother: animal.mother !== null ? animal.mother : '',
-            sex: animal.sex ? sexToDisplay[animal.sex] : animal.sex,
+            sex: animal.sex,
         }));
 
         let newRows: any[] = [];
         for (let i = 0; i < defaultRows.length; i++) {
             let newRow = defaultRows[i];
             if (schema) {
-                if (newRow.type.toLowerCase() !== schema._name.toLowerCase()) {
+                if (newRow.type.toLowerCase() !== schema.name.toLowerCase()) {
                     continue;
                 }
                 let animal = animalList.find((animal) => {return animal.id === newRow.id});
                 if (!animal) {
                     continue;
                 }
-                for (let key in schema._fields) {
+                for (let key in schema.fields) {
                     newRow[key] = typeof animal.fields[key] === typeof false ? animal.fields[key] ? "Yes" : "No" : animal.fields[key];
                 }
             }
@@ -192,7 +185,7 @@ const AnimalTable = ({farms, cityfarm}) => {
             type: animal.type.charAt(0).toUpperCase() + animal.type.slice(1),
             father: animal.father !== null ? animal.father : '',
             mother: animal.mother !== null ? animal.mother : '',
-            sex: animal.sex ? sexToDisplay[animal.sex] : animal.sex,
+            sex: animal.sex,
         }));
         setRows(defaultRows);
     }, [animalList])
@@ -207,12 +200,40 @@ const AnimalTable = ({farms, cityfarm}) => {
             console.error("Could not find animal with id ", animal_id);
             return;
         }
-        let animal = {...old_animal};
-        animal.father = modifyAnimal.father ? modifyAnimal.father._id ? modifyAnimal.father._id : modifyAnimal.father : old_animal.father;
-        animal.mother = modifyAnimal.mother ? modifyAnimal.mother._id ? modifyAnimal.mother._id : modifyAnimal.mother : old_animal.mother;
+        let animal: any = {...old_animal};
+        animal.father = modifyAnimal.father ? modifyAnimal.father.id ? modifyAnimal.father.id : modifyAnimal.father : old_animal.father;
+        animal.mother = modifyAnimal.mother ? modifyAnimal.mother.id ? modifyAnimal.mother.id : modifyAnimal.mother : old_animal.mother;
         animal.name = modifyAnimal.name ? modifyAnimal.name : old_animal.name;
 
-        animal.sex = modifyAnimal.sex ? displayToSex[modifyAnimal.sex] : old_animal.sex;
+        if (modifyAnimal.sex !== null && modifyAnimal.sex !== undefined && modifyAnimal.sex !== '') {
+            switch (modifyAnimal.sex) {
+                case Sex.Male:
+                    animal.sex = "m";
+                    break;
+                case Sex.Female:
+                    animal.sex = "f";
+                    break;
+                case Sex.Castrated:
+                    animal.sex = "c";
+                    break;
+                default:
+                    animal.sex = null;
+            }
+        } else {
+            switch (old_animal.sex) {
+                case Sex.Male:
+                    animal.sex = "m";
+                    break;
+                case Sex.Female:
+                    animal.sex = "f";
+                    break;
+                case Sex.Castrated:
+                    animal.sex = "c";
+                    break;
+                default:
+                    animal.sex = null;
+            }
+        }
 
         animal.fields = {...modifyAnimal.fields};
         for (let key in old_animal.fields) {
@@ -222,18 +243,6 @@ const AnimalTable = ({farms, cityfarm}) => {
         if (old_animal !== modifyAnimal) {
             axios.patch(`/animals/by_id/${animal_id}`, animal, token).then(displayAll);
         }
-    }
-
-    const sexToDisplay = {
-        "m": "Male",
-        "f": "Female",
-        "c": "Castrated"
-    };
-
-    const displayToSex = {
-        "Male": "m",
-        "Female": "f",
-        "Castrated": "c"
     }
 
     const fieldTypeSwitch = (type, params) => {
@@ -310,7 +319,7 @@ const AnimalTable = ({farms, cityfarm}) => {
 
     const defaultCols: GridColDef[] = [
         { field: 'name', type: 'singleSelect', headerName: 'Name', headerClassName: 'grid-header', headerAlign: 'left', flex: 1, editable: true,
-            renderCell: (animal) => {return <AnimalPopover animalID={animal.value._id}/>}, renderEditCell: (params) => {
+            renderCell: (animal) => {return <AnimalPopover animalID={animal.value.id}/>}, renderEditCell: (params) => {
                 params.value = params.value.name;
                 return <FormControl sx={{width: '100%'}}>
                     <TextField
@@ -406,52 +415,65 @@ const AnimalTable = ({farms, cityfarm}) => {
                         }}
                     />)
                 }},
-        { field: 'sex', type: 'singleSelect', headerName: 'Sex', headerClassName: 'grid-header', headerAlign: 'left', flex: 1, editable: true, renderEditCell: (params) => {
-            return (<Autocomplete
-                style={{width: '100%'}}
-                size='medium'
-                renderOption={(props, option) => {
-                    return (
-                        <li {...props} key={option.id}>
-                            {option.name}
-                        </li>
-                    );
-                }}
-                renderInput={(params) => <TextField {...params}/>}
-                isOptionEqualToValue={(option, value) => option.id === value.id}
-                getOptionLabel={option => option.name}
-                value={{id: ["Male", "Female", "Castrated"].indexOf(params.value), name: params.value}}
-                onChange={(_, value) => {
-                    let current = {...modifyAnimal};
-                    if (value) {
-                        switch (value.name) {
-                            case 'Male':
-                                current.sex = Sex.Male;
-                                break;
-                            case 'Female':
-                                current.sex = Sex.Female;
-                                break;
-                            case 'Castrated':
-                                current.sex = Sex.Castrated;
-                                break;
-                            default:
-                                current.sex = null;
-                        }
-                    } else {
-                        current.sex = null;
-                    }
-  
-                    setModifyAnimal(current);
-                    gridApi.current.setEditCellValue({id: params.id, field: params.field, value: value ? value.name : null});
-                }}
-                options={
-                    [
-                        {id: 0, name: "Male"},
-                        {id: 1, name: "Female"},
-                        {id: 2, name: "Castrated"}
-                    ]
+        { field: 'sex', type: 'singleSelect', headerName: 'Sex', headerClassName: 'grid-header', headerAlign: 'left', flex: 1, editable: true,
+            renderCell: (params) => {
+                switch (params.value) {
+                    case Sex.Male:
+                        return "Male";
+                    case Sex.Female:
+                        return "Female";
+                    case Sex.Castrated:
+                        return "Castrated";
+                    default:
+                        return "Unknown";
                 }
-            />)
+            },
+            renderEditCell: (params) => {
+                return (<Autocomplete
+                    style={{width: '100%'}}
+                    size='medium'
+                    renderOption={(props, option) => {
+                        return (
+                            <li {...props} key={option.id}>
+                                {option.name}
+                            </li>
+                        );
+                    }}
+                    renderInput={(params) => <TextField {...params}/>}
+                    isOptionEqualToValue={(option, value) => option.id === value.id}
+                    getOptionLabel={option => option.name}
+                    value={{id: params.value, name: ["Male", "Female", "Castrated"][params.value]}}
+                    onChange={(_, value) => {
+                        let current = {...modifyAnimal};
+                        if (value) {
+                            switch (value.name) {
+                                case 'Male':
+                                    current.sex = Sex.Male;
+                                    break;
+                                case 'Female':
+                                    current.sex = Sex.Female;
+                                    break;
+                                case 'Castrated':
+                                    current.sex = Sex.Castrated;
+                                    break;
+                                default:
+                                    current.sex = null;
+                            }
+                        } else {
+                            current.sex = null;
+                        }
+    
+                        setModifyAnimal(current);
+                        gridApi.current.setEditCellValue({id: params.id, field: params.field, value: value ? value.id : null});
+                    }}
+                    options={
+                        [
+                            {id: 0, name: "Male"},
+                            {id: 1, name: "Female"},
+                            {id: 2, name: "Castrated"}
+                        ]
+                    }
+                />)
         }},
     ];
     const [cols, setCols] = useState(defaultCols);
@@ -518,14 +540,15 @@ const AnimalTable = ({farms, cityfarm}) => {
                                 {
                                     id: 1,
                                     field: "type",
-                                    operator: "contains",
-                                    value: params.value,
+                                    operator: "is",
+                                    value: String(params.value),
                                 },
                             ],
                         };
                         setFilterModel(newModel);
+                        const schema_name: string = String(params.value).toLowerCase();
 
-                        let schema = schemas.find((schema) => {return schema.name.toLowerCase() === (params.value as string).toLowerCase()});
+                        let schema = schemas.find((schema) => {return schema.name.toLowerCase() === schema_name});
                         setSelectedSchema(schema ? schema : null);
                     }
                 }}
