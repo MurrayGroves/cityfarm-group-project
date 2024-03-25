@@ -53,7 +53,7 @@ const AnimalCreator = (props) => {
         switch(schema._fields[field]._type) {   /* check the type of the field and display appropriate input method */
             case "java.lang.Boolean":
                 return (
-                    <FormControl error={error} required={req} sx={{width: '100%'}}>
+                    <FormControl fullWidth error={error} required={req}>
                     <FormHelperText style={{margin: '0 0 2.5px 5px'}}>{req ? 'Required' : 'Not Required'}</FormHelperText>
                     <Select
                         value={newAnimal.fields[field] !== undefined ? newAnimal.fields[field] : ''}
@@ -72,7 +72,7 @@ const AnimalCreator = (props) => {
                 );
             case "java.lang.String":
                 return (
-                    <FormControl error={error} required={req} sx={{width: '100%'}}>
+                    <FormControl fullWidth error={error} required={req}>
                     <FormHelperText style={{margin: '0 0 2.5px 5px'}}>{req ? 'Required' : 'Not Required'}</FormHelperText>
                     <TextField
                         fullWidth
@@ -88,7 +88,7 @@ const AnimalCreator = (props) => {
                 );
             case "java.lang.Integer":
                 return (
-                    <FormControl error={error} required={req} sx={{width: '100%'}}>
+                    <FormControl fullWidth error={error} required={req}>
                     <FormHelperText style={{margin: '0 0 2.5px 5px'}}>{req ? 'Required' : 'Not Required'}</FormHelperText>
                     <TextField
                         type='number'
@@ -105,7 +105,7 @@ const AnimalCreator = (props) => {
                 );
             case "java.lang.Double":
                 return (
-                    <FormControl error={error} required={req} sx={{width: '100%'}}>
+                    <FormControl fullWidth error={error} required={req}>
                     <FormHelperText style={{margin: '0 0 2.5px 5px'}}>{req ? 'Required' : 'Not Required'}</FormHelperText>
                     <TextField
                         type='number'
@@ -122,7 +122,7 @@ const AnimalCreator = (props) => {
                 );
             case "java.time.ZonedDateTime":
                 return (
-                    <FormControl error={error} required={req} sx={{width: '100%'}}>
+                    <FormControl fullWidth error={error} required={req}>
                     <FormHelperText style={{margin: '0 0 2.5px 5px'}}>{req ? 'Required' : 'Not Required'}</FormHelperText>
                     <DatePicker
                         onChange={(e) => {
@@ -144,12 +144,12 @@ const AnimalCreator = (props) => {
             <Table>
                 <TableHead>
                     <TableRow>
-                        <TableCell width='16.7%'>Name</TableCell>
-                        <TableCell width='16.7%'>Type</TableCell>
-                        <TableCell width='16.7%'>Father</TableCell>
-                        <TableCell width='16.7%'>Mother</TableCell>
-                        <TableCell width='16.6%'>Sex</TableCell>
-                        <TableCell width='16.6%'>Farm</TableCell>
+                        <TableCell sx={{minWidth: '120px'}} width='16.7%'>Name</TableCell>
+                        <TableCell sx={{minWidth: '120px'}} width='16.7%'>Type</TableCell>
+                        <TableCell sx={{minWidth: '120px'}} width='16.7%'>Father</TableCell>
+                        <TableCell sx={{minWidth: '120px'}} width='16.7%'>Mother</TableCell>
+                        <TableCell sx={{minWidth: '120px'}} width='16.6%'>Sex</TableCell>
+                        <TableCell sx={{minWidth: '120px'}} width='16.6%'>Farm</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>

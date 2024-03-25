@@ -27,7 +27,7 @@ const AnimalTable = ({farms, device}) => {
     const [modifyAnimal, setModifyAnimal] = useState({});
     const [editingRow, setEditingRow] = useState(null);
 
-    const [deleteAnimal, setDeleteAnimal] = useState({})
+    const [deleteAnimals, setDeleteAnimals] = useState([])
 
     const [create, setCreate] = useState(false);
     const [del, setDel] = useState(false);
@@ -37,19 +37,21 @@ const AnimalTable = ({farms, device}) => {
 
     const gridApi = useGridApiRef();
 
-    const handleDelAnimal = (animal) => (async () => {
-        try {
-            const response = await axios.delete(`/animals/by_id/${animal._id}`, token);
-        } catch (error) {
-            if (error.response.status === 401) {
-                window.location.href = "/login";
-                return;
-            } else {
-                window.alert(error);
-            }
-        }
+    const handleDelAnimals = (animals) => {
+        animals.map(async (animal) => {
+            try {
+                const response = await axios.delete(`/animals/by_id/${animal._id}`, token);
+                console.log(response);
+            } catch (error) {
+                if (error.response.status === 401) {
+                    window.location.href = "/login";
+                    return;
+                } else {
+                    window.alert(error);
+                }
+            }})
         window.location.reload(false);
-    })()
+    }
 
     function displayAll() {
         (async () => {
@@ -503,8 +505,13 @@ const AnimalTable = ({farms, device}) => {
                                 <EditIcon/>
                             </IconButton>
                             <IconButton onClick={() => {
-                                let ani = animalList.find((animal) => {return animal._id === params.row.id});
-                                setDeleteAnimal(ani);
+                                let animals = []
+                                if (gridApi.current.getSelectedRows().size > 0) {
+                                    animals = animalList.filter((animal => Array.from(gridApi.current.getSelectedRows().keys()).includes(animal._id)))
+                                } else {
+                                    animals = animalList.filter((animal) => animal._id === params.row.id)
+                                }
+                                setDeleteAnimals(animals);
                                 setDel(true);
                             }}>
                                 <Delete/>
@@ -562,10 +569,12 @@ const AnimalTable = ({farms, device}) => {
         <Backdrop style={{zIndex: '4', background: '#000000AA'}} open={del} onClick={() => {setDel(false);}}>
             <Alert
                 severity='warning'
-                action={<Button color='warning' variant='contained' onClick={() => handleDelAnimal(deleteAnimal)}>Yes</Button>}
+                action={<Button color='warning' variant='contained' onClick={() => handleDelAnimals(deleteAnimals)}>Yes</Button>}
             >
                 <AlertTitle>Confirmation</AlertTitle>
-                Are you sure you want to delete {deleteAnimal.name}?
+                {deleteAnimals.length > 1
+                    ? <p>Are you sure you want to delete {deleteAnimals.at(0).name} and others?</p>
+                    : deleteAnimals.length > 0 && <p>Are you sure you want to delete {deleteAnimals.at(0).name}?</p>}
             </Alert>
         </Backdrop>
     </>)

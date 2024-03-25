@@ -42,7 +42,6 @@ const FarmTabs = (props) => {
                         },
                     }}
                 >
-                    {console.log('rerendering')}
                     <Tab value={null} label="All"/>
                     {Object.values(farms).map((farm) => <Tab key={farm} value={farm} label={readableFarm(farm)}/>)}
                     {/*<Tab value={farms.WH} label="Windmill Hill"/>
