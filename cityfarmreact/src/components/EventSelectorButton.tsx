@@ -21,6 +21,12 @@ export const EventSelectorButton = (
         }
         getEvent();
     }, [currentEventID, cityfarm.events_cache])
+
+    // Close the dialog when the event is selected
+    useEffect(() => {
+        console.log("Current Event ID", currentEventID)
+        setEventDialog(null)
+    }, [currentEventID])
     
     return (
         currentEventID === null || currentEventID === '' ?

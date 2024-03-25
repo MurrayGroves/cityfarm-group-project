@@ -1,11 +1,10 @@
 import {Calendar as BigCalendar, dayjsLocalizer} from 'react-big-calendar';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
-import React, {useState, useEffect, useCallback} from 'react';
+import React, {useState, useEffect, useCallback, ChangeEvent} from 'react';
 import dayjs from 'dayjs';
 import "../pages/Calendar.css";
-import Event from "./Event";
-import CreateEvent from "./FindOrCreateEvent.tsx";
-import AnimalPopover from "./AnimalPopover";
+import Event from "./Event.jsx";
+import AnimalPopover from "./AnimalPopover.jsx";
 import Close from '@mui/icons-material/Close';
 import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
@@ -17,15 +16,14 @@ import AddIcon from '@mui/icons-material/Add';
 import Delete from '@mui/icons-material/Delete';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
-import AssociateAnimal from './AssociateAnimal';
-import axios from '../api/axiosConfig'
-import AssociateEnclosure from './AssociateEnclosure';
-import { getConfig } from '../api/getToken';
+import AssociateAnimal from './AssociateAnimal.jsx';
+import axios from '../api/axiosConfig.js'
+import AssociateEnclosure from './AssociateEnclosure.jsx';
+import { getConfig } from '../api/getToken.js';
+import { CityFarm } from '../api/cityfarm.ts';
 
-export const EventCreator = (props) => {
-    const farms = props.farms;
-
-    const [newEvent,setNewEvent] = useState({
+export const EventCreator = ({farms, style, cityfarm, setEvent}: {farms: any, style: any, cityfarm: CityFarm, setEvent: (eventID: string) => void}) => {
+    const [newEvent,setNewEvent] = useState<any>({
         title: "",
         allDay: true,
         start: new Date(),
@@ -91,8 +89,10 @@ export const EventCreator = (props) => {
         }
 
         try {
-            recurring ? await axios.post(`/events/create/recurring`, newEvent, token)
+            const response = recurring ? await axios.post(`/events/create/recurring`, newEvent, token)
                       : await axios.post(`/events/create/once`, newEvent, token)
+
+            setEvent(response.data._id);
         } catch(error) {
             if (error.response.status === 401) {
                 window.location.href = "/login";
@@ -111,9 +111,7 @@ export const EventCreator = (props) => {
             animals: [],
             description: "",
             enclosures: []
-        });
-        
-        window.location.reload(false);
+        });        
     }
 
     function showingTime(isShown) {
@@ -123,9 +121,10 @@ export const EventCreator = (props) => {
                 <DateTimePicker
                     value={recurring ? dayjs(newEvent.firstStart) : dayjs(newEvent.start)}
                     onChange={(e) => {
-                        recurring ?
-                            setNewEvent({...newEvent, firstStart: e.$d, firstEnd: newEvent.firstEnd < e.$d ? e.$d : newEvent.firstEnd})
-                            : setNewEvent({...newEvent, start: e.$d, end: newEvent.end < e.$d ? e.$d : newEvent.end})
+                        const dstring = e?.toISOString() ?? "0";
+                        return recurring ?
+                            setNewEvent({...newEvent, firstStart: dstring, firstEnd: newEvent.firstEnd < dstring ? dstring : newEvent.firstEnd})
+                            : setNewEvent({...newEvent, start: dstring ?? newEvent.start, end: newEvent.end < dstring ?? newEvent.end ? dstring : newEvent.end})
                     }}
                     slotProps={{textField: {fullWidth: true, size: 'small'}}}
                 />
@@ -133,9 +132,10 @@ export const EventCreator = (props) => {
                 <DateTimePicker
                     value={recurring ? dayjs(newEvent.firstEnd) : dayjs(newEvent.end)}
                     onChange={(e) => {
+                        const dstring = e?.toISOString() ?? "0";
                         recurring ?
-                            setNewEvent({...newEvent, firstEnd: e.$d, firstStart: e.$d < newEvent.firstStart ? e.$d : newEvent.firstStart})
-                            : setNewEvent({...newEvent, end: e.$d, start: e.$d < newEvent.start ? e.$d : newEvent.start})
+                            setNewEvent({...newEvent, firstEnd: dstring, firstStart: dstring < newEvent.firstStart ? dstring : newEvent.firstStart})
+                            : setNewEvent({...newEvent, end: dstring, start: dstring < newEvent.start ? dstring : newEvent.start})
                     }}
                     slotProps={{textField: {fullWidth: true, size: 'small'}}}
                 />
@@ -147,9 +147,10 @@ export const EventCreator = (props) => {
                     value={recurring ? dayjs(newEvent.firstStart) : dayjs(newEvent.start)}
                     onChange={(e) => {
                         console.log('date changed');
+                        const dstring = e?.toISOString() ?? "0";
                         recurring ?
-                            setNewEvent({...newEvent, firstStart: e.$d, firstEnd: newEvent.firstEnd < e.$d ? e.$d : newEvent.firstEnd})
-                            : setNewEvent({...newEvent, start: e.$d, end: newEvent.end < e.$d ? e.$d : newEvent.end})
+                            setNewEvent({...newEvent, firstStart: dstring, firstEnd: newEvent.firstEnd < dstring ? dstring : newEvent.firstEnd})
+                            : setNewEvent({...newEvent, start: dstring, end: newEvent.end < dstring ? dstring : newEvent.end})
                     }}
                     slotProps={{textField: {fullWidth: true, size: 'small'}}}
                 />
@@ -157,9 +158,10 @@ export const EventCreator = (props) => {
                 <DatePicker
                     value={recurring ? dayjs(newEvent.firstEnd) : dayjs(newEvent.end)}
                     onChange={(e) => {
+                        const dstring = e?.toISOString() ?? "0";
                         recurring ?
-                            setNewEvent({...newEvent, firstEnd: e.$d, firstStart: e.$d < newEvent.firstStart ? e.$d : newEvent.firstStart})
-                            : setNewEvent({...newEvent, end: e.$d, start: e.$d < newEvent.start ? e.$d : newEvent.start})
+                            setNewEvent({...newEvent, firstEnd: dstring, firstStart: dstring < newEvent.firstStart ? dstring : newEvent.firstStart})
+                            : setNewEvent({...newEvent, end: dstring, start: dstring < newEvent.start ? dstring : newEvent.start})
                     }}
                     slotProps={{textField: {fullWidth: true, size: 'small'}}}
                 />
@@ -168,7 +170,7 @@ export const EventCreator = (props) => {
     }
 
     return (
-        <div style={{width: '400px', margin: '0 0 20px 0', padding: '10px', ...props.style}}>
+        <div style={{width: '400px', margin: '0 0 20px 0', padding: '10px', ...style}}>
             <h2 className='boxTitle'>Create New Event</h2>
             <div>
                 <TextField
@@ -180,12 +182,12 @@ export const EventCreator = (props) => {
                     value={newEvent.title}
                     onChange={(e)=>setNewEvent({...newEvent, title: e.target.value})}
                 />
-                {showingTime(!newEvent.allDay, "add")}
+                {showingTime(!newEvent.allDay)}
             </div>
 
             <div className='smallMarginTop'>
-                <FormControlLabel control={<Checkbox defaultChecked size='small'/>} label="All Day" onChange={() => changeAllDay(!newEvent.allDay, "add")}/>
-                <FormControlLabel control={<Checkbox size='small'/>} label="Recurring" onChange={() => changeRecurring(!recurring, "add")} />
+                <FormControlLabel control={<Checkbox defaultChecked size='small'/>} label="All Day" onChange={() => changeAllDay(!newEvent.allDay)}/>
+                <FormControlLabel control={<Checkbox size='small'/>} label="Recurring" onChange={() => changeRecurring(!recurring)} />
                 <Button variant='contained' style={{float: "right"}} onClick={()=>handleAddEvent()} endIcon={<AddIcon/>}>Create</Button>
             </div>
             {recurring && (
@@ -195,7 +197,7 @@ export const EventCreator = (props) => {
                     orientation='horizontal'
                     value={newEvent.delay}
                     exclusive
-                    onChange={(e) => setNewEvent({...newEvent, delay: e.target.value})}
+                    onChange={(e) => setNewEvent({...newEvent, delay: (e.target as HTMLInputElement).value})}
                 >
                     <ToggleButton value='P1D'>Daily</ToggleButton>
                     <ToggleButton value='P7D'>Weekly</ToggleButton>

@@ -11,7 +11,6 @@ import { Add, Delete, Close } from '@mui/icons-material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { getConfig } from '../api/getToken.js';
 
-import { FindOrCreateEvent } from './FindOrCreateEvent.tsx';
 import { CityFarm } from '../api/cityfarm.ts';
 import { Schema, Animal, Sex } from '../api/animals.ts';
 import { EventSelectorButton } from './EventSelectorButton.tsx';

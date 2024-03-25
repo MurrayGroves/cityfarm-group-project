@@ -1,5 +1,5 @@
 import { FindEvent } from './FindEvent.tsx';
-import { EventCreator } from './EventCreator';
+import { EventCreator } from './EventCreator.tsx';
 import { useState } from 'react';
 import { Tabs, Tab, Divider } from '@mui/material';
 import { CityFarm } from '../api/cityfarm';
@@ -15,7 +15,11 @@ export const FindOrCreateEvent = ({style, farms, cityfarm, setEvent}: {style: an
                 <Tab label="Find"/>
             </Tabs>
             <Divider/>
-            {finding === 1 ? <FindEvent cityfarm={cityfarm} setEvent={setEvent} farms={farms} style={{marginTop: '1%'}}/> : <EventCreator style={{marginTop: '1%'}} farms={farms}/>}
+            {finding === 1 ?
+                <FindEvent cityfarm={cityfarm} setEvent={setEvent} farms={farms} style={{marginTop: '1%'}}/>
+            :
+                <EventCreator style={{marginTop: '1%'}} farms={farms} cityfarm={cityfarm} setEvent={setEvent}/>
+            }
         </div>
     )
 }
