@@ -11,8 +11,9 @@ import org.springframework.lang.Nullable;
 
 import java.util.HashMap;
 import java.util.Objects;
-import java.util.Set;
+import java.util.List;
 import java.util.UUID;
+
 
 @Document("enclosures")
 public class Enclosure extends EnclosureGeneric {
@@ -26,22 +27,15 @@ public class Enclosure extends EnclosureGeneric {
 
     @JsonCreator
     @PersistenceCreator
-    public Enclosure(@NonNull String name, @Nullable HashMap<String, Integer> capacities, @Nullable HashMap<String, Set<AnimalCustom>> holding, @JsonProperty("_id") @Nullable String id, @JsonProperty("notes") @Nullable String notes, @JsonProperty("farm") @NonNull String farm) {
+    public Enclosure(@NonNull String name, @Nullable HashMap<String, Integer> capacities, @JsonProperty("holding") @Nullable List<AnimalCustom> holding, @JsonProperty("_id") @Nullable String id, @JsonProperty("notes") @Nullable String notes, @JsonProperty("farm") @NonNull String farm) {
         super(name, capacities, holding, notes, farm);
 
         // Generate `ID` if not present
         this.id = Objects.requireNonNullElseGet(id, () -> UUID.randomUUID().toString());
     }
 
-    public Enclosure(@NonNull String name, @Nullable HashMap<String, Integer> capacities, @Nullable HashMap<String, Set<AnimalCustom>> holding, @JsonProperty("notes") @Nullable String notes, @JsonProperty("farm") @NonNull String farm) {
+    public Enclosure(@NonNull String name, @Nullable HashMap<String, Integer> capacities, @JsonProperty("holding") @Nullable List<AnimalCustom> holding, @JsonProperty("notes") @Nullable String notes, @JsonProperty("farm") @NonNull String farm) {
         super(name, capacities, holding, notes, farm);
-
-        // Generate `ID`
-        this.id = UUID.randomUUID().toString();
-    }
-
-    public Enclosure(@NonNull String name, @NonNull String farm) {
-        super(name, farm);
 
         // Generate `ID`
         this.id = UUID.randomUUID().toString();

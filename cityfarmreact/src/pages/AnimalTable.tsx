@@ -1,14 +1,11 @@
 import React, {useEffect, useState} from "react";
 import axios from '../api/axiosConfig.js'
 import "./AnimalTable.css";
-import { DataGrid, GridColDef, GridFilterModel, useGridApiRef } from '@mui/x-data-grid';
-import { Paper , TextField, Button, Select, MenuItem, Dialog, FormControl, IconButton, Autocomplete} from '@mui/material/';
+import { DataGrid, FooterPropsOverrides, GridColDef, GridFilterModel, useGridApiRef } from '@mui/x-data-grid';
+import { Autocomplete, Backdrop, TableContainer, Paper, TextField, Button, Select, MenuItem, Fab, FormControlLabel, FormGroup, FormControl, FormHelperText, IconButton, Divider, Grid, Dialog, DialogContent, Alert, AlertTitle } from '@mui/material';
 import { GridAlignment } from "@mui/x-data-grid";
 
-import EditIcon from '@mui/icons-material/Edit';
-import DoneIcon from '@mui/icons-material/Done';
-import ClearIcon from '@mui/icons-material/Clear';
-import { Close } from '@mui/icons-material';
+import { Add as AddIcon, Edit as EditIcon, Delete, Done as DoneIcon, Clear as ClearIcon } from '@mui/icons-material';
 
 import AnimalCreator from "../components/AnimalCreator.tsx";
 import FarmMoveButton from "../components/FarmMoveButton.jsx";
@@ -22,7 +19,7 @@ import { getConfig } from '../api/getToken.js';
 import { Animal, Schema, Sex } from '../api/animals.ts';
 import { CityFarm } from "../api/cityfarm.ts";
 
-const AnimalTable = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
+const AnimalTable = ({farms, cityfarm, device}: {farms: any, cityfarm: CityFarm, device: any}) => {
     const [animalList, setAnimalList] = useState<Animal[]>([]); /* The State for the list of animals. The initial state is [] */
     const [searchTerm, setSearchTerm] = useState(''); /* The term being searched for in the searchbar */
     const [schemaList, setSchemaList] = useState<Schema[]>([]);
@@ -39,11 +36,28 @@ const AnimalTable = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
     const [selectedAnimals,setSelectedAnimals] = useState<string[]>([])
 
     const [rows, setRows] = useState<any[]>([]);
+    const [deleteAnimal, setDeleteAnimal] = useState<Animal | null>(null)
 
+    const [create, setCreate] = useState(false);
+    const [del, setDel] = useState(false);
 
     const token = getConfig();
 
     const gridApi = useGridApiRef();
+
+    const handleDelAnimal = (animal) => (async () => {
+        try {
+            const response = await axios.delete(`/animals/by_id/${animal._id}`, token);
+        } catch (error) {
+            if (error.response.status === 401) {
+                window.location.href = "/login";
+                return;
+            } else {
+                window.alert(error);
+            }
+        }
+        window.location.reload();
+    })()
 
     function displayAll() {
         (async () => {
@@ -70,7 +84,7 @@ const AnimalTable = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
         })()
     }
 
-    useEffect(getSchemas, []);
+    useEffect(getSchemas, [animalList]);
 
     useEffect(() => {
         (async () => {
@@ -319,7 +333,8 @@ const AnimalTable = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
 
     const defaultCols: GridColDef[] = [
         { field: 'name', type: 'singleSelect', headerName: 'Name', headerClassName: 'grid-header', headerAlign: 'left', flex: 1, editable: true,
-            renderCell: (animal) => {return <AnimalPopover animalID={animal.value.id}/>}, renderEditCell: (params) => {
+        renderCell: (animal) => {return (animal.value.id ? <AnimalPopover animalID={animal.value.id}/> : <p>Loading...</p>)}, renderEditCell: (params) => {
+
                 params.value = params.value.name;
                 return <FormControl sx={{width: '100%'}}>
                     <TextField
@@ -478,8 +493,6 @@ const AnimalTable = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
     ];
     const [cols, setCols] = useState(defaultCols);
 
-    const [creatorOffset, setCreatorOffset] = useState(36.5+20);
-
     return(<>
         <h1>Livestock</h1>
         <span style={{display: 'flex', justifyContent: 'space-between', height: '60px'}}>
@@ -488,22 +501,37 @@ const AnimalTable = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
                 placeholder='Search'
                 style={{margin: '0 20px 20px 0'}}
                 onChange={(e) => setSearchTerm(e.target.value)}
-            ></TextField>
+            />
             <FarmTabs farms={farms} selectedFarm={farm} setSelectedFarm={setFarm}/>
         </span>
-        <Paper style={{height: `calc(100vh - (210.88px + ${creatorOffset}px))`, marginBottom: '10px'}}>
-            <DataGrid editMode="row" apiRef={gridApi} disableRowSelectionOnClick filterModel={filterModel} style={{fontSize: '1rem'}} checkboxSelection
-                      onRowSelectionModelChange={(ids) => {
-                        setSelectedAnimals(ids.map(id => id.toString()));
-                      }}
-                      columns={[...cols, {
+        <div style={{display: 'flex', flexDirection: 'column', height: 'calc(100% - 150.88px)'}}>
+        {/* this flex ain't flexing :( */}
+        <Paper elevation={3} style={{flex: 1, minHeight: '0', minWidth: '0'}}>
+            <DataGrid editMode="row" apiRef={gridApi} disableRowSelectionOnClick filterModel={filterModel} sx={{fontSize: '1rem'}} checkboxSelection
+                paginationMode="server"
+                rowCount={0}
+                slots={{
+                    footer: CustomFooter
+                }}
+                slotProps={{
+                    footer: {
+                        setFilterModel,
+                        selectedSchema,
+                        setSelectedSchema,
+                        create,
+                        setCreate
+                    } as FooterPropsOverrides
+                }}
+                onRowSelectionModelChange={(ids) => {
+                    setSelectedAnimals(ids.map(id => id.toString()));
+                }}
+                columns={[...cols, {
                     field: 'edit',
                     headerName: '',
                     disableColumnMenu: true,
                     sortable: false,
                     headerClassName: 'grid-header',
                     headerAlign: 'right',
-                    flex: 0.225,
                     renderCell: (params) => {
                         return editingRow === params.row.id ?
                             <div>
@@ -523,6 +551,7 @@ const AnimalTable = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
                                 </IconButton>
                             </div>
                         :
+                            <div>
                             <IconButton onClick={() => {
                                 let obj = animalList.find((animal) => {return animal.id === params.row.id});
                                 setModifyAnimal(obj);
@@ -531,6 +560,14 @@ const AnimalTable = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
                             }}>
                                 <EditIcon/>
                             </IconButton>
+                            <IconButton onClick={() => {
+                                let ani = animalList.find((animal) => {return animal.id === params.row.id});
+                                if (ani) setDeleteAnimal(ani);
+                                setDel(true);
+                            }}>
+                                <Delete/>
+                            </IconButton>
+                            </div>
                     }
                 }]}
                 rows={rows} onCellClick={(params, event, details) => {
@@ -564,25 +601,61 @@ const AnimalTable = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
                 }}
             />
         </Paper>
-        <div style={{marginTop: '0', display: 'flex'}}>            
-            <Button variant="contained" onClick={() => {
-                setFilterModel({items: []});
-                setSelectedSchema(null);
-            }}>Clear Filter</Button>
-            {selectedSchema ? <p style={{marginLeft: '15px'}}>Currently filtering to show {selectedSchema.name}s</p> : <></>}
-        </div>
-        <AnimalCreator cityfarm={cityfarm} animalList={animalList} schemaList={schemaList} setOffset={setCreatorOffset} farms={farms}/>
-        <>{
+
+        {device === 'mobile' ?
+        <Dialog PaperProps={{sx: {overflow: 'visible'}}} fullWidth maxWidth='xl' open={create} onClose={() => setCreate(false)}>
+            <DialogContent sx={{p: 0}}>
+                <AnimalCreator cityfarm={cityfarm} animalList={animalList} schemaList={schemaList} farms={farms} device={device}/>
+            </DialogContent>
+        </Dialog>
+        :
+        <>{create && <Paper sx={{mt: '10px'}} elevation={3}><AnimalCreator cityfarm={cityfarm} animalList={animalList} schemaList={schemaList} farms={farms} device={device}/></Paper>}</>}
+        <div className="fmButtons">{
             selectedAnimals.length > 0 ? (
                 Object.entries(farms).map((farm) => (
                         <React.Fragment key={String(farm)}>
                             <FarmMoveButton farm={farm} ids={selectedAnimals}/>
                         </React.Fragment>
-                    ))
-                ) :  ''
-        }
+                    )))
+            :  ''}
+        </div>
+        </div>
+        <Backdrop style={{zIndex: '4', background: '#000000AA'}} open={del} onClick={() => {setDel(false);}}>
+            <Alert
+                severity='warning'
+                action={<Button color='warning' variant='contained' onClick={() => handleDelAnimal(deleteAnimal)}>Yes</Button>}
+            >
+                <AlertTitle>Confirmation</AlertTitle>
+                Are you sure you want to delete {deleteAnimal?.name}?
+            </Alert>
+        </Backdrop>
+    </>)
+}
 
-        </>
+type CustomFooterProps = {
+    setFilterModel: any,
+    selectedSchema: any,
+    setSelectedSchema: any,
+    create: any,
+    setCreate: any
+}
+
+const CustomFooter: React.FC<CustomFooterProps> = ({setFilterModel, selectedSchema, setSelectedSchema, create, setCreate}) => {
+    return (<>
+        <Divider/>
+        <div style={{maxHeight: '56px', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+            <span style={{display: 'flex', alignItems: 'center'}}>
+            <Button sx={{width: '125.9px', margin: '10px'}} variant="contained" onClick={() => {
+                setFilterModel({items: []});
+                setSelectedSchema(null);
+            }}>Clear Filter</Button>
+            {selectedSchema ? <p style={{margin: '10px 15px 10px 5px'}}>Showing {selectedSchema._name}s</p> : <></>}
+            </span>
+            {create ?
+            <Button sx={{width: '100px', margin: '10px'}} endIcon={<Delete/>} variant='contained' color='warning' onClick={() => setCreate(false)}>Discard</Button>
+            : <Button sx={{width: '100px', margin: '10px'}} variant="contained" color='primary' onClick={() => setCreate(true)} endIcon={<AddIcon/>}>Create</Button>
+            }
+        </div>
     </>)
 }
 

@@ -30,7 +30,7 @@ const classToReadable = {
 }
 
 const Schemas = () => {
-    const [schemaList, setSchemaList] = useState([]); /* The State for the list of enclosures. The initial state is [] */
+    const [schemaList, setSchemaList] = useState([]); /* The State for the list of schemas. The initial state is [] */
     const [searchTerm, setSearchTerm] = useState(''); /* The term being search for in the searchbar */
     const [newFields, setNewFields] = useState([{"name": "", "type": "", "required": ""}])
     const [newSchemaName, setNewSchemaName] = useState("");
@@ -114,14 +114,15 @@ const Schemas = () => {
     return(<>
         <h1>Animal Types</h1>
         <h2>Create New Animal Type</h2>
-        <TableContainer style={{marginTop: '20px'}} component={Paper}>
+        <Paper sx={{marginTop: '20px'}} elevation={3}>
+        <TableContainer>
         <div style={{marginBottom: '20px', display: 'flex'}}>
             <TextField error={newSchemaName === ''} required style={{margin: '15px 15px 0 15px'}} label='Name' placeholder="Species Name" value={newSchemaName} size="small"
                 onChange={(e) => {
                     setNewSchemaName(e.target.value.charAt(0).toUpperCase() + e.target.value.slice(1));
                 }}
             />
-            <Button disableElevation variant="contained" aria-label="add" endIcon={<AddIcon />} style={{maxHeight: '40px', marginTop: '15px'}}
+            <Button disableElevation variant="contained" aria-label="add" endIcon={<AddIcon />} style={{maxHeight: '40px', margin: '15px 15px 0 0'}}
                 onClick={() => {
                     if (Object.values(inputErr).filter((err) => err === true).length > 0) {
                         return setShowErr(true);
@@ -159,7 +160,7 @@ const Schemas = () => {
             <Table aria-label="fields table">
                 <TableHead>
                     <TableRow>
-                        <TableCell width='30%'>Property Name</TableCell>
+                        <TableCell sx={{minWidth: '168px'}} width='30%'>Property Name</TableCell>
                         <TableCell width='30%'>Data Type</TableCell>
                         <TableCell width='30%'>Required</TableCell>
                         <TableCell width='10%'/>
@@ -238,6 +239,7 @@ const Schemas = () => {
                 </TableBody>
             </Table>
         </TableContainer>
+        </Paper>
 
         <h2>Existing Animal Types</h2>
 
@@ -246,12 +248,13 @@ const Schemas = () => {
                 setSearchTerm(e.target.value);
             }}
         />
-        <Grid container spacing={2} columns={2}>
+        <Grid container spacing={3} columns={{xs: 1, lg: 2}}>
             {schemaList.map((schema) => (
                 <Grid item xs={1} key={schema._name}>
                     <div className="schema-card">
                         <h2 style={{margin: '0 0 10px 0'}}>{schema._name}</h2>
-                        <TableContainer component={Paper}>
+                        <Paper elevation={3}>
+                        <TableContainer>
                             <Table aria-label="fields table">
                                 <TableHead>
                                 <TableRow>
@@ -292,6 +295,7 @@ const Schemas = () => {
                                 </TableBody>
                             </Table>
                             </TableContainer>
+                            </Paper>
                     </div>
                 </Grid>
             ))}

@@ -1,4 +1,4 @@
-import Tabs from "@mui/material/Tabs";
+import Tabs, {tabsClasses} from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import "./FarmTabs.css";
 import { React, useState } from 'react';
@@ -19,14 +19,35 @@ const FarmTabs = (props) => {
         }
     }
 
+    function readableFarm(farm) {
+        switch(farm) {
+            case "WH": return 'Windmill Hill';
+            case "HC": return 'Hartcliffe';
+            case "SW": return 'St Werburghs';
+            default: return 'Loading...';
+        }   
+    }
+
     return (
         <div className="tab-container">
             <ThemeProvider theme={tabTheme}>
-                <Tabs value={props.selectedFarm} onChange={(e, farm)=>{props.setSelectedFarm(farm)}}>
+                <Tabs
+                    variant='scrollable'
+                    scrollButtons='auto'
+                    value={props.selectedFarm}
+                    onChange={(e, farm)=>{props.setSelectedFarm(farm)}}
+                    sx={{
+                        [`& .${tabsClasses.scrollButtons}`]: {
+                          '&.Mui-disabled': { opacity: 0.3 },
+                        },
+                    }}
+                >
+                    {console.log('rerendering')}
                     <Tab value={null} label="All"/>
-                    <Tab value={farms.WH} label="Windmill Hill"/>
+                    {Object.values(farms).map((farm) => <Tab key={farm} value={farm} label={readableFarm(farm)}/>)}
+                    {/*<Tab value={farms.WH} label="Windmill Hill"/>
                     <Tab value={farms.HC} label="Hartcliffe"/>
-                    <Tab value={farms.SW} label="St Werburghs"/>
+                    <Tab value={farms.SW} label="St Werburghs"/>*/}
                 </Tabs>
             </ThemeProvider>
         </div>

@@ -1,17 +1,16 @@
 package cityfarm.api.enclosure;
 
 import cityfarm.api.animals.AnimalCustom;
+import cityfarm.api.animals.AnimalRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.http.HttpHeaders;
-import org.springframework.boot.actuate.autoconfigure.observation.ObservationProperties;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.http.HttpHeaders;
 
 import java.net.URI;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @CrossOrigin(origins = {"http://localhost:3000", "https://cityfarm.murraygrov.es"}, methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE, RequestMethod.PATCH})
@@ -23,19 +22,28 @@ public class EnclosureController {
     EnclosureRepositoryCustom enclosureRepositoryCustom;
 
     @Autowired
+    AnimalRepository animalRepository;
+
+    @Autowired
     MongoTemplate mongoTemplate;
 
     //HttpHeaders responseHeaders = new HttpHeaders();
 
     @PostMapping("/api/enclosures/create")
-    public ResponseEntity<Enclosure> create_enclosure(@RequestBody EnclosureGeneric enclosureReq) {
+    public ResponseEntity<Enclosure> create_enclosure(@RequestBody CreateEnclosureRequest enclosure) {
 
-        Enclosure enclosure = new Enclosure(enclosureReq);
+        List<AnimalCustom> holding = new ArrayList<>();
+        for (String animal: enclosure.holding) {
+            AnimalCustom anm = animalRepository.findAnimalById(animal);
+            holding.add(anm);
+        }
 
-        enclosureRepository.save(enclosure);
+        Enclosure new_enclosure = new Enclosure(enclosure.name, enclosure.capacities, holding, enclosure.notes, enclosure.farm);
 
-        String location = String.format("/enclosures/by_id/%s", enclosure.get_id());
-        return ResponseEntity.created(URI.create(location)).body(enclosure);
+        enclosureRepository.save(new_enclosure);
+
+        String location = String.format("/enclosures/by_id/%s", new_enclosure.get_id());
+        return ResponseEntity.created(URI.create(location)).body(new_enclosure);
     }
 
     @GetMapping("/api/enclosures")
@@ -75,49 +83,51 @@ public class EnclosureController {
         return ResponseEntity.ok().body(enclosures);
     }
 
-    @PatchMapping("/api/enclosures/by_id/{id}/holding")
-    public ResponseEntity<String> set_enclosure_holding(@PathVariable String id, @RequestBody HashMap<String, Set<AnimalCustom>> holding) {
-        Enclosure enc = enclosureRepository.findEnclosureById(id);
+//    THIS CODE DOESN'T WORK ANY MORE, NEEDS TO BE ADAPTED
+    
+//    @PatchMapping("/api/enclosures/by_id/{id}/holding")
+//    public ResponseEntity<String> set_enclosure_holding(@PathVariable String id, @RequestBody List<AnimalCustom> holding) {
+//        Enclosure enc = enclosureRepository.findEnclosureById(id);
+//
+//        for (String type : holding.keySet()) {
+//            if (!enc.capacities.containsKey(type)) {
+//                continue;
+//            }
+//            if (holding.get(type).size() > enc.capacities.get(type)) {
+//                return ResponseEntity.badRequest().body("Holding exceeds capacity");
+//            }
+//        }
+//
+//        long res = enclosureRepositoryCustom.updateHolding(id, holding);
+//
+//        // If no documents updated
+//        if (res == 0) {
+//            return ResponseEntity.notFound().build();
+//        }
+//
+//        return ResponseEntity.ok().build();
+//    }
 
-        for (String type : holding.keySet()) {
-            if (!enc.capacities.containsKey(type)) {
-                continue;
-            }
-            if (holding.get(type).size() > enc.capacities.get(type)) {
-                return ResponseEntity.badRequest().body("Holding exceeds capacity");
-            }
-        }
-
-        long res = enclosureRepositoryCustom.updateHolding(id, holding);
-
-        // If no documents updated
-        if (res == 0) {
-            return ResponseEntity.notFound().build();
-        }
-
-        return ResponseEntity.ok().build();
-    }
-
-    @PatchMapping("/api/enclosures/by_id/{id}/capacities")
-    public ResponseEntity<String> set_enclosure_capacities(@PathVariable String id, @RequestBody HashMap<String, Integer> capacities) {
-        Enclosure enc = enclosureRepository.findEnclosureById(id);
-
-        for (String type : capacities.keySet()) {
-            Set<AnimalCustom> holds = Objects.requireNonNullElse(enc.holding.get(type), new HashSet<>());
-            if (holds.size() > capacities.get(type)) {
-                return ResponseEntity.badRequest().body("Capacity too low for current inhabitants");
-            }
-        }
-
-        long res = enclosureRepositoryCustom.updateCapacities(id, capacities);
-
-        // If no documents updated
-        if (res == 0) {
-            return ResponseEntity.notFound().build();
-        }
-
-        return ResponseEntity.ok().build();
-    }
+//    @PatchMapping("/api/enclosures/by_id/{id}/capacities")
+//    public ResponseEntity<String> set_enclosure_capacities(@PathVariable String id, @RequestBody HashMap<String, Integer> capacities) {
+//        Enclosure enc = enclosureRepository.findEnclosureById(id);
+//
+//        for (int i = 0; i < enc.holding.size(); i++) {
+//         List<AnimalCustom> holds = new ArrayList(Objects.requireNonNullElse(enc.holding.get(type), new HashSet<>()));
+//            if (holds.size() > capacities.get(type)) {
+//                return ResponseEntity.badRequest().body("Capacity too low for current inhabitants");
+//            }
+//        }
+//
+//        long res = enclosureRepositoryCustom.updateCapacities(id, capacities);
+//
+//        // If no documents updated
+//        if (res == 0) {
+//            return ResponseEntity.notFound().build();
+//        }
+//
+//        return ResponseEntity.ok().build();
+//    }
 
     @PatchMapping("/api/enclosures/by_id/{id}/name/{newName}")
     public ResponseEntity<String> set_enclosure_name(@PathVariable String id, @PathVariable String newName) {

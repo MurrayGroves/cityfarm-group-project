@@ -22,3 +22,27 @@
 .table-shadow a:hover {
     color: grey;
 }
+
+.fmButtons{
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    justify-content: space-evenly;
+    flex-direction: row;
+}
+
+.scroll-cell {
+    overflow-y: scroll !important;
+    align-items: start !important;
+}
+
+.scroll-cell ul {
+    margin: 0;
+    padding-left: 5px;
+}
+
+.MuiAlert-action {
+    align-items: flex-end !important;
+    padding-bottom: 8px !important;
+}

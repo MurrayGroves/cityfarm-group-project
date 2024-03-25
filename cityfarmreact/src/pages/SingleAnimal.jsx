@@ -22,6 +22,7 @@ const SingleAnimal = (props) => {
     const [selectedEvent,setSelectedEvent] = useState("No event selected");
     const [schema, setSchema] = useState();
     const [children,setChildren] = useState([])
+    const [eventsAll,setEventAll] = useState(false)
 
     const token = getConfig();
 
@@ -160,8 +161,49 @@ const SingleAnimal = (props) => {
         }
     }
 
+    const singleEvent = (e,index)=>{
+        return(
+            <Paper elevation={3} className="event-box" key={index}>
+                <h2 onClick={() => handleEventClick(e)}>{e.title}</h2>
+                {
+                    e.allDay ?
+                        <div>
+                            <p>{e.start.toLocaleDateString()} {e.end == null ? <></> : e.end.toLocaleDateString() === e.start.toLocaleDateString() ? <></> : " - " + e.end.toLocaleDateString()}</p>
+                        </div>
+                        :
+                        <div>
+                            <p>{e.start.toLocaleString([], {year: '2-digit', month: '2-digit', day: '2-digit', hour: '2-digit', minute:'2-digit'})} - {e.start.toLocaleDateString() === e.end.toLocaleDateString() ? e.end.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}): e.end.toLocaleString([], {year: '2-digit', month: '2-digit', day: '2-digit', hour: '2-digit', minute:'2-digit'})}</p>
+                        </div>
+
+                }
+                {e.farms.length !== 0 ? <h3>Farms</h3> : <></>}
+                {e.farms.includes(farms.WH) ? <p>Windmill Hill</p> : <></>}
+                {e.farms.includes(farms.HC) ? <p>Hartcliffe</p> : <></>}
+                {e.farms.includes(farms.SW) ? <p>St Werberghs</p> : <></>}
+                {e.animals.length !== 0 ? <h3>Animals</h3> : <></>}
+                {e.animals.map((animalID) => (
+                    <AnimalPopover key={animalID._id} animalID={animalID._id}/>
+                ))}
+                {e.enclosures.length !== 0 &&
+                    <div>
+                        <h3>Enclosures</h3>
+                        {e.enclosures.map((enclosure, index) => (
+                            <p key={index}>{enclosure.name}</p>
+                        ))}
+                    </div>}
+                {e.description !== "" ?
+                    <div>
+                        <h3>Description</h3>
+                        {e.description}
+                    </div> : <></>}
+            </Paper>
+        )
+    }
+
     return<>
+
         <h1>{chosenAnimal.name}</h1>
+        <div className='details'>
         <div><b>Sex:</b> {chosenAnimal.sex === undefined ? <span>Loading...</span> : (chosenAnimal.sex === 'f' ? <span>Female</span> : (chosenAnimal.sex === 'm' ? <span>Male</span> : <span>Castrated</span>))}</div>
         <div><b>Species:</b> {chosenAnimal.type}</div>
         <div style={{display: 'flex'}}>
@@ -172,7 +214,7 @@ const SingleAnimal = (props) => {
         </div>
         <div style={{display: 'flex'}}>
             <span style={{marginRight: '0.5em'}}><b>Mother:</b></span>
-            {chosenAnimal.mother ? 
+            {chosenAnimal.mother ?
                 <AnimalPopover key={chosenAnimal.mother} animalID={chosenAnimal.mother}/>
             : <span>Unregistered</span>}
         </div>
@@ -185,22 +227,20 @@ const SingleAnimal = (props) => {
         {chosenAnimal.fields && Object.entries(chosenAnimal.fields).map(([name, value]) => {
             return fieldTypeSwitch(name, value);
         })}
-        <br/>
-        <br/>
+        </div>
+
         {
             Array.isArray(children) && children.length > 0 && (
-            <div>
+            <div className="children">
                 <b>Children:</b>
                 {children.map((animal, index) => {
                     return (<AnimalPopover key={animal} animalID={animal} />);
                 })}
             </div>
         )}
-        <div>
-
+        <div className="farmButtons">
             {Object.entries(farms).map((farm) => (
                 <React.Fragment key={farm}>
-
                     <FarmMoveButton farm={farm} ids={[chosenAnimal._id]  }/>
                 </React.Fragment>
             ))}
@@ -208,26 +248,22 @@ const SingleAnimal = (props) => {
 
 
         <div>
-            {relEvents.length !== 0 ? <h2>Linked Events</h2> : <></>}
-            {relEvents.map((event, index) => {
-            return(
-                <div key={index}>
-                    {/* Display relevant event information very similar to event view*/}
-                    <h3 onClick={() => handleEventClick(event)}>{event.title}</h3>
-                    {event.allDay ?
-                        <div>
-                            <p>{event.start.toLocaleDateString()} {event.end == null ? <></> : event.end.toLocaleDateString()===event.start.toLocaleDateString() ? <></> : " - " + event.end.toLocaleDateString()}</p>
-                        </div>
+            {relEvents.length !== 0 ? <h2 onClick={()=>setEventAll(!eventsAll)}>Linked Event, click for more</h2> : <></>}
+
+                <div className="events-container">
+                    {!eventsAll ? <>
+                    {relEvents.slice(0, 3).map((e, index)=>(
+                        singleEvent(e,index)
+                    ))} </>
                         :
-                        <div>
-                            <p>{event.start.toLocaleString([], {year: '2-digit', month: '2-digit', day: '2-digit', hour: '2-digit', minute:'2-digit'})} - {event.start.toLocaleDateString() === event.end.toLocaleDateString() ? event.end.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : event.end.toLocaleString([], {year: '2-digit', month: '2-digit', day: '2-digit', hour: '2-digit', minute:'2-digit'})}</p>
-                        </div>}
-                    {event.farms.length !== 0 ? <h4>Farms: </h4> : <></>}
-                    {event.farms.includes(farms.WH) ? <p>Windmill Hill </p> : <></>}
-                    {event.farms.includes(farms.HC) ? <p>Hartcliffe </p> : <></>}
-                    {event.farms.includes(farms.SW) ? <p>St Werburghs</p> : <></>}
+                    <>
+                        {relEvents.map((e, index)=>(
+                            singleEvent(e,index)
+                        ))} </>
+
+                    }
                 </div>
-            )})}
+
         </div>
         {selectedEvent !== "No event selected" && (
             <Paper elevation={3} className='selectedBox'>

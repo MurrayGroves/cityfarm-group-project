@@ -1,3 +1,37 @@
+:root {
+  --device: desktopLarge;
+  --nav-width: 150px;
+}
+
+@media screen and (min-width: 800px) and (max-width: 1250px) {
+  :root {
+    --device: desktopSmall;
+    --nav-width: 150px;
+  }
+}
+
+/* Hide sidebar for small screens */
+@media screen and (max-width: 799px) {
+  :root {
+    --device: mobile;
+    --nav-width: 0px;
+  }
+  .Content h1 {
+    margin-left: 80px;
+  }
+}
+
+/* Hide sidebar for mobile devices */
+@media (pointer: coarse) {
+  :root {
+    --device: mobile;
+    --nav-width: 0px;
+  }
+  .Content h1 {
+    margin-left: 80px;
+  }
+}
+
 .App {
   width: 100vw;
   height: 100vh;
@@ -8,8 +42,34 @@
   position: absolute;
   top: 0;
   left: 0;
-  width: calc(100% - 150px);
+  width: calc(100% - var(--nav-width));
   height: 100%;
-  margin-left: 150px;
+  margin-left: var(--nav-width);
   padding: 0 20px 20px 20px;
+}
+
+a {
+  color: var(--colour);
+  text-decoration: none;
+}
+
+a:hover {
+  color: #888888;
+  transition: 0.3s;
+}
+
+h2 {
+  margin-top: 20px;
+}
+
+h4 {
+  margin: 0;
+}
+
+h3 {
+  margin-bottom: 10px;
+}
+
+p {
+  margin: 5px 0;
 }

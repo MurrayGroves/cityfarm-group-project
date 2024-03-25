@@ -1,21 +1,22 @@
 import React, {useEffect, useState} from "react";
 import axios from "../api/axiosConfig";
-import "./AnimalTable.css";
+import TextField from '@mui/material/TextField';
+import "../pages/AnimalTable.css";
 import FarmTabs from "../components/FarmTabs";
 import TableContainer from '@mui/material/TableContainer';
-import TextField from '@mui/material/TextField';
-import { DataGrid } from "@mui/x-data-grid";
-import Paper from '@mui/material/Paper';
-import EditIcon from '@mui/icons-material/Edit';
+import { Paper, Divider } from '@mui/material';
+import { DataGrid, GridPagination } from "@mui/x-data-grid";
+import { Edit, Add } from '@mui/icons-material';
 import Button from '@mui/material/Button';
-import { diff } from "deep-object-diff";
-
+import AnimalPopover from "../components/AnimalPopover";
+import EnclosureCreator from "../components/EnclosureCreator";
 import { getConfig } from '../api/getToken';
 
 const EnclosureTable = ({farms}) => {
     const [enclosureList, setEnclosureList] = useState([]); /* The State for the list of enclosures. The initial state is [] */
     const [searchTerm, setSearchTerm] = useState(''); /* The term being search for in the searchbar */
     const [editMode, setEditMode] = useState(false); /* Whether edit mode is on. Initial state is false */
+    const [create, setCreate] = useState(false);
 
     const token = getConfig();
 
@@ -59,19 +60,18 @@ const EnclosureTable = ({farms}) => {
 
     const cols =  [
         { field: 'name', editable: true, headerName: 'Name', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
-        { field: 'holding', headerName: 'Holding', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
+        { field: 'holding', headerName: 'Holding', headerClassName: 'grid-header', headerAlign: 'left', flex: 1, cellClassName: 'scroll-cell',
+            renderCell: (animalList) => <ul>{animalList.value.map(animal => {console.log(animal); return(<li key={animal._id}><AnimalPopover animalID={animal._id}/></li>)})}</ul>
+        },
         { field: 'capacities', headerName: 'Capacities', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
     ]
+
+    console.log(enclosureList)
 
     const rows = enclosureList.map((enclosure) => ({
         id: enclosure._id,
         name: enclosure.name,
-        holding: Object.keys(enclosure.holding).map((key) => {
-            return (` ${key}:
-            ${Object.keys(enclosure.holding[key]).map((animal) => {
-                return enclosure.holding[key][animal].name
-            })}`)
-        }),
+        holding: enclosure.holding,
         capacities: Object.keys(enclosure.capacities).map((key) => {
             return (` ${key}: ${enclosure.capacities[key]}`)
         })
@@ -88,14 +88,20 @@ const EnclosureTable = ({farms}) => {
             ></TextField>
             <FarmTabs farms={farms} selectedFarm={farm} setSelectedFarm={setFarm}/>
         </span>
-        <TableContainer component={Paper} style={{marginBottom: '20px', height: 'calc(100vh - (40px + 36.5px + 60px + 48px + (2*21.44px))'}}>
+        <div style={{display: 'flex', flexDirection: 'column', height: 'calc(100% - 150.88px)'}}>
+        <Paper elevation={3} style={{flex: 1}}>
             <DataGrid rows={rows} columns={cols}
+            slots={{
+                footer: CustomFooter
+            }}
+            slotProps={{
+                footer: {
+                    setEditMode,
+                    setCreate
+                }
+            }}
             style={{fontSize: '1rem'}}
             isCellEditable={() => editMode}
-            // editMode="row"
-            // onCellEditStop = {(params, event) => {
-                
-            // }}
             processRowUpdate = {(newVal, oldVal) => {
                 if (newVal.name === oldVal.name) { return newVal; }
                 const newName = newVal.name;
@@ -117,8 +123,22 @@ const EnclosureTable = ({farms}) => {
                 setEditMode(false);
                 return newVal;
             }}/>
-        </TableContainer>
-        <Button style={{float: 'right'}} aria-label="edit" onClick={() => setEditMode(true)} variant='contained' endIcon={<EditIcon/>}>Edit</Button>
+        </Paper>
+        {create && <EnclosureCreator setCreate={setCreate}/>}
+        </div>
+    </>)
+}
+
+const CustomFooter = ({setEditMode, setCreate}) => {
+    return (<>
+        <Divider/>
+        <div style={{maxHeight: '56.5px', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+            <span style={{display: 'flex', alignItems: 'center'}}>
+            <Button className="tallButton" sx={{margin: '10px'}} aria-label="edit" onClick={() => setEditMode(true)} variant='contained' endIcon={<Edit/>}>Edit</Button>
+            <Button sx={{maxWidth: '100px', float: 'right'}} variant='contained' endIcon={<Add/>} style={{float: 'right'}} onClick={() => setCreate(true)}>Create</Button>
+            </span>
+            <GridPagination/>
+        </div>
     </>)
 }
 
