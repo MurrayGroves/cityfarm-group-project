@@ -5,7 +5,6 @@ import { Animal, Schema } from './animals.ts';
 
 export class CityFarm {
     events_cache: Event[];
-    enclosures_cache: Enclosure[];
     animals_cache: Animal[];
     schemas_cache: Schema[];
     private token: {headers: {Authorization: string}};
@@ -14,8 +13,6 @@ export class CityFarm {
 
     constructor() {
         this.events_cache = [];
-
-        this.enclosures_cache = [];
         this.animals_cache = [];
         this.farms = ["Windmill Hill", "St Werburghs", "Hartcliffe"];
         this.token = getConfig();
