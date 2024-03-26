@@ -14,6 +14,7 @@ export class CityFarm {
     constructor() {
         this.events_cache = [];
         this.animals_cache = [];
+        this.schemas_cache = [];
         this.farms = ["Windmill Hill", "St Werburghs", "Hartcliffe"];
         this.token = getConfig();
     }
@@ -255,26 +256,26 @@ export class CityFarm {
         }
     }
 
-    async getSchema(name: string, use_cache: boolean, callback?: (schemas) => void) : Promise<Schema[]> {
-        const cached_schemas = this.schemas_cache;
-        if (use_cache && cached_schemas.length > 0) {
+    async getSchema(name: string, use_cache: boolean, callback?: (schema: Schema) => void) : Promise<Schema | null> {
+        const cached_schema = this.schemas_cache.find((x) => x.name === name);
+        if (use_cache && cached_schema) {
             try {
                 axios.get(`/schemas/by_name/${name}`, this.token).then((response) => {
-                    const schemas = response.data.map((data) => new Schema(data));
+                    const schema = new Schema(response.data)
                     // If the schemas have changed, update the cache and call the callback
-                    if (cached_schemas !== schemas) {
-                        this.schemas_cache = schemas
+                    if (cached_schema !== schema) {
+                        this.schemas_cache = this.schemas_cache.map((x) => x.name === schema.name ? schema : x);
                         if (callback) {
-                            callback(schemas);
+                            callback(schema);
                         }
                     }
                 });
-                return cached_schemas;
+                return cached_schema;
             } catch (error) {
                 if (error.response.status === 401) {
                     console.log('Token expired');
                     window.location.href = "/login";
-                    return [];
+                    return null;
                 }
                 throw error;
             }
@@ -282,13 +283,18 @@ export class CityFarm {
         } else {
             try {
                 const response = await axios.get(`/schemas/by_name/${name}`, this.token);
-                this.schemas_cache = response.data.map((data) => new Schema(data));
-                return this.schemas_cache;
+                const schema = new Schema(response.data);
+                if (cached_schema) {
+                    this.schemas_cache = this.schemas_cache.map((x) => x.name === schema.name ? schema : x);
+                } else {
+                    this.schemas_cache.push(schema);
+                }
+                return schema;
             } catch (error) {
-                if (error.response.status === 401) {
+                if (error.response && error.response.status === 401) {
                     console.log('Token expired');
                     window.location.href = "/login";
-                    return [];
+                    return null;
                 }
                 throw error;
             }

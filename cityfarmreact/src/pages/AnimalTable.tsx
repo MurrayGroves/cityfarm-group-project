@@ -192,26 +192,34 @@ const AnimalTable = ({farms, cityfarm, device}: {farms: any, cityfarm: CityFarm,
     }, [selectedSchema, animalList])
 
 
-    useEffect(() => {
-        const defaultRows = animalList.map((animal) => ({
-            id: animal.id,
-            name: animal,
-            type: animal.type.charAt(0).toUpperCase() + animal.type.slice(1),
-            father: animal.father !== null ? animal.father : '',
-            mother: animal.mother !== null ? animal.mother : '',
-            sex: animal.sex,
-        }));
-        setRows(defaultRows);
-    }, [animalList])
+    // useEffect(() => {
+    //     const defaultRows = animalList.map((animal) => ({
+    //         id: animal.id,
+    //         name: animal,
+    //         type: animal.type.charAt(0).toUpperCase() + animal.type.slice(1),
+    //         father: animal.father !== null ? animal.father : '',
+    //         mother: animal.mother !== null ? animal.mother : '',
+    //         sex: animal.sex,
+    //     }));
+    //     setRows(defaultRows);
+    //     calculateColumnsAndRows(selectedSchema);
+    // }, [animalList])
 
 
-    function saveAnimal(animal_id) {
+    async function saveAnimal(animal_id) {
         let row = gridApi.current.getRow(animal_id)
         console.log(row);
         console.log(modifyAnimal)
         let old_animal = animalList.find((animal) => {return animal.id === animal_id});
+        if (old_animal === undefined || old_animal === null) return;
+        let schema = await cityfarm.getSchema(old_animal.type, true);
         if (!old_animal) {
             console.error("Could not find animal with id ", animal_id);
+            return;
+        }
+
+        if (!schema) {
+            console.error("Could not find schema with name ", old_animal.type);
             return;
         }
         let animal: any = {...old_animal};
@@ -252,6 +260,13 @@ const AnimalTable = ({farms, cityfarm, device}: {farms: any, cityfarm: CityFarm,
         animal.fields = {...modifyAnimal.fields};
         for (let key in old_animal.fields) {
             animal.fields[key] = animal.fields[key] ? animal.fields[key] : old_animal.fields[key];
+            if (schema.fields[key].type === "java.lang.Boolean") {
+                if (animal.fields[key] === 'Yes') {
+                    animal.fields[key] = true;
+                } else if (animal.fields[key] === 'No') {
+                    animal.fields[key] = false;
+                }
+            } 
         }
 
         if (old_animal !== modifyAnimal) {
@@ -268,14 +283,15 @@ const AnimalTable = ({farms, cityfarm, device}: {farms: any, cityfarm: CityFarm,
                         value={params.value}
                         onChange={(e) => {
                             let current = {...modifyAnimal};
-                            current.fields[params.field] = e.target.value;
+                            current.fields = {...current.fields, [params.field]: e.target.value};
+                            console.log("Fields:", current.fields)
                             setModifyAnimal(current);
                             gridApi.current.setEditCellValue({id: params.id, field: params.field, value: e.target.value});
                         }}
                     >
                         <MenuItem value={''}><em>Empty</em></MenuItem>
-                        <MenuItem value={1}>Yes</MenuItem>
-                        <MenuItem value={0}>No</MenuItem>
+                        <MenuItem value={'Yes'}>Yes</MenuItem>
+                        <MenuItem value={'No'}>No</MenuItem>
                     </Select>
                     </FormControl>
                 );
@@ -319,6 +335,7 @@ const AnimalTable = ({farms, cityfarm, device}: {farms: any, cityfarm: CityFarm,
                         defaultValue={params.value}
                         onChange={(e) => {
                             let current = {...modifyAnimal};
+                            current.fields = {...current.fields};
                             current.fields[params.field] = e.target.value;
                             setModifyAnimal(current);
                             gridApi.current.setEditCellValue({id: params.id, field: params.field, value: e.target.value});
@@ -640,7 +657,7 @@ type CustomFooterProps = {
     setCreate: any
 }
 
-const CustomFooter: React.FC<CustomFooterProps> = ({setFilterModel, selectedSchema, setSelectedSchema, create, setCreate}) => {
+const CustomFooter: React.FC<CustomFooterProps> = ({setFilterModel, selectedSchema, setSelectedSchema, create, setCreate}: {setFilterModel: any, selectedSchema: Schema, setSelectedSchema: (schema: Schema | null) => void, create: boolean, setCreate: (create: boolean) => void}) => {
     return (<>
         <Divider/>
         <div style={{maxHeight: '56px', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
@@ -649,7 +666,7 @@ const CustomFooter: React.FC<CustomFooterProps> = ({setFilterModel, selectedSche
                 setFilterModel({items: []});
                 setSelectedSchema(null);
             }}>Clear Filter</Button>
-            {selectedSchema ? <p style={{margin: '10px 15px 10px 5px'}}>Showing {selectedSchema._name}s</p> : <></>}
+            {selectedSchema ? <p style={{margin: '10px 15px 10px 5px'}}>Showing {selectedSchema.name}s</p> : <></>}
             </span>
             {create ?
             <Button sx={{width: '100px', margin: '10px'}} endIcon={<Delete/>} variant='contained' color='warning' onClick={() => setCreate(false)}>Discard</Button>

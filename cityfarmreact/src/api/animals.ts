@@ -58,7 +58,11 @@ export class Schema {
     hidden: boolean;
     name: string;
 
-    constructor(data: any) {
+    constructor(data: {
+        _fields: {[key: string]: any},
+        _name: string,
+        _hidden: boolean,
+    }) {
         this.fields = Object.keys(data._fields).reduce((dict, field) => {
             return {...dict,
                 [field]: {
@@ -67,7 +71,7 @@ export class Schema {
                 }
             }
         }, {})
-        this.hidden = data.hidden;
+        this.hidden = data._hidden;
         this.name = data._name;
     }
 }
