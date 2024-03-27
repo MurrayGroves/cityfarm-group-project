@@ -1,22 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from "../api/axiosConfig";
 import './AnimalCreator.css';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Divider from '@mui/material/Divider';
-import Fab from '@mui/material/Fab';
-import { FormHelperText, Select, Backdrop, Alert } from "@mui/material";
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import Button from '@mui/material/Button';
-import AddIcon from '@mui/icons-material/Add';
-import DeleteIcon from '@mui/icons-material/Delete';
-import TextField from '@mui/material/TextField';
-import Autocomplete from '@mui/material/Autocomplete';
+import { TransitionGroup } from 'react-transition-group';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Divider, Fab, FormHelperText, Select, Backdrop, Alert, MenuItem, FormControl, Button, TextField, Autocomplete, Collapse } from '@mui/material';
+import { Add as AddIcon, Delete as DeleteIcon } from '@mui/icons-material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { getConfig } from '../api/getToken';
 
@@ -140,16 +127,17 @@ const AnimalCreator = (props) => {
     }
 
     return (<>
+        <TransitionGroup>
         <TableContainer>
             <Table>
                 <TableHead>
                     <TableRow>
-                        <TableCell sx={{minWidth: '120px'}} width='16.7%'>Name</TableCell>
-                        <TableCell sx={{minWidth: '120px'}} width='16.7%'>Type</TableCell>
-                        <TableCell sx={{minWidth: '120px'}} width='16.7%'>Father</TableCell>
-                        <TableCell sx={{minWidth: '120px'}} width='16.7%'>Mother</TableCell>
-                        <TableCell sx={{minWidth: '120px'}} width='16.6%'>Sex</TableCell>
-                        <TableCell sx={{minWidth: '120px'}} width='16.6%'>Farm</TableCell>
+                        <TableCell sx={{minWidth: '135px'}} width='16.7%'>Name</TableCell>
+                        <TableCell sx={{minWidth: '135px'}} width='16.7%'>Type</TableCell>
+                        <TableCell sx={{minWidth: '135px'}} width='16.7%'>Father</TableCell>
+                        <TableCell sx={{minWidth: '135px'}} width='16.7%'>Mother</TableCell>
+                        <TableCell sx={{minWidth: '135px'}} width='16.6%'>Sex</TableCell>
+                        <TableCell sx={{minWidth: '135px'}} width='16.6%'>Farm</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -267,7 +255,7 @@ const AnimalCreator = (props) => {
                 </TableBody>
             </Table>
         </TableContainer>
-        {schema ? <>
+        {schema ? <Collapse>
         <Divider/>
         <Divider/>
         <Divider/>
@@ -316,8 +304,10 @@ const AnimalCreator = (props) => {
                     window.location.reload(false);
                 })()
             }}
-        ><AddIcon/></Fab></>
+        ><AddIcon/></Fab>
+        </Collapse>
         : <></>}
+        </TransitionGroup>
         <Backdrop style={{zIndex: '4', background: '#000000AA'}} open={showErr} onClick={() => setShowErr(false)}>
             <Alert severity='warning'>
                 Please ensure all required fields are filled
