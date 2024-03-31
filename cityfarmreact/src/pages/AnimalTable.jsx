@@ -10,7 +10,7 @@ import { getConfig } from '../api/getToken';
 import "./AnimalTable.css";
 import { DataGrid, useGridApiRef, GridPagination } from '@mui/x-data-grid';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { Collapse, Autocomplete, Backdrop, TableContainer, Paper, TextField, Button, Select, MenuItem, Fab, FormControlLabel, FormGroup, FormControl, FormHelperText, IconButton, Divider, Grid, Dialog, DialogContent, Alert, AlertTitle } from '@mui/material';
+import { Collapse, Autocomplete, Backdrop, TableContainer, Paper, TextField, Button, Select, MenuItem, Fab, FormControlLabel, FormGroup, FormControl, FormHelperText, IconButton, Divider, Grid, Dialog, DialogContent, Alert, AlertTitle, ButtonGroup } from '@mui/material';
 import { Add as AddIcon, Edit as EditIcon, Delete, Done as DoneIcon, Clear as ClearIcon, ArrowDropDownCircle as Arrow } from '@mui/icons-material';
 
 const AnimalTable = ({farms, device}) => {
@@ -23,7 +23,6 @@ const AnimalTable = ({farms, device}) => {
     const [filterModel, setFilterModel] = useState({items: []});
     const [schemas, setSchemas] = useState([]);
     const [selectedSchema, setSelectedSchema] = useState(null);
-    const [newAnimal, setNewAnimal] = useState( useState({name: '', type: '', father: '', mother: '', male: true, alive: true, fields: {}}));
     const [modifyAnimal, setModifyAnimal] = useState({});
     const [editingRow, setEditingRow] = useState(null);
 
@@ -435,7 +434,9 @@ const AnimalTable = ({farms, device}) => {
             />)
         }},
     ];
+
     const [cols, setCols] = useState(defaultCols);
+    const [createClicked, setCreateClicked] = useState(false);
 
     return(<>
         <h1>Livestock</h1>
@@ -552,16 +553,19 @@ const AnimalTable = ({farms, device}) => {
         {device === 'mobile' ?
         <Dialog PaperProps={{sx: {overflow: 'visible'}}} fullWidth maxWidth='xl' open={create} onClose={() => setCreate(false)}>
             <DialogContent sx={{p: 0}}>
-                <AnimalCreator animalList={animalList} schemaList={schemaList} setCreate={setCreate} farms={farms} device={device}/>
+                <AnimalCreator animalList={animalList} schemaList={schemaList} createClicked={createClicked} farms={farms} device={device}/>
             </DialogContent>
         </Dialog>
         :
         <TransitionGroup>
         <div style={{marginTop: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
             <h2 style={{margin: '0'}}>Create Animal</h2>
-            <Button onClick={() => setCreate(!create)} color={create ? 'warning' : 'primary'} endIcon={create ? <Delete/> : <Arrow/>}>{create ? 'Discard' : 'Expand'}</Button>
+            <ButtonGroup>
+                {create && <Button variant='contained' onClick={() => setCreateClicked(true)} color='success' endIcon={<AddIcon/>}>Create</Button>}
+                <Button variant='contained' onClick={() => setCreate(!create)} color={create ? 'warning' : 'primary'} endIcon={create ? <Delete/> : <Arrow/>}>{create ? 'Discard' : 'Expand'}</Button>
+            </ButtonGroup>
         </div>
-        {create && <Collapse><Paper sx={{mt: '10px'}} elevation={3}><AnimalCreator animalList={animalList} schemaList={schemaList} setCreate={setCreate} farms={farms} device={device}/></Paper></Collapse>}
+        {create && <Collapse><Paper sx={{mt: '10px'}} elevation={3}><AnimalCreator animalList={animalList} schemaList={schemaList} createClicked={createClicked} setCreateClicked={setCreateClicked} farms={farms} device={device}/></Paper></Collapse>}
         </TransitionGroup>}
         <div className="fmButtons">
             {selectedAnimals.length > 0 ? (
@@ -599,10 +603,6 @@ const CustomFooter = ({setFilterModel, selectedSchema, setSelectedSchema, create
             {selectedSchema ? <p style={{margin: '10px 15px 10px 5px'}}>Showing {selectedSchema._name}s</p> : <></>}
             </span>
             {device === 'mobile' && <Button sx={{width: '100px', margin: '10px'}} variant="contained" color='primary' onClick={() => setCreate(true)} endIcon={<AddIcon/>}>Create</Button>}
-            {/*create ?
-            <Button sx={{width: '100px', margin: '10px'}} endIcon={<Delete/>} variant='contained' color='warning' onClick={() => setCreate(false)}>Discard</Button>
-            : <Button sx={{width: '100px', margin: '10px'}} variant="contained" color='primary' onClick={() => setCreate(true)} endIcon={<AddIcon/>}>Create</Button>
-            */}
         </div>
     </>)
 }

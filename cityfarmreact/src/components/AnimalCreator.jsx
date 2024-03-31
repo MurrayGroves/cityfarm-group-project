@@ -14,13 +14,30 @@ const AnimalCreator = (props) => {
     const [inputErr, setInputErr] = useState({});
     const [showErr, setShowErr] = useState(false);
 
+    useEffect(() => {
+        props.createClicked && handleCreate();
+        props.setCreateClicked(false);
+    }, [props.createClicked])
+
     const token = getConfig();
 
-    const reset = () => {
-        props.setCreate(false);
-        setNewAnimal({name: '', type: '', father: '', mother: '', sex: '', alive: true, farm: '', fields: {}, notes: ''})
-        setInputErr({name: true, type: true, sex: true});
-        setSchema();
+    const handleCreate = () => {
+        if (Object.values(inputErr).filter((err) => err === true).length > 0) {
+            return setShowErr(true);
+        }
+        (async () => {
+            try {
+                await axios.post(`/animals/create`, newAnimal, token)
+            } catch(error) {
+                if (error.response.status === 401) {
+                    window.location.href = "/login";
+                    return;
+                } else {
+                    window.alert(error);
+                }
+            }
+            window.location.reload(false);
+        })()
     }
 
     useEffect(() => {
@@ -283,28 +300,14 @@ const AnimalCreator = (props) => {
                 </TableBody>
             </Table>
         </TableContainer>
+        {props.device === 'mobile' &&
         <Fab
-            sx={props.device === 'mobile' ? {position: 'absolute', bottom: '90px', right: '-10px'} : {position: 'absolute', bottom: '110px', right: '10px'}}
+            sx={{position: 'absolute', bottom: '90px', right: '-10px'}}
             color='success'
-            onClick={() => {
-                if (Object.values(inputErr).filter((err) => err === true).length > 0) {
-                    return setShowErr(true);
-                }
-                (async () => {
-                    try {
-                        await axios.post(`/animals/create`, newAnimal, token)
-                    } catch(error) {
-                        if (error.response.status === 401) {
-                            window.location.href = "/login";
-                            return;
-                        } else {
-                            window.alert(error);
-                        }
-                    }
-                    window.location.reload(false);
-                })()
-            }}
-        ><AddIcon/></Fab>
+            onClick={() => handleCreate()}
+        >
+            <AddIcon/>
+        </Fab>}
         </Collapse>
         : <></>}
         </TransitionGroup>
