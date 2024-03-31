@@ -604,11 +604,10 @@ const AnimalTable = ({farms, cityfarm, device}: {farms: any, cityfarm: CityFarm,
         {device === 'mobile' ?
         <Dialog PaperProps={{sx: {overflow: 'visible'}}} fullWidth maxWidth='xl' open={create} onClose={() => setCreate(false)}>
             <DialogContent sx={{p: 0}}>
-                <AnimalCreator cityfarm={cityfarm} animalList={animalList} schemaList={schemaList} createClicked={createClicked} setCreateClicked={setCreateClicked} farms={farms} device={device}/>
+                <AnimalCreator animalList={animalList} schemaList={schemaList} create={create} createClicked={createClicked} setCreateClicked={setCreateClicked} farms={farms} device={device}/>
             </DialogContent>
         </Dialog>
-        :
-        <TransitionGroup>
+        : <>
         <div style={{marginTop: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
             <h2 style={{margin: '0'}}>Create Animal</h2>
             <ButtonGroup>
@@ -616,8 +615,11 @@ const AnimalTable = ({farms, cityfarm, device}: {farms: any, cityfarm: CityFarm,
                 <Button variant='contained' onClick={() => setCreate(!create)} color={create ? 'warning' : 'primary'} endIcon={create ? <Delete/> : <Arrow/>}>{create ? 'Discard' : 'Expand'}</Button>
             </ButtonGroup>
         </div>
-        {create && <Collapse><Paper sx={{mt: '10px'}} elevation={3}><AnimalCreator cityfarm={cityfarm} animalList={animalList} schemaList={schemaList} createClicked={createClicked} setCreateClicked={setCreateClicked} farms={farms} device={device}/></Paper></Collapse>}
-        </TransitionGroup>}
+        <Collapse in={create}>
+            <Paper sx={{mt: '10px'}} elevation={3}>
+                <AnimalCreator animalList={animalList} schemaList={schemaList} create={create} createClicked={createClicked} setCreateClicked={setCreateClicked} farms={farms} device={device}/>
+            </Paper>
+        </Collapse></>}
         <div className="fmButtons">
             {selectedAnimals.length > 0 ? (
                 Object.entries(farms).map((farm) => (

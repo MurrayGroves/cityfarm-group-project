@@ -10,22 +10,32 @@ import { CityFarm } from '../api/cityfarm.ts';
 import { Schema, Animal, Sex } from '../api/animals.ts';
 import { EventSelectorButton } from './EventSelectorButton.tsx';
 
-const AnimalCreator = ({farms, cityfarm, schemaList, animalList, device, createClicked, setCreateClicked}: {farms: any, cityfarm: CityFarm, schemaList: Schema[], animalList: Animal[], device: any, createClicked: boolean, setCreateClicked: (clicked: boolean) => void}) => {
+const AnimalCreator = ({farms, schemaList, animalList, device, create, createClicked, setCreateClicked}: {farms: any, schemaList: Schema[], animalList: Animal[], device: any, create: boolean, createClicked: boolean, setCreateClicked: (clicked: boolean) => void}) => {
     const [newAnimal, setNewAnimal] = useState<any>(new Animal({name: '', type: '', father: '', mother: '', sex: '', alive: true, farm: '', fields: {}, notes: ''}));
     const [schema, setSchema] = useState<Schema | null>();
     const [fieldList, setFieldList] = useState<string[]>([]);
-    const [create, setCreate] = useState(false);
     const [inputErr, setInputErr] = useState({});
     const [showErr, setShowErr] = useState(false);
     const [eventDialog, setEventDialog] = useState(null);
     const [idToEvent, setIdToEvent] = useState({});
 
     useEffect(() => {
-        createClicked && handleCreate();
+        if (createClicked) handleCreate();
         setCreateClicked(false);
     }, [createClicked])
 
+    useEffect(() => {
+        !create && reset();
+    }, [create])
+
     const token = getConfig();
+
+    const reset = () => {
+        setNewAnimal(new Animal({name: '', type: '', father: '', mother: '', sex: '', alive: true, farm: '', fields: {}, notes: ''}));
+        setSchema(null);
+        setFieldList(new Array);
+        setInputErr(new Object);
+    }
 
     const handleCreate = () => {
         if (Object.values(inputErr).filter((err) => err === true).length > 0) {
@@ -145,8 +155,11 @@ const AnimalCreator = ({farms, cityfarm, schemaList, animalList, device, createC
         };
     }
 
+    const [typeInput, setTypeInput] = useState('');
+    const [fatherInput, setFatherInput] = useState('');
+    const [motherInput, setMotherInput] = useState('');
+
     return (<>
-        <TransitionGroup>
         <TableContainer>
             <Table>
                 <TableHead>
@@ -174,29 +187,20 @@ const AnimalCreator = ({farms, cityfarm, schemaList, animalList, device, createC
                         </TableCell>
                         <TableCell sx={{ borderBottom: 'none' }}>
                             <Autocomplete
-                                renderOption={(props, option) => {
-                                    return (
-                                        <li {...props} key={option.name}>
-                                            {option.name}
-                                        </li>
-                                    );
-                                } }
+                                value={schema || null}
+                                inputValue={typeInput}
+                                onInputChange={(_, newInput) => setTypeInput(newInput)}
                                 isOptionEqualToValue={(option, value) => option.name === value.name}
                                 renderInput={(params) => <TextField {...params} fullWidth error={newAnimal.type === ''} required size='small' label="Type" />}
                                 getOptionLabel={option => option.name}
                                 options={schemaList}
-                                onChange={(e, v) => {
+                                onChange={(_, v) => {
                                     if (v) {
                                         setNewAnimal({ ...newAnimal, type: v.name, fields: {} });
-                                        let tempSchema = schemaList.find((schema) => schema.name === v.name);
-                                        if (!tempSchema) {
-                                            console.error('Schema not found');
-                                            return;
-                                        };
-                                        setSchema(tempSchema);
-                                        setFieldList(Object.keys(tempSchema.fields));
+                                        setSchema(v);
+                                        setFieldList(Object.keys(v.fields));
                                     } else {
-                                        setNewAnimal({ ...newAnimal, type: '', fields: {}, notes: '' });
+                                        setNewAnimal({ ...newAnimal, mother: '', father: '', type: '', fields: {}, notes: '' });
                                         setSchema(null);
                                         setFieldList([]);
                                         setInputErr({});
@@ -205,39 +209,31 @@ const AnimalCreator = ({farms, cityfarm, schemaList, animalList, device, createC
                         </TableCell>
                         <TableCell sx={{borderBottom: 'none'}}>
                             <Autocomplete
-                                renderOption={(props, option: any) => {
-                                    return (
-                                        <li {...props} key={option.id}>
-                                            {option.name}
-                                        </li>
-                                    );
-                                } }
+                                value={animalList.find((animal) => newAnimal.father === animal.id) || null}
+                                inputValue={fatherInput}
+                                onInputChange={(_, newInput) => setFatherInput(newInput)}
                                 renderInput={(params) => <TextField {...params} fullWidth required={false} size='small' label="Father" />}
                                 isOptionEqualToValue={(option, value) => option.id === value.id}
                                 getOptionLabel={option => option.name}
-                                options={animalList.filter((animal) => { return animal.type === newAnimal.type && animal.sex === Sex.Male; }).map((animal) => {
-                                    return { id: animal.id, name: animal.name };
+                                options={animalList.filter((animal) => { return animal.type === newAnimal.type && (animal.sex === Sex.Male || animal.sex === Sex.Castrated); }).map((animal) => {
+                                    return animal;
                                 })}
-                                onChange={(e, v) => {
+                                onChange={(_, v) => {
                                     v ? setNewAnimal({ ...newAnimal, father: v.id }) : setNewAnimal({ ...newAnimal, father: '' });
                                 } } />
                         </TableCell>
                         <TableCell sx={{borderBottom: 'none'}}>
                             <Autocomplete
-                                renderOption={(props, option: any) => {
-                                    return (
-                                        <li {...props} key={option.id}>
-                                            {option.name}
-                                        </li>
-                                    );
-                                } }
+                                value={animalList.find((animal) => newAnimal.mother === animal.id) || null}
+                                inputValue={motherInput}
+                                onInputChange={(_, newInput) => setMotherInput(newInput)}
                                 renderInput={(params) => <TextField {...params} fullWidth required={false} size='small' label="Mother" />}
                                 isOptionEqualToValue={(option, value) => option.id === value.id}
                                 getOptionLabel={option => option.name}
                                 options={animalList.filter((animal) => { return animal.type === newAnimal.type && animal.sex === Sex.Female; }).map((animal) => {
-                                    return { id: animal.id, name: animal.name };
+                                    return animal;
                                 })}
-                                onChange={(e, v) => {
+                                onChange={(_, v) => {
                                     v ? setNewAnimal({ ...newAnimal, mother: v.id }) : setNewAnimal({ ...newAnimal, mother: '' });
                                 } } />
                         </TableCell>
@@ -248,11 +244,11 @@ const AnimalCreator = ({farms, cityfarm, schemaList, animalList, device, createC
                                 error={newAnimal.sex === null}
                                 required
                                 label='Sex'
-                                value={newAnimal.sex}
+                                value={newAnimal.sex || ''}
                                 size='small'
                                 onChange={(e) => {
                                     setNewAnimal({ ...newAnimal, sex: e.target.value });
-                                } }
+                                }}
                             >
                                 <MenuItem value={'f'}>Female</MenuItem>
                                 <MenuItem value={'m'}>Male</MenuItem>
@@ -271,7 +267,7 @@ const AnimalCreator = ({farms, cityfarm, schemaList, animalList, device, createC
                 </TableBody>
             </Table>
         </TableContainer>
-        {schema instanceof Schema ? <Collapse>
+        <Collapse in={schema instanceof Schema}>
         <Divider/>
         <Divider/>
         <Divider/>
@@ -291,10 +287,10 @@ const AnimalCreator = ({farms, cityfarm, schemaList, animalList, device, createC
                     <TableRow>
                         {Object.keys(schema?.fields ?? {}).map((key, index) => {
                             return (
-                                <TableCell key={index}>{fieldList ? fieldTypeSwitch(index) : <p>Loading...</p>}</TableCell>
+                                <TableCell sx={{borderBottom: 'none'}} key={index}>{fieldList ? fieldTypeSwitch(index) : <p>Loading...</p>}</TableCell>
                             );
                         })}
-                        <TableCell><TextField size='small' multiline placeholder='Add notes...' fullWidth rows={2} onChange={(e) => {setNewAnimal({...newAnimal, notes: e.target.value})}}/></TableCell>
+                        <TableCell sx={{borderBottom: 'none'}}><TextField size='small' multiline placeholder='Add notes...' fullWidth rows={2} onChange={(e) => {setNewAnimal({...newAnimal, notes: e.target.value})}}/></TableCell>
                     </TableRow>
                 </TableBody>
             </Table>
@@ -308,8 +304,6 @@ const AnimalCreator = ({farms, cityfarm, schemaList, animalList, device, createC
             <AddIcon/>
         </Fab>}
         </Collapse>
-        : <></>}
-        </TransitionGroup>
         <Backdrop style={{zIndex: '4', background: '#000000AA'}} open={showErr} onClick={() => setShowErr(false)}>
             <Alert severity='warning'>
                 Please ensure all required fields are filled
