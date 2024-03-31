@@ -4,14 +4,14 @@ import '@fontsource/roboto/300.css';
 import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
-import AnimalTable from "./pages/AnimalTable";
-import NavBar from "./components/NavBar";
-import Calendar from "./pages/Calendar";
-import EnclosureTable from "./pages/EnclosureTable";
-import Schemas from "./pages/Schemas";
+import AnimalTable from "./pages/AnimalTable.tsx";
+import NavBar from "./components/NavBar.jsx";
+import Calendar from "./pages/Calendar.jsx";
+import EnclosureTable from "./pages/EnclosureTable.jsx";
+import Schemas from "./pages/Schemas.jsx";
 import Error from "./pages/Error.jsx";
 import Login from './pages/Login.jsx';
-import SingleAnimal from "./pages/SingleAnimal";
+import SingleAnimal from "./pages/SingleAnimal.jsx";
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 
@@ -25,6 +25,8 @@ import { PublicClientApplication } from "@azure/msal-browser";
 import Home from "./pages/Home.jsx";
 import Help from "./pages/Help.jsx";
 import usePersistState from './components/PersistentState.jsx'
+
+import { CityFarm } from './api/cityfarm.ts';
 
 const App = () => {
 
@@ -102,6 +104,7 @@ const App = () => {
         return;
     }
 
+    const cityfarm = new CityFarm();
     // when window is resized, check if width thresholds have changed
     window.addEventListener("resize", () => setDevice(getComputedStyle(document.documentElement).getPropertyValue('--device')));
 
@@ -118,7 +121,7 @@ const App = () => {
                         <Routes>
                             <Route path="/" element={<Home farms={farms}/>}/>
                             <Route path="/calendar" element={<Calendar farms={farms} device={device}/>}/>
-                            <Route path="/animals" element={<AnimalTable farms={farms} device={device}/>}/>
+                            <Route path="/animals" element={<AnimalTable farms={farms} cityfarm={cityfarm} device={device}/>}/>
                             <Route path="/enclosures" element={<EnclosureTable farms={farms}/>}/>
                             <Route path="/schemas" element={<Schemas farms={farms}/>}/>
                             <Route path="/help" element={<Help/>}/>

@@ -52,6 +52,13 @@ public class CalendarController {
         return ResponseEntity.ok().body(instances);
     }
 
+    @GetMapping("/api/events/non_instanced")
+    public ResponseEntity<List<Event>> get_events_non_instanced() {
+        List<Event> events = eventRepository.findAll();
+
+        return ResponseEntity.ok().body(events);
+    }
+
     @GetMapping("/api/events/by_id/{id}")
     public ResponseEntity<Event> get_event_by_id(@PathVariable String id) {
 

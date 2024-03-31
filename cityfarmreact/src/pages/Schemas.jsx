@@ -26,7 +26,7 @@ const classToReadable = {
     "java.lang.String": "Text",
     "java.lang.Integer": "Whole Number",
     "java.lang.Double": "Decimal Number",
-    "java.time.ZonedDateTime": "Date & Time",
+    "cityfarm.api.calendar.EventRef": "Event",
 }
 
 const Schemas = () => {

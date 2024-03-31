@@ -15,9 +15,4 @@ public class SchemaRepositoryCustom {
     public SchemaRepositoryCustom(MongoOperations mongoOperations) {
         this.mongoOperations = mongoOperations;
     }
-
-    public List<AnimalSchema> findSchemaByName(String name){
-        Criteria regex = Criteria.where("name").regex(name, "i");
-        return mongoOperations.find(new Query().addCriteria(regex), AnimalSchema.class);
-    }
 }
