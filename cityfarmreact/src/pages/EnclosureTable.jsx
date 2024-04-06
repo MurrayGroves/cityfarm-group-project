@@ -11,6 +11,7 @@ import Button from '@mui/material/Button';
 import AnimalPopover from "../components/AnimalPopover";
 import EnclosureCreator from "../components/EnclosureCreator";
 import { getConfig } from '../api/getToken';
+import {Link} from "react-router-dom";
 
 const EnclosureTable = ({farms}) => {
     const [enclosureList, setEnclosureList] = useState([]); /* The State for the list of enclosures. The initial state is [] */
@@ -59,7 +60,13 @@ const EnclosureTable = ({farms}) => {
     },[searchTerm, farm])
 
     const cols =  [
-        { field: 'name', editable: true, headerName: 'Name', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
+        { field: 'name', editable: true, headerName: 'Name', headerClassName: 'grid-header', headerAlign: 'left', flex: 1,
+            renderCell: (enc) => (
+                console.log('hello',enc.row.id),
+                <Link to={`/single-enclosure/${enc.row.id}`}>
+                    {enc.row.name}
+                </Link>
+            )},
         { field: 'holding', headerName: 'Holding', headerClassName: 'grid-header', headerAlign: 'left', flex: 1, cellClassName: 'scroll-cell',
             renderCell: (animalList) => <ul>{animalList.value.map(animal => {console.log(animal); return(<li key={animal._id}><AnimalPopover animalID={animal._id}/></li>)})}</ul>
         },

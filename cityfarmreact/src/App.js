@@ -27,6 +27,7 @@ import Help from "./pages/Help.jsx";
 import usePersistState from './components/PersistentState.jsx'
 
 import { CityFarm } from './api/cityfarm.ts';
+import SingleEnclosure from "./pages/SingleEnclosure";
 
 const App = () => {
 
@@ -126,6 +127,7 @@ const App = () => {
                             <Route path="/schemas" element={<Schemas farms={farms}/>}/>
                             <Route path="/help" element={<Help/>}/>
                             <Route path="/single-animal/:animalID" element={<SingleAnimal farms={farms}/>} />
+                            <Route path="/single-enclosure/:enclosureID" element={<SingleEnclosure farms={{farms}}/>}/>
                             <Route path="*" element={<Error/>}/>
                         </Routes>
                     </div>
