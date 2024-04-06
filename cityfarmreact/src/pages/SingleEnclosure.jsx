@@ -7,10 +7,10 @@ const SingleEnclosure = (props) => {
   const token = getConfig();
   const enclosureID = useParams().enclosureID
   const [enclosure, setEnclosure] = useState({name: 'Loading...'})
-  //e5540dd6-4500-4d67-b749-ffd0c644eaef
-  //e5540dd6-4500-4d67-b749-ffd0c644eaef
+  const [animalTypes,setAnimalTypes] = useState([])
+
+
   useEffect(() => {
-    console.log(enclosureID);
     (
         async () => {
     try {

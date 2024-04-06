@@ -351,7 +351,6 @@ const AnimalTable = ({farms, cityfarm, device}: {farms: any, cityfarm: CityFarm,
     const defaultCols: GridColDef[] = [
         { field: 'name', type: 'singleSelect', headerName: 'Name', headerClassName: 'grid-header', headerAlign: 'left', flex: 1, editable: true,
         renderCell: (animal) => {
-            console.log(animal)
             return (animal.value.id ? <AnimalPopover animalID={animal.value.id}/> : <p>Loading...</p>)}, renderEditCell: (params) => {
 
                 params.value = params.value.name;

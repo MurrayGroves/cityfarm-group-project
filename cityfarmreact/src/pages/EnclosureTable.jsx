@@ -61,12 +61,7 @@ const EnclosureTable = ({farms}) => {
 
     const cols =  [
         { field: 'name', editable: true, headerName: 'Name', headerClassName: 'grid-header', headerAlign: 'left', flex: 1,
-            renderCell: (enc) => (
-                console.log('hello',enc.row.id),
-                <Link to={`/single-enclosure/${enc.row.id}`}>
-                    {enc.row.name}
-                </Link>
-            )},
+            renderCell: (enc) => (<Link to={`/single-enclosure/${enc.row.id}`}>{enc.row.name}</Link>)},
         { field: 'holding', headerName: 'Holding', headerClassName: 'grid-header', headerAlign: 'left', flex: 1, cellClassName: 'scroll-cell',
             renderCell: (animalList) => <ul>{animalList.value.map(animal => {console.log(animal); return(<li key={animal._id}><AnimalPopover animalID={animal._id}/></li>)})}</ul>
         },
