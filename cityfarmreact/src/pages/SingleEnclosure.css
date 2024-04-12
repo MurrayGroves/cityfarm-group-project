@@ -1,5 +1,6 @@
-.h3{
-    padding: 0px;
-    margin:0px;
-    color: red;
+
+
+.animalAndMove{
+    display : flex;
+    flex-direction: row;
 }

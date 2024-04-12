@@ -7,6 +7,9 @@ import "./SingleEnclosure.css"
 import {Dialog, DialogContent, DialogTitle} from "@mui/material";
 import AssociateAnimal from "../components/AssociateAnimal";
 import Button from "@mui/material/Button";
+import DeleteIcon from '@mui/icons-material/Delete';
+import IconButton from "@mui/material/IconButton";
+
 const SingleEnclosure = (props) => {
   const token = getConfig();
   const enclosureID = useParams().enclosureID
@@ -52,6 +55,44 @@ const SingleEnclosure = (props) => {
     return animals
   }
 
+  const animalTo = (animal, enc) =>{
+    //TODO fix this please i keep getting 401 errors even tho im logged in
+    console.log(animal.name , "to : " ,enc.name);
+    (async ()=>{
+      try {
+        const req = await axios.patch(`enclosures/moveanimal/${animal._id}/to/${enc._id}/from/${enclosure._id}`,token)
+        console.log(req);
+        window.location.reload(false);
+      }catch (error) {
+      if (error.response.status === 401) {
+        //this is errored out bc im just getting a 401 error
+        //window.location.href = "/login";
+        console.log(error)
+        return;
+      } else {
+        window.alert(error);
+      }
+    }
+    })();
+
+  }
+
+  const enclosureMove =(animal) =>{
+    if (animal){
+      return(
+          <div> Moving {animalToMove.name} to one of: <br/>{
+            allEnclosures.map((enc)=>(<div onClick={()=>animalTo(animal,enc)}>{enc.name}<br/></div>
+            ))}
+            <Button startIcon={<DeleteIcon />} onClick={()=>setAnimalToMove(false)}/>
+          </div>
+            )
+    }else{
+      return <></>
+    }
+  }
+
+
+
 
   const holdings =()=>{
     let holdingDisplay=[]
@@ -63,14 +104,14 @@ const SingleEnclosure = (props) => {
       }
       for (const type of animalTypes){
         holdingDisplay.push(
-            <>
+            <div>
             <h3 style={{ display: "inline-block" }}>{type}:</h3><br/>
-              {animalsByType(type).map((animal) => (<span style={{marginRight: '0.5em'}}>
+              {animalsByType(type).map((animal) => (<div className="animalAndMove" >
                <AnimalPopover key={animal._id} animalID={animal._id}/>
-               <Button onClick={() => setAnimalToMove(animal)}> Move</Button></span>
+               <Button onClick={() => setAnimalToMove(animal)}> Move</Button></div>
        ))}
-
-            </>
+            <br/>
+            </div>
         )
 
       }
@@ -121,7 +162,7 @@ const SingleEnclosure = (props) => {
         </DialogContent>
       </Dialog>
     </div>
-
+    {enclosureMove(animalToMove)}
 
 
   </div>
