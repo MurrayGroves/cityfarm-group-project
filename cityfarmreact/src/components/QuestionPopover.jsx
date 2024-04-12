@@ -5,7 +5,7 @@ import {Link,  useLocation} from "react-router-dom";
 import './AnimalPopover.css'
 import { useState, useEffect } from 'react';
 import { useTheme } from '@mui/material/styles';
-import {calData, liveData, encData, typeData, singleData} from '../pages/Help'
+import {calData, liveData, encData, typeData, singleData, singleEncData} from '../pages/Help'
 import { getConfig } from '../api/getToken';
 import question from "../assets/question mark.png";
 import singleAnimal from "../pages/SingleAnimal";
@@ -29,6 +29,8 @@ const QuestionPopover = () => {
     const getContentForCurrentPath = () => {
         if (location.pathname.startsWith('/single-animal/')){
             return singleData}
+        if (location.pathname.startsWith('/single-enclosure')){
+            return singleEncData}
 
         switch (location.pathname) {
             case '/calendar':

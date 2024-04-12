@@ -1,4 +1,4 @@
-import {useParams} from "react-router-dom";
+import {Link, useParams} from "react-router-dom";
 import React, {useEffect, useState} from "react";
 import axios from "../api/axiosConfig";
 import {getConfig} from "../api/getToken";
@@ -9,6 +9,7 @@ import AssociateAnimal from "../components/AssociateAnimal";
 import Button from "@mui/material/Button";
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from "@mui/material/IconButton";
+import {DataGrid} from "@mui/x-data-grid";
 
 const SingleEnclosure = (props) => {
   const token = getConfig();
@@ -18,6 +19,7 @@ const SingleEnclosure = (props) => {
   const [openAnimalsPopup ,setOpenAnimalsPopup] = useState(false)
   const [allEnclosures,setAllEnclosures] = useState([])
   const [animalToMove,setAnimalToMove] = useState(false)
+  const [selectedAnimals,setSelectedAnimals] = useState([])
 
 
   useEffect(() => {
@@ -55,40 +57,57 @@ const SingleEnclosure = (props) => {
     return animals
   }
 
-  const animalTo = (animal, enc) =>{
-    //TODO fix this please i keep getting 401 errors even tho im logged in
-    console.log(animal.name , "to : " ,enc.name);
-    (async ()=>{
-      try {
-        const req = await axios.patch(`enclosures/moveanimal/${animal._id}/to/${enc._id}/from/${enclosure._id}`,token)
-        console.log(req);
-        window.location.reload(false);
-      }catch (error) {
-      if (error.response.status === 401) {
-        //this is errored out bc im just getting a 401 error
-        //window.location.href = "/login";
-        console.log(error)
-        return;
-      } else {
-        window.alert(error);
-      }
-    }
-    })();
+  const animalTo = (animalList, enc) =>{
 
+
+    //TODO fix this please i keep getting 401 errors even tho im logged in
+    for (const animal of animalList) {
+      (async () => {
+        try {
+          const req = await axios.patch(`enclosures/moveanimal/${animal._id}/to/${enc._id}/from/${enclosure._id}`, token)
+          console.log(req);
+          window.location.reload(false);
+        } catch (error) {
+          if (error.response.status === 401) {
+            //this is errored out bc im just getting a 401 error
+            //window.location.href = "/login";
+            console.log(error)
+            return;
+          } else {
+            window.alert(error);
+          }
+        }
+      })();
+    }
   }
 
-  const enclosureMove =(animal) =>{
-    if (animal){
+  const enclosureMove =(animalList) =>{
+
+    let name = ' animal group'
+
+
+    console.log(animalList)
+
+    if (animalList.length >0){
+      if (animalList.length === 1){
+        name = <AnimalPopover key={animalList[0]} animalID={animalList[0]}/>
+      }
       return(
-          <div> Moving {animalToMove.name} to one of: <br/>{
-            allEnclosures.map((enc)=>(<div onClick={()=>animalTo(animal,enc)}>{enc.name}<br/></div>
+          <div> Moving {name} to one of: <br/>{
+            allEnclosures.map((enc)=>(<div onClick={()=>animalTo(animalList,enc)}>{enc.name}<br/></div>
             ))}
-            <Button startIcon={<DeleteIcon />} onClick={()=>setAnimalToMove(false)}/>
+            <Button startIcon={<DeleteIcon />} onClick={closeEnclosureMove}/>
           </div>
             )
     }else{
       return <></>
     }
+  }
+
+
+  const closeEnclosureMove =()=>{
+    setAnimalToMove(false)
+    setSelectedAnimals([])
   }
 
 
@@ -103,13 +122,27 @@ const SingleEnclosure = (props) => {
         }
       }
       for (const type of animalTypes){
+        let rows = []
+        for (const a of animalsByType(type)){
+          rows.push({id: a._id,name : a , move: a})
+        }
         holdingDisplay.push(
             <div>
             <h3 style={{ display: "inline-block" }}>{type}:</h3><br/>
-              {animalsByType(type).map((animal) => (<div className="animalAndMove" >
-               <AnimalPopover key={animal._id} animalID={animal._id}/>
-               <Button onClick={() => setAnimalToMove(animal)}> Move</Button></div>
-       ))}
+
+              <DataGrid columns={
+                [
+                    { field: 'name', headerName: 'Name', headerClassName: 'grid-header', headerAlign: 'left', flex: 1,
+                  renderCell: (animal) => (<AnimalPopover key={animal.value._id} animalID={animal.value._id}/>)},
+                  { field: 'move', headerName: '', headerClassName: 'grid-header', headerAlign: 'left', flex: 1,
+                  renderCell:(animal)=>(<Button onClick={() => setSelectedAnimals([animal.id])}> Move</Button>)}
+                ]
+              } rows={rows}
+              disableRowSelectionOnClick
+              checkboxSelection
+              onRowSelectionModelChange={(ids) => {
+              setSelectedAnimals(ids.map(name => name));}}
+              />
             <br/>
             </div>
         )
@@ -149,8 +182,8 @@ const SingleEnclosure = (props) => {
   return (
 
   <div className="enclosureView">
-    {enclosure.name}<br/>
-    <h2 style={{ display: "inline-block" }}>Animal Holdings:</h2><br/>
+    <h2>{enclosure.name}</h2>
+    <h3 style={{ display: "inline-block" }}>Animal Holdings:</h3><br/>
     {holdings().map((item)=>(item))}
 
     <div id="AssociateAnimal" style={{textAlign:'center'}}>
@@ -162,7 +195,7 @@ const SingleEnclosure = (props) => {
         </DialogContent>
       </Dialog>
     </div>
-    {enclosureMove(animalToMove)}
+    {enclosureMove(selectedAnimals)}
 
 
   </div>
