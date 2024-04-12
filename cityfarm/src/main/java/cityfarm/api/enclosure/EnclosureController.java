@@ -142,4 +142,20 @@ public class EnclosureController {
 
         return ResponseEntity.ok().build();
     }
+
+    @PatchMapping("/api/enclosures/by_id/{id}/update/{enclosure}")
+    public ResponseEntity<String> set_enclosure_new(@PathVariable String id, @PathVariable Enclosure enclosure) {
+        //I THINK THIS WORKS
+
+        long res1 = enclosureRepositoryCustom.updateName(id, enclosure.name);
+        long res2 = enclosureRepositoryCustom.updateHolding(id,enclosure.holding);
+        long res3 = enclosureRepositoryCustom.updateCapacities(id,enclosure.capacities);
+
+        // If no documents updated
+        if (res1 + res2+ res3 == 0) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok().build();
+    }
 }

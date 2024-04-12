@@ -3,21 +3,28 @@ import React, {useEffect, useState} from "react";
 import axios from "../api/axiosConfig";
 import {getConfig} from "../api/getToken";
 import AnimalPopover from "../components/AnimalPopover";
-
+import "./SingleEnclosure.css"
+import {Dialog, DialogContent, DialogTitle} from "@mui/material";
+import AssociateAnimal from "../components/AssociateAnimal";
+import Button from "@mui/material/Button";
 const SingleEnclosure = (props) => {
   const token = getConfig();
   const enclosureID = useParams().enclosureID
   const [enclosure, setEnclosure] = useState({name: 'Loading...'})
   const [animalTypes,setAnimalTypes] = useState([])
-
+  const [openAnimalsPopup ,setOpenAnimalsPopup] = useState(false)
+  const [allEnclosures,setAllEnclosures] = useState([])
+  const [animalToMove,setAnimalToMove] = useState(false)
 
 
   useEffect(() => {
     (
         async () => {
     try {
-      const req = await axios.get(`/enclosures/by_id/${enclosureID}`, token)
-      setEnclosure(req.data)
+      const req1 = await axios.get(`/enclosures/by_id/${enclosureID}`, token)
+      setEnclosure(req1.data)
+      const req2 = await axios.get('/enclosures',token)
+      setAllEnclosures(req2.data)
 
 
     } catch (error) {
@@ -38,9 +45,14 @@ const SingleEnclosure = (props) => {
       if (animal.type === type) {
         animals.push(animal)
       }
-      return animals
+
+
+
     }
+    return animals
   }
+
+
   const holdings =()=>{
     let holdingDisplay=[]
     if (enclosure.holding!==undefined){
@@ -52,10 +64,12 @@ const SingleEnclosure = (props) => {
       for (const type of animalTypes){
         holdingDisplay.push(
             <>
-              {type}
-              {animalsByType(type).map((animal) => (
+            <h3 style={{ display: "inline-block" }}>{type}:</h3><br/>
+              {animalsByType(type).map((animal) => (<span style={{marginRight: '0.5em'}}>
                <AnimalPopover key={animal._id} animalID={animal._id}/>
+               <Button onClick={() => setAnimalToMove(animal)}> Move</Button></span>
        ))}
+
             </>
         )
 
@@ -64,12 +78,54 @@ const SingleEnclosure = (props) => {
     return holdingDisplay
   }
 
+
+  const setEnclosureNewAnimals = (animalList) => {
+
+    updateEnclosure({...enclosure, holding: animalList})
+  }
+
+  const handleOpenAnimalsPopup = () => {
+    setOpenAnimalsPopup(!openAnimalsPopup);
+  }
+  const updateEnclosure = (enclosure) =>{
+    (async() => {
+      try{
+        const response = await axios.patch(`/enclosures/by_id/${enclosure._id}/update/${enclosure}`, null, token)
+        console.log(response);
+        window.location.reload(false);
+      } catch (error) {
+        console.log(error)
+        if (error.response.status === 401) {
+          window.location.href = "/login";
+          return;
+        } else {
+          window.alert(error);
+        }
+      }
+    })();
+  }
+
   return (
-  <div>
-    {enclosure.name}
+
+  <div className="enclosureView">
+    {enclosure.name}<br/>
+    <h2 style={{ display: "inline-block" }}>Animal Holdings:</h2><br/>
     {holdings().map((item)=>(item))}
 
-  </div>)
+    <div id="AssociateAnimal" style={{textAlign:'center'}}>
+      <Button onClick={handleOpenAnimalsPopup}>Edit Animals</Button>
+      <Dialog fullWidth maxWidth='md' open={openAnimalsPopup} onClose={()=>{setOpenAnimalsPopup(false)}}>
+        <DialogTitle>Change Animals</DialogTitle>
+        <DialogContent>
+          <AssociateAnimal setAnimals={setEnclosureNewAnimals} animals={enclosure.holding} close={()=>setOpenAnimalsPopup(false)}></AssociateAnimal>
+        </DialogContent>
+      </Dialog>
+    </div>
+
+
+
+  </div>
+  )
 
 }
 
