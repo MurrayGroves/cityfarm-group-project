@@ -105,7 +105,17 @@ const App = () => {
         return;
     }
 
+
+    if (window.location.href.includes("/login")) {
+        return <Router>
+            <Routes>
+                <Route path="/login" element={<Login msal={msal} setMsal={setMsal} />}/>
+            </Routes>
+        </Router>
+    }
+
     const cityfarm = new CityFarm();
+
     // when window is resized, check if width thresholds have changed
     window.addEventListener("resize", () => setDevice(getComputedStyle(document.documentElement).getPropertyValue('--device')));
 
