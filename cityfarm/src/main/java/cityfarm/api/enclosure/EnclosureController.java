@@ -162,8 +162,12 @@ public class EnclosureController {
         return ResponseEntity.ok().build();
     }
 
-    @PatchMapping("/api/enclosures/moveanimal/{anId}/to/{toId}/from/{fromId}")
-    public ResponseEntity<String> change_animal_enclosure(@PathVariable String anId,@PathVariable String toId,@PathVariable String fromId){
+    @PatchMapping("/api/enclosures/moveanimal")
+    public ResponseEntity<String> change_animal_enclosure( @RequestBody List<String> ids){
+        String anId = ids.get(0);
+        String toId = ids.get(1);
+        String fromId = ids.get(2);
+
         //gets the animal
 
         AnimalCustom animal = animalRepository.findAnimalById(anId);
@@ -176,17 +180,17 @@ public class EnclosureController {
                 removalPoint = fromEnclosure.holding.indexOf(a);
             }
         }
-        if (removalPoint == -1){
-            return ResponseEntity.notFound().build();
-        }
+//        if (removalPoint == -1){
+//            return ResponseEntity.notFound().build();
+//        }
 
 
         Enclosure toEnclosure = enclosureRepository.findEnclosureById(toId);
 
         //checks it's found both enclosures
-        if (fromEnclosure == null || toEnclosure== null){
-            return ResponseEntity.notFound().build();
-        }
+//        if (fromEnclosure == null || toEnclosure== null){
+//            return ResponseEntity.notFound().build();
+//        }
 
         //removes then adds the animal
         fromEnclosure.holding.remove(removalPoint);
@@ -194,9 +198,7 @@ public class EnclosureController {
         toEnclosure.holding.add(animal);
         long add = enclosureRepositoryCustom.updateHolding(toId,toEnclosure.holding);
 
-        if (remove == 0 || add ==0 ){
-            return ResponseEntity.notFound().build();
-        }
+
 
         return ResponseEntity.ok().build();
     }

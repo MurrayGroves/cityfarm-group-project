@@ -58,20 +58,17 @@ const SingleEnclosure = (props) => {
   }
 
   const animalTo = (animalList, enc) =>{
-
-
-    //TODO fix this please i keep getting 401 errors even tho im logged in
+    console.log(animalList)
     for (const animal of animalList) {
       (async () => {
         try {
-          console.log(animal)
-          const req = await axios.patch(`enclosures/moveanimal/${animal}/to/${enc._id}/from/${enclosure._id}`, token)
-          console.log(req);
-          window.location.reload(false);
+          console.log('SENDING',animal)
+          const req = await axios.patch(`/enclosures/moveanimal`,[animal,enc._id,enclosure._id], token)
+          // console.log(req);
+          //window.location.reload(false);
         } catch (error) {
           if (error.response.status === 401) {
-            //this is errored out bc im just getting a 401 error
-            //window.location.href = "/login";
+            window.location.href = "/login";
             console.log(error)
             return;
           } else {
@@ -86,8 +83,6 @@ const SingleEnclosure = (props) => {
 
     let name = ' animal group'
 
-
-    console.log(animalList)
 
     if (animalList.length >0){
       if (animalList.length === 1){
