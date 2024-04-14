@@ -144,19 +144,20 @@ public class EnclosureController {
         return ResponseEntity.ok().build();
     }
 
-    @PatchMapping("/api/enclosures/by_id/{id}/update/{enclosure}")
-    public ResponseEntity<String> set_enclosure_new(@PathVariable String id, @PathVariable Enclosure enclosure) {
-        //I THINK THIS WORKS
-        //it doesn't btw lol
-        //it may not like the entire enclosure being sent down idk
-        long res1 = enclosureRepositoryCustom.updateName(id, enclosure.name);
-        long res2 = enclosureRepositoryCustom.updateHolding(id,enclosure.holding);
-        long res3 = enclosureRepositoryCustom.updateCapacities(id,enclosure.capacities);
+    @PatchMapping("/api/enclosures/by_id/{id}/update")
+    public ResponseEntity<String> set_enclosure_new(@PathVariable String id, @RequestBody CreateEnclosureRequest enclosureNew) {
 
-        // If no documents updated
-        if (res1 + res2+ res3 == 0) {
-            return ResponseEntity.notFound().build();
+        List<AnimalCustom> holding = new ArrayList<>();
+        for (String animal: enclosureNew.holding) {
+            AnimalCustom anm = animalRepository.findAnimalById(animal);
+            holding.add(anm);
         }
+        long res1 = enclosureRepositoryCustom.updateName(id, enclosureNew.name);
+        long res2 = enclosureRepositoryCustom.updateHolding(id,holding);
+        long res3 = enclosureRepositoryCustom.updateCapacities(id,enclosureNew.capacities);
+
+        // TODO an error check
+
 
         return ResponseEntity.ok().build();
     }
@@ -164,6 +165,7 @@ public class EnclosureController {
     @PatchMapping("/api/enclosures/moveanimal/{anId}/to/{toId}/from/{fromId}")
     public ResponseEntity<String> change_animal_enclosure(@PathVariable String anId,@PathVariable String toId,@PathVariable String fromId){
         //gets the animal
+
         AnimalCustom animal = animalRepository.findAnimalById(anId);
 
         //defines home and destination nd also where the animal is getting removed from, can probs be done more elegantly

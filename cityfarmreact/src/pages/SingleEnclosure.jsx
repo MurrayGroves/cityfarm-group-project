@@ -64,7 +64,8 @@ const SingleEnclosure = (props) => {
     for (const animal of animalList) {
       (async () => {
         try {
-          const req = await axios.patch(`enclosures/moveanimal/${animal._id}/to/${enc._id}/from/${enclosure._id}`, token)
+          console.log(animal)
+          const req = await axios.patch(`enclosures/moveanimal/${animal}/to/${enc._id}/from/${enclosure._id}`, token)
           console.log(req);
           window.location.reload(false);
         } catch (error) {
@@ -152,21 +153,38 @@ const SingleEnclosure = (props) => {
     return holdingDisplay
   }
 
+  // const setEnclosureNewAnimals = async (animalList) => {
+  //   try {
+  //     const newHolding = await Promise.all(animalList.map(async (id) => {
+  //       const response = await axios.get(`/animals/by_id/${id}`, token);
+  //       return response.data;
+  //     }));
+  //
+  //     console.log('newholding', newHolding);
+  //     updateEnclosure({name: enclosure.name, holding: newHolding,
+  //       capacities: enclosure.capacities, notes: enclosure.notes, farm: enclosure.farm});
+  //   } catch (error) {
+  //     window.alert(error);
+  //   }
+  // }
 
   const setEnclosureNewAnimals = (animalList) => {
-
-    updateEnclosure({...enclosure, holding: animalList})
+    updateEnclosure(enclosure._id,{name: enclosure.name, holding: animalList,
+          capacities: enclosure.capacities, notes: enclosure.notes, farm: enclosure.farm})
   }
+
+
 
   const handleOpenAnimalsPopup = () => {
     setOpenAnimalsPopup(!openAnimalsPopup);
   }
-  const updateEnclosure = (enclosure) =>{
+  const updateEnclosure = (id,enclosure) =>{
     (async() => {
       try{
-        const response = await axios.patch(`/enclosures/by_id/${enclosure._id}/update/${enclosure}`, null, token)
+        console.log(enclosure)
+        const response = await axios.patch(`/enclosures/by_id/${id}/update`, enclosure, token)
         console.log(response);
-        window.location.reload(false);
+        //window.location.reload(false);
       } catch (error) {
         console.log(error)
         if (error.response.status === 401) {
