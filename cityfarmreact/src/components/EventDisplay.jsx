@@ -11,6 +11,8 @@ import AddIcon from '@mui/icons-material/Add';
 import Delete from '@mui/icons-material/Delete';
 import AssociateAnimal from '../components/AssociateAnimal';
 import AssociateEnclosure from '../components/AssociateEnclosure';
+import { Unstable_NumberInput as NumberInput } from '@mui/base/Unstable_NumberInput';
+
 
 const EventDisplay = ({
     selectedEvent, setSelectedEvent,
@@ -161,24 +163,27 @@ const EventDisplay = ({
                         <Button variant='contained' style={{float: "right"}} onClick={()=>handleAddEvent()} endIcon={<AddIcon/>}>Create</Button>
                         <FormGroup>
                             <FormControlLabel control={<Checkbox checked={newEvent.allDay} size='small'/>} label="All Day" onChange={() => changeAllDay(!newEvent.allDay, "add")}/>
-                            <FormControlLabel control={<Checkbox checked={recurring} size='small'/>} label="Recurring" onChange={() => changeRecurring(!recurring, "add")} />
                         </FormGroup>
                     </div>
-                    {recurring && (
                     <div className='smallMarginTop'>
-                        <ToggleButtonGroup
-                            fullWidth
-                            orientation='horizontal'
-                            value={newEvent.delay}
-                            exclusive
-                            onChange={(e) => setNewEvent({...newEvent, delay: e.target.value})}
-                        >
-                            <ToggleButton value='P1D'>Daily</ToggleButton>
-                            <ToggleButton value='P7D'>Weekly</ToggleButton>
-                            <ToggleButton value='P1M'>Monthly</ToggleButton>
-                            <ToggleButton value='P1Y'>Yearly</ToggleButton>
-                        </ToggleButtonGroup>
-                    </div>)}
+                    <div style={{display: "flex", alignItems: 'center'}}>
+                            <FormControlLabel style={{flex: '0.01', marginRight: '0'}} label="Repeats" control={<Checkbox checked={recurring} size='small'/>} onChange={() => changeRecurring(!recurring, "add")} />
+                            <p style={{margin: '1%', flex: '0.5', visibility: recurring ? 'visible': 'hidden'}}>every</p>
+
+                            <input type="number" onFocus={(e) => e.target.addEventListener("wheel", function (e) { e.preventDefault() }, { passive: false })}
+                                placeholder="Years" min={0} max={99} style={{flex: '1', marginRight: '1%', visibility: recurring ? 'visible': 'hidden'}}
+                            />
+                            <input type="number" onFocus={(e) => e.target.addEventListener("wheel", function (e) { e.preventDefault() }, { passive: false })}
+                                placeholder="Months" min={0} max={99} style={{flex: '1', marginRight: '1%', visibility: recurring ? 'visible': 'hidden'}}
+                            />
+                            <input type="number" onFocus={(e) => e.target.addEventListener("wheel", function (e) { e.preventDefault() }, { passive: false })}
+                                placeholder="Weeks" min={0} max={99} style={{flex: '1', marginRight: '1%', visibility: recurring ? 'visible': 'hidden'}}
+                            />
+                            <input type="number" onFocus={(e) => e.target.addEventListener("wheel", function (e) { e.preventDefault() }, { passive: false })}
+                                placeholder="Days" min={0} max={99} style={{flex: '1', marginRight: '1%', visibility: recurring ? 'visible': 'hidden'}}
+                            />
+                        </div>
+                    </div>
                     <div className='smallMarginTop'>
                         <h3>Farms</h3>
                         <FormGroup>
