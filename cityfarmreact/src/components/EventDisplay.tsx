@@ -27,7 +27,7 @@ const EventDisplay = ({
     
 
     return (<>
-        <div style={{overflow: 'hidden'}}>
+        <div style={{overflow: 'auto'}}>
             { selectedEvent !== "" ?
                 <>
                     <div style={{display: "flex", justifyContent: "space-between"}}>

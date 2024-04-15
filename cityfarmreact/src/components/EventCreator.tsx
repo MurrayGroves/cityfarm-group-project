@@ -3,12 +3,14 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 import React, {useState, useEffect, useCallback, ChangeEvent} from 'react';
 import dayjs from 'dayjs';
 import "../pages/Calendar.css";
+import "./EventCreator.css";
+
 import Event from "./Event.jsx";
 import AnimalPopover from "./AnimalPopover.jsx";
 import Close from '@mui/icons-material/Close';
 import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
-import {  DialogActions, DialogContent, DialogContentText, DialogTitle, ToggleButton, ToggleButtonGroup } from "@mui/material";
+import {  DialogActions, DialogContent, DialogContentText, DialogTitle, ToggleButton, ToggleButtonGroup, createTheme } from "@mui/material";
 import { IconButton, Button, ButtonGroup, Checkbox, FormControlLabel, FormGroup, useTheme, Dialog, FormHelperText, Backdrop, Alert } from '@mui/material';
 import AlertTitle from '@mui/material/AlertTitle';
 import EditIcon from '@mui/icons-material/Edit';
@@ -21,6 +23,7 @@ import axios from '../api/axiosConfig.js'
 import AssociateEnclosure from './AssociateEnclosure.jsx';
 import { getConfig } from '../api/getToken.js';
 import { CityFarm } from '../api/cityfarm.ts';
+import { Theme, ThemeProvider } from '@emotion/react';
 
 export const EventCreator = ({farms, style, cityfarm, setEvent}: {farms: any, style: any, cityfarm: CityFarm, setEvent: (eventID: string) => void}) => {
     const [newEvent,setNewEvent] = useState<any>({
@@ -83,17 +86,17 @@ export const EventCreator = ({farms, style, cityfarm, setEvent}: {farms: any, st
     }
 
     interface RepeatDelay {
-        years: number,
-        months: number,
-        weeks: number,
-        days: number
+        years: number | null,
+        months: number | null,
+        weeks: number | null,
+        days: number | null,
     }
 
     const [repeatDelay, setRepeatDelay] = useState<RepeatDelay>({years: 0, months: 0, weeks: 0, days: 0});
 
     useEffect(() => {
-        let days = repeatDelay.days + repeatDelay.weeks * 7;
-        let period = `P${repeatDelay.years}Y${repeatDelay.months}M${days}D`;
+        let days = (repeatDelay.days ?? 0) + (repeatDelay.weeks ?? 0) * 7;
+        let period = `P${repeatDelay.years ?? 0}Y${repeatDelay.months ?? 0}M${days}D`;
         let oldEvent = newEvent;
         oldEvent.delay = period;
         setNewEvent(oldEvent);
@@ -159,7 +162,7 @@ export const EventCreator = ({farms, style, cityfarm, setEvent}: {farms: any, st
                 />
             </>)
         } else {
-            return(<>
+            return(<>  
                 <FormHelperText>Start</FormHelperText>
                 <DatePicker
                     value={recurring ? dayjs(newEvent.firstStart) : dayjs(newEvent.start)}
@@ -187,6 +190,18 @@ export const EventCreator = ({farms, style, cityfarm, setEvent}: {farms: any, st
         }
     }
 
+    const textFieldTheme = () => createTheme({
+        components: {
+            MuiFormHelperText: {
+                styleOverrides: {
+                    root: {
+                        marginLeft: '5%',
+                    }
+                }
+            },
+        }
+    })
+
     return (
         <div style={{width: '400px', margin: '0 0 20px 0', padding: '10px', ...style}}>
             <h2 className='boxTitle'>Create New Event</h2>
@@ -210,23 +225,53 @@ export const EventCreator = ({farms, style, cityfarm, setEvent}: {farms: any, st
                 </FormGroup>
             </div>
             <div className='smallMarginTop'>
-                <div style={{display: "flex", alignItems: 'center', width: '40%'}}>
-                    <FormControlLabel style={{flex: '0.01', marginRight: '0'}} label="Repeats" control={<Checkbox checked={recurring} size='small'/>} onChange={() => changeRecurring(!recurring)} />
-                    <p style={{margin: '1%', flex: '0.5', visibility: recurring ? 'visible': 'hidden'}}>every</p>
+                <ThemeProvider theme={textFieldTheme()}>
+                    <div style={{display: "flex", alignItems: 'center', width: '100%'}}>
+                        <FormControlLabel style={{flex: '0.01', marginRight: '0'}} label="Repeats" control={<Checkbox checked={recurring} size='small'/>} onChange={() => changeRecurring(!recurring)} />
+                        <p style={{margin: '1%', flex: '0.5', visibility: recurring ? 'visible': 'hidden'}}>every</p>
 
-                    <input type="number" onFocus={(e) => e.target.addEventListener("wheel", function (e) { e.preventDefault() }, { passive: false })}
-                        placeholder="Years" min={0} max={99} style={{flex: '1', marginRight: '1%', visibility: recurring ? 'visible': 'hidden'}}
-                    />
-                    <input type="number" onFocus={(e) => e.target.addEventListener("wheel", function (e) { e.preventDefault() }, { passive: false })}
-                        placeholder="Months" min={0} max={99} style={{flex: '1', marginRight: '1%', visibility: recurring ? 'visible': 'hidden'}}
-                    />
-                    <input type="number" onFocus={(e) => e.target.addEventListener("wheel", function (e) { e.preventDefault() }, { passive: false })}
-                        placeholder="Weeks" min={0} max={99} style={{flex: '1', marginRight: '1%', visibility: recurring ? 'visible': 'hidden'}}
-                    />
-                    <input type="number" onFocus={(e) => e.target.addEventListener("wheel", function (e) { e.preventDefault() }, { passive: false })}
-                        placeholder="Days" min={0} max={99} style={{flex: '1', marginRight: '1%', visibility: recurring ? 'visible': 'hidden'}}
-                    />
-                </div>
+                        <TextField type="number" onFocus={(e) => e.target.addEventListener("wheel", function (e) { e.preventDefault() }, { passive: false })}
+                            helperText="Years" style={{flex: '1', visibility: recurring ? 'visible': 'hidden', marginRight:'1%'}}
+                            onChange={(e) => setRepeatDelay({...repeatDelay, years: parseInt(e.target.value)})} value={repeatDelay.years?? undefined}
+                            inputProps={{
+                                style: {
+                                padding: 5,
+                                }
+                            }}
+                            size='small'
+                        />
+                        <TextField type="number" onFocus={(e) => e.target.addEventListener("wheel", function (e) { e.preventDefault() }, { passive: false })}
+                            helperText="Months" style={{flex: '1', visibility: recurring ? 'visible': 'hidden', marginRight:'1%'}}
+                            onChange={(e) => setRepeatDelay({...repeatDelay, months: parseInt(e.target.value)})} value={repeatDelay.months?? undefined}
+                            inputProps={{
+                                style: {
+                                padding: 5
+                                }
+                            }}
+                            size='small'
+                        />
+                        <TextField type="number" onFocus={(e) => e.target.addEventListener("wheel", function (e) { e.preventDefault() }, { passive: false })}
+                            helperText="Weeks" style={{flex: '1', visibility: recurring ? 'visible': 'hidden', marginRight:'1%'}}
+                            onChange={(e) => setRepeatDelay({...repeatDelay, weeks: parseInt(e.target.value)})} value={repeatDelay.weeks?? undefined}
+                            inputProps={{
+                                style: {
+                                padding: 5
+                                }
+                            }}
+                            size='small'
+                        />
+                        <TextField type="number" onFocus={(e) => e.target.addEventListener("wheel", function (e) { e.preventDefault() }, { passive: false })}
+                            helperText="Days" style={{flex: '1', visibility: recurring ? 'visible': 'hidden'}}
+                            onChange={(e) => setRepeatDelay({...repeatDelay, days: parseInt(e.target.value)})} value={repeatDelay.days?? undefined}
+                            inputProps={{
+                                style: {
+                                padding: 5
+                                }
+                            }}
+                            size='small'
+                        />
+                    </div>
+                </ThemeProvider>
             </div>
             <div className='smallMarginTop'>
                 <h3>Farms</h3>

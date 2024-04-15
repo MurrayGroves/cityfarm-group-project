@@ -424,7 +424,7 @@ const Calendar = ({farms, device, cityfarm}) => {
                 </DialogContent>
             </Dialog>
             :
-            <Paper elevation={3} style={{padding: '10px', flex: 1, overflowY: 'scroll'}}>
+            <Paper elevation={3} style={{padding: '10px', flex: 1, overflowY: 'auto'}}>
                 <EventDisplay
                     selectedEvent={selectedEvent} setSelectedEvent={setSelectedEvent}
                     modifiedEvent={modifiedEvent} modifyEvent={modifyEvent} setModifiedEvent={setModifiedEvent} setModifiedEventAnimals={setModifiedEventAnimals} setModifiedEventEnclosures={setModifiedEventEnclosures} setModifyEvent={setModifyEvent}
