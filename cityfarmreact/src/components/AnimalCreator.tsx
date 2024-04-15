@@ -196,7 +196,7 @@ const AnimalCreator = ({farms, schemaList, animalList, device, create, createCli
                                 options={schemaList}
                                 onChange={(_, v) => {
                                     if (v) {
-                                        setNewAnimal({ ...newAnimal, type: v.name, fields: {} });
+                                        setNewAnimal({ ...newAnimal, mother: '', father: '', type: v.name, fields: {} });
                                         setSchema(v);
                                         setFieldList(Object.keys(v.fields));
                                     } else {

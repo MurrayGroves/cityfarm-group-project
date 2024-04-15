@@ -11,7 +11,7 @@ import EnclosureTable from "./pages/EnclosureTable.jsx";
 import Schemas from "./pages/Schemas.jsx";
 import Error from "./pages/Error.jsx";
 import Login from './pages/Login.jsx';
-import SingleAnimal from "./pages/SingleAnimal.jsx";
+import SingleAnimal from "./pages/SingleAnimal.tsx";
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 
@@ -125,7 +125,7 @@ const App = () => {
                             <Route path="/enclosures" element={<EnclosureTable farms={farms}/>}/>
                             <Route path="/schemas" element={<Schemas farms={farms}/>}/>
                             <Route path="/help" element={<Help/>}/>
-                            <Route path="/single-animal/:animalID" element={<SingleAnimal farms={farms}/>} />
+                            <Route path="/single-animal/:animalID" element={<SingleAnimal farms={farms} cityfarm={cityfarm}/>} />
                             <Route path="*" element={<Error/>}/>
                         </Routes>
                     </div>

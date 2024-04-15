@@ -4,6 +4,7 @@ export class Event {
     title: string;
     description: string;
     allDay: boolean;
+    farms: string[];
     start: Date;
     end: Date;
     id: string
@@ -14,6 +15,7 @@ export class Event {
         this.title = data.title;
         this.description = data.description;
         this.allDay = data.allDay;
+        this.farms = data.farms;
         this.start = new Date(data.start);
         this.end = new Date(data.end);
         this.id = data._id;

@@ -2,27 +2,28 @@ import * as React from "react";
 import "./SingleAnimal.css"
 import {  useParams } from "react-router-dom";
 import Typography from "@mui/material/Typography";
-import axios from '../api/axiosConfig';
+import axios from '../api/axiosConfig.js';
 import { useState, useEffect } from 'react';
-import AnimalPopover from "../components/AnimalPopover";
-import CloseIcon from "../assets/close-512-light.webp";
+import AnimalPopover from "../components/AnimalPopover.jsx";
 import Paper from "@mui/material/Paper";
-import SelectedEvent from "../components/SelectedEvent";
-import { getConfig } from '../api/getToken';
-import FarmMoveButton from "../components/FarmMoveButton";
+import SelectedEvent from "../components/SelectedEvent.jsx";
+import { getConfig } from '../api/getToken.js';
+import FarmMoveButton from "../components/FarmMoveButton.jsx";
+import { CityFarm } from "../api/cityfarm.ts";
+import { Animal, Schema, Sex } from "../api/animals.ts";
+import { Event } from "../api/events.ts";
 
-const SingleAnimal = (props) => {
+const SingleAnimal = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
 
-    const farms = props.farms;
+    const { animalID } = useParams<string>();
 
-    const { animalID } = useParams();
-
-    const [relEvents,setRelEvents] = useState([])
-    const [chosenAnimal, setChosenAnimal] = useState({name: 'Loading...', type: 'Loading...'});
-    const [selectedEvent,setSelectedEvent] = useState("No event selected");
-    const [schema, setSchema] = useState();
-    const [children,setChildren] = useState([])
-    const [eventsAll,setEventAll] = useState(false)
+    const [relEvents,setRelEvents] = useState(new Array());
+    const [chosenAnimal, setChosenAnimal] = useState<Animal>(new Animal({name: 'Loading...', type: 'Loading...'}));
+    const [selectedEvent, setSelectedEvent] = useState<Event>();
+    const [schema, setSchema] = useState<Schema>();
+    const [children, setChildren] = useState<String[]>(new Array<String>());
+    const [eventsAll, setEventAll] = useState(false);
+    const [animals, setAnimals] = useState<Animal[]>([]);
 
     const token = getConfig();
 
@@ -38,69 +39,44 @@ const SingleAnimal = (props) => {
 
     useEffect(() => {
         (async () => {
-            try {
-                const response = await axios.get(`/animals/by_id/${animalID}`, token);
-                setChosenAnimal(response.data);
-
-                const events = await axios.get(`/events/by_animal/${animalID}`, token)
-                setRelEvents(eventsConversion(events.data))
-
-            } catch (error) {
-                if (error.response.status === 401) {
-                    window.location.href = "/login";
-                    return;
-                } else {
-                    window.alert(error);
-                }
-            }
-        })();
-    }, [animalID]);
+            const animal = await cityfarm.getAnimal(animalID!, true, (animal) => {setChosenAnimal(animal)});
+            setChosenAnimal(animal!);
+            const events = await cityfarm.getEvents(true, (events) => {setRelEvents(eventsConversion(events))})
+            setRelEvents(eventsConversion(events));
+    })()}, [animalID]);
 
     useEffect(()=>{
-
-        let kids =[];
-        let animals = [];
+        let kids = new Array<String>();
         (async () => {
-            try {
-                const response = await axios.get(`/animals`,token);
-                animals=response.data
+            const anis = await cityfarm.getAnimals(true, (animals) => {setAnimals(animals)});
+            setAnimals(anis)
 
-                if (chosenAnimal.sex!=='c') {
+            if (chosenAnimal.sex !== Sex.Castrated) {
 
-                    if (chosenAnimal.sex === 'm') {
+                if (chosenAnimal.sex === Sex.Male) {
 
-                        for (let a of animals) {
-                            if (a.father === chosenAnimal._id) {
-
-                                kids.push(a._id)
-                            }
-                        }
-                    } else {
-
-                        for (let a of animals) {
-
-                            if (a.mother === chosenAnimal._id) {
-
-                                kids.push(a._id)
-                            }
+                    for (let a of animals) {
+                        if (a.father === chosenAnimal.id) {
+                            kids.push(a.id)
                         }
                     }
-
-                    setChildren(kids)
-
-                }
-            } catch (error) {
-                if (error.response.status === 401) {
-                    window.location.href = "/login";
-                    return;
                 } else {
-                    window.alert(error);
+
+                    for (let a of animals) {
+                        if (a.mother === chosenAnimal.id) {
+                            kids.push(a.id)
+                        }
+                    }
                 }
-            };
+
+                setChildren(kids)
+
+            }
         })()
-        },[chosenAnimal])
-    const eventsConversion=(events)=>{
-        let changed=[]
+    },[chosenAnimal])
+    
+    const eventsConversion=(events: Event[])=>{
+        let changed = new Array<any>()
         for (let i=0;i<events.length;i++){
             changed.push(
                 {
@@ -118,22 +94,17 @@ const SingleAnimal = (props) => {
         return changed;
     }
 
-    const handleEventClick=(event)=>{
+    const handleEventClick=(event: Event)=>{
         setSelectedEvent(event)
     }
 
     function getSchema() {
         (async () => {
-            try {
-                const response = await axios.get(`/schemas/by_name/${chosenAnimal.type}`, token);
-                setSchema(response.data.pop());
-            } catch (error) {
-                if (error.response.status === 401) {
-                    window.location.href = "/login";
-                    return;
-                } else {
-                    window.alert(error);
-                }
+            const schema = await cityfarm.getSchema(chosenAnimal.type, true, (schema) => {setSchema(schema)})
+            if (!schema) {
+                console.error(`No schema with name ${chosenAnimal.type} found.`);
+            } else {
+                setSchema(schema);
             }
         })()
     }
@@ -144,7 +115,7 @@ const SingleAnimal = (props) => {
 
     const fieldTypeSwitch = (name, value) => {
         if (schema && value !== '') {
-            switch(schema._fields[name]._type) {
+            switch(schema.fields[name].type) {
                 case "java.lang.Boolean":
                     return <span key={name}><b>{name.charAt(0).toUpperCase() + name.slice(1)}:</b> {value ? 'Yes' : 'No'}</span>;
                 case "java.lang.String":
@@ -161,7 +132,7 @@ const SingleAnimal = (props) => {
         }
     }
 
-    const singleEvent = (e,index)=>{
+    const singleEvent = (e, index)=>{
         return(
             <Paper elevation={3} className="event-box" key={index}>
                 <h2 onClick={() => handleEventClick(e)}>{e.title}</h2>
@@ -201,10 +172,9 @@ const SingleAnimal = (props) => {
     }
 
     return<>
-
         <h1>{chosenAnimal.name}</h1>
         <div className='details'>
-        <div><b>Sex:</b> {chosenAnimal.sex === undefined ? <span>Loading...</span> : (chosenAnimal.sex === 'f' ? <span>Female</span> : (chosenAnimal.sex === 'm' ? <span>Male</span> : <span>Castrated</span>))}</div>
+        <div><b>Sex:</b> {chosenAnimal.sex === undefined ? <span>Loading...</span> : (chosenAnimal.sex === Sex.Female ? <span>Female</span> : (chosenAnimal.sex === Sex.Male ? <span>Male</span> : <span>Castrated</span>))}</div>
         <div><b>Species:</b> {chosenAnimal.type}</div>
         <div style={{display: 'flex'}}>
             <span style={{marginRight: '0.5em'}}><b>Father:</b></span>
@@ -240,8 +210,8 @@ const SingleAnimal = (props) => {
         )}
         <div className="farmButtons">
             {Object.entries(farms).map((farm) => (
-                <React.Fragment key={farm}>
-                    <FarmMoveButton farm={farm} ids={[chosenAnimal._id]  }/>
+                <React.Fragment key={farm[0]}>
+                    <FarmMoveButton farm={farm} ids={[chosenAnimal.id]}/>
                 </React.Fragment>
             ))}
         </div>
@@ -265,7 +235,7 @@ const SingleAnimal = (props) => {
                 </div>
 
         </div>
-        {selectedEvent !== "No event selected" && (
+        {selectedEvent && (
             <Paper elevation={3} className='selectedBox'>
                 <SelectedEvent event={selectedEvent} setEvent={setSelectedEvent} farms={farms}/>
             </Paper>

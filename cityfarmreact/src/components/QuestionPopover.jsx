@@ -8,7 +8,7 @@ import { useTheme } from '@mui/material/styles';
 import {calData, liveData, encData, typeData, singleData} from '../pages/Help'
 import { getConfig } from '../api/getToken';
 import question from "../assets/question mark.png";
-import singleAnimal from "../pages/SingleAnimal";
+import singleAnimal from "../pages/SingleAnimal.tsx";
 
 const QuestionPopover = () => {
 
