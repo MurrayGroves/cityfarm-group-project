@@ -175,8 +175,8 @@ const EventDisplay = ({
                         >
                             <ToggleButton value='P1D'>Daily</ToggleButton>
                             <ToggleButton value='P7D'>Weekly</ToggleButton>
-                            <ToggleButton value='P30D'>Monthly</ToggleButton>
-                            <ToggleButton value='P365D'>Yearly</ToggleButton>
+                            <ToggleButton value='P1M'>Monthly</ToggleButton>
+                            <ToggleButton value='P1Y'>Yearly</ToggleButton>
                         </ToggleButtonGroup>
                     </div>)}
                     <div className='smallMarginTop'>

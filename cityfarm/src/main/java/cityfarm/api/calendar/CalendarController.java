@@ -4,10 +4,8 @@ import cityfarm.api.animals.AnimalCustom;
 import cityfarm.api.animals.AnimalRepository;
 import cityfarm.api.enclosure.Enclosure;
 import cityfarm.api.enclosure.EnclosureRepository;
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,10 +28,6 @@ public class CalendarController {
 
     @Autowired
     AnimalRepository animalRepository;
-
-    private final String host_url = "http://localhost:3000";
-
-
 
     @GetMapping("/api/events")
     public ResponseEntity<List<EventInstance>> get_events(

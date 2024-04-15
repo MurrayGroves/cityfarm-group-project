@@ -201,8 +201,8 @@ export const EventCreator = ({farms, style, cityfarm, setEvent}: {farms: any, st
                 >
                     <ToggleButton value='P1D'>Daily</ToggleButton>
                     <ToggleButton value='P7D'>Weekly</ToggleButton>
-                    <ToggleButton value='P28D'>Monthly</ToggleButton>
-                    <ToggleButton value='P265D'>Yearly</ToggleButton>
+                    <ToggleButton value='P1M'>Monthly</ToggleButton>
+                    <ToggleButton value='P1Y'>Yearly</ToggleButton>
                 </ToggleButtonGroup>
             </div>)}
             <div className='smallMarginTop'>
