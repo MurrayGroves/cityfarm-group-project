@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import "../pages/Calendar.css";
-import AnimalPopover from "../components/AnimalPopover";
+import AnimalPopover from "./AnimalPopover";
 import Close from '@mui/icons-material/Close';
 import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
@@ -9,9 +9,9 @@ import { IconButton, Button, ButtonGroup, Checkbox, FormControlLabel, FormGroup,
 import EditIcon from '@mui/icons-material/Edit';
 import AddIcon from '@mui/icons-material/Add';
 import Delete from '@mui/icons-material/Delete';
-import AssociateAnimal from '../components/AssociateAnimal';
-import AssociateEnclosure from '../components/AssociateEnclosure';
-import { Unstable_NumberInput as NumberInput } from '@mui/base/Unstable_NumberInput';
+import AssociateAnimal from './AssociateAnimal';
+import AssociateEnclosure from './AssociateEnclosure';
+import { EventCreator } from './EventCreator.tsx';
 
 
 const EventDisplay = ({
@@ -22,11 +22,12 @@ const EventDisplay = ({
     showingTime, functionopenPopup, functionclosePopup,
     openAnimalsPopup, openEnclosurePopup,
     recurring, changeRecurring, changeAllDay,
-    farms, device
+    farms, device, cityfarm
     }) => {
+    
 
     return (<>
-        <div>
+        <div style={{overflow: 'hidden'}}>
             { selectedEvent !== "" ?
                 <>
                     <div style={{display: "flex", justifyContent: "space-between"}}>
@@ -144,97 +145,7 @@ const EventDisplay = ({
                 </>
                 :
                 <>
-                {createEvent && <>
-                    <h2 className='boxTitle'>Create New Event</h2>
-                    <div>
-                        <TextField
-                            error={newEvent.title === ''}
-                            size='small'
-                            fullWidth
-                            placeholder="Add Title"
-                            label='Title'
-                            value={newEvent.title}
-                            onChange={(e)=>setNewEvent({...newEvent, title: e.target.value})}
-                        />
-                        {showingTime(!newEvent.allDay,"add")}
-                    </div>
-
-                    <div className='smallMarginTop'>
-                        <Button variant='contained' style={{float: "right"}} onClick={()=>handleAddEvent()} endIcon={<AddIcon/>}>Create</Button>
-                        <FormGroup>
-                            <FormControlLabel control={<Checkbox checked={newEvent.allDay} size='small'/>} label="All Day" onChange={() => changeAllDay(!newEvent.allDay, "add")}/>
-                        </FormGroup>
-                    </div>
-                    <div className='smallMarginTop'>
-                    <div style={{display: "flex", alignItems: 'center'}}>
-                            <FormControlLabel style={{flex: '0.01', marginRight: '0'}} label="Repeats" control={<Checkbox checked={recurring} size='small'/>} onChange={() => changeRecurring(!recurring, "add")} />
-                            <p style={{margin: '1%', flex: '0.5', visibility: recurring ? 'visible': 'hidden'}}>every</p>
-
-                            <input type="number" onFocus={(e) => e.target.addEventListener("wheel", function (e) { e.preventDefault() }, { passive: false })}
-                                placeholder="Years" min={0} max={99} style={{flex: '1', marginRight: '1%', visibility: recurring ? 'visible': 'hidden'}}
-                            />
-                            <input type="number" onFocus={(e) => e.target.addEventListener("wheel", function (e) { e.preventDefault() }, { passive: false })}
-                                placeholder="Months" min={0} max={99} style={{flex: '1', marginRight: '1%', visibility: recurring ? 'visible': 'hidden'}}
-                            />
-                            <input type="number" onFocus={(e) => e.target.addEventListener("wheel", function (e) { e.preventDefault() }, { passive: false })}
-                                placeholder="Weeks" min={0} max={99} style={{flex: '1', marginRight: '1%', visibility: recurring ? 'visible': 'hidden'}}
-                            />
-                            <input type="number" onFocus={(e) => e.target.addEventListener("wheel", function (e) { e.preventDefault() }, { passive: false })}
-                                placeholder="Days" min={0} max={99} style={{flex: '1', marginRight: '1%', visibility: recurring ? 'visible': 'hidden'}}
-                            />
-                        </div>
-                    </div>
-                    <div className='smallMarginTop'>
-                        <h3>Farms</h3>
-                        <FormGroup>
-                            <FormControlLabel control={<Checkbox checked={newEvent.farms.includes(farms.WH)} color={farms.WH} size='small'/>} label="Windmill Hill" onChange={() => setNewEvent({...newEvent, farms: newEvent.farms.includes(farms.WH) ? newEvent.farms.filter((farm) => farm !== farms.WH) : newEvent.farms.concat(farms.WH)})}/>
-                            <FormControlLabel control={<Checkbox checked={newEvent.farms.includes(farms.HC)} color={farms.HC} size='small'/>} label="Hartcliffe" onChange={()=>setNewEvent({...newEvent, farms: newEvent.farms.includes(farms.HC) ? newEvent.farms.filter((farm) => farm !== farms.HC) : newEvent.farms.concat(farms.HC)})}/>
-                            <FormControlLabel control={<Checkbox checked={newEvent.farms.includes(farms.SW)} color={farms.SW} size='small'/>} label="St Werburghs" onChange={()=>setNewEvent({...newEvent, farms: newEvent.farms.includes(farms.SW) ? newEvent.farms.filter((farm) => farm !== farms.SW) : newEvent.farms.concat(farms.SW)})}/>
-                        </FormGroup>
-                    </div>
-                    <div>
-                        <span style={{display: 'flex'}}><h3>Animals</h3><IconButton style={{height: '40px', margin: '12px 0 0 5px'}} onClick={() => {functionopenPopup("animals")}}><AddIcon color='primary'/></IconButton></span>
-                        {/* idea: make this open the animal table page with a new column of checkboxes. Click on an associate animal(s) button would then pass a list of animal id to the calendar to the new event state. This could be re used in the modification of events.  */}
-                        {newEvent.animals.map((animalID) => (
-                            <AnimalPopover key={animalID} animalID={animalID} />
-                        ))}
-                        <div id="AssociateAnimal" style={{textAlign:'center'}}>
-                            <Dialog fullWidth maxWidth='md' open={openAnimalsPopup} onClose={functionclosePopup}>
-                                <DialogTitle>Add Animal</DialogTitle>
-                                <DialogContent>
-                                    <AssociateAnimal setAnimals={setAddEventAnimals} animals={newEvent.animals} close={functionclosePopup}></AssociateAnimal>
-                                </DialogContent>
-                            </Dialog>
-                        </div>
-                    </div>
-                    <div>
-                        <span style={{display: 'flex'}}><h3>Enclosures</h3><IconButton style={{height: '40px', margin: '12.5px 0 0 5px'}} onClick={() => {functionopenPopup("enclosures")}}><AddIcon color='primary'/></IconButton></span>
-                        {newEvent.enclosures.map((enclosureName, index) => (
-                            <p key={index}>{enclosureName}</p>
-                        ))}{/*Add a way to remove enclosures from events */}
-                        {/* idea: make this open the enlcosure  page with a new column of checkboxes. Click on an associate enlcosure(s) button would then pass a list of enclosure names to the calendar to be placed in a field*/}
-                        <div id="AssociateEnclosure" style={{textAlign:'center'}}>
-                            <Dialog fullWidth maxWidth='md' open={openEnclosurePopup} onClose={functionclosePopup}>
-                                <DialogTitle>Add Enclosure</DialogTitle>
-                                <DialogContent>
-                                    <AssociateEnclosure enclosures={newEvent.enclosures} setEnclosures={setAddEventEnclosures} close={functionclosePopup}></AssociateEnclosure>
-                                </DialogContent>
-                            </Dialog>
-                        </div>
-                    </div>
-                    <div>
-                        <h3>Description</h3>
-                        <TextField
-                            fullWidth
-                            size='small'
-                            multiline
-                            rows={3}
-                            placeholder='Enter Description'
-                            value={newEvent.description}
-                            onChange={(e) => {setNewEvent({...newEvent, description: e.target.value})}}
-                        />
-                    </div>
-            </>}</>}
+                {createEvent && <EventCreator farms={farms} cityfarm={cityfarm} setEvent={(_)=>{}} style={{width: '100%'}}/>}</>}
         </div>
     </>)
 }

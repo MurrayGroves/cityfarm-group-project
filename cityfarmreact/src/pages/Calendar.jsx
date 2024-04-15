@@ -21,7 +21,7 @@ import AssociateEnclosure from '../components/AssociateEnclosure';
 
 import { getConfig } from '../api/getToken';
 import { FilterAlt } from '@mui/icons-material';
-import EventDisplay from '../components/EventDisplay';
+import EventDisplay from '../components/EventDisplay.tsx';
 
 export const eventsConversion=(events)=>{
     let changed=[]
@@ -43,7 +43,7 @@ export const eventsConversion=(events)=>{
     return changed
 }
 
-const Calendar = ({farms, device}) => {
+const Calendar = ({farms, device, cityfarm}) => {
   
     const token = getConfig();
     const theme = useTheme().palette;
@@ -419,12 +419,12 @@ const Calendar = ({farms, device}) => {
                         showingTime={showingTime} functionopenPopup={functionopenPopup} functionclosePopup={functionclosePopup}
                         openAnimalsPopup={openAnimalsPopup} openEnclosurePopup={openEnclosurePopup}
                         recurring={recurring} changeRecurring={changeRecurring} changeAllDay={changeAllDay}
-                        farms={farms} device={device}
+                        farms={farms} device={device} cityfarm={cityfarm}
                     />
                 </DialogContent>
             </Dialog>
             :
-            <Paper elevation={3} style={{padding: '10px', flex: 1, overflow: 'scroll'}}>
+            <Paper elevation={3} style={{padding: '10px', flex: 1, overflowY: 'scroll'}}>
                 <EventDisplay
                     selectedEvent={selectedEvent} setSelectedEvent={setSelectedEvent}
                     modifiedEvent={modifiedEvent} modifyEvent={modifyEvent} setModifiedEvent={setModifiedEvent} setModifiedEventAnimals={setModifiedEventAnimals} setModifiedEventEnclosures={setModifiedEventEnclosures} setModifyEvent={setModifyEvent}
@@ -433,7 +433,7 @@ const Calendar = ({farms, device}) => {
                     showingTime={showingTime} functionopenPopup={functionopenPopup} functionclosePopup={functionclosePopup}
                     openAnimalsPopup={openAnimalsPopup} openEnclosurePopup={openEnclosurePopup}
                     recurring={recurring} changeRecurring={changeRecurring} changeAllDay={changeAllDay}
-                    farms={farms} device={device}
+                    farms={farms} device={device} cityfarm={cityfarm}
                 />
             </Paper>}
         </div>

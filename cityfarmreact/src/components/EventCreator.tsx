@@ -82,6 +82,24 @@ export const EventCreator = ({farms, style, cityfarm, setEvent}: {farms: any, st
         setOpenEnclosurePopup(false)
     }
 
+    interface RepeatDelay {
+        years: number,
+        months: number,
+        weeks: number,
+        days: number
+    }
+
+    const [repeatDelay, setRepeatDelay] = useState<RepeatDelay>({years: 0, months: 0, weeks: 0, days: 0});
+
+    useEffect(() => {
+        let days = repeatDelay.days + repeatDelay.weeks * 7;
+        let period = `P${repeatDelay.years}Y${repeatDelay.months}M${days}D`;
+        let oldEvent = newEvent;
+        oldEvent.delay = period;
+        setNewEvent(oldEvent);
+    }, [repeatDelay])
+
+
 
     const handleAddEvent = async() => {
         if (Object.values(inputErr).filter((err) => err === true).length > 0) {
@@ -186,25 +204,30 @@ export const EventCreator = ({farms, style, cityfarm, setEvent}: {farms: any, st
             </div>
 
             <div className='smallMarginTop'>
-                <FormControlLabel control={<Checkbox defaultChecked size='small'/>} label="All Day" onChange={() => changeAllDay(!newEvent.allDay)}/>
-                <FormControlLabel control={<Checkbox size='small'/>} label="Recurring" onChange={() => changeRecurring(!recurring)} />
                 <Button variant='contained' style={{float: "right"}} onClick={()=>handleAddEvent()} endIcon={<AddIcon/>}>Create</Button>
+                <FormGroup>
+                    <FormControlLabel control={<Checkbox checked={newEvent.allDay} size='small'/>} label="All Day" onChange={() => changeAllDay(!newEvent.allDay)}/>
+                </FormGroup>
             </div>
-            {recurring && (
             <div className='smallMarginTop'>
-                <ToggleButtonGroup
-                    fullWidth
-                    orientation='horizontal'
-                    value={newEvent.delay}
-                    exclusive
-                    onChange={(e) => setNewEvent({...newEvent, delay: (e.target as HTMLInputElement).value})}
-                >
-                    <ToggleButton value='P1D'>Daily</ToggleButton>
-                    <ToggleButton value='P7D'>Weekly</ToggleButton>
-                    <ToggleButton value='P1M'>Monthly</ToggleButton>
-                    <ToggleButton value='P1Y'>Yearly</ToggleButton>
-                </ToggleButtonGroup>
-            </div>)}
+                <div style={{display: "flex", alignItems: 'center', width: '40%'}}>
+                    <FormControlLabel style={{flex: '0.01', marginRight: '0'}} label="Repeats" control={<Checkbox checked={recurring} size='small'/>} onChange={() => changeRecurring(!recurring)} />
+                    <p style={{margin: '1%', flex: '0.5', visibility: recurring ? 'visible': 'hidden'}}>every</p>
+
+                    <input type="number" onFocus={(e) => e.target.addEventListener("wheel", function (e) { e.preventDefault() }, { passive: false })}
+                        placeholder="Years" min={0} max={99} style={{flex: '1', marginRight: '1%', visibility: recurring ? 'visible': 'hidden'}}
+                    />
+                    <input type="number" onFocus={(e) => e.target.addEventListener("wheel", function (e) { e.preventDefault() }, { passive: false })}
+                        placeholder="Months" min={0} max={99} style={{flex: '1', marginRight: '1%', visibility: recurring ? 'visible': 'hidden'}}
+                    />
+                    <input type="number" onFocus={(e) => e.target.addEventListener("wheel", function (e) { e.preventDefault() }, { passive: false })}
+                        placeholder="Weeks" min={0} max={99} style={{flex: '1', marginRight: '1%', visibility: recurring ? 'visible': 'hidden'}}
+                    />
+                    <input type="number" onFocus={(e) => e.target.addEventListener("wheel", function (e) { e.preventDefault() }, { passive: false })}
+                        placeholder="Days" min={0} max={99} style={{flex: '1', marginRight: '1%', visibility: recurring ? 'visible': 'hidden'}}
+                    />
+                </div>
+            </div>
             <div className='smallMarginTop'>
                 <h3>Farms</h3>
                 <FormGroup>
@@ -224,6 +247,36 @@ export const EventCreator = ({farms, style, cityfarm, setEvent}: {farms: any, st
                     value={newEvent.description}
                     onChange={(e) => {setNewEvent({...newEvent, description: e.target.value})}}
                 />
+            </div>
+            <div>
+                <span style={{display: 'flex'}}><h3>Animals</h3><IconButton style={{height: '40px', margin: '12px 0 0 5px'}} onClick={() => {functionopenPopup("animals")}}><AddIcon color='primary'/></IconButton></span>
+                {/* idea: make this open the animal table page with a new column of checkboxes. Click on an associate animal(s) button would then pass a list of animal id to the calendar to the new event state. This could be re used in the modification of events.  */}
+                {newEvent.animals.map((animalID) => (
+                    <AnimalPopover key={animalID} animalID={animalID} />
+                ))}
+                <div id="AssociateAnimal" style={{textAlign:'center'}}>
+                    <Dialog fullWidth maxWidth='md' open={openAnimalsPopup} onClose={functionclosePopup}>
+                        <DialogTitle>Add Animal</DialogTitle>
+                        <DialogContent>
+                            <AssociateAnimal setAnimals={setAddEventAnimals} animals={newEvent.animals} close={functionclosePopup}></AssociateAnimal>
+                        </DialogContent>
+                    </Dialog>
+                </div>
+            </div>
+            <div>
+                <span style={{display: 'flex'}}><h3>Enclosures</h3><IconButton style={{height: '40px', margin: '12.5px 0 0 5px'}} onClick={() => {functionopenPopup("enclosures")}}><AddIcon color='primary'/></IconButton></span>
+                {newEvent.enclosures.map((enclosureName, index) => (
+                    <p key={index}>{enclosureName}</p>
+                ))}{/*Add a way to remove enclosures from events */}
+                {/* idea: make this open the enlcosure  page with a new column of checkboxes. Click on an associate enlcosure(s) button would then pass a list of enclosure names to the calendar to be placed in a field*/}
+                <div id="AssociateEnclosure" style={{textAlign:'center'}}>
+                    <Dialog fullWidth maxWidth='md' open={openEnclosurePopup} onClose={functionclosePopup}>
+                        <DialogTitle>Add Enclosure</DialogTitle>
+                        <DialogContent>
+                            <AssociateEnclosure enclosures={newEvent.enclosures} setEnclosures={setAddEventEnclosures} close={functionclosePopup}></AssociateEnclosure>
+                        </DialogContent>
+                    </Dialog>
+                </div>
             </div>
         </div>
     )

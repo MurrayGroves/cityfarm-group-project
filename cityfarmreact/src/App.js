@@ -120,7 +120,7 @@ const App = () => {
                     <div className='Content'>
                         <Routes>
                             <Route path="/" element={<Home farms={farms}/>}/>
-                            <Route path="/calendar" element={<Calendar farms={farms} device={device}/>}/>
+                            <Route path="/calendar" element={<Calendar farms={farms} device={device} cityfarm={cityfarm}/>}/>
                             <Route path="/animals" element={<AnimalTable farms={farms} cityfarm={cityfarm} device={device}/>}/>
                             <Route path="/enclosures" element={<EnclosureTable farms={farms}/>}/>
                             <Route path="/schemas" element={<Schemas farms={farms}/>}/>
