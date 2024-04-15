@@ -12,6 +12,7 @@ import FarmMoveButton from "../components/FarmMoveButton.jsx";
 import { CityFarm } from "../api/cityfarm.ts";
 import { Animal, Schema, Sex } from "../api/animals.ts";
 import { Event } from "../api/events.ts";
+import { Grid } from "@mui/material";
 
 const SingleAnimal = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
 
@@ -134,6 +135,7 @@ const SingleAnimal = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
 
     const singleEvent = (e, index)=>{
         return(
+            <Grid item xs={1} key={index}>
             <Paper elevation={3} className="event-box" key={index}>
                 <h2 onClick={() => handleEventClick(e)}>{e.title}</h2>
                 {
@@ -168,6 +170,7 @@ const SingleAnimal = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
                         {e.description}
                     </div> : <></>}
             </Paper>
+            </Grid>
         )
     }
 
@@ -219,8 +222,7 @@ const SingleAnimal = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
 
         <div>
             {relEvents.length !== 0 ? <h2 onClick={()=>setEventAll(!eventsAll)}>Linked Event, click for more</h2> : <></>}
-
-                <div className="events-container">
+                <Grid container spacing={3} columns={{xs: 1, md: 2, lg: 3, xl: 4}}>
                     {!eventsAll ? <>
                     {relEvents.slice(0, 3).map((e, index)=>(
                         singleEvent(e,index)
@@ -232,7 +234,7 @@ const SingleAnimal = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
                         ))} </>
 
                     }
-                </div>
+                </Grid>
 
         </div>
         {selectedEvent && (
