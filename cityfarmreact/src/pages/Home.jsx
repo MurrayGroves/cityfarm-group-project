@@ -5,7 +5,7 @@ import "./Home.css"
 import { getConfig } from '../api/getToken';
 import { Button } from "@mui/material";
 import AnimalPopover from "../components/AnimalPopover";
-import { eventsConversion } from "./Calendar";
+import { eventsConversion } from "./Calendar.tsx";
 import { useTheme } from "@mui/material";
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';

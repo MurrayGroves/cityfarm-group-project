@@ -20,6 +20,23 @@ export class Event {
     }
 }
 
+export class EventRecurring extends Event {
+    firstStart: Date;
+    firstEnd: Date;
+    finalEnd: Date;
+    delay: String;
+
+    constructor(data: any) {
+        super(data)
+    }
+}
+
+export class EventOnce extends Event {
+    constructor(data: any) {
+        super(data)
+    }
+}
+
 export interface EventInstance {
     start: Date,
     end: Date,

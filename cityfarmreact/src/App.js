@@ -6,7 +6,7 @@ import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 import AnimalTable from "./pages/AnimalTable.tsx";
 import NavBar from "./components/NavBar.jsx";
-import Calendar from "./pages/Calendar.jsx";
+import Calendar from "./pages/Calendar.tsx";
 import EnclosureTable from "./pages/EnclosureTable.jsx";
 import Schemas from "./pages/Schemas.jsx";
 import Error from "./pages/Error.jsx";

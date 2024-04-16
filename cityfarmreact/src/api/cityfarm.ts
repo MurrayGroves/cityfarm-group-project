@@ -1,6 +1,6 @@
 import axios from './axiosConfig'
 import { getConfig } from './getToken'
-import { Event, EventInstance } from './events.ts'
+import { EventOnce, EventRecurring, Event, EventInstance } from './events.ts'
 import { Animal, Schema } from './animals.ts';
 
 export class CityFarm {
@@ -47,6 +47,7 @@ export class CityFarm {
             try {
                 const response = await axios.get(`/events/non_instanced`, this.token);
                 this.events_cache = response.data.map((data) => new Event(data));
+                console.log("New events cache", this.events_cache);
                 return this.events_cache;
             } catch (error) {
                 if (error.response.status === 401) {

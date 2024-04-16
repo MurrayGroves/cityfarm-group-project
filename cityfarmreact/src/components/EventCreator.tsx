@@ -114,6 +114,8 @@ export const EventCreator = ({farms, style, cityfarm, setEvent}: {farms: any, st
                       : await axios.post(`/events/create/once`, newEvent, token)
 
             setEvent(response.data._id);
+            // Update internal events cache
+            await cityfarm.getEvents(false);
         } catch(error) {
             if (error.response.status === 401) {
                 window.location.href = "/login";

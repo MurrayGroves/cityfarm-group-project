@@ -3,7 +3,7 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 import React, {useState, useEffect, useCallback} from 'react';
 import dayjs from 'dayjs';
 import "./Calendar.css";
-import AnimalPopover from "../components/AnimalPopover";
+import AnimalPopover from "../components/AnimalPopover.jsx";
 import Close from '@mui/icons-material/Close';
 import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
@@ -15,16 +15,19 @@ import AddIcon from '@mui/icons-material/Add';
 import Delete from '@mui/icons-material/Delete';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
-import AssociateAnimal from '../components/AssociateAnimal';
-import axios from '../api/axiosConfig'
-import AssociateEnclosure from '../components/AssociateEnclosure';
+import AssociateAnimal from '../components/AssociateAnimal.jsx';
+import axios from '../api/axiosConfig.js'
+import AssociateEnclosure from '../components/AssociateEnclosure.jsx';
 
-import { getConfig } from '../api/getToken';
+import { getConfig } from '../api/getToken.js';
 import { FilterAlt } from '@mui/icons-material';
 import EventDisplay from '../components/EventDisplay.tsx';
 
+import { CityFarm } from '../api/cityfarm.ts';
+import { Event, EventRecurring } from '../api/events.ts';
+
 export const eventsConversion=(events)=>{
-    let changed=[]
+    let changed: any = []
     for (let i=0;i<events.length;i++){
         changed.push(
             {
@@ -43,12 +46,12 @@ export const eventsConversion=(events)=>{
     return changed
 }
 
-const Calendar = ({farms, device, cityfarm}) => {
+const Calendar = ({farms, device, cityfarm}: {farms: any, device: any, cityfarm: CityFarm}) => {
   
     const token = getConfig();
-    const theme = useTheme().palette;
+    const theme: any = useTheme().palette;
 
-    const [newEvent,setNewEvent] = useState({
+    const [newEvent,setNewEvent] = useState<any>({
         title: "",
         allDay: true,
         start: new Date(),
@@ -58,19 +61,10 @@ const Calendar = ({farms, device, cityfarm}) => {
         description: "",
         enclosures: []
     })
-    const [modifiedEvent,setModifiedEvent] = useState({
-        title: "",
-        allDay: true,
-        start: new Date(),
-        end: new Date(),
-        farms: [],
-        animals: [],
-        description: "",
-        enclosures: []
-    })
+    const [modifiedEvent,setModifiedEvent] = useState<Event | null>(null)
 
     const [allEvents,setAllEvents] = useState([]);
-    const [selectedEvent,setSelectedEvent] = useState("");
+    const [selectedEvent,setSelectedEvent] = useState<any>("");
     const [visibleFarms, setVisibleFarms] = useState([farms.WH, farms.HC, farms.SW]);
     const [modifyEvent, setModifyEvent] = useState(false);
     const [showErr, setShowErr] = useState(false);
@@ -86,9 +80,15 @@ const Calendar = ({farms, device, cityfarm}) => {
     },[selectedEvent]);
 
     const setModifiedEventAnimals = (animalList) => {
+        if (modifiedEvent === null) {
+            return;
+        }
         setModifiedEvent({...modifiedEvent, animals: animalList})
     }
     const setModifiedEventEnclosures = (enclosures) => {
+        if (modifiedEvent === null) {
+            return;
+        }
         setModifiedEvent({...modifiedEvent, enclosures: enclosures})
     }
     const setAddEventEnclosures = (enclosures) => {
@@ -99,7 +99,11 @@ const Calendar = ({farms, device, cityfarm}) => {
     }
     
     const changeAllDay = (isAllDay, type) => {
-        type === "add" ? setNewEvent({...newEvent, allDay: isAllDay}) : setModifiedEvent({...modifiedEvent, allDay: isAllDay})
+        if (type === 'add') {
+            setNewEvent({...newEvent, allDay: isAllDay});
+        } else if (type === 'modify' && modifiedEvent !== null) {
+            setModifiedEvent({...modifiedEvent, allDay: isAllDay});
+        }
     }
 
     const changeRecurring = (isRecurring, type) => {
@@ -112,8 +116,10 @@ const Calendar = ({farms, device, cityfarm}) => {
             : newEvent.firstStart && setNewEvent({...newEvent, end: newEvent.firstEnd, start: newEvent.firstStart, firstStart: null, firstEnd: null, delay: null, finalEnd: null})
     }, [recurring])
 
+
     useEffect(() => {
         (async () => {
+            console.log("Refetching events");
             try {
                 const start = new Date()
                 start.setMonth(start.getMonth()-1)
@@ -131,7 +137,7 @@ const Calendar = ({farms, device, cityfarm}) => {
                 }
             }
         })();
-    },[]);
+    },[cityfarm.events_cache]);
 
     const handleAddEvent = async() => {
         if (Object.values(inputErr).filter((err) => err === true).length > 0) {
@@ -161,7 +167,7 @@ const Calendar = ({farms, device, cityfarm}) => {
             enclosures: []
         });
         
-        window.location.reload(false);
+        window.location.reload();
     }
 
     const handleDelEvent = async() => {
@@ -176,12 +182,16 @@ const Calendar = ({farms, device, cityfarm}) => {
                 window.alert(error);
             }
         }
-        window.location.reload(false);
+        await cityfarm.getEvents(false);
     }
 
     const handlePatchEvent = async() => {
+        if (modifiedEvent === null) {
+            return;
+        }
+
         try {
-            const response = await axios.patch(`/events/by_id/${modifiedEvent._id}/update`, modifiedEvent, token);
+            await axios.patch(`/events/by_id/${modifiedEvent.id}/update`, modifiedEvent, token);
         } catch(error) {
             if (error.response.status === 401) {
                 window.location.href = "/login";
@@ -190,7 +200,7 @@ const Calendar = ({farms, device, cityfarm}) => {
                 window.alert(error);
             }
         }
-        window.location.reload(false);
+        cityfarm.getEvents(false);
     }
 
     const updateVisibleFarms = (selected) => {
@@ -221,72 +231,95 @@ const Calendar = ({farms, device, cityfarm}) => {
         };
     }
 
-    function showingTime(isShown, type) {
-        if (type === "add") {
-            if (isShown){
-                return(<>
-                    <FormHelperText>Start</FormHelperText>
-                    <DateTimePicker
-                        value={recurring ? dayjs(newEvent.firstStart) : dayjs(newEvent.start)}
-                        onChange={(e) => {
-                            recurring ?
-                                setNewEvent({...newEvent, firstStart: e.$d, firstEnd: newEvent.firstEnd < e.$d ? e.$d : newEvent.firstEnd})
-                                : setNewEvent({...newEvent, start: e.$d, end: newEvent.end < e.$d ? e.$d : newEvent.end})
-                        }}
-                        slotProps={{textField: {fullWidth: true, size: 'small'}}}
-                    />
-                    <FormHelperText>End</FormHelperText>
-                    <DateTimePicker
-                        value={recurring ? dayjs(newEvent.firstEnd) : dayjs(newEvent.end)}
-                        onChange={(e) => {
-                            recurring ?
-                                setNewEvent({...newEvent, firstEnd: e.$d, firstStart: e.$d < newEvent.firstStart ? e.$d : newEvent.firstStart})
-                                : setNewEvent({...newEvent, end: e.$d, start: e.$d < newEvent.start ? e.$d : newEvent.start})
-                        }}
-                        slotProps={{textField: {fullWidth: true, size: 'small'}}}
-                    />
-                </>)
-            } else {
-                return(<>
-                    <FormHelperText>Start</FormHelperText>
-                    <DatePicker
-                        value={recurring ? dayjs(newEvent.firstStart) : dayjs(newEvent.start)}
-                        onChange={(e) => {
-                            console.log('date changed');
-                            recurring ?
-                                setNewEvent({...newEvent, firstStart: e.$d, firstEnd: newEvent.firstEnd < e.$d ? e.$d : newEvent.firstEnd})
-                                : setNewEvent({...newEvent, start: e.$d, end: newEvent.end < e.$d ? e.$d : newEvent.end})
-                        }}
-                        slotProps={{textField: {fullWidth: true, size: 'small'}}}
-                    />
-                    <FormHelperText>End</FormHelperText>
-                    <DatePicker
-                        value={recurring ? dayjs(newEvent.firstEnd) : dayjs(newEvent.end)}
-                        onChange={(e) => {
-                            recurring ?
-                                setNewEvent({...newEvent, firstEnd: e.$d, firstStart: e.$d < newEvent.firstStart ? e.$d : newEvent.firstStart})
-                                : setNewEvent({...newEvent, end: e.$d, start: e.$d < newEvent.start ? e.$d : newEvent.start})
-                        }}
-                        slotProps={{textField: {fullWidth: true, size: 'small'}}}
-                    />
-                </>)
+    function setEventStart(e: dayjs.Dayjs | null) {
+        if (e === null || modifiedEvent === null) {
+            return;
+        }
+        if (modifiedEvent instanceof EventRecurring) {
+            let delta = modifiedEvent.firstEnd.getTime() - modifiedEvent.firstStart.getTime();
+
+            let myEvent = (modifiedEvent as EventRecurring);
+            myEvent.firstStart = new Date(e.toISOString());
+            myEvent.start = new Date(e.toISOString());
+
+            // If the new start time is after the end time, move the end time to be the same distance from the new start time as the old end time was from the old start time
+            // E.g. if the event was 10:00 - 11:00 and you move the start time to 11:00, the end time will be moved to 12:00
+            if (myEvent.firstEnd < myEvent.firstStart) {
+                myEvent.firstEnd = new Date(myEvent.firstStart.getTime() + delta);
+                myEvent.end = new Date(myEvent.start.getTime() + delta);
             }
+
+            setModifiedEvent(myEvent);
         } else {
-            if (isShown) {
-                return(<>
-                    <FormHelperText>Start</FormHelperText>
-                    <DateTimePicker value={recurring ? dayjs(modifiedEvent.firstStart) : dayjs(modifiedEvent.start)} placeholder={selectedEvent.start} onChange={(e) => {setModifiedEvent({...modifiedEvent, start: e.$d, end: modifiedEvent.end < e.$d ? e.$d : modifiedEvent.end})}} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
-                    <FormHelperText>End</FormHelperText>
-                    <DateTimePicker value={recurring ? dayjs(modifiedEvent.firstEnd) : dayjs(modifiedEvent.end)} placeholder={selectedEvent.end} onChange={(e) => {setModifiedEvent({...modifiedEvent, end: e.$d, start: e.$d < modifiedEvent.start ? e.$d : modifiedEvent.start})}} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
-                </>)
-            } else {
-                return(<>
-                    <FormHelperText>Start</FormHelperText>
-                    <DatePicker value={recurring ? dayjs(modifiedEvent.firstStart) : dayjs(modifiedEvent.start)} placeholder={selectedEvent.start} onChange={(e) => {setModifiedEvent({...modifiedEvent, start: e.$d, end: modifiedEvent.end < e.$d ? e.$d : modifiedEvent.end})}} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
-                    <FormHelperText>End</FormHelperText>
-                    <DatePicker value={recurring ? dayjs(modifiedEvent.firstEnd) : dayjs(modifiedEvent.end)} placeholder={selectedEvent.end} onChange={(e) => {setModifiedEvent({...modifiedEvent, end: e.$d, start: e.$d < modifiedEvent.start ? e.$d : modifiedEvent.start})}} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
-                </>)
+            let delta = modifiedEvent.end.getTime() - modifiedEvent.start.getTime();
+
+            let myEvent: Event = {...modifiedEvent};
+            myEvent.start = new Date(e.toISOString());
+
+            // If the new start time is after the end time, move the end time to be the same distance from the new start time as the old end time was from the old start time
+            // E.g. if the event was 10:00 - 11:00 and you move the start time to 11:00, the end time will be moved to 12:00
+            if (myEvent.end < myEvent.start) {
+                myEvent.end = new Date(myEvent.start.getTime() + delta);
             }
+
+            setModifiedEvent(myEvent);
+        }
+    }
+
+    function setEventEnd(e: dayjs.Dayjs | null) {
+        if (e === null || modifiedEvent === null) {
+            return;
+        }
+        if (modifiedEvent instanceof EventRecurring) {
+            let delta = modifiedEvent.firstEnd.getTime() - modifiedEvent.firstStart.getTime();
+
+            let myEvent = (modifiedEvent as EventRecurring);
+            myEvent.firstEnd = new Date(e.toISOString());
+            myEvent.end = new Date(e.toISOString());
+
+            // If the new end time is before the start time, move the start time to be the same distance from the new end time as the old start time was from the old end time
+            // E.g. if the event was 10:00 - 11:00 and you move the end time to 11:00, the start time will be moved to 12:00
+            if (myEvent.firstEnd < myEvent.firstStart) {
+                myEvent.firstStart = new Date(myEvent.firstEnd.getTime() - delta);
+                myEvent.start = new Date(myEvent.end.getTime() - delta);
+            }
+
+            setModifiedEvent(myEvent);
+        } else {
+            let delta = modifiedEvent.end.getTime() - modifiedEvent.start.getTime();
+
+            let myEvent: Event = {...modifiedEvent};
+            myEvent.end = new Date(e.toISOString());
+
+            // If the new end time is before the start time, move the start time to be the same distance from the new end time as the old start time was from the old end time
+            // E.g. if the event was 10:00 - 11:00 and you move the end time to 11:00, the start time will be moved to 12:00
+            if (myEvent.end < myEvent.start) {
+                myEvent.start = new Date(myEvent.start.getTime() - delta);
+            }
+
+            setModifiedEvent(myEvent);
+        }
+    }
+
+    function showingTime(isShown) {
+        if (modifiedEvent === null) {
+            return;
+        }
+
+        if (isShown) {
+            return(<>
+                <FormHelperText>Start</FormHelperText>
+                <DateTimePicker value={modifiedEvent instanceof EventRecurring ? dayjs(modifiedEvent.firstStart) : dayjs(modifiedEvent?.start)} onChange={setEventStart} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
+                <FormHelperText>End</FormHelperText>
+                <DateTimePicker value={modifiedEvent instanceof EventRecurring ? dayjs(modifiedEvent.firstEnd) : dayjs(modifiedEvent.end)} onChange={setEventEnd} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
+            </>)
+        } else {
+            return(<>
+                <FormHelperText>Start</FormHelperText>
+                <DatePicker value={modifiedEvent instanceof EventRecurring ? dayjs(modifiedEvent.firstStart) : dayjs(modifiedEvent.start)} onChange={setEventStart} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
+                <FormHelperText>End</FormHelperText>
+                <DatePicker value={modifiedEvent instanceof EventRecurring ? dayjs(modifiedEvent.firstEnd) : dayjs(modifiedEvent.end)} onChange={setEventEnd} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
+            </>)
         }
     }
     const [anchor, setAnchor] = React.useState(null);
@@ -355,7 +388,7 @@ const Calendar = ({farms, device, cityfarm}) => {
             <h1>Calendar</h1>
             {/* wrap filters in dialog and button when on mobile */}
             {device === 'mobile' ? <>
-            <Button variant='contained' sx={{height: '40px', mt: '24px'}} label='Filter' onClick={() => setFilter(true)} endIcon={<FilterAlt/>}>Filter</Button>
+            <Button variant='contained' sx={{height: '40px', mt: '24px'}} onClick={() => setFilter(true)} endIcon={<FilterAlt/>}>Filter</Button>
             <Dialog open={filter} onClose={() => setFilter(false)}>
                 <DialogContent>
                     <FormGroup>
