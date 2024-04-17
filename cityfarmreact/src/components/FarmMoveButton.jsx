@@ -17,9 +17,11 @@ const FarmMoveButton = (props) => {
 
                     const response = await axios.get(`/animals/by_id/${a}`,token);
                     animal=response.data
-                    animal.farm=farm[0]
-                    await axios.patch(`/animals/by_id/${a}`, animal, token)
-                    window.location.reload()
+                    if (animal.farm !== farm[0]) {
+                        animal.farm = farm[0];
+                        await axios.patch(`/animals/by_id/${a}`, animal, token)
+                        window.location.reload()
+                    }
 
                 } catch (error) {
 

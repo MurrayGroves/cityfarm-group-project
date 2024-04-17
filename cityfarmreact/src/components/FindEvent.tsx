@@ -83,7 +83,7 @@ export const FindEvent = ({style, cityfarm, farms, setEvent}: {style: any, cityf
                     {index === searchResults.length -1 ? <></> :<Divider component="li"/>}</>
                 )
             })}
-            {showing && mousedEvent ? <EventPopover anchorEl={anchorEl} farms={farms} eventID={mousedEvent.id} /> : null}
+            {showing && mousedEvent ? <EventPopover anchorEl={anchorEl} cityfarm={cityfarm} farms={farms} eventID={mousedEvent.id} /> : null}
             </List>
         </div>
     )

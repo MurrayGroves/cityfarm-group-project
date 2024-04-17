@@ -4,13 +4,13 @@ import axios from "../api/axiosConfig";
 import "./Home.css"
 import { getConfig } from '../api/getToken';
 import { Button } from "@mui/material";
-import AnimalPopover from "../components/AnimalPopover";
+import AnimalPopover from "../components/AnimalPopover.tsx";
 import { eventsConversion } from "./Calendar";
 import { useTheme } from "@mui/material";
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
 
-const Home = ({farms}) => {
+const Home = ({farms, cityfarm}) => {
     const [events,setEvents] = useState([])
     const token = getConfig();
     const colour = useTheme().palette.mode === 'dark' ? 'white' : 'black';
@@ -75,7 +75,7 @@ const Home = ({farms}) => {
                 {e.farms.includes(farms.SW) ? <p>St Werberghs</p> : <></>}
                 {e.animals.length !== 0 ? <h3>Animals</h3> : <></>}
                 {e.animals.map((animalID) => (
-                    <AnimalPopover key={animalID._id} animalID={animalID._id}/>
+                    <AnimalPopover key={animalID._id} cityfarm={cityfarm} animalID={animalID._id}/>
                 ))}
                 {e.enclosures.length !== 0 &&
                     <div>

@@ -3,7 +3,7 @@ import Popover from '@mui/material/Popover';
 import Typography from '@mui/material/Typography';
 import {Link} from "react-router-dom";
 import './Enclosure.css';
-import AnimalPopover from './AnimalPopover';
+import AnimalPopover from './AnimalPopover.tsx';
 
 let exampleHolding = new Map([
     ["cow", aExamples[0]],

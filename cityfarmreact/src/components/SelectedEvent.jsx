@@ -1,4 +1,4 @@
-import AnimalPopover from "./AnimalPopover";
+import AnimalPopover from "./AnimalPopover.tsx";
 import * as React from "react";
 import CloseIconLight from "../assets/close-512-light.webp";
 import CloseIconDark from "../assets/close-512-dark.webp";
@@ -41,7 +41,7 @@ const SelectedEvent = (props) => {
           {event.animals.length !== 0 && <h3>Animals</h3>}
 
           {event.animals.map((animal) => (
-              <AnimalPopover key={animal._id} animalID={animal._id}/>
+              <AnimalPopover key={animal._id} cityfarm={props.cityfarm} animalID={animal._id}/>
           ))}
         </div>
       </div>

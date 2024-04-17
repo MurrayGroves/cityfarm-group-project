@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from '../api/axiosConfig'
 import FarmTabs from "../components/FarmTabs";
-import AnimalPopover from "../components/AnimalPopover";
+import AnimalPopover from "../components/AnimalPopover.tsx";
 import "../pages/AnimalTable.css";
 import { DataGrid } from '@mui/x-data-grid';
 import Paper from '@mui/material/Paper';
@@ -72,7 +72,7 @@ const AssociateAnimal = (props) => {
     }));
     const cols = [
         { field: 'name', headerName: 'Name', headerClassName: 'grid-header', headerAlign: 'left', flex: 1,
-            renderCell: (animal) => {return <AnimalPopover animalID={animal.value._id}/>} },
+            renderCell: (animal) => {return <AnimalPopover cityfarm={props.cityfarm} animalID={animal.value._id}/>} },
         { field: 'type', headerName: 'Type', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
         { field: 'sex', headerName: 'Sex', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
     ];

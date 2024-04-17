@@ -5,7 +5,7 @@ import { getConfig } from '../api/getToken';
 
 import { Paper, Popover } from '@mui/material';
 
-import AnimalPopover from './AnimalPopover';
+import AnimalPopover from './AnimalPopover.tsx';
 
 export const EventPopover = (props) => {
     const farms = props.farms;
@@ -69,7 +69,7 @@ export const EventPopover = (props) => {
                         {event.farms.includes(farms.SW) ? <p>St Werburghs</p> : <></>}
                         {event.animals.length > 0 ? <h3>Animals</h3> : <></>}
                         {event.animals.map((animal) => (
-                            <AnimalPopover key={animal._id} animalID={animal._id}/>
+                            <AnimalPopover key={animal._id} cityfarm={props.cityfarm} animalID={animal._id}/>
                         ))}
                         {event.enclosures.length > 0 &&
                         <div>

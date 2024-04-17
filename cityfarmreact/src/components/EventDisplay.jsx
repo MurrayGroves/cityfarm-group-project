@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import "../pages/Calendar.css";
-import AnimalPopover from "../components/AnimalPopover";
+import AnimalPopover from "../components/AnimalPopover.tsx";
 import Close from '@mui/icons-material/Close';
 import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
@@ -20,7 +20,7 @@ const EventDisplay = ({
     showingTime, functionopenPopup, functionclosePopup,
     openAnimalsPopup, openEnclosurePopup,
     recurring, changeRecurring, changeAllDay,
-    farms, device
+    farms, device, cityfarm
     }) => {
 
     return (<>
@@ -55,7 +55,7 @@ const EventDisplay = ({
                         {selectedEvent.farms.includes(farms.SW) ? <p>St Werburghs</p> : <></>}
                         {selectedEvent.animals.length > 0 ? <h3>Animals</h3> : <></>}
                         {selectedEvent.animals.map((animal) => (
-                            <AnimalPopover key={animal._id} animalID={animal._id}/>
+                            <AnimalPopover key={animal._id} cityfarm={cityfarm} animalID={animal._id}/>
                         ))}
                         {selectedEvent.enclosures.length > 0 &&
                         <div>
@@ -100,13 +100,13 @@ const EventDisplay = ({
                         <div>
                             <span style={{display: 'flex'}}><h3>Animals</h3><IconButton style={{height: '40px', margin: '12.5px 0 0 5px'}} onClick={() => {functionopenPopup("animals")}}><AddIcon color='primary'/></IconButton></span>
                             {modifiedEvent.animals.map((animal) => {
-                                return (<AnimalPopover key={animal} animalID={animal} />)}
+                                return (<AnimalPopover key={animal} cityfarm={cityfarm} animalID={animal} />)}
                             )}{/*Add a way to remove animals from events */}
                             <div id="AssociateAnimal" style={{textAlign:'center'}}>
                                 <Dialog fullWidth maxWidth='md' open={openAnimalsPopup} onClose={functionclosePopup}>
                                     <DialogTitle>Add Animal</DialogTitle>
                                     <DialogContent>
-                                        <AssociateAnimal setAnimals={setModifiedEventAnimals} animals={modifiedEvent.animals} close={functionclosePopup}></AssociateAnimal>
+                                        <AssociateAnimal setAnimals={setModifiedEventAnimals} cityfarm={cityfarm} animals={modifiedEvent.animals} close={functionclosePopup}></AssociateAnimal>
                                     </DialogContent>
                                 </Dialog>
                             </div>
@@ -121,7 +121,7 @@ const EventDisplay = ({
                                 <Dialog fullWidth maxWidth='md' open={openEnclosurePopup} onClose={functionclosePopup}>
                                     <DialogTitle>Add Enclosure</DialogTitle>
                                     <DialogContent>
-                                        <AssociateEnclosure enclosures={modifiedEvent.enclosures} setEnclosures={setModifiedEventEnclosures} close={functionclosePopup}></AssociateEnclosure>
+                                        <AssociateEnclosure enclosures={modifiedEvent.enclosures} cityfarm={cityfarm} setEnclosures={setModifiedEventEnclosures} close={functionclosePopup}></AssociateEnclosure>
                                     </DialogContent>
                                 </Dialog>
                             </div>
@@ -191,13 +191,13 @@ const EventDisplay = ({
                         <span style={{display: 'flex'}}><h3>Animals</h3><IconButton style={{height: '40px', margin: '12px 0 0 5px'}} onClick={() => {functionopenPopup("animals")}}><AddIcon color='primary'/></IconButton></span>
                         {/* idea: make this open the animal table page with a new column of checkboxes. Click on an associate animal(s) button would then pass a list of animal id to the calendar to the new event state. This could be re used in the modification of events.  */}
                         {newEvent.animals.map((animalID) => (
-                            <AnimalPopover key={animalID} animalID={animalID} />
+                            <AnimalPopover key={animalID} cityfarm={cityfarm} animalID={animalID} />
                         ))}
                         <div id="AssociateAnimal" style={{textAlign:'center'}}>
                             <Dialog fullWidth maxWidth='md' open={openAnimalsPopup} onClose={functionclosePopup}>
                                 <DialogTitle>Add Animal</DialogTitle>
                                 <DialogContent>
-                                    <AssociateAnimal setAnimals={setAddEventAnimals} animals={newEvent.animals} close={functionclosePopup}></AssociateAnimal>
+                                    <AssociateAnimal setAnimals={setAddEventAnimals} cityfarm={cityfarm} animals={newEvent.animals} close={functionclosePopup}></AssociateAnimal>
                                 </DialogContent>
                             </Dialog>
                         </div>
@@ -212,7 +212,7 @@ const EventDisplay = ({
                             <Dialog fullWidth maxWidth='md' open={openEnclosurePopup} onClose={functionclosePopup}>
                                 <DialogTitle>Add Enclosure</DialogTitle>
                                 <DialogContent>
-                                    <AssociateEnclosure enclosures={newEvent.enclosures} setEnclosures={setAddEventEnclosures} close={functionclosePopup}></AssociateEnclosure>
+                                    <AssociateEnclosure enclosures={newEvent.enclosures} cityfarm={cityfarm} setEnclosures={setAddEventEnclosures} close={functionclosePopup}></AssociateEnclosure>
                                 </DialogContent>
                             </Dialog>
                         </div>

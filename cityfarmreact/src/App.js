@@ -91,11 +91,11 @@ const App = () => {
         }
     };
 
-    if (msal == null) {
+    if (msal === null) {
         const msalInstance = new PublicClientApplication(msalConfig);
         msalInstance.initialize().then(() => {
             setMsal(msalInstance);
-            if (msalInstance.getAllAccounts().length == 0) {
+            if (msalInstance.getAllAccounts().length === 0) {
                 if (!window.location.href.includes("/login")) {
                     window.location.href = "/login";
                 }
@@ -119,10 +119,10 @@ const App = () => {
                     <NavBar theme={theme} setTheme={setTheme} msal={msal} device={device}/>
                     <div className='Content'>
                         <Routes>
-                            <Route path="/" element={<Home farms={farms}/>}/>
-                            <Route path="/calendar" element={<Calendar farms={farms} device={device}/>}/>
+                            <Route path="/" element={<Home farms={farms} cityfarm={cityfarm}/>}/>
+                        <Route path="/calendar" element={<Calendar farms={farms} cityfarm={cityfarm} device={device}/>}/>
                             <Route path="/animals" element={<AnimalTable farms={farms} cityfarm={cityfarm} device={device}/>}/>
-                            <Route path="/enclosures" element={<EnclosureTable farms={farms}/>}/>
+                            <Route path="/enclosures" element={<EnclosureTable farms={farms} cityfarm={cityfarm}/>}/>
                             <Route path="/schemas" element={<Schemas farms={farms}/>}/>
                             <Route path="/help" element={<Help/>}/>
                             <Route path="/single-animal/:animalID" element={<SingleAnimal farms={farms} cityfarm={cityfarm}/>} />

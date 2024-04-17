@@ -3,7 +3,7 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 import React, {useState, useEffect, useCallback} from 'react';
 import dayjs from 'dayjs';
 import "./Calendar.css";
-import AnimalPopover from "../components/AnimalPopover";
+import AnimalPopover from "../components/AnimalPopover.tsx";
 import Close from '@mui/icons-material/Close';
 import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
@@ -43,7 +43,7 @@ export const eventsConversion=(events)=>{
     return changed
 }
 
-const Calendar = ({farms, device}) => {
+const Calendar = ({farms, cityfarm, device}) => {
   
     const token = getConfig();
     const theme = useTheme().palette;
@@ -419,7 +419,7 @@ const Calendar = ({farms, device}) => {
                         showingTime={showingTime} functionopenPopup={functionopenPopup} functionclosePopup={functionclosePopup}
                         openAnimalsPopup={openAnimalsPopup} openEnclosurePopup={openEnclosurePopup}
                         recurring={recurring} changeRecurring={changeRecurring} changeAllDay={changeAllDay}
-                        farms={farms} device={device}
+                        farms={farms} device={device} cityfarm={cityfarm}
                     />
                 </DialogContent>
             </Dialog>
@@ -433,7 +433,7 @@ const Calendar = ({farms, device}) => {
                     showingTime={showingTime} functionopenPopup={functionopenPopup} functionclosePopup={functionclosePopup}
                     openAnimalsPopup={openAnimalsPopup} openEnclosurePopup={openEnclosurePopup}
                     recurring={recurring} changeRecurring={changeRecurring} changeAllDay={changeAllDay}
-                    farms={farms} device={device}
+                    farms={farms} device={device} cityfarm={cityfarm}
                 />
             </Paper>}
         </div>

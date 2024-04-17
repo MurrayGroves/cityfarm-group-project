@@ -1,8 +1,7 @@
 import React, {useEffect, useState} from "react";
-import { TransitionGroup } from 'react-transition-group';
 import axios from '../api/axiosConfig.js'
 import FarmTabs from "../components/FarmTabs.jsx";
-import AnimalPopover from "../components/AnimalPopover.jsx";
+import AnimalPopover from "../components/AnimalPopover.tsx";
 import AnimalCreator from "../components/AnimalCreator.tsx";
 import FarmMoveButton from "../components/FarmMoveButton.jsx";
 import "./AnimalTable.css";
@@ -28,7 +27,6 @@ const AnimalTable = ({farms, cityfarm, device}: {farms: any, cityfarm: CityFarm,
     const [filterModel, setFilterModel] = useState<GridFilterModel>({items: []});
     const [schemas, setSchemas] = useState<Schema[]>([]);
     const [selectedSchema, setSelectedSchema] = useState<Schema | null>(null);
-    const [newAnimal, setNewAnimal] = useState( useState({name: '', type: '', father: '', mother: '', male: true, alive: true, fields: {}}));
     const [modifyAnimal, setModifyAnimal] = useState<any>({});
     const [editingRow, setEditingRow] = useState(null);
 
@@ -323,7 +321,7 @@ const AnimalTable = ({farms, cityfarm, device}: {farms: any, cityfarm: CityFarm,
 
     const defaultCols: GridColDef[] = [
         { field: 'name', type: 'singleSelect', headerName: 'Name', headerClassName: 'grid-header', headerAlign: 'left', flex: 1, editable: true,
-        renderCell: (animal) => {return (animal.value.id ? <AnimalPopover animalID={animal.value.id}/> : <p>Loading...</p>)}, renderEditCell: (params) => {
+        renderCell: (animal) => {return (animal.value.id ? <AnimalPopover cityfarm={cityfarm} animalID={animal.value.id}/> : <p>Loading...</p>)}, renderEditCell: (params) => {
 
                 params.value = params.value.name;
                 return <FormControl sx={{width: '100%'}}>
@@ -355,7 +353,7 @@ const AnimalTable = ({farms, cityfarm, device}: {farms: any, cityfarm: CityFarm,
         { field: 'father', type: 'singleSelect', headerName: 'Father', headerClassName: 'grid-header', headerAlign: 'left', flex: 1, editable: true,
         renderCell:(father)=>{
             return father.value?
-             <AnimalPopover key={father.value} animalID={father.value}/> : "Unregistered"}, renderEditCell: (params) => {
+             <AnimalPopover key={father.value} cityfarm={cityfarm} animalID={father.value}/> : "Unregistered"}, renderEditCell: (params) => {
                 let initial_animal = animalList.find((animal) => {return animal.id === params.value});
                 let initial_name = initial_animal ? initial_animal.name : 'Unregistered';
                 return (
@@ -390,7 +388,7 @@ const AnimalTable = ({farms, cityfarm, device}: {farms: any, cityfarm: CityFarm,
             }},
         { field: 'mother', type: 'singleSelect', headerName: 'Mother', headerClassName: 'grid-header', headerAlign: 'left', flex: 1, editable: true,
             renderCell:(mother)=>{return mother.value?
-                <AnimalPopover key={mother.value} animalID={mother.value}/> : "Unregistered"}, renderEditCell: (params) => {
+                <AnimalPopover key={mother.value} cityfarm={cityfarm} animalID={mother.value}/> : "Unregistered"}, renderEditCell: (params) => {
                     let initial_animal = animalList.find((animal) => {return animal.id === params.value});
                     let initial_name = initial_animal ? initial_animal.name : 'Unregistered';
                     return (<Autocomplete

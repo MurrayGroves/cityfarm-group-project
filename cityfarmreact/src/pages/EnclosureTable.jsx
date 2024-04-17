@@ -8,11 +8,11 @@ import { Paper, Divider } from '@mui/material';
 import { DataGrid, GridPagination } from "@mui/x-data-grid";
 import { Edit, Add } from '@mui/icons-material';
 import Button from '@mui/material/Button';
-import AnimalPopover from "../components/AnimalPopover";
+import AnimalPopover from "../components/AnimalPopover.tsx";
 import EnclosureCreator from "../components/EnclosureCreator";
 import { getConfig } from '../api/getToken';
 
-const EnclosureTable = ({farms}) => {
+const EnclosureTable = ({farms, cityfarm}) => {
     const [enclosureList, setEnclosureList] = useState([]); /* The State for the list of enclosures. The initial state is [] */
     const [searchTerm, setSearchTerm] = useState(''); /* The term being search for in the searchbar */
     const [editMode, setEditMode] = useState(false); /* Whether edit mode is on. Initial state is false */
@@ -61,7 +61,7 @@ const EnclosureTable = ({farms}) => {
     const cols =  [
         { field: 'name', editable: true, headerName: 'Name', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
         { field: 'holding', headerName: 'Holding', headerClassName: 'grid-header', headerAlign: 'left', flex: 1, cellClassName: 'scroll-cell',
-            renderCell: (animalList) => <ul>{animalList.value.map(animal => {console.log(animal); return(<li key={animal._id}><AnimalPopover animalID={animal._id}/></li>)})}</ul>
+            renderCell: (animalList) => <ul>{animalList.value.map(animal => {console.log(animal); return(<li key={animal._id}><AnimalPopover cityfarm={cityfarm} animalID={animal._id}/></li>)})}</ul>
         },
         { field: 'capacities', headerName: 'Capacities', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
     ]

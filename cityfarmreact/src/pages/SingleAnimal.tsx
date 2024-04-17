@@ -1,13 +1,10 @@
 import * as React from "react";
 import "./SingleAnimal.css"
 import {  useParams } from "react-router-dom";
-import Typography from "@mui/material/Typography";
-import axios from '../api/axiosConfig.js';
 import { useState, useEffect } from 'react';
-import AnimalPopover from "../components/AnimalPopover.jsx";
+import AnimalPopover from "../components/AnimalPopover.tsx";
 import Paper from "@mui/material/Paper";
 import SelectedEvent from "../components/SelectedEvent.jsx";
-import { getConfig } from '../api/getToken.js';
 import FarmMoveButton from "../components/FarmMoveButton.jsx";
 import { CityFarm } from "../api/cityfarm.ts";
 import { Animal, Schema, Sex } from "../api/animals.ts";
@@ -18,15 +15,13 @@ const SingleAnimal = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
 
     const { animalID } = useParams<string>();
 
-    const [relEvents,setRelEvents] = useState(new Array());
+    const [relEvents,setRelEvents] = useState<Event[]>([]);
     const [chosenAnimal, setChosenAnimal] = useState<Animal>(new Animal({name: 'Loading...', type: 'Loading...'}));
     const [selectedEvent, setSelectedEvent] = useState<Event>();
     const [schema, setSchema] = useState<Schema>();
-    const [children, setChildren] = useState<String[]>(new Array<String>());
+    const [children, setChildren] = useState<string[]>(new Array<string>());
     const [eventsAll, setEventAll] = useState(false);
     const [animals, setAnimals] = useState<Animal[]>([]);
-
-    const token = getConfig();
 
     function readableFarm(farm) {
         switch(farm) {
@@ -42,12 +37,12 @@ const SingleAnimal = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
         (async () => {
             const animal = await cityfarm.getAnimal(animalID!, true, (animal) => {setChosenAnimal(animal)});
             setChosenAnimal(animal!);
-            const events = await cityfarm.getEvents(true, (events) => {setRelEvents(eventsConversion(events))})
-            setRelEvents(eventsConversion(events));
+            const events = await cityfarm.getEvents(true, (events) => {setRelEvents(events)})
+            setRelEvents(events);
     })()}, [animalID]);
 
     useEffect(()=>{
-        let kids = new Array<String>();
+        let kids = new Array<string>();
         (async () => {
             const anis = await cityfarm.getAnimals(true, (animals) => {setAnimals(animals)});
             setAnimals(anis)
@@ -75,28 +70,9 @@ const SingleAnimal = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
             }
         })()
     },[chosenAnimal])
-    
-    const eventsConversion=(events: Event[])=>{
-        let changed = new Array<any>()
-        for (let i=0;i<events.length;i++){
-            changed.push(
-                {
-                    title : events[i].title,
-                    allDay: events[i].allDay,
-                    start: new  Date(events[i].start),
-                    end: new  Date(events[i].end),
-                    farms: events[i].farms,
-                    animals: events[i].animals,
-                    description: events[i].description,
-                    enclosures: events[i].enclosures
-                }
-            )
-        }
-        return changed;
-    }
 
     const handleEventClick=(event: Event)=>{
-        setSelectedEvent(event)
+        //setSelectedEvent(event)
     }
 
     function getSchema() {
@@ -136,7 +112,7 @@ const SingleAnimal = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
     const singleEvent = (e, index)=>{
         return(
             <Grid item xs={1} key={index}>
-            <Paper elevation={3} className="event-box" key={index}>
+            <Paper elevation={3} className="event-box">
                 <h2 onClick={() => handleEventClick(e)}>{e.title}</h2>
                 {
                     e.allDay ?
@@ -150,12 +126,10 @@ const SingleAnimal = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
 
                 }
                 {e.farms.length !== 0 ? <h3>Farms</h3> : <></>}
-                {e.farms.includes(farms.WH) ? <p>Windmill Hill</p> : <></>}
-                {e.farms.includes(farms.HC) ? <p>Hartcliffe</p> : <></>}
-                {e.farms.includes(farms.SW) ? <p>St Werberghs</p> : <></>}
+                {e.farms.map((farm, index) => <p key={index}>{readableFarm(farm)}</p>)}
                 {e.animals.length !== 0 ? <h3>Animals</h3> : <></>}
-                {e.animals.map((animalID) => (
-                    <AnimalPopover key={animalID._id} animalID={animalID._id}/>
+                {e.animals.map((animal: Animal, index) => (
+                    <AnimalPopover key={index} cityfarm={cityfarm} animalID={animal.id}/>
                 ))}
                 {e.enclosures.length !== 0 &&
                     <div>
@@ -182,13 +156,13 @@ const SingleAnimal = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
         <div style={{display: 'flex'}}>
             <span style={{marginRight: '0.5em'}}><b>Father:</b></span>
             {chosenAnimal.father ?
-                <AnimalPopover key={chosenAnimal.father} animalID={chosenAnimal.father}/>
+                <AnimalPopover cityfarm={cityfarm} animalID={chosenAnimal.father}/>
             : <span>Unregistered</span>}
         </div>
         <div style={{display: 'flex'}}>
             <span style={{marginRight: '0.5em'}}><b>Mother:</b></span>
             {chosenAnimal.mother ?
-                <AnimalPopover key={chosenAnimal.mother} animalID={chosenAnimal.mother}/>
+                <AnimalPopover cityfarm={cityfarm} animalID={chosenAnimal.mother}/>
             : <span>Unregistered</span>}
         </div>
         <div>
@@ -206,8 +180,8 @@ const SingleAnimal = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
             Array.isArray(children) && children.length > 0 && (
             <div className="children">
                 <b>Children:</b>
-                {children.map((animal, index) => {
-                    return (<AnimalPopover key={animal} animalID={animal} />);
+                {children.map((animalID, index) => {
+                    return (<AnimalPopover key={index} cityfarm={cityfarm} animalID={animalID} />);
                 })}
             </div>
         )}
@@ -239,7 +213,7 @@ const SingleAnimal = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
         </div>
         {selectedEvent && (
             <Paper elevation={3} className='selectedBox'>
-                <SelectedEvent event={selectedEvent} setEvent={setSelectedEvent} farms={farms}/>
+                <SelectedEvent event={selectedEvent} setEvent={setSelectedEvent} cityfarm={cityfarm} farms={farms}/>
             </Paper>
         )}
         </>;
