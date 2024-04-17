@@ -4,9 +4,8 @@ export class Event {
     title: string;
     description: string;
     allDay: boolean;
-    start: Date;
-    end: Date;
-    id: string
+    id: string;
+    farms: any[];
 
     constructor(data: any) {
         this.enclosures = data.enclosures;
@@ -14,9 +13,8 @@ export class Event {
         this.title = data.title;
         this.description = data.description;
         this.allDay = data.allDay;
-        this.start = new Date(data.start);
-        this.end = new Date(data.end);
         this.id = data._id;
+        this.farms = data.farms;
     }
 }
 
@@ -27,18 +25,35 @@ export class EventRecurring extends Event {
     delay: String;
 
     constructor(data: any) {
-        super(data)
+        super({...data,
+            start: new Date(data.firstStart)
+        })
+        this.firstStart = new Date(data.firstStart);
+        this.firstEnd = new Date(data.firstEnd);
+        this.finalEnd = new Date(data.finalEnd);
+        this.delay = data.delay;
     }
 }
 
 export class EventOnce extends Event {
+    start: Date;
+    end: Date;
+
     constructor(data: any) {
-        super(data)
+        super(data);
+        this.start = new Date(data.start);
+        this.end = new Date(data.end);
     }
 }
 
-export interface EventInstance {
-    start: Date,
-    end: Date,
-    event: Event
+export class EventInstance {
+    start: Date;
+    end: Date;
+    event: Event;
+
+    constructor(data) {
+        this.start = new Date(data.start);
+        this.end = new Date(data.end);
+        this.event = new Event(data.event);
+    }
 }

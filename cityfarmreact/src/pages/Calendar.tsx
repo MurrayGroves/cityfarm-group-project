@@ -24,7 +24,7 @@ import { FilterAlt } from '@mui/icons-material';
 import EventDisplay from '../components/EventDisplay.tsx';
 
 import { CityFarm } from '../api/cityfarm.ts';
-import { Event, EventRecurring } from '../api/events.ts';
+import { Event, EventInstance, EventOnce, EventRecurring } from '../api/events.ts';
 
 export const eventsConversion=(events)=>{
     let changed: any = []
@@ -63,8 +63,8 @@ const Calendar = ({farms, device, cityfarm}: {farms: any, device: any, cityfarm:
     })
     const [modifiedEvent,setModifiedEvent] = useState<Event | null>(null)
 
-    const [allEvents,setAllEvents] = useState([]);
-    const [selectedEvent,setSelectedEvent] = useState<any>("");
+    const [allEvents,setAllEvents] = useState<EventInstance[]>([]);
+    const [selectedEvent,setSelectedEvent] = useState<EventInstance | null>(null);
     const [visibleFarms, setVisibleFarms] = useState([farms.WH, farms.HC, farms.SW]);
     const [modifyEvent, setModifyEvent] = useState(false);
     const [showErr, setShowErr] = useState(false);
@@ -76,7 +76,7 @@ const Calendar = ({farms, device, cityfarm}: {farms: any, device: any, cityfarm:
     }, [newEvent]);
 
     useEffect(() =>{
-        selectedEvent && setModifiedEvent({...selectedEvent, animals: selectedEvent.animals.map(animal => animal._id), enclosures: selectedEvent.enclosures.map(enclosure => enclosure._id)});
+        selectedEvent && setModifiedEvent({...selectedEvent.event, animals: selectedEvent.event.animals.map(animal => animal._id), enclosures: selectedEvent.event.enclosures.map(enclosure => enclosure._id)});
     },[selectedEvent]);
 
     const setModifiedEventAnimals = (animalList) => {
@@ -126,52 +126,29 @@ const Calendar = ({farms, device, cityfarm}: {farms: any, device: any, cityfarm:
                 const end =  new Date()
                 end.setMonth(end.getMonth()+1)
 
-                const response = await axios.get(`/events`, {params: {from: start.toISOString(), to: end.toISOString()}, ...token});
-                setAllEvents(eventsConversion(response.data));
+                const resp = await cityfarm.getEventsBetween(true, start, end);
+                console.log("Resp", resp);
+                setAllEvents(resp);
             } catch (error) {
-                if (error.response.status === 401) {
+                if (error?.response?.status === 401) {
                     window.location.href = "/login";
                     return;
                 } else {
+                    console.error(error);
                     window.alert(error);
                 }
             }
         })();
     },[cityfarm.events_cache]);
 
-    const handleAddEvent = async() => {
-        if (Object.values(inputErr).filter((err) => err === true).length > 0) {
-            return setShowErr(true);
-        }
-
-        try {
-            recurring ? await axios.post(`/events/create/recurring`, newEvent, token)
-                      : await axios.post(`/events/create/once`, newEvent, token)
-        } catch(error) {
-            if (error.response.status === 401) {
-                window.location.href = "/login";
-                return;
-            } else {
-                window.alert(error);
-            }
-        }
-        
-        setNewEvent({
-            title: "",
-            allDay: true,
-            start: new Date(),
-            end: new Date(),
-            farms: [],
-            animals: [],
-            description: "",
-            enclosures: []
-        });
-        
-        window.location.reload();
-    }
 
     const handleDelEvent = async() => {
-        let id = selectedEvent._id;
+        if (selectedEvent === null) {
+            console.error("Delete event fired but no event selected")
+            return;
+        }
+
+        let id = selectedEvent.event.id;
         try {
             await axios.delete(`/events/by_id/${id}`, token);
         } catch(error) {
@@ -182,6 +159,7 @@ const Calendar = ({farms, device, cityfarm}: {farms: any, device: any, cityfarm:
                 window.alert(error);
             }
         }
+        setSelectedEvent(null);
         await cityfarm.getEvents(false);
     }
 
@@ -207,7 +185,8 @@ const Calendar = ({farms, device, cityfarm}: {farms: any, device: any, cityfarm:
         visibleFarms.includes(selected) ? setVisibleFarms(visibleFarms.filter(farm => farm !== selected)) : setVisibleFarms([...visibleFarms, selected]);
     }
 
-    const eventStyleGetter = (event) => {
+    const eventStyleGetter = (eventInstance) => {
+        const event = eventInstance.event;
         var colour1 = event.farms.includes(farms.WH) ? theme.WH.main : (event.farms.includes(farms.HC) ? theme.HC.main : theme.SW.main);
         var colour2 = event.farms.includes(farms.HC) ? (event.farms.includes(farms.WH) ? theme.HC.main : (event.farms.includes(farms.SW) ? theme.SW.main : theme.SW.main)) : theme.SW.main;
         const offset = 0;
@@ -240,20 +219,19 @@ const Calendar = ({farms, device, cityfarm}: {farms: any, device: any, cityfarm:
 
             let myEvent = (modifiedEvent as EventRecurring);
             myEvent.firstStart = new Date(e.toISOString());
-            myEvent.start = new Date(e.toISOString());
 
             // If the new start time is after the end time, move the end time to be the same distance from the new start time as the old end time was from the old start time
             // E.g. if the event was 10:00 - 11:00 and you move the start time to 11:00, the end time will be moved to 12:00
             if (myEvent.firstEnd < myEvent.firstStart) {
                 myEvent.firstEnd = new Date(myEvent.firstStart.getTime() + delta);
-                myEvent.end = new Date(myEvent.start.getTime() + delta);
             }
 
             setModifiedEvent(myEvent);
         } else {
-            let delta = modifiedEvent.end.getTime() - modifiedEvent.start.getTime();
+            let myEvent = (modifiedEvent as EventOnce);
 
-            let myEvent: Event = {...modifiedEvent};
+            let delta = myEvent.end.getTime() - myEvent.start.getTime();
+
             myEvent.start = new Date(e.toISOString());
 
             // If the new start time is after the end time, move the end time to be the same distance from the new start time as the old end time was from the old start time
@@ -275,20 +253,19 @@ const Calendar = ({farms, device, cityfarm}: {farms: any, device: any, cityfarm:
 
             let myEvent = (modifiedEvent as EventRecurring);
             myEvent.firstEnd = new Date(e.toISOString());
-            myEvent.end = new Date(e.toISOString());
 
             // If the new end time is before the start time, move the start time to be the same distance from the new end time as the old start time was from the old end time
             // E.g. if the event was 10:00 - 11:00 and you move the end time to 11:00, the start time will be moved to 12:00
             if (myEvent.firstEnd < myEvent.firstStart) {
                 myEvent.firstStart = new Date(myEvent.firstEnd.getTime() - delta);
-                myEvent.start = new Date(myEvent.end.getTime() - delta);
             }
 
             setModifiedEvent(myEvent);
         } else {
-            let delta = modifiedEvent.end.getTime() - modifiedEvent.start.getTime();
+            let myEvent = (modifiedEvent as EventOnce);
 
-            let myEvent: Event = {...modifiedEvent};
+            let delta = myEvent.end.getTime() - myEvent.start.getTime();
+
             myEvent.end = new Date(e.toISOString());
 
             // If the new end time is before the start time, move the start time to be the same distance from the new end time as the old start time was from the old end time
@@ -303,22 +280,22 @@ const Calendar = ({farms, device, cityfarm}: {farms: any, device: any, cityfarm:
 
     function showingTime(isShown) {
         if (modifiedEvent === null) {
-            return;
+            return <></>;
         }
 
         if (isShown) {
             return(<>
                 <FormHelperText>Start</FormHelperText>
-                <DateTimePicker value={modifiedEvent instanceof EventRecurring ? dayjs(modifiedEvent.firstStart) : dayjs(modifiedEvent?.start)} onChange={setEventStart} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
+                <DateTimePicker value={modifiedEvent instanceof EventRecurring ? dayjs(modifiedEvent.firstStart) : dayjs((modifiedEvent as EventOnce).start)} onChange={setEventStart} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
                 <FormHelperText>End</FormHelperText>
-                <DateTimePicker value={modifiedEvent instanceof EventRecurring ? dayjs(modifiedEvent.firstEnd) : dayjs(modifiedEvent.end)} onChange={setEventEnd} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
+                <DateTimePicker value={modifiedEvent instanceof EventRecurring ? dayjs(modifiedEvent.firstEnd) : dayjs((modifiedEvent as EventOnce).end)} onChange={setEventEnd} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
             </>)
         } else {
             return(<>
                 <FormHelperText>Start</FormHelperText>
-                <DatePicker value={modifiedEvent instanceof EventRecurring ? dayjs(modifiedEvent.firstStart) : dayjs(modifiedEvent.start)} onChange={setEventStart} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
+                <DatePicker value={modifiedEvent instanceof EventRecurring ? dayjs(modifiedEvent.firstStart) : dayjs((modifiedEvent as EventOnce).start)} onChange={setEventStart} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
                 <FormHelperText>End</FormHelperText>
-                <DatePicker value={modifiedEvent instanceof EventRecurring ? dayjs(modifiedEvent.firstEnd) : dayjs(modifiedEvent.end)} onChange={setEventEnd} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
+                <DatePicker value={modifiedEvent instanceof EventRecurring ? dayjs(modifiedEvent.firstEnd) : dayjs((modifiedEvent as EventOnce).end)} onChange={setEventEnd} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
             </>)
         }
     }
@@ -414,12 +391,26 @@ const Calendar = ({farms, device, cityfarm}: {farms: any, device: any, cityfarm:
                 <BigCalendar
                     culture='en-gb'
                     localizer={dayjsLocalizer(dayjs)}
-                    events={allEvents}
-                    startAccessor="start"
-                    endAccessor="end"
+                    events={allEvents.map((event: EventInstance) => {
+                        console.log("instance", event)
+                        console.log("start type", typeof event.start)
+                        const newEvent = {
+                            title: event.event.title,
+                            start: event.start,
+                            end: event.end,
+                            event: event.event,
+                            allDay: event.event.allDay,
+                        };
+
+                        console.log("new", newEvent);
+                        return newEvent
+                    })}
+
                     style={{width: '100%', '--day': dayColour, '--off-range': offRangeColour, '--today': todayColour, '--text': textColour, '--header': headerColour}}
                     showMultiDayTimes
-                    onSelectEvent={setSelectedEvent}
+                    onSelectEvent={(bigCalendarEvent: EventInstance) => {
+                        setSelectedEvent(bigCalendarEvent);
+                    }}
                     eventPropGetter={eventStyleGetter}
                     onRangeChange={onRangeChange}
                 />
@@ -429,7 +420,14 @@ const Calendar = ({farms, device, cityfarm}: {farms: any, device: any, cityfarm:
                 <BigCalendar
                     culture='en-gb'
                     localizer={dayjsLocalizer(dayjs)}
-                    events={allEvents}
+                    events={allEvents.map(event => {
+                        return {
+                            title: event.event.title,
+                            start: event.start,
+                            end: event.end,
+                            event: event.event,
+                        }
+                    })}
                     startAccessor="start"
                     endAccessor="end"
                     style={{width: '100%', '--day': dayColour, '--off-range': offRangeColour, '--today': todayColour, '--text': textColour, '--header': headerColour}}
@@ -442,17 +440,17 @@ const Calendar = ({farms, device, cityfarm}: {farms: any, device: any, cityfarm:
 
             {/* wrap selected event / create event in a dialog when screen is small */}
             {device !== 'desktopLarge' ?
-            <Dialog fullWidth maxWidth='xs' open={selectedEvent !== '' || createEvent} onClose={() => {setSelectedEvent(''); setCreateEvent(false); setModifyEvent(false);}}>
+            <Dialog fullWidth maxWidth='xs' open={selectedEvent !== null || createEvent} onClose={() => {setSelectedEvent(null); setCreateEvent(false); setModifyEvent(false);}}>
                 <DialogContent>
                     <EventDisplay
                         selectedEvent={selectedEvent} setSelectedEvent={setSelectedEvent}
                         modifiedEvent={modifiedEvent} modifyEvent={modifyEvent} setModifiedEvent={setModifiedEvent} setModifiedEventAnimals={setModifiedEventAnimals} setModifiedEventEnclosures={setModifiedEventEnclosures} setModifyEvent={setModifyEvent}
-                        newEvent={newEvent} createEvent={createEvent} setNewEvent={setNewEvent} setAddEventAnimals={setAddEventAnimals} setAddEventEnclosures={setAddEventEnclosures}
-                        handleAddEvent={handleAddEvent} handleDelEvent={handleDelEvent} handlePatchEvent={handlePatchEvent}
+                        createEvent={createEvent}
+                        handleDelEvent={handleDelEvent} handlePatchEvent={handlePatchEvent}
                         showingTime={showingTime} functionopenPopup={functionopenPopup} functionclosePopup={functionclosePopup}
                         openAnimalsPopup={openAnimalsPopup} openEnclosurePopup={openEnclosurePopup}
-                        recurring={recurring} changeRecurring={changeRecurring} changeAllDay={changeAllDay}
-                        farms={farms} device={device} cityfarm={cityfarm}
+                        changeAllDay={changeAllDay}
+                        farms={farms} cityfarm={cityfarm}
                     />
                 </DialogContent>
             </Dialog>
@@ -461,12 +459,12 @@ const Calendar = ({farms, device, cityfarm}: {farms: any, device: any, cityfarm:
                 <EventDisplay
                     selectedEvent={selectedEvent} setSelectedEvent={setSelectedEvent}
                     modifiedEvent={modifiedEvent} modifyEvent={modifyEvent} setModifiedEvent={setModifiedEvent} setModifiedEventAnimals={setModifiedEventAnimals} setModifiedEventEnclosures={setModifiedEventEnclosures} setModifyEvent={setModifyEvent}
-                    newEvent={newEvent} createEvent={true} setNewEvent={setNewEvent} setAddEventAnimals={setAddEventAnimals} setAddEventEnclosures={setAddEventEnclosures}
-                    handleAddEvent={handleAddEvent} handleDelEvent={handleDelEvent} handlePatchEvent={handlePatchEvent}
+                    createEvent={true}
+                    handleDelEvent={handleDelEvent} handlePatchEvent={handlePatchEvent}
                     showingTime={showingTime} functionopenPopup={functionopenPopup} functionclosePopup={functionclosePopup}
                     openAnimalsPopup={openAnimalsPopup} openEnclosurePopup={openEnclosurePopup}
-                    recurring={recurring} changeRecurring={changeRecurring} changeAllDay={changeAllDay}
-                    farms={farms} device={device} cityfarm={cityfarm}
+                    changeAllDay={changeAllDay}
+                    farms={farms} cityfarm={cityfarm}
                 />
             </Paper>}
         </div>

@@ -3,20 +3,99 @@ import { getConfig } from './getToken'
 import { EventOnce, EventRecurring, Event, EventInstance } from './events.ts'
 import { Animal, Schema } from './animals.ts';
 
+import { useState } from 'react';
+
 export class CityFarm {
     events_cache: Event[];
+    setEventsCache: (events: Event[]) => void;
+    event_instance_cache: EventInstance[];
+    setEventInstanceCache: (instances: EventInstance[]) => void;
     animals_cache: Animal[];
+    setAnimalsCache: (animals: Animal[]) => void;
     schemas_cache: Schema[];
+    setSchemasCache: (schemas: Schema[]) => void;
     private token: {headers: {Authorization: string}};
 
     farms: string[];
 
-    constructor() {
-        this.events_cache = [];
-        this.animals_cache = [];
-        this.schemas_cache = [];
+    constructor(events_cache: Event[], setEventsCache: (events: Event[]) => void, animals_cache: Animal[], setAnimalsCache: (animals: Animal[]) => void,
+                    schemas_cache: Schema[], setSchemasCache: (schemas: Schema[]) => void,
+                    event_instance_cache: EventInstance[], setEventInstanceCache: (instances: EventInstance[]) => void
+                ){
+        [this.events_cache, this.setEventsCache] = [events_cache, setEventsCache];
+        [this.animals_cache, this.setAnimalsCache] = [animals_cache, setAnimalsCache];
+        [this.schemas_cache, this.setSchemasCache] = [schemas_cache, setSchemasCache];
+        [this.event_instance_cache, this.setEventInstanceCache] = [event_instance_cache, setEventInstanceCache];
         this.farms = ["Windmill Hill", "St Werburghs", "Hartcliffe"];
         this.token = getConfig();
+    }
+
+    async getEventsBetween(use_cache: boolean, start: Date, end: Date, callback?: (events) => void) : Promise<EventInstance[]> {
+        const cached_events = this.event_instance_cache.filter((instance) => {
+            return instance.start > start && instance.end < end;
+        });
+        if (use_cache && cached_events.length > 0) {
+            try {
+                axios.get(`/events`, {params: {from: start.toISOString(), to: end.toISOString()}, ...this.token}).then((response) => {
+                    const events = response.data.map((data) => new EventInstance(data));
+                    // If the events have changed, update the cache and call the callback
+                    if (cached_events !== events) {
+                        let new_events = this.event_instance_cache.filter((instance) => {
+                            // If instance should've been in the new response but isn't: delete it
+                            return (instance.start > start && instance.end < end && !events.includes(instance));
+                        })
+
+                        // Add new instances
+                        events.forEach((instance) => {
+                            if (!new_events.includes(instance)) {
+                                new_events.push(instance);
+                            }
+                        })
+
+                        // Update cache
+                        this.setEventInstanceCache(new_events);
+                    }
+                });
+                return cached_events;
+            } catch (error) {
+                if (error.response.status === 401) {
+                    console.log('Token expired');
+                    window.location.href = "/login";
+                    return [];
+                }
+                throw error;
+            }
+
+        } else {
+            try {
+                const response = await axios.get(`/events`, {params: {from: start.toISOString(), to: end.toISOString()}, ...this.token});
+                const events = response.data.map((data) => new EventInstance(data));
+                if (cached_events !== events) {
+                    let new_events = this.event_instance_cache.filter((instance) => {
+                        // If instance should've been in the new response but isn't: delete it
+                        return (instance.start > start && instance.end < end && !events.includes(instance));
+                    })
+
+                    // Add new instances
+                    events.forEach((instance) => {
+                        if (!new_events.includes(instance)) {
+                            new_events.push(instance);
+                        }
+                    })
+
+                    // Update cache
+                    this.setEventInstanceCache(new_events);
+                }
+                return events;
+            } catch (error) {
+                if (error.response?.status === 401) {
+                    console.log('Token expired');
+                    window.location.href = "/login";
+                    return [];
+                }
+                throw error;
+            }
+        }
     }
 
     async getEvents(use_cache: boolean, callback?: (events) => void) : Promise<Event[]> {
@@ -27,7 +106,7 @@ export class CityFarm {
                     const events = response.data.map((data) => new Event(data));
                     // If the events have changed, update the cache and call the callback
                     if (cached_events !== events) {
-                        this.events_cache = events
+                        this.setEventsCache(events);
                         if (callback) {
                             callback(events);
                         }
@@ -46,7 +125,7 @@ export class CityFarm {
         } else {
             try {
                 const response = await axios.get(`/events/non_instanced`, this.token);
-                this.events_cache = response.data.map((data) => new Event(data));
+                this.setEventsCache(response.data.map((data) => new Event(data)));
                 console.log("New events cache", this.events_cache);
                 return this.events_cache;
             } catch (error) {
@@ -73,7 +152,7 @@ export class CityFarm {
             if (!cached_event) {
                 try {
                     const response = await axios.get(`/events/by_id/${id}`, this.token);
-                    this.events_cache.push(new Event(response.data));
+                    this.setEventsCache([...this.events_cache, new Event(response.data)]);
                     return new Event(response.data);
                 } catch (error) {
                     if (error.response.status === 401) {
@@ -90,7 +169,7 @@ export class CityFarm {
                     axios.get(`/events/by_id/${id}`, this.token).then((response) => {
                         // If the event has changed, update the cache and call the callback
                         if (this.events_cache !== response.data) {
-                            this.events_cache = this.events_cache.map((event) => event.id !== id ? event : new Event(response.data));
+                            this.setEventsCache(this.events_cache.map((event) => event.id !== id ? event : new Event(response.data)));
                             if (callback) {
                                 callback(new Event(response.data));
                             }
@@ -111,9 +190,9 @@ export class CityFarm {
         } else { // The user needs the most up-to-date data so wait to fetch and return it
             const response = await axios.get(`/events/by_id/${id}`, this.token);
             // Update cache
-            this.events_cache.map((event) => event.id !== id ? event : new Event(response.data));
+            this.setEventsCache(this.events_cache.map((event) => event.id !== id ? event : new Event(response.data)));
             if (this.events_cache.find((event) => event.id === id) === undefined) {
-                this.events_cache.push(new Event(response.data));
+                this.setEventsCache([...this.events_cache, new Event(response.data)]);
             }
             return new Event(response.data);
         }
@@ -131,7 +210,7 @@ export class CityFarm {
             if (!cached_animal) {
                 try {
                     const response = await axios.get(`/animals/by_id/${id}`, this.token);
-                    this.animals_cache.push(new Animal(response.data));
+                    this.setAnimalsCache([...this.animals_cache, new Animal(response.data)]);
                     return new Animal(response.data);
                 } catch (error) {
                     if (error.response.status === 401) {
@@ -148,7 +227,7 @@ export class CityFarm {
                     axios.get(`/animals/by_id/${id}`, this.token).then((response) => {
                         // If the animal has changed, update the cache and call the callback
                         if (this.animals_cache !== response.data) {
-                            this.animals_cache = this.animals_cache.map((animal) => animal.id !== id ? animal : new Animal(response.data));
+                            this.setAnimalsCache(this.animals_cache.map((animal) => animal.id !== id ? animal : new Animal(response.data)));
                             if (callback) {
                                 callback(new Animal(response.data));
                             }
@@ -169,9 +248,9 @@ export class CityFarm {
         } else { // The user needs the most up-to-date data so wait to fetch and return it
             const response = await axios.get(`/animals/by_id/${id}`, this.token);
             // Update cache
-            this.animals_cache.map((animal) => animal.id !== id ? animal : new Animal(response.data));
+            this.setAnimalsCache(this.animals_cache.map((animal) => animal.id !== id ? animal : new Animal(response.data)));
             if (this.animals_cache.find((animal) => animal.id === id) === undefined) {
-                this.animals_cache.push(new Animal(response.data));
+                this.setAnimalsCache([...this.animals_cache, new Animal(response.data)]);
             }
             return new Animal(response.data);
         }
@@ -185,7 +264,7 @@ export class CityFarm {
                     const animals = response.data.map((data) => new Animal(data));
                     // If the animals have changed, update the cache and call the callback
                     if (cached_animals !== animals) {
-                        this.animals_cache = animals
+                        this.setAnimalsCache(animals)
                         if (callback) {
                             callback(animals);
                         }
@@ -204,7 +283,7 @@ export class CityFarm {
         } else {
             try {
                 const response = await axios.get(`/animals`, this.token);
-                this.animals_cache = response.data.map((data) => new Animal(data));
+                this.setAnimalsCache(response.data.map((data) => new Animal(data)));
                 return this.animals_cache;
             } catch (error) {
                 if (error.response.status === 401) {

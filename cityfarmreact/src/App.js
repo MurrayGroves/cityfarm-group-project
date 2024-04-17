@@ -78,6 +78,11 @@ const App = () => {
     const [msal, setMsal] = useState(null);
     const [device, setDevice] = useState('');
 
+    const [animals_cache, setAnimalsCache] = useState([]);
+    const [events_cache, setEventsCache] = useState([]);
+    const [schemas_cache, setSchemasCache] = useState([]);
+    const [event_instances_cache, setEventInstancesCache] = useState([]);
+
     useEffect(() => setDevice(getComputedStyle(document.documentElement).getPropertyValue('--device')), [])
 
     const msalConfig = {
@@ -104,7 +109,7 @@ const App = () => {
         return;
     }
 
-    const cityfarm = new CityFarm();
+    const cityfarm = new CityFarm(animals_cache, setAnimalsCache, events_cache, setEventsCache, schemas_cache, setSchemasCache, event_instances_cache, setEventInstancesCache);
     // when window is resized, check if width thresholds have changed
     window.addEventListener("resize", () => setDevice(getComputedStyle(document.documentElement).getPropertyValue('--device')));
 
