@@ -26,25 +26,6 @@ import EventDisplay from '../components/EventDisplay.tsx';
 import { CityFarm } from '../api/cityfarm.ts';
 import { Event, EventInstance, EventOnce, EventRecurring } from '../api/events.ts';
 
-export const eventsConversion=(events)=>{
-    let changed: any = []
-    for (let i=0;i<events.length;i++){
-        changed.push(
-            {
-                _id: events[i].event._id,
-                title: events[i].event.title,
-                allDay: events[i].event.allDay,
-                start: new  Date(events[i].start),
-                end: new  Date(events[i].end),
-                farms: events[i].event.farms,
-                animals: events[i].event.animals,
-                description: events[i].event.description,
-                enclosures: events[i].event.enclosures
-            }
-        )
-    }
-    return changed
-}
 
 const Calendar = ({farms, device, cityfarm}: {farms: any, device: any, cityfarm: CityFarm}) => {
   
@@ -314,25 +295,22 @@ const Calendar = ({farms, device, cityfarm}: {farms: any, device: any, cityfarm:
     const onRangeChange = useCallback(async (range) => {
         if (range.start !== undefined){ //month or agenda case start and end are the times displayed on the calendar
             try {
-                const start = range.start.toISOString()
-                const end = range.end.toISOString()
-
-                const response = await axios.get(`/events`, {params: {from: start, to: end}, ...token});
-                setAllEvents(eventsConversion(response.data));
+                const start = range.start
+                const end = range.end
+                setAllEvents(await cityfarm.getEventsBetween(true, start, end));
             } catch (error) {
-                window.alert(error);
+                console.error(error);
 
             }
         } else {
             if (range[1] !== undefined){ //week case has an array of 7 times
                 try {
-                    const start = range[0].toISOString()
-                    const end = range[range.length - 1].toISOString()
-                    const response = await axios.get(`/events`, {params: {from: start, to: end}, ...token});
+                    const start = range[0]
+                    const end = range[range.length - 1]
 
-                    setAllEvents(eventsConversion(response.data));
+                    setAllEvents(await cityfarm.getEventsBetween(true, start, end));
                 } catch (error){
-                    window.alert(error);
+                    console.error(error);
                 }
             }
             else { // day case has a single element of the start time
@@ -341,11 +319,9 @@ const Calendar = ({farms, device, cityfarm}: {farms: any, device: any, cityfarm:
                     const end = start
                     end.setDate(start.getDate() + 1)
 
-                    const response = await axios.get(`/events`, {params: {from: start.toISOString(), to: end.toISOString()}, ...token});
-
-                    setAllEvents(eventsConversion(response.data));
+                    setAllEvents(await cityfarm.getEventsBetween(true, start, end));
                 } catch (error) {
-                    window.alert(error)
+                    console.error(error)
                 }
             }
         }
@@ -392,8 +368,6 @@ const Calendar = ({farms, device, cityfarm}: {farms: any, device: any, cityfarm:
                     culture='en-gb'
                     localizer={dayjsLocalizer(dayjs)}
                     events={allEvents.map((event: EventInstance) => {
-                        console.log("instance", event)
-                        console.log("start type", typeof event.start)
                         const newEvent = {
                             title: event.event.title,
                             start: event.start,
@@ -401,8 +375,6 @@ const Calendar = ({farms, device, cityfarm}: {farms: any, device: any, cityfarm:
                             event: event.event,
                             allDay: event.event.allDay,
                         };
-
-                        console.log("new", newEvent);
                         return newEvent
                     })}
 
@@ -450,7 +422,7 @@ const Calendar = ({farms, device, cityfarm}: {farms: any, device: any, cityfarm:
                         showingTime={showingTime} functionopenPopup={functionopenPopup} functionclosePopup={functionclosePopup}
                         openAnimalsPopup={openAnimalsPopup} openEnclosurePopup={openEnclosurePopup}
                         changeAllDay={changeAllDay}
-                        farms={farms} cityfarm={cityfarm}
+                        farms={farms} cityfarm={cityfarm} setShowErr={setShowErr}
                     />
                 </DialogContent>
             </Dialog>
@@ -464,7 +436,7 @@ const Calendar = ({farms, device, cityfarm}: {farms: any, device: any, cityfarm:
                     showingTime={showingTime} functionopenPopup={functionopenPopup} functionclosePopup={functionclosePopup}
                     openAnimalsPopup={openAnimalsPopup} openEnclosurePopup={openEnclosurePopup}
                     changeAllDay={changeAllDay}
-                    farms={farms} cityfarm={cityfarm}
+                    farms={farms} cityfarm={cityfarm} setShowErr={setShowErr}
                 />
             </Paper>}
         </div>
