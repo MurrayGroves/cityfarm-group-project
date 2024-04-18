@@ -1,17 +1,17 @@
 import Eevent from "../assets/example event.png"
 import React, {useEffect, useState} from "react";
-import axios from "../api/axiosConfig";
+import axios from "../api/axiosConfig.js";
 import "./Home.css"
-import { getConfig } from '../api/getToken';
-import { Button } from "@mui/material";
+import { getConfig } from '../api/getToken.js';
 import AnimalPopover from "../components/AnimalPopover.tsx";
-import { eventsConversion } from "./Calendar";
 import { useTheme } from "@mui/material";
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
+import { Event, EventInstance } from '../api/events.ts';
+import { Animal } from '../api/animals.ts';
 
 const Home = ({farms, cityfarm}) => {
-    const [events,setEvents] = useState([])
+    const [events, setEvents] = useState<EventInstance[]>([])
     const token = getConfig();
     const colour = useTheme().palette.mode === 'dark' ? 'white' : 'black';
 
@@ -23,7 +23,7 @@ const Home = ({farms, cityfarm}) => {
                 const end =  new Date()
                 end.setMonth(end.getMonth()+2)
                 const response = await axios.get(`/events`, {params: {from: start.toISOString(), to: end.toISOString()}, ...token});
-                setEvents(eventsConversion(response.data.slice(0, 5)));
+                setEvents(response.data.slice(0, 5));
             } catch (error) {
                 if (error.response.status === 401) {
                     window.location.href = "/login";
@@ -54,7 +54,12 @@ const Home = ({farms, cityfarm}) => {
         {events.length > 0 && <h2>Upcoming Events</h2>}
         {/*  events are mapped below, same as in selected event with some visual changes*/}
         <Grid container spacing={3} columns={{xs: 1, md: 2, lg: 3, xl: 4 }}>
-        {events.map((e, index)=>(
+        {events.map((i: EventInstance, index)=>{
+            let e = i.event;
+            e.start = new Date(i.start);
+            e.end = new Date(i.end);
+            e.animals = e.animals.map((animal) => new Animal(animal));
+            return (
             <Grid item xs={1} key={index}>
             <Paper elevation={3} className="event-box">
                 <h2>{e.title}</h2>
@@ -75,7 +80,7 @@ const Home = ({farms, cityfarm}) => {
                 {e.farms.includes(farms.SW) ? <p>St Werberghs</p> : <></>}
                 {e.animals.length !== 0 ? <h3>Animals</h3> : <></>}
                 {e.animals.map((animalID) => (
-                    <AnimalPopover key={animalID._id} cityfarm={cityfarm} animalID={animalID._id}/>
+                    <AnimalPopover key={animalID.id} cityfarm={cityfarm} animalID={animalID.id}/>
                 ))}
                 {e.enclosures.length !== 0 &&
                     <div>
@@ -91,7 +96,7 @@ const Home = ({farms, cityfarm}) => {
                     </div> : <></>}
             </Paper>
             </Grid>
-        ))}
+        )})}
         </Grid>
     </>)
 }

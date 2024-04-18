@@ -7,8 +7,8 @@ import '@fontsource/roboto/700.css';
 import AnimalTable from "./pages/AnimalTable.tsx";
 import NavBar from "./components/NavBar.jsx";
 import Calendar from "./pages/Calendar.jsx";
-import EnclosureTable from "./pages/EnclosureTable.jsx";
-import Schemas from "./pages/Schemas.jsx";
+import EnclosureTable from "./pages/EnclosureTable.tsx";
+import Schemas from "./pages/Schemas.tsx";
 import Error from "./pages/Error.jsx";
 import Login from './pages/Login.jsx';
 import SingleAnimal from "./pages/SingleAnimal.tsx";
@@ -22,7 +22,7 @@ import 'dayjs/locale/en-gb';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { PublicClientApplication } from "@azure/msal-browser";
-import Home from "./pages/Home.jsx";
+import Home from "./pages/Home.tsx";
 import Help from "./pages/Help.jsx";
 import usePersistState from './components/PersistentState.jsx'
 
@@ -123,7 +123,7 @@ const App = () => {
                         <Route path="/calendar" element={<Calendar farms={farms} cityfarm={cityfarm} device={device}/>}/>
                             <Route path="/animals" element={<AnimalTable farms={farms} cityfarm={cityfarm} device={device}/>}/>
                             <Route path="/enclosures" element={<EnclosureTable farms={farms} cityfarm={cityfarm}/>}/>
-                            <Route path="/schemas" element={<Schemas farms={farms}/>}/>
+                            <Route path="/schemas" element={<Schemas farms={farms} cityfarm={cityfarm}/>}/>
                             <Route path="/help" element={<Help/>}/>
                             <Route path="/single-animal/:animalID" element={<SingleAnimal farms={farms} cityfarm={cityfarm}/>} />
                             <Route path="*" element={<Error/>}/>

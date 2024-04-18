@@ -5,16 +5,15 @@ import { React, useState } from 'react';
 import { ThemeProvider, useTheme } from "@emotion/react";
 import { createTheme } from "@mui/material";
 
-const FarmTabs = (props) => {
-    const farms = props.farms;
+const FarmTabs = ({farms, selectedFarm, setSelectedFarm}) => {
 
     var tabTheme = createTheme(useTheme());
     var mainTheme = useTheme();
 
-    if (props.selectedFarm) {
-        tabTheme.palette.primary.main = mainTheme.palette[farms[props.selectedFarm]].main;
+    if (selectedFarm) {
+        tabTheme.palette.primary.main = mainTheme.palette[farms[selectedFarm]].main;
     } else {
-        if (props.selectedFarm != null) {
+        if (selectedFarm != null) {
             tabTheme.palette.primary.main = mainTheme.palette.green.main;
         }
     }
@@ -34,8 +33,8 @@ const FarmTabs = (props) => {
                 <Tabs
                     variant='scrollable'
                     scrollButtons='auto'
-                    value={props.selectedFarm}
-                    onChange={(e, farm)=>{props.setSelectedFarm(farm)}}
+                    value={selectedFarm}
+                    onChange={(e, farm)=>{setSelectedFarm(farm)}}
                     sx={{
                         [`& .${tabsClasses.scrollButtons}`]: {
                           '&.Mui-disabled': { opacity: 0.3 },

@@ -21,7 +21,7 @@ export class Animal {
     farm: string;
 
     constructor(data: any) {
-        this.id = data._id;
+        this.id = data._id || data.id;
         this.name = data.name;
         this.type = data.type;
         this.fields = data.fields;

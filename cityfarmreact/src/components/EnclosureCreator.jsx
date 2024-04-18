@@ -24,7 +24,7 @@ import { Unstable_Popup as BasePopup } from '@mui/base/Unstable_Popup';
 import { styled } from '@mui/system';
 import {  DialogActions, DialogContent, DialogContentText, DialogTitle, Dialog } from "@mui/material";
 
-const EnclosureCreator = (props) => {
+const EnclosureCreator = ({ setCreateProp, cityfarm}) => {
     const [newEnclosure, setNewEnclosure] = useState({name: '', holding: {}, capacities: {}, notes: '', farm: ''});
     const [create, setCreate] = useState(false);
     const [anchor, setAnchor] = React.useState(null);
@@ -39,7 +39,7 @@ const EnclosureCreator = (props) => {
     }
 
     const reset = () => {
-        props.setCreate(false);
+        setCreateProp(false);
         setNewEnclosure({name: '', holding: {}, capacities: {}, notes: '', farm: ''})
     }
 
@@ -102,7 +102,7 @@ const EnclosureCreator = (props) => {
                 <Dialog fullWidth maxWidth='md' open={openAnimalsPopup} onClose={()=>{setOpenAnimalsPopup(false)}}>
                     <DialogTitle>Add Animal</DialogTitle>
                     <DialogContent>
-                        <AssociateAnimal setAnimals={setNewEnclosureAnimals} animals={newEnclosure.holding} close={()=>setOpenAnimalsPopup(false)}></AssociateAnimal>
+                        <AssociateAnimal setAnimals={setNewEnclosureAnimals} cityfarm={cityfarm} animals={newEnclosure.holding} close={()=>setOpenAnimalsPopup(false)}></AssociateAnimal>
                     </DialogContent>
                 </Dialog>
             </div>

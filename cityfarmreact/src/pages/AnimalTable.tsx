@@ -43,10 +43,9 @@ const AnimalTable = ({farms, cityfarm, device}: {farms: any, cityfarm: CityFarm,
     const gridApi = useGridApiRef();
 
     const handleDelAnimals = (animals: Animal[]) => {
-        animals.map(async (animal: Animal) => {
+        animals.map(async (animal) => {
             try {
                 const response = await axios.delete(`/animals/by_id/${animal.id}`, token);
-                console.log(response);
             } catch (error) {
                 if (error.response.status === 401) {
                     window.location.href = "/login";
@@ -60,7 +59,7 @@ const AnimalTable = ({farms, cityfarm, device}: {farms: any, cityfarm: CityFarm,
 
     function displayAll() {
         (async () => {
-            const animals = await cityfarm.getAnimals(true, (animals) => {setAnimalList(animals)});
+            const animals = await cityfarm.getAnimals(false, farm, (animals) => {setAnimalList(animals)});
             setAnimalList(animals);
         })()
     }
@@ -83,6 +82,7 @@ const AnimalTable = ({farms, cityfarm, device}: {farms: any, cityfarm: CityFarm,
             try {
                 const response = await axios.get(`/animals/by_name/${searchTerm}`, {params: {farm: farm}, ...token});
                 setAnimalList(response.data);
+                console.log(response);
             } catch (error) {
                 if (error.response.status === 401) {
                     window.location.href = "/login";
@@ -129,7 +129,7 @@ const AnimalTable = ({farms, cityfarm, device}: {farms: any, cityfarm: CityFarm,
         const defaultRows = animalList.map((animal) => ({
             id: animal.id,
             name: animal,
-            type: animal.type.charAt(0).toUpperCase() + animal.type.slice(1),
+            type: animal.type,
             father: animal.father !== null ? animal.father : '',
             mother: animal.mother !== null ? animal.mother : '',
             sex: animal.sex,

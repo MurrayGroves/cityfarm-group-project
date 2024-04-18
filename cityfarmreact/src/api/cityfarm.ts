@@ -176,11 +176,11 @@ export class CityFarm {
         }
     }
 
-    async getAnimals(use_cache: boolean, callback?: (animals) => void) : Promise<Animal[]> {
+    async getAnimals(use_cache: boolean, farm: string | null, callback?: (animals) => void) : Promise<Animal[]> {
         const cached_animals = this.animals_cache;
         if (use_cache && cached_animals.length > 0) {
             try {
-                axios.get(`/animals`, this.token).then((response) => {
+                axios.get(`/animals`, {params: {farm: farm}, ...this.token}).then((response) => {
                     const animals = response.data.map((data) => new Animal(data));
                     // If the animals have changed, update the cache and call the callback
                     if (cached_animals !== animals) {
@@ -202,7 +202,7 @@ export class CityFarm {
 
         } else {
             try {
-                const response = await axios.get(`/animals`, this.token);
+                const response = await axios.get(`/animals`, {params: {farm: farm}, ...this.token});
                 this.animals_cache = response.data.map((data) => new Animal(data));
                 return this.animals_cache;
             } catch (error) {

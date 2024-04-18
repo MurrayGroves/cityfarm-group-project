@@ -1,16 +1,27 @@
 import React, {useEffect, useState} from "react";
-import axios from "../api/axiosConfig";
+import axios from "../api/axiosConfig.js";
 import TextField from '@mui/material/TextField';
 import "../pages/AnimalTable.css";
-import FarmTabs from "../components/FarmTabs";
-import TableContainer from '@mui/material/TableContainer';
+import FarmTabs from "../components/FarmTabs.jsx";
 import { Paper, Divider } from '@mui/material';
-import { DataGrid, GridPagination } from "@mui/x-data-grid";
+import { DataGrid, GridColDef, GridPagination, GridSlotsComponentsProps } from "@mui/x-data-grid";
 import { Edit, Add } from '@mui/icons-material';
 import Button from '@mui/material/Button';
 import AnimalPopover from "../components/AnimalPopover.tsx";
-import EnclosureCreator from "../components/EnclosureCreator";
-import { getConfig } from '../api/getToken';
+import EnclosureCreator from "../components/EnclosureCreator.jsx";
+import { getConfig } from '../api/getToken.js';
+import { Schema } from '../api/animals.ts';
+
+declare module '@mui/x-data-grid' {
+    interface FooterPropsOverrides {
+        setEditMode?: (mode: boolean) => void;
+        setCreate?: (create: boolean) => void;
+        setFilterModel?: any;
+        selectedSchema?: Schema;
+        setSelectedSchema?: (schema: Schema) => void;
+        create?: boolean;
+    }
+}
 
 const EnclosureTable = ({farms, cityfarm}) => {
     const [enclosureList, setEnclosureList] = useState([]); /* The State for the list of enclosures. The initial state is [] */
@@ -58,7 +69,7 @@ const EnclosureTable = ({farms, cityfarm}) => {
         })()
     },[searchTerm, farm])
 
-    const cols =  [
+    const cols: GridColDef[] = [
         { field: 'name', editable: true, headerName: 'Name', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
         { field: 'holding', headerName: 'Holding', headerClassName: 'grid-header', headerAlign: 'left', flex: 1, cellClassName: 'scroll-cell',
             renderCell: (animalList) => <ul>{animalList.value.map(animal => {console.log(animal); return(<li key={animal._id}><AnimalPopover cityfarm={cityfarm} animalID={animal._id}/></li>)})}</ul>
@@ -68,7 +79,7 @@ const EnclosureTable = ({farms, cityfarm}) => {
 
     console.log(enclosureList)
 
-    const rows = enclosureList.map((enclosure) => ({
+    const rows = enclosureList.map((enclosure: any) => ({
         id: enclosure._id,
         name: enclosure.name,
         holding: enclosure.holding,
@@ -110,7 +121,7 @@ const EnclosureTable = ({farms, cityfarm}) => {
                     try{
                         const response = await axios.patch(`/enclosures/by_id/${_id}/name/${newName}`, null, token)
                         console.log(response);
-                        window.location.reload(false);
+                        window.location.reload();
                     } catch (error) {
                         if (error.response.status === 401) {
                             window.location.href = "/login";
@@ -124,18 +135,18 @@ const EnclosureTable = ({farms, cityfarm}) => {
                 return newVal;
             }}/>
         </Paper>
-        {create && <EnclosureCreator setCreate={setCreate}/>}
+        {create && <EnclosureCreator setCreateProp={setCreate} cityfarm={cityfarm}/>}
         </div>
     </>)
 }
 
-const CustomFooter = ({setEditMode, setCreate}) => {
+const CustomFooter = (props: NonNullable<GridSlotsComponentsProps['footer']>) => {
     return (<>
         <Divider/>
         <div style={{maxHeight: '56.5px', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
             <span style={{display: 'flex', alignItems: 'center'}}>
-            <Button className="tallButton" sx={{margin: '10px'}} aria-label="edit" onClick={() => setEditMode(true)} variant='contained' endIcon={<Edit/>}>Edit</Button>
-            <Button sx={{maxWidth: '100px', float: 'right'}} variant='contained' endIcon={<Add/>} style={{float: 'right'}} onClick={() => setCreate(true)}>Create</Button>
+            <Button className="tallButton" sx={{margin: '10px'}} aria-label="edit" onClick={() => props.setEditMode!(true)} variant='contained' endIcon={<Edit/>}>Edit</Button>
+            <Button sx={{maxWidth: '100px', float: 'right'}} variant='contained' endIcon={<Add/>} style={{float: 'right'}} onClick={() => props.setCreate!(true)}>Create</Button>
             </span>
             <GridPagination/>
         </div>
