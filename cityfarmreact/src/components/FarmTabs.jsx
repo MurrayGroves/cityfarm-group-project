@@ -1,22 +1,27 @@
 import Tabs, {tabsClasses} from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import "./FarmTabs.css";
-import { React, useState } from 'react';
+import { React, useEffect, useState } from 'react';
 import { ThemeProvider, useTheme } from "@emotion/react";
 import { createTheme } from "@mui/material";
 
-const FarmTabs = ({farms, selectedFarm, setSelectedFarm}) => {
+const FarmTabs = ({farms, setSelectedFarm}) => {
 
     var tabTheme = createTheme(useTheme());
     var mainTheme = useTheme();
+    const [farm, setFarm] = useState(null);
 
-    if (selectedFarm) {
-        tabTheme.palette.primary.main = mainTheme.palette[farms[selectedFarm]].main;
+    if (farm) {
+        tabTheme.palette.primary.main = mainTheme.palette[farms[farm]].main;
     } else {
-        if (selectedFarm != null) {
+        if (farm != null) {
             tabTheme.palette.primary.main = mainTheme.palette.green.main;
         }
     }
+
+    useEffect(() => {
+        setTimeout(() => setSelectedFarm(farm), 250);
+    }, [farm])
 
     function readableFarm(farm) {
         switch(farm) {
@@ -33,8 +38,8 @@ const FarmTabs = ({farms, selectedFarm, setSelectedFarm}) => {
                 <Tabs
                     variant='scrollable'
                     scrollButtons='auto'
-                    value={selectedFarm}
-                    onChange={(e, farm)=>{setSelectedFarm(farm)}}
+                    value={farm}
+                    onChange={(_, farm) => {setFarm(farm)}}
                     sx={{
                         [`& .${tabsClasses.scrollButtons}`]: {
                           '&.Mui-disabled': { opacity: 0.3 },

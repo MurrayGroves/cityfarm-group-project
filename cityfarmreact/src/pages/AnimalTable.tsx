@@ -492,7 +492,7 @@ const AnimalTable = ({farms, cityfarm, device}: {farms: any, cityfarm: CityFarm,
                 style={{margin: '0 20px 20px 0'}}
                 onChange={(e) => setSearchTerm(e.target.value)}
             />
-            <FarmTabs farms={farms} selectedFarm={farm} setSelectedFarm={setFarm}/>
+            <FarmTabs farms={farms} setSelectedFarm={setFarm}/>
         </span>
         <div style={{display: 'flex', flexDirection: 'column', height: 'calc(100% - 150.88px)'}}>
         {/* this flex ain't flexing :( */}

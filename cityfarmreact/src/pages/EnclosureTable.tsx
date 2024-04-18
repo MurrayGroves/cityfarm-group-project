@@ -97,7 +97,7 @@ const EnclosureTable = ({farms, cityfarm}) => {
                 style={{margin: '0 20px 20px 0'}}
                 onChange={(e) => setSearchTerm(e.target.value)}
             ></TextField>
-            <FarmTabs farms={farms} selectedFarm={farm} setSelectedFarm={setFarm}/>
+            <FarmTabs farms={farms} setSelectedFarm={setFarm}/>
         </span>
         <div style={{display: 'flex', flexDirection: 'column', height: 'calc(100% - 150.88px)'}}>
         <Paper elevation={3} style={{flex: 1}}>
