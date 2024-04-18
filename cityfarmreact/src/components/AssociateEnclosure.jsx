@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import axios from '../api/axiosConfig'
-import FarmTabs from "../components/FarmTabs";
 import AnimalPopover from "../components/AnimalPopover.tsx";
 import "../pages/AnimalTable.css";
 import { DataGrid } from '@mui/x-data-grid';

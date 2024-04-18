@@ -4,8 +4,8 @@ import {  useParams } from "react-router-dom";
 import { useState, useEffect } from 'react';
 import AnimalPopover from "../components/AnimalPopover.tsx";
 import Paper from "@mui/material/Paper";
-import SelectedEvent from "../components/SelectedEvent.jsx";
-import FarmMoveButton from "../components/FarmMoveButton.jsx";
+import SelectedEvent from "../components/SelectedEvent.tsx";
+import FarmMoveButton from "../components/FarmMoveButton.tsx";
 import { CityFarm } from "../api/cityfarm.ts";
 import { Animal, Schema, Sex } from "../api/animals.ts";
 import { Event } from "../api/events.ts";
@@ -44,7 +44,7 @@ const SingleAnimal = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
     useEffect(()=>{
         let kids = new Array<string>();
         (async () => {
-            const anis = await cityfarm.getAnimals(true, (animals) => {setAnimals(animals)});
+            const anis = await cityfarm.getAnimals(true, null, (animals) => {setAnimals(animals)});
             setAnimals(anis)
 
             if (chosenAnimal.sex !== Sex.Castrated) {
@@ -186,9 +186,9 @@ const SingleAnimal = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
             </div>
         )}
         <div className="farmButtons">
-            {Object.entries(farms).map((farm) => (
-                <React.Fragment key={farm[0]}>
-                    <FarmMoveButton farm={farm} ids={[chosenAnimal.id]}/>
+            {Object.values(farms).map((farm, index) => (
+                <React.Fragment key={index}>
+                    <FarmMoveButton cityfarm={cityfarm} farm={farm as string} ids={[chosenAnimal.id]}/>
                 </React.Fragment>
             ))}
         </div>

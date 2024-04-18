@@ -211,7 +211,7 @@ const Calendar = ({farms, cityfarm, device}) => {
         }
         var style = {
             display: visible ? 'block' : 'none',
-            backgroundColor: theme.grey.main,
+            backgroundColor: theme.default.main,
             backgroundImage: `linear-gradient(135deg, ${colour1}, ${colour1} ${100/event.farms.length - offset}%, ${colour2} ${100/event.farms.length + offset}%, ${colour2} ${200/event.farms.length - offset}%, ${theme.SW.main} ${200/event.farms.length + offset}%, ${theme.SW.main})`,
             color: 'white',
             borderRadius: '5px'

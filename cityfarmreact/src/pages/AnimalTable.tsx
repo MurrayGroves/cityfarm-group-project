@@ -1,9 +1,9 @@
 import React, {useEffect, useState} from "react";
 import axios from '../api/axiosConfig.js'
-import FarmTabs from "../components/FarmTabs.jsx";
+import FarmTabs from "../components/FarmTabs.tsx";
 import AnimalPopover from "../components/AnimalPopover.tsx";
 import AnimalCreator from "../components/AnimalCreator.tsx";
-import FarmMoveButton from "../components/FarmMoveButton.jsx";
+import FarmMoveButton from "../components/FarmMoveButton.tsx";
 import "./AnimalTable.css";
 import { DataGrid, useGridApiRef, FooterPropsOverrides, GridColDef, GridFilterModel } from '@mui/x-data-grid';
 import { Collapse, Autocomplete, Backdrop, Paper, TextField, Button, Select, MenuItem, FormControl, IconButton, Divider, Dialog, DialogContent, Alert, AlertTitle, ButtonGroup } from '@mui/material';
@@ -620,9 +620,9 @@ const AnimalTable = ({farms, cityfarm, device}: {farms: any, cityfarm: CityFarm,
         </Collapse></>}
         <div className="fmButtons">
             {selectedAnimals.length > 0 ? (
-                Object.entries(farms).map((farm) => (
-                        <React.Fragment key={String(farm)}>
-                            <FarmMoveButton farm={farm} ids={selectedAnimals}/>
+                Object.values(farms).map((farm, index) => (
+                        <React.Fragment key={index}>
+                            <FarmMoveButton cityfarm={cityfarm} farm={farm as string} ids={selectedAnimals}/>
                         </React.Fragment>
                     )))
             :  ''}

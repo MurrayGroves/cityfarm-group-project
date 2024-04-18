@@ -2,7 +2,7 @@ import React, {useEffect, useState} from "react";
 import axios from "../api/axiosConfig.js";
 import TextField from '@mui/material/TextField';
 import "../pages/AnimalTable.css";
-import FarmTabs from "../components/FarmTabs.jsx";
+import FarmTabs from "../components/FarmTabs.tsx";
 import { Paper, Divider } from '@mui/material';
 import { DataGrid, GridColDef, GridPagination, GridSlotsComponentsProps } from "@mui/x-data-grid";
 import { Edit, Add } from '@mui/icons-material';

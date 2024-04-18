@@ -13,14 +13,14 @@ import AssociateAnimal from '../components/AssociateAnimal';
 import AssociateEnclosure from '../components/AssociateEnclosure';
 
 const EventDisplay = ({
-    selectedEvent, setSelectedEvent,
-    modifiedEvent, modifyEvent, setModifiedEvent, setModifiedEventAnimals, setModifiedEventEnclosures, setModifyEvent,
-    newEvent, createEvent, setNewEvent, setAddEventAnimals, setAddEventEnclosures,
-    handleAddEvent, handleDelEvent, handlePatchEvent,
-    showingTime, functionopenPopup, functionclosePopup,
-    openAnimalsPopup, openEnclosurePopup,
-    recurring, changeRecurring, changeAllDay,
-    farms, device, cityfarm
+        selectedEvent, setSelectedEvent,
+        modifiedEvent, modifyEvent, setModifiedEvent, setModifiedEventAnimals, setModifiedEventEnclosures, setModifyEvent,
+        newEvent, createEvent, setNewEvent, setAddEventAnimals, setAddEventEnclosures,
+        handleAddEvent, handleDelEvent, handlePatchEvent,
+        showingTime, functionopenPopup, functionclosePopup,
+        openAnimalsPopup, openEnclosurePopup,
+        recurring, changeRecurring, changeAllDay,
+        farms, device, cityfarm
     }) => {
 
     return (<>

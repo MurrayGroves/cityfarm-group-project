@@ -1,14 +1,14 @@
 import Tabs, {tabsClasses} from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import "./FarmTabs.css";
-import { React, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ThemeProvider, useTheme } from "@emotion/react";
 import { createTheme } from "@mui/material";
 
 const FarmTabs = ({farms, setSelectedFarm}) => {
 
     var tabTheme = createTheme(useTheme());
-    var mainTheme = useTheme();
+    var mainTheme = createTheme(useTheme());
     const [farm, setFarm] = useState(null);
 
     if (farm) {
@@ -20,7 +20,7 @@ const FarmTabs = ({farms, setSelectedFarm}) => {
     }
 
     useEffect(() => {
-        setTimeout(() => setSelectedFarm(farm), 250);
+        setTimeout(() => setSelectedFarm(farm), 350);
     }, [farm])
 
     function readableFarm(farm) {
@@ -47,7 +47,7 @@ const FarmTabs = ({farms, setSelectedFarm}) => {
                     }}
                 >
                     <Tab value={null} label="All"/>
-                    {Object.values(farms).map((farm) => <Tab key={farm} value={farm} label={readableFarm(farm)}/>)}
+                    {Object.values(farms).map((farm, index) => <Tab key={index} value={farm} label={readableFarm(farm)}/>)}
                     {/*<Tab value={farms.WH} label="Windmill Hill"/>
                     <Tab value={farms.HC} label="Hartcliffe"/>
                     <Tab value={farms.SW} label="St Werburghs"/>*/}

@@ -5,12 +5,12 @@ import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 import AnimalTable from "./pages/AnimalTable.tsx";
-import NavBar from "./components/NavBar.jsx";
+import NavBar from "./components/NavBar.tsx";
 import Calendar from "./pages/Calendar.jsx";
 import EnclosureTable from "./pages/EnclosureTable.tsx";
 import Schemas from "./pages/Schemas.tsx";
-import Error from "./pages/Error.jsx";
-import Login from './pages/Login.jsx';
+import Error from "./pages/Error.tsx";
+import Login from './pages/Login.tsx';
 import SingleAnimal from "./pages/SingleAnimal.tsx";
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
@@ -23,10 +23,30 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { PublicClientApplication } from "@azure/msal-browser";
 import Home from "./pages/Home.tsx";
-import Help from "./pages/Help.jsx";
-import usePersistState from './components/PersistentState.jsx'
+import Help from "./pages/Help.tsx";
+import usePersistState from './components/PersistentState.ts'
 
 import { CityFarm } from './api/cityfarm.ts';
+
+declare module '@mui/material/styles' {
+    interface Theme {
+        palette: Palette;
+    }
+
+    interface Palette {
+        WH: Palette['primary'];
+        HC: Palette['primary'];
+        SW: Palette['primary'];
+        green: Palette['primary'];
+    }
+  
+    interface PaletteOptions {
+        WH?: PaletteOptions['primary'];
+        HC?: PaletteOptions['primary'];
+        SW?: PaletteOptions['primary'];
+        green?: PaletteOptions['primary'];
+    }
+}
 
 const App = () => {
 
@@ -46,7 +66,7 @@ const App = () => {
         SW: {
             main: "#ffb121"
         },
-        grey: {
+        default: {
             main: "#888888"
         },
         green: {
@@ -75,7 +95,7 @@ const App = () => {
     });
     
     const [theme, setTheme] = usePersistState('light', 'theme');
-    const [msal, setMsal] = useState(null);
+    const [msal, setMsal] = useState<PublicClientApplication | null>(null);
     const [device, setDevice] = useState('');
 
     useEffect(() => setDevice(getComputedStyle(document.documentElement).getPropertyValue('--device')), [])
@@ -104,6 +124,14 @@ const App = () => {
         return;
     }
 
+    if (window.location.href.includes("/login")) {
+        return <Router>
+            <Routes>
+                <Route path="/login" element={<Login msal={msal} setMsal={setMsal} />}/>
+            </Routes>
+        </Router>
+    }
+
     const cityfarm = new CityFarm();
     // when window is resized, check if width thresholds have changed
     window.addEventListener("resize", () => setDevice(getComputedStyle(document.documentElement).getPropertyValue('--device')));
@@ -115,7 +143,7 @@ const App = () => {
         <Router>
             <Routes>
                 <Route path="/login" element={<Login msal={msal} setMsal={setMsal} />}/>
-                <Route exact path="*" element={<>
+                <Route path="*" element={<>
                     <NavBar theme={theme} setTheme={setTheme} msal={msal} device={device}/>
                     <div className='Content'>
                         <Routes>

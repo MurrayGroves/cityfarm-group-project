@@ -6,7 +6,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import { useNavigate } from "react-router-dom";
 import question from "../assets/question mark.png"
 import Switch from '@mui/material/Switch';
-import QuestionPopover from "./QuestionPopover";
+import QuestionPopover from "./QuestionPopover.tsx";
 import Drawer from '@mui/material/Drawer';
 import Fab from '@mui/material/Fab';
 import MenuIcon from '@mui/icons-material/Menu';

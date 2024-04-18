@@ -5,8 +5,7 @@ import {Link,  useLocation} from "react-router-dom";
 import './AnimalPopover.css'
 import { useState, useEffect } from 'react';
 import { useTheme } from '@mui/material/styles';
-import {calData, liveData, encData, typeData, singleData} from '../pages/Help'
-import { getConfig } from '../api/getToken';
+import {calData, liveData, encData, typeData, singleData} from '../pages/Help.tsx'
 import question from "../assets/question mark.png";
 import singleAnimal from "../pages/SingleAnimal.tsx";
 
