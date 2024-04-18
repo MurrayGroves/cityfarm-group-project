@@ -11,6 +11,7 @@ import AddIcon from '@mui/icons-material/Add';
 import Delete from '@mui/icons-material/Delete';
 import AssociateAnimal from '../components/AssociateAnimal';
 import AssociateEnclosure from '../components/AssociateEnclosure';
+import Enclosure from './Enclosure.tsx';
 
 const EventDisplay = ({
         selectedEvent, setSelectedEvent,
@@ -61,7 +62,7 @@ const EventDisplay = ({
                         <div>
                             <h3>Enclosures</h3>
                             {selectedEvent.enclosures.map((enclosure, index) => (
-                                <p key={index} className='noMarginTop'>{enclosure.name}</p>
+                                <Enclosure key={index} enclosureID={enclosure._id}/>
                             ))}
                         </div>}
                         {selectedEvent.description !== "" ?
@@ -114,7 +115,7 @@ const EventDisplay = ({
                         <div>
                             <span style={{display: 'flex'}}><h3>Enclosures</h3><IconButton style={{height: '40px', margin: '12.5px 0 0 5px'}} onClick={() => {functionopenPopup("enclosures")}}><AddIcon color='primary'/></IconButton></span>
                             {modifiedEvent.enclosures.map((enclosure, index) => (
-                                <p key={index}>{enclosure}</p>
+                                <Enclosure key={index} enclosureID={enclosure}/>
                             ))}{/*Add a way to remove enclosures from events */}
                             {/* idea: make this open the enlcosure  page with a new column of checkboxes. Click on an associate enlcosure(s) button would then pass a list of enclosure names to the calendar to be placed in a field*/}
                             <div id="AssociateEnclosure" style={{textAlign:'center'}}>
@@ -204,8 +205,8 @@ const EventDisplay = ({
                     </div>
                     <div>
                         <span style={{display: 'flex'}}><h3>Enclosures</h3><IconButton style={{height: '40px', margin: '12.5px 0 0 5px'}} onClick={() => {functionopenPopup("enclosures")}}><AddIcon color='primary'/></IconButton></span>
-                        {newEvent.enclosures.map((enclosureName, index) => (
-                            <p key={index}>{enclosureName}</p>
+                        {newEvent.enclosures.map((enclosure, index) => (
+                            <Enclosure key={index} enclosureID={enclosure} />
                         ))}{/*Add a way to remove enclosures from events */}
                         {/* idea: make this open the enlcosure  page with a new column of checkboxes. Click on an associate enlcosure(s) button would then pass a list of enclosure names to the calendar to be placed in a field*/}
                         <div id="AssociateEnclosure" style={{textAlign:'center'}}>

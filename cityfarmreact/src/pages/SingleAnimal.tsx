@@ -1,7 +1,6 @@
-import * as React from "react";
 import "./SingleAnimal.css"
 import {  useParams } from "react-router-dom";
-import { useState, useEffect } from 'react';
+import React, { Fragment, useState, useEffect } from 'react';
 import AnimalPopover from "../components/AnimalPopover.tsx";
 import Paper from "@mui/material/Paper";
 import SelectedEvent from "../components/SelectedEvent.tsx";
@@ -10,6 +9,7 @@ import { CityFarm } from "../api/cityfarm.ts";
 import { Animal, Schema, Sex } from "../api/animals.ts";
 import { Event } from "../api/events.ts";
 import { Grid } from "@mui/material";
+import Enclosure from "../components/Enclosure.tsx";
 
 const SingleAnimal = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
 
@@ -109,9 +109,9 @@ const SingleAnimal = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
         }
     }
 
-    const singleEvent = (e, index)=>{
+    const singleEvent = (e: Event)=>{
         return(
-            <Grid item xs={1} key={index}>
+            <Grid item xs={1}>
             <Paper elevation={3} className="event-box">
                 <h2 onClick={() => handleEventClick(e)}>{e.title}</h2>
                 {
@@ -135,7 +135,7 @@ const SingleAnimal = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
                     <div>
                         <h3>Enclosures</h3>
                         {e.enclosures.map((enclosure, index) => (
-                            <p key={index}>{enclosure.name}</p>
+                            <Enclosure key={index} enclosureID={enclosure._id}/>
                         ))}
                     </div>}
                 {e.description !== "" ?
@@ -148,7 +148,7 @@ const SingleAnimal = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
         )
     }
 
-    return<>
+    return (<>
         <h1>{chosenAnimal.name}</h1>
         <div className='details'>
         <div><b>Sex:</b> {chosenAnimal.sex === undefined ? <span>Loading...</span> : (chosenAnimal.sex === Sex.Female ? <span>Female</span> : (chosenAnimal.sex === Sex.Male ? <span>Male</span> : <span>Castrated</span>))}</div>
@@ -187,9 +187,9 @@ const SingleAnimal = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
         )}
         <div className="farmButtons">
             {Object.values(farms).map((farm, index) => (
-                <React.Fragment key={index}>
+                <Fragment key={index}>
                     <FarmMoveButton cityfarm={cityfarm} farm={farm as string} ids={[chosenAnimal.id]}/>
-                </React.Fragment>
+                </Fragment>
             ))}
         </div>
 
@@ -199,12 +199,12 @@ const SingleAnimal = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
                 <Grid container spacing={3} columns={{xs: 1, md: 2, lg: 3, xl: 4}}>
                     {!eventsAll ? <>
                     {relEvents.slice(0, 3).map((e, index)=>(
-                        singleEvent(e,index)
+                        <Fragment key={index}>{singleEvent(e)}</Fragment>
                     ))} </>
                         :
                     <>
                         {relEvents.map((e, index)=>(
-                            singleEvent(e,index)
+                            <Fragment key={index}>{singleEvent(e)}</Fragment>
                         ))} </>
 
                     }
@@ -216,7 +216,7 @@ const SingleAnimal = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
                 <SelectedEvent event={selectedEvent} setEvent={setSelectedEvent} cityfarm={cityfarm} farms={farms}/>
             </Paper>
         )}
-        </>;
+    </>);
 }
 
 export default SingleAnimal

@@ -16,8 +16,13 @@ const FarmMoveButton = ({ids, farm, cityfarm}: {ids: string[], farm: string, cit
         (async () => {
             if (animal && animal.farm !== farm) {
                 animal.farm = farm;
-                await axios.patch(`/animals/by_id/${animal.id}`, animal, token)
-                window.location.reload();
+                try {
+                    await axios.patch(`/animals/by_id/${animal.id}`, animal, token)
+                } catch(error) {
+                    console.log(error.message)
+                    window.alert(error.message);
+                }
+                //window.location.reload();
             }
     })()
     }, [animal])

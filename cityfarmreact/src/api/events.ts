@@ -13,7 +13,7 @@ export class Event {
 
     constructor(data: any) {
         this.enclosures = data.enclosures;
-        this.animals = data.animals.map((animal: any) => new Animal(animal))
+        this.animals = data.animals?.map((animal: any) => new Animal(animal))
         this.title = data.title;
         this.description = data.description;
         this.allDay = data.allDay;

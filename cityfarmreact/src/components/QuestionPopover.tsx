@@ -2,7 +2,6 @@ import * as React from 'react';
 import Popover from '@mui/material/Popover';
 import Typography from '@mui/material/Typography';
 import {Link,  useLocation} from "react-router-dom";
-import './AnimalPopover.css'
 import { useState, useEffect } from 'react';
 import { useTheme } from '@mui/material/styles';
 import {calData, liveData, encData, typeData, singleData} from '../pages/Help.tsx'

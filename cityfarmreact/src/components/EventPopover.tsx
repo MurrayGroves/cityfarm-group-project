@@ -1,23 +1,25 @@
 import React, { useState, useEffect } from 'react';
 
-import axios from '../api/axiosConfig';
-import { getConfig } from '../api/getToken';
+import axios from '../api/axiosConfig.js';
+import { getConfig } from '../api/getToken.js';
 
 import { Paper, Popover } from '@mui/material';
 
 import AnimalPopover from './AnimalPopover.tsx';
+import { Event } from '../api/events.ts';
+import Enclosure from './Enclosure.tsx';
 
 export const EventPopover = (props) => {
     const farms = props.farms;
 
-    const [event, setEvent] = useState({event: {title: 'Loading...'}});
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+    const [event, setEvent] = useState<Event>(new Event({title: 'Loading...'}));
+    const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<Error | null>(null);
 
     useEffect(() => {
         axios.get(`/events/by_id/${props.eventID}`, getConfig())
             .then((response) => {
-                setEvent(response.data);
+                setEvent(new Event(response.data));
                 setLoading(false);
             })
             .catch((error) => {
@@ -36,7 +38,7 @@ export const EventPopover = (props) => {
     return (
         <Popover
             id="mouse-over-popover"
-            sx={{pointerEvents: 'none', width: '70%'}}
+            style={{pointerEvents: 'none', minWidth: '500px'}}
             anchorEl={props.anchorEl}
             open={open}
             anchorOrigin={{
@@ -68,14 +70,14 @@ export const EventPopover = (props) => {
                         {event.farms.includes(farms.HC) ? <p>Hartcliffe</p> : <></>}
                         {event.farms.includes(farms.SW) ? <p>St Werburghs</p> : <></>}
                         {event.animals.length > 0 ? <h3>Animals</h3> : <></>}
-                        {event.animals.map((animal) => (
-                            <AnimalPopover key={animal._id} cityfarm={props.cityfarm} animalID={animal._id}/>
+                        {event.animals.map((animal, index) => (
+                            <AnimalPopover key={index} cityfarm={props.cityfarm} animalID={animal.id}/>
                         ))}
                         {event.enclosures.length > 0 &&
                         <div>
                             <h3>Enclosures</h3>
                             {event.enclosures.map((enclosure, index) => (
-                                <p key={index} className='noMarginTop'>{enclosure.name}</p>
+                                <Enclosure key={index} enclosureID={enclosure._id} />
                             ))}
                         </div>}
                         {event.description !== "" ?

@@ -60,6 +60,7 @@ const AnimalCreator = ({farms, schemaList, animalList, device, create, createCli
         setInputErr(prevInputErr => ({...prevInputErr, name: newAnimal.name === ''}));
         setInputErr(prevInputErr => ({...prevInputErr, type: newAnimal.type === ''}));
         setInputErr(prevInputErr => ({...prevInputErr, sex: newAnimal.sex === null}));
+        console.log(newAnimal, inputErr);
         if (!schema) return;
         Object.keys(newAnimal.fields).map((field) => {
             setInputErr(prevInputErr => ({...prevInputErr, [field]: (newAnimal.fields[field] === '' || newAnimal.fields[field] === null) && schema.fields[field].required}))
@@ -144,7 +145,7 @@ const AnimalCreator = ({farms, schemaList, animalList, device, create, createCli
                 );
             case "cityfarm.api.calendar.EventRef":
                 return (
-                    <EventSelectorButton key={key} cityfarm={new CityFarm} farms={farms} currentEventID={newAnimal.fields[field]} setEventID={(eventID) => {
+                    <EventSelectorButton open={key} cityfarm={new CityFarm} farms={farms} currentEventID={newAnimal.fields[field]} setEventID={(eventID) => {
                         let newFields = newAnimal.fields;
                         newFields[field] = eventID;
                         setNewAnimal({...newAnimal, fields: newFields});
@@ -180,6 +181,7 @@ const AnimalCreator = ({farms, schemaList, animalList, device, create, createCli
                                 error={newAnimal.name === ''}
                                 required
                                 size='small'
+                                value={newAnimal.name}
                                 onChange={(e) => {
                                     setNewAnimal({ ...newAnimal, name: e.target.value });
                                 } }

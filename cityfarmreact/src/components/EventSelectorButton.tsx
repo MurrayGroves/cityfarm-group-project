@@ -6,11 +6,11 @@ import { Close } from "@mui/icons-material";
 import { CityFarm } from "../api/cityfarm";
 
 export const EventSelectorButton = (
-                                    {farms, key, currentEventID, setEventID, cityfarm, style}:
-                                    {cityfarm: CityFarm, farms: any, key: any, currentEventID: string, setEventID: (eventID: string | null) => void, style: any}
+                                    {farms, open, currentEventID, setEventID, cityfarm, style}:
+                                    {cityfarm: CityFarm, farms: any, open: any, currentEventID: string, setEventID: (eventID: string | null) => void, style: any}
                                     ) => {
     const [eventDialog, setEventDialog] = useState(null);
-    const [eventTitle, setEventTitle] = useState('');
+    const [eventTitle, setEventTitle] = useState<string>('');
 
     useEffect(() => {
         async function getEvent() {
@@ -31,8 +31,8 @@ export const EventSelectorButton = (
     return (
         currentEventID === null || currentEventID === '' ?
             <div style={style}>
-                <Button variant="contained" onClick={() => setEventDialog(key)}>Select Event</Button>
-                <Dialog open={eventDialog === key} onClose={() => setEventDialog(null)}>
+                <Button variant="contained" onClick={() => setEventDialog(open)}>Select Event</Button>
+                <Dialog open={eventDialog === open} onClose={() => setEventDialog(null)}>
                     <FindOrCreateEvent style={{padding: '1%', width: '30vw', height: '80vh'}} farms={farms} cityfarm={cityfarm} setEvent={(eventID) => {
                         setEventID(eventID);
                     }}/>

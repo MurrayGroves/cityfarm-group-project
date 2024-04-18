@@ -11,6 +11,7 @@ import AnimalPopover from "../components/AnimalPopover.tsx";
 import EnclosureCreator from "../components/EnclosureCreator.jsx";
 import { getConfig } from '../api/getToken.js';
 import { Schema } from '../api/animals.ts';
+import Enclosure from "../components/Enclosure.tsx";
 
 declare module '@mui/x-data-grid' {
     interface FooterPropsOverrides {
@@ -70,7 +71,9 @@ const EnclosureTable = ({farms, cityfarm}) => {
     },[searchTerm, farm])
 
     const cols: GridColDef[] = [
-        { field: 'name', editable: true, headerName: 'Name', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
+        { field: 'name', editable: true, headerName: 'Name', headerClassName: 'grid-header', headerAlign: 'left', flex: 1,
+            renderCell: (enclosure) => <Enclosure enclosureID={enclosure.value._id} />
+        },
         { field: 'holding', headerName: 'Holding', headerClassName: 'grid-header', headerAlign: 'left', flex: 1, cellClassName: 'scroll-cell',
             renderCell: (animalList) => <ul>{animalList.value.map(animal => {console.log(animal); return(<li key={animal._id}><AnimalPopover cityfarm={cityfarm} animalID={animal._id}/></li>)})}</ul>
         },
@@ -81,7 +84,7 @@ const EnclosureTable = ({farms, cityfarm}) => {
 
     const rows = enclosureList.map((enclosure: any) => ({
         id: enclosure._id,
-        name: enclosure.name,
+        name: enclosure,
         holding: enclosure.holding,
         capacities: Object.keys(enclosure.capacities).map((key) => {
             return (` ${key}: ${enclosure.capacities[key]}`)

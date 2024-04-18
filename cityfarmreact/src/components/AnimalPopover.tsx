@@ -1,8 +1,7 @@
-import * as React from 'react';
+import React from 'react';
 import Popover from '@mui/material/Popover';
 import Typography from '@mui/material/Typography';
 import {Link} from "react-router-dom";
-import './AnimalPopover.css'
 import { useState, useEffect } from 'react';
 import { useTheme } from '@mui/material/styles';
 import { CityFarm } from '../api/cityfarm.js';

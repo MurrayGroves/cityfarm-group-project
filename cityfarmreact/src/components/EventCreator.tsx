@@ -3,7 +3,6 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 import React, {useState, useEffect, useCallback, ChangeEvent} from 'react';
 import dayjs from 'dayjs';
 import "../pages/Calendar.css";
-import Event from "./Event.jsx";
 import AnimalPopover from "./AnimalPopover.tsx";
 import Close from '@mui/icons-material/Close';
 import Paper from '@mui/material/Paper';

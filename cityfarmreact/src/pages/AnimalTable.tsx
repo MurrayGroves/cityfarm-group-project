@@ -9,7 +9,7 @@ import { DataGrid, useGridApiRef, FooterPropsOverrides, GridColDef, GridFilterMo
 import { Collapse, Autocomplete, Backdrop, Paper, TextField, Button, Select, MenuItem, FormControl, IconButton, Divider, Dialog, DialogContent, Alert, AlertTitle, ButtonGroup } from '@mui/material';
 import { Add as AddIcon, Edit as EditIcon, Delete, Done as DoneIcon, Clear as ClearIcon, ArrowDropDownCircle as Arrow } from '@mui/icons-material';
 
-import { EventText } from "../components/EventText.jsx";
+import { EventText } from "../components/EventText.tsx";
 import { EventSelectorButton } from "../components/EventSelectorButton.tsx";
 
 import { getConfig } from '../api/getToken.js';
@@ -101,7 +101,7 @@ const AnimalTable = ({farms, cityfarm, device}: {farms: any, cityfarm: CityFarm,
             for (let key in schema.fields) {
                 if (schema.fields[key].type === "cityfarm.api.calendar.EventRef") {
                     newCols.push({type: 'singleSelect', field: key, headerName: key, headerClassName: 'grid-header', headerAlign: 'left', flex: 1, editable: true, renderEditCell: (params) => {
-                        return <EventSelectorButton key={key} style={{margin: '5%'}} farms={farms} cityfarm={cityfarm} currentEventID={params.row[key]} setEventID={(eventID) => {
+                        return <EventSelectorButton open={key} style={{margin: '5%'}} farms={farms} cityfarm={cityfarm} currentEventID={params.row[key]} setEventID={(eventID) => {
                             console.log("Calling setEventID with ", eventID)
                             let current = {...modifyAnimal};
                             if (current.fields === undefined) {
