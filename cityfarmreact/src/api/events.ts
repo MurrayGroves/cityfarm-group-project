@@ -1,3 +1,5 @@
+import { Animal } from "./animals.ts";
+
 export class Event {
     enclosures: any[];
     animals: any[];
@@ -9,7 +11,7 @@ export class Event {
 
     constructor(data: any) {
         this.enclosures = data.enclosures;
-        this.animals = data.animals;
+        this.animals = data.animals.map((animal) => new Animal(animal));
         this.title = data.title;
         this.description = data.description;
         this.allDay = data.allDay;
