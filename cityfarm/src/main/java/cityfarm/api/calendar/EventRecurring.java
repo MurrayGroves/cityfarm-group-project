@@ -14,15 +14,15 @@ import java.time.*;
 import java.util.*;
 
 public class EventRecurring extends Event {
-    private final ZonedDateTime firstStart;
+    public ZonedDateTime firstStart;
 
-    private final ZonedDateTime firstEnd;
+    public ZonedDateTime firstEnd;
 
     // The datetime at which the last occurence of the event will end
-    private final ZonedDateTime finalEnd;
+    public ZonedDateTime finalEnd;
 
     // The delay between each occurence of the event, Period supports Years, Months, & Days
-    private final Period delay;
+    public Period delay;
 
     @Override
     public String get_id() {
@@ -105,7 +105,7 @@ public class EventRecurring extends Event {
                           @JsonProperty("title") @NonNull String title, @JsonProperty("description") @Nullable String description,
                           @JsonProperty("enclosures") @Nullable List<Enclosure> enclosures, @JsonProperty("animals") @Nullable List<AnimalCustom> animals, @JsonProperty("farms") @Nullable List<String> farms, @JsonProperty("people") @Nullable List<String> attachedPeople,
                           @JsonProperty("finalEnd") @Nullable ZonedDateTime finalEnd, @JsonProperty("delay") @NonNull Period delay, @JsonProperty("_id") @Nullable String id) {
-        if (end == null && !allDay) {
+        if (firstEnd == null && !allDay) {
             throw new IllegalArgumentException("If end isn't present, the event must be marked as all day");
         }
 

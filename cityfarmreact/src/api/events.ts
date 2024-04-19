@@ -24,12 +24,14 @@ export class EventRecurring extends Event {
     firstStart: Date;
     firstEnd: Date;
     finalEnd: Date;
-    delay: String;
+    delay: string;
 
     constructor(data: any) {
-        super({...data,
-            start: new Date(data.firstStart)
-        })
+        if (data instanceof EventRecurring) {
+            return data;
+        }
+
+        super(data);
         this.firstStart = new Date(data.firstStart);
         this.firstEnd = new Date(data.firstEnd);
         this.finalEnd = new Date(data.finalEnd);
@@ -42,6 +44,9 @@ export class EventOnce extends Event {
     end: Date;
 
     constructor(data: any) {
+        if (data instanceof EventOnce) {
+            return data;
+        }
         super(data);
         this.start = new Date(data.start);
         this.end = new Date(data.end);
@@ -54,8 +59,12 @@ export class EventInstance {
     event: Event;
 
     constructor(data) {
+        if (data instanceof EventInstance) {
+            return data;
+        }
+
         this.start = new Date(data.start);
         this.end = new Date(data.end);
-        this.event = new Event(data.event);
+        this.event = data.event.type === "once" ? new EventOnce(data.event) : new EventRecurring(data.event);
     }
 }

@@ -22,7 +22,7 @@ import 'dayjs/locale/en-gb';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { PublicClientApplication } from "@azure/msal-browser";
-import Home from "./pages/Home.jsx";
+import Home from "./pages/Home.tsx";
 import Help from "./pages/Help.jsx";
 import usePersistState from './components/PersistentState.jsx'
 
@@ -124,7 +124,7 @@ const App = () => {
                     <NavBar theme={theme} setTheme={setTheme} msal={msal} device={device}/>
                     <div className='Content'>
                         <Routes>
-                            <Route path="/" element={<Home farms={farms}/>}/>
+                            <Route path="/" element={<Home farms={farms} cityfarm={cityfarm}/>}/>
                             <Route path="/calendar" element={<Calendar farms={farms} device={device} cityfarm={cityfarm}/>}/>
                             <Route path="/animals" element={<AnimalTable farms={farms} cityfarm={cityfarm} device={device}/>}/>
                             <Route path="/enclosures" element={<EnclosureTable farms={farms}/>}/>

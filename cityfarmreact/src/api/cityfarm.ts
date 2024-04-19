@@ -42,18 +42,22 @@ export class CityFarm {
                     if (cached_events !== events) {
                         let new_events = this.event_instance_cache.filter((instance) => {
                             // If instance should've been in the new response but isn't: delete it
-                            return (instance.start > start && instance.end < end && !events.includes(instance));
+                            return (!(instance.start > start && instance.end < end));
                         })
-
+    
                         // Add new instances
                         events.forEach((instance) => {
-                            if (!new_events.includes(instance)) {
-                                new_events.push(instance);
-                            }
+                            new_events.push(instance);
                         })
+    
+                        console.log("Returning new events", new_events);
 
                         // Update cache
                         this.setEventInstanceCache(new_events);
+
+                        if (callback) {
+                            callback(new_events);
+                        }
                     }
                 });
                 return cached_events;
@@ -73,15 +77,15 @@ export class CityFarm {
                 if (cached_events !== events) {
                     let new_events = this.event_instance_cache.filter((instance) => {
                         // If instance should've been in the new response but isn't: delete it
-                        return (instance.start > start && instance.end < end && !events.includes(instance));
+                        return (!(instance.start > start && instance.end < end));
                     })
 
                     // Add new instances
                     events.forEach((instance) => {
-                        if (!new_events.includes(instance)) {
-                            new_events.push(instance);
-                        }
+                        new_events.push(instance);
                     })
+
+                    console.log("Returning new events", new_events);
 
                     // Update cache
                     this.setEventInstanceCache(new_events);
@@ -103,7 +107,7 @@ export class CityFarm {
         if (use_cache && cached_events.length > 0) {
             try {
                 axios.get(`/events/non_instanced`, this.token).then((response) => {
-                    const events = response.data.map((data) => new Event(data));
+                    const events = response.data.map((data) => response.data.type === "once" ? new EventOnce(response.data) : new EventRecurring(response.data));
                     // If the events have changed, update the cache and call the callback
                     if (cached_events !== events) {
                         this.setEventsCache(events);
@@ -125,7 +129,7 @@ export class CityFarm {
         } else {
             try {
                 const response = await axios.get(`/events/non_instanced`, this.token);
-                this.setEventsCache(response.data.map((data) => new Event(data)));
+                this.setEventsCache(response.data.map((data) => data.type === "once" ? new EventOnce(data) : new EventRecurring(data)));
                 console.log("New events cache", this.events_cache);
                 return this.events_cache;
             } catch (error) {
@@ -152,8 +156,8 @@ export class CityFarm {
             if (!cached_event) {
                 try {
                     const response = await axios.get(`/events/by_id/${id}`, this.token);
-                    this.setEventsCache([...this.events_cache, new Event(response.data)]);
-                    return new Event(response.data);
+                    this.setEventsCache([...this.events_cache, response.data.type === "once" ? new EventOnce(response.data) : new EventRecurring(response.data)]);
+                    return new response.data.type === "once" ? new EventOnce(response.data) : new EventRecurring(response.data);
                 } catch (error) {
                     if (error.response.status === 401) {
                         console.log('Token expired');
@@ -169,9 +173,9 @@ export class CityFarm {
                     axios.get(`/events/by_id/${id}`, this.token).then((response) => {
                         // If the event has changed, update the cache and call the callback
                         if (this.events_cache !== response.data) {
-                            this.setEventsCache(this.events_cache.map((event) => event.id !== id ? event : new Event(response.data)));
+                            this.setEventsCache(this.events_cache.map((event) => event.id !== id ? event : response.data.type === "once" ? new EventOnce(response.data) : new EventRecurring(response.data)));
                             if (callback) {
-                                callback(new Event(response.data));
+                                callback(response.data.type === "once" ? new EventOnce(response.data) : new EventRecurring(response.data));
                             }
                         }
                     })
@@ -192,9 +196,9 @@ export class CityFarm {
             // Update cache
             this.setEventsCache(this.events_cache.map((event) => event.id !== id ? event : new Event(response.data)));
             if (this.events_cache.find((event) => event.id === id) === undefined) {
-                this.setEventsCache([...this.events_cache, new Event(response.data)]);
+                this.setEventsCache([...this.events_cache, response.data.type === "once" ? new EventOnce(response.data) : new EventRecurring(response.data)]);
             }
-            return new Event(response.data);
+            return response.data.type === "once" ? new EventOnce(response.data) : new EventRecurring(response.data);
         }
     }
 

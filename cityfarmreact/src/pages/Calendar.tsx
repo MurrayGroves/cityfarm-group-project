@@ -50,7 +50,6 @@ const Calendar = ({farms, device, cityfarm}: {farms: any, device: any, cityfarm:
     const [modifyEvent, setModifyEvent] = useState(false);
     const [showErr, setShowErr] = useState(false);
     const [inputErr, setInputErr] = useState({newTitle: true});
-    const [recurring, setRecurring] = useState(false);
 
     useEffect(() => {
         setInputErr({...inputErr, newTitle: newEvent.title === ''});
@@ -72,12 +71,6 @@ const Calendar = ({farms, device, cityfarm}: {farms: any, device: any, cityfarm:
         }
         setModifiedEvent({...modifiedEvent, enclosures: enclosures})
     }
-    const setAddEventEnclosures = (enclosures) => {
-        setNewEvent({...newEvent, enclosures: enclosures})
-    }
-    const setAddEventAnimals = (animalList) => {
-        setNewEvent({...newEvent, animals: animalList})
-    }
     
     const changeAllDay = (isAllDay, type) => {
         if (type === 'add') {
@@ -86,16 +79,6 @@ const Calendar = ({farms, device, cityfarm}: {farms: any, device: any, cityfarm:
             setModifiedEvent({...modifiedEvent, allDay: isAllDay});
         }
     }
-
-    const changeRecurring = (isRecurring, type) => {
-        type === "add" && setRecurring(isRecurring);
-    }
-
-    useEffect(() => {
-        recurring ?
-            setNewEvent({...newEvent, firstStart: newEvent.start, firstEnd: newEvent.end, delay: 'P1D', finalEnd: null, start: null, end: null})
-            : newEvent.firstStart && setNewEvent({...newEvent, end: newEvent.firstEnd, start: newEvent.firstStart, firstStart: null, firstEnd: null, delay: null, finalEnd: null})
-    }, [recurring])
 
 
     useEffect(() => {
@@ -107,7 +90,7 @@ const Calendar = ({farms, device, cityfarm}: {farms: any, device: any, cityfarm:
                 const end =  new Date()
                 end.setMonth(end.getMonth()+1)
 
-                const resp = await cityfarm.getEventsBetween(true, start, end);
+                const resp = await cityfarm.getEventsBetween(true, start, end, (events) => {console.log("updated events", events);setAllEvents(events)});
                 console.log("Resp", resp);
                 setAllEvents(resp);
             } catch (error) {
@@ -150,7 +133,11 @@ const Calendar = ({farms, device, cityfarm}: {farms: any, device: any, cityfarm:
         }
 
         try {
-            await axios.patch(`/events/by_id/${modifiedEvent.id}/update`, modifiedEvent, token);
+            if (modifiedEvent instanceof EventOnce) {
+                await axios.patch(`/events/once/by_id/${modifiedEvent.id}/update`, modifiedEvent, token);
+            } else {
+                await axios.patch(`/events/recurring/by_id/${modifiedEvent.id}/update`, modifiedEvent, token);
+            }
         } catch(error) {
             if (error.response.status === 401) {
                 window.location.href = "/login";
@@ -280,7 +267,6 @@ const Calendar = ({farms, device, cityfarm}: {farms: any, device: any, cityfarm:
             </>)
         }
     }
-    const [anchor, setAnchor] = React.useState(null);
     const [openAnimalsPopup, setOpenAnimalsPopup] = useState(false)
     const [openEnclosurePopup, setOpenEnclosurePopup] = useState(false);
 

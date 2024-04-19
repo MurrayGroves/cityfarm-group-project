@@ -24,18 +24,19 @@ const EventDisplay = ({
     showingTime, functionopenPopup, functionclosePopup,
     openAnimalsPopup, openEnclosurePopup,
     changeAllDay,
-    farms, cityfarm
+    farms, cityfarm,
+    setShowErr
     }: {selectedEvent: EventInstance | null, setSelectedEvent: (eventInstance: EventInstance | null) => void, modifiedEvent: Event | null, modifyEvent: boolean, setModifiedEvent: (event: Event | null) => void,
         setModifiedEventAnimals: (animals: string[]) => void, setModifiedEventEnclosures: (enclosures: string[]) => void, setModifyEvent: (modify: boolean)=>void,
         createEvent: boolean, handleDelEvent: () => void, handlePatchEvent: () => void, showingTime: (show: boolean) => JSX.Element, functionopenPopup: (type: string) => void, functionclosePopup: () => void,
-        openAnimalsPopup: boolean, openEnclosurePopup: boolean, changeAllDay: (allDay: boolean, type: string) => void, farms: any, cityfarm: CityFarm
+        openAnimalsPopup: boolean, openEnclosurePopup: boolean, changeAllDay: (allDay: boolean, type: string) => void, farms: any, cityfarm: CityFarm, setShowErr: (show: boolean) => void
     }) => {
     
         console.log("selected", selectedEvent);
 
     return (<>
         <div style={{overflow: 'auto'}}>
-            { selectedEvent !== null ?
+            { selectedEvent !== null && !modifyEvent ?
                 <>
                     <div style={{display: "flex", justifyContent: "space-between"}}>
                         <h2 className='boxTitle'>Selected Event</h2>
@@ -45,7 +46,6 @@ const EventDisplay = ({
                             <IconButton sx={{height: '40px'}} onClick={() => {setModifyEvent(false); setSelectedEvent(null)}}><Close/></IconButton>
                         </span>
                     </div>
-                    {!modifyEvent ?
                     <div className='selectedEvent'>
                         <h2 className='noMarginTop'>{selectedEvent.event.title}</h2>
                         {
@@ -80,101 +80,10 @@ const EventDisplay = ({
                             {selectedEvent.event.description}
                         </div> : <></>}
                     </div>
-                    :
-                    <div className='modifyEvent'>
-                        <TextField
-                            error={modifiedEvent?.title === ''}
-                            fullWidth
-                            size='small'
-                            placeholder={selectedEvent?.event.title}
-                            label='Title'
-                            value={modifiedEvent?.title}
-                            onChange={(e)=>{
-                                if (modifiedEvent !== null) {
-                                    setModifiedEvent({...modifiedEvent, title: e.target.value})
-                                } else {
-                                    setModifiedEvent({...selectedEvent.event, title: e.target.value})
-                                }
-                            }}
-                        />
-                        {showingTime(!modifiedEvent?.allDay)}
-                        <div style={{marginTop: "10px"}}>
-                            <FormControlLabel control={<Checkbox checked={modifiedEvent?.allDay} size='small'/>} label="All Day" onChange={(e) => {changeAllDay(!modifiedEvent?.allDay, "modify")}}/>
-                            <ButtonGroup style={{float: 'right'}}>
-                                <Button variant='contained' color='warning' onClick={()=>{setModifyEvent(false)}}>Discard</Button>
-                                <Button variant='contained' color='success' onClick={()=>{handlePatchEvent()}}>Update</Button>
-                            </ButtonGroup>
-                        </div>
-                        <div>
-                            <h3>Farms</h3>
-                            <FormGroup>
-                                <FormControlLabel control={<Checkbox checked={modifiedEvent?.farms.includes(farms.WH)} color={farms.WH} size='small'/>} label="Windmill Hill" onChange={() => {
-                                    let eventBase = modifiedEvent ? modifiedEvent : selectedEvent.event;
-                                    setModifiedEvent({...eventBase, farms: eventBase.farms.includes(farms.WH) ? eventBase.farms.filter((farm) => farm !== farms.WH) : eventBase.farms.concat(farms.WH)})
-                                }}/>
-                                <FormControlLabel control={<Checkbox checked={modifiedEvent?.farms.includes(farms.HC)} color={farms.HC} size='small'/>} label="Hartcliffe" onChange={() => {
-                                    let eventBase = modifiedEvent ? modifiedEvent : selectedEvent.event;
-                                    setModifiedEvent({...eventBase, farms: eventBase.farms.includes(farms.HC) ? eventBase.farms.filter((farm) => farm !== farms.HC) : eventBase.farms.concat(farms.HC)})
-                                }}/>
-                                <FormControlLabel control={<Checkbox checked={modifiedEvent?.farms.includes(farms.SW)} color={farms.SW} size='small'/>} label="St Werburghs" onChange={() => {
-                                    let eventBase = modifiedEvent ? modifiedEvent : selectedEvent.event;
-                                    setModifiedEvent({...eventBase, farms: eventBase.farms.includes(farms.SW) ? eventBase.farms.filter((farm) => farm !== farms.SW) : eventBase.farms.concat(farms.SW)})
-                                
-                                }}/>
-                            </FormGroup>
-                        </div>
-                        <div>
-                            <span style={{display: 'flex'}}><h3>Animals</h3><IconButton style={{height: '40px', margin: '12.5px 0 0 5px'}} onClick={() => {functionopenPopup("animals")}}><AddIcon color='primary'/></IconButton></span>
-                            {modifiedEvent?.animals.map((animal) => {
-                                return (<AnimalPopover key={animal} animalID={animal} />)}
-                            )}{/*Add a way to remove animals from events */}
-                            <div id="AssociateAnimal" style={{textAlign:'center'}}>
-                                <Dialog fullWidth maxWidth='md' open={openAnimalsPopup} onClose={functionclosePopup}>
-                                    <DialogTitle>Add Animal</DialogTitle>
-                                    <DialogContent>
-                                        <AssociateAnimal setAnimals={setModifiedEventAnimals} animals={modifiedEvent?.animals} close={functionclosePopup}></AssociateAnimal>
-                                    </DialogContent>
-                                </Dialog>
-                            </div>
-                        </div>
-                        <div>
-                            <span style={{display: 'flex'}}><h3>Enclosures</h3><IconButton style={{height: '40px', margin: '12.5px 0 0 5px'}} onClick={() => {functionopenPopup("enclosures")}}><AddIcon color='primary'/></IconButton></span>
-                            {modifiedEvent?.enclosures.map((enclosure, index) => (
-                                <p key={index}>{enclosure}</p>
-                            ))}{/*Add a way to remove enclosures from events */}
-                            {/* idea: make this open the enlcosure  page with a new column of checkboxes. Click on an associate enlcosure(s) button would then pass a list of enclosure names to the calendar to be placed in a field*/}
-                            <div id="AssociateEnclosure" style={{textAlign:'center'}}>
-                                <Dialog fullWidth maxWidth='md' open={openEnclosurePopup} onClose={functionclosePopup}>
-                                    <DialogTitle>Add Enclosure</DialogTitle>
-                                    <DialogContent>
-                                        <AssociateEnclosure enclosures={modifiedEvent?.enclosures} setEnclosures={setModifiedEventEnclosures} close={functionclosePopup}></AssociateEnclosure>
-                                    </DialogContent>
-                                </Dialog>
-                            </div>
-                        </div>
-                        <div>
-                            <h3>Description</h3>
-                            <TextField
-                                fullWidth
-                                size='small'
-                                multiline
-                                rows={3}
-                                placeholder='Enter Description'
-                                value={modifiedEvent?.description}
-                                onChange={(e) => {
-                                    if (modifiedEvent !== null) {
-                                        setModifiedEvent({...modifiedEvent, description: e.target.value})
-                                    } else {
-                                        setModifiedEvent({...selectedEvent.event, description: e.target.value})
-                                    }
-                                }}
-                            />
-                        </div>
-                    </div>}
                 </>
                 :
                 <>
-                {createEvent && <EventCreator farms={farms} cityfarm={cityfarm} setEvent={(eventID)=>{cityfarm.getEvent(eventID, true).then((event) => {
+                <EventCreator initialEvent={selectedEvent?.event ?? null} modify={modifyEvent} setModify={setModifyEvent} setShowError={setShowErr} farms={farms} cityfarm={cityfarm} setEvent={(eventID)=>{cityfarm.getEvent(eventID, false).then((event) => {
                     if (event === null) {
                         setSelectedEvent(null);
                         return;
@@ -188,7 +97,7 @@ const EventDisplay = ({
                         setSelectedEvent(instance)
                     }
                 }
-                )}} style={{width: '100%'}}/>}</>}
+                )}} style={{width: '100%'}}/></>}
         </div>
     </>)
 }
