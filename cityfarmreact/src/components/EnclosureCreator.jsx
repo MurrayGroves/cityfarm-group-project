@@ -85,14 +85,14 @@ const EnclosureCreator = (props) => {
             </div>
 
                 {/* WIP */}
-            {/* <div id="CapacityChanger" style={{textAlign:'center'}}>
+            <div id="CapacityChanger" style={{textAlign:'center'}}>
                 <Dialog open={openCapacitiesPopup} onClose={()=>{setOpenCapacitiesPopup(false)}}>
                     <DialogTitle>Capacities</DialogTitle>
                     <DialogContent>
-                        <CapacityChanger close={()=>setOpenCapacitiesPopup(false)}></CapacityChanger>
+                        <CapacityChanger close={()=>setOpenCapacitiesPopup(false)} enclosure={newEnclosure}></CapacityChanger>
                     </DialogContent>
                 </Dialog>
-            </div> */}
+            </div>
 
             <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '20px'}}>
             <Button

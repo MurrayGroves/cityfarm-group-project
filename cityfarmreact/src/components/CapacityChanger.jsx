@@ -20,6 +20,7 @@ const CapacityChanger = (props) => {
             try {
                 const response = await axios.get(`/schemas`, token);
                 setSchemaList(response.data.reverse());
+                setLinkedCapacities(props.enclosure.capacities);
                 console.log(schemaList[0]);
             } catch (error) {
                 if (error.response.status === 401) {
@@ -30,7 +31,7 @@ const CapacityChanger = (props) => {
                 }
             }
         })()
-    }
+    } 
     
     useEffect (() => {
         (async () => {
@@ -53,13 +54,13 @@ const CapacityChanger = (props) => {
     },[searchTerm])
 
     const rows = schemaList.map((schema) => ({
-        id: 1 ,
-        type: schema._name,
-        number: 0
+        id: schema._name,
+        number: linkedCapacities[schema._name] == null ? 0 : linkedCapacities[schema._name],
     }));
+
     const cols = [
-        { field: 'type', headerName: 'Type', headerClassName: 'grid-header', headerAlign: 'left', flex: 1} ,
-        { field: 'number', headerName: 'Capacity', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
+        { field: 'id', headerName: 'Type', headerClassName: 'grid-header', headerAlign: 'left', flex: 1} ,
+        { field: 'number', editable: true, headerName: 'Capacity', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
     ];
 
     return (
@@ -77,6 +78,12 @@ const CapacityChanger = (props) => {
                     columns={cols}
                     rows={rows}
                     disableRowSelectionOnClick
+                    processRowUpdate = {(newVal, oldVal) => {
+                        if (newVal.number === oldVal.number) { return newVal; }
+                        const newCapacity = newVal.number;
+                        props.enclosure.capacities[newVal.id] = newVal.number
+                        return newVal;
+                    }}
                 />
             </Paper>
             <Button variant='outlined' style={{float: "right"}} onClick={() => {props.close()}}>Close</Button>
