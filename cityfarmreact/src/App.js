@@ -6,7 +6,7 @@ import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 import AnimalTable from "./pages/AnimalTable.tsx";
 import NavBar from "./components/NavBar.jsx";
-import Calendar from "./pages/Calendar.jsx";
+import Calendar from "./pages/Calendar.tsx";
 import EnclosureTable from "./pages/EnclosureTable.jsx";
 import Schemas from "./pages/Schemas.jsx";
 import Error from "./pages/Error.jsx";
@@ -22,7 +22,7 @@ import 'dayjs/locale/en-gb';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { PublicClientApplication } from "@azure/msal-browser";
-import Home from "./pages/Home.jsx";
+import Home from "./pages/Home.tsx";
 import Help from "./pages/Help.jsx";
 import usePersistState from './components/PersistentState.jsx'
 
@@ -78,6 +78,11 @@ const App = () => {
     const [msal, setMsal] = useState(null);
     const [device, setDevice] = useState('');
 
+    const [animals_cache, setAnimalsCache] = useState([]);
+    const [events_cache, setEventsCache] = useState([]);
+    const [schemas_cache, setSchemasCache] = useState([]);
+    const [event_instances_cache, setEventInstancesCache] = useState([]);
+
     useEffect(() => setDevice(getComputedStyle(document.documentElement).getPropertyValue('--device')), [])
 
     const msalConfig = {
@@ -104,7 +109,7 @@ const App = () => {
         return;
     }
 
-    const cityfarm = new CityFarm();
+    const cityfarm = new CityFarm(animals_cache, setAnimalsCache, events_cache, setEventsCache, schemas_cache, setSchemasCache, event_instances_cache, setEventInstancesCache);
     // when window is resized, check if width thresholds have changed
     window.addEventListener("resize", () => setDevice(getComputedStyle(document.documentElement).getPropertyValue('--device')));
 
@@ -119,8 +124,8 @@ const App = () => {
                     <NavBar theme={theme} setTheme={setTheme} msal={msal} device={device}/>
                     <div className='Content'>
                         <Routes>
-                            <Route path="/" element={<Home farms={farms}/>}/>
-                            <Route path="/calendar" element={<Calendar farms={farms} device={device}/>}/>
+                            <Route path="/" element={<Home farms={farms} cityfarm={cityfarm}/>}/>
+                            <Route path="/calendar" element={<Calendar farms={farms} device={device} cityfarm={cityfarm}/>}/>
                             <Route path="/animals" element={<AnimalTable farms={farms} cityfarm={cityfarm} device={device}/>}/>
                             <Route path="/enclosures" element={<EnclosureTable farms={farms}/>}/>
                             <Route path="/schemas" element={<Schemas farms={farms}/>}/>

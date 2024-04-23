@@ -1,6 +1,6 @@
 package cityfarm.api.calendar;
 
-import java.time.Duration;
+import java.time.Period;
 import java.time.ZonedDateTime;
 import java.util.List;
 
@@ -25,5 +25,5 @@ public class CreateEventRecurringRequest {
 
     public ZonedDateTime firstEnd;
 
-    public Duration delay;
+    public Period delay;
 }

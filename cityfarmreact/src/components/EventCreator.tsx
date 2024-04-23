@@ -3,12 +3,13 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 import React, {useState, useEffect, useCallback, ChangeEvent} from 'react';
 import dayjs from 'dayjs';
 import "../pages/Calendar.css";
-import Event from "./Event.jsx";
+import "./EventCreator.css";
+
 import AnimalPopover from "./AnimalPopover.jsx";
 import Close from '@mui/icons-material/Close';
 import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
-import {  DialogActions, DialogContent, DialogContentText, DialogTitle, ToggleButton, ToggleButtonGroup } from "@mui/material";
+import {  DialogActions, DialogContent, DialogContentText, DialogTitle, ToggleButton, ToggleButtonGroup, createTheme } from "@mui/material";
 import { IconButton, Button, ButtonGroup, Checkbox, FormControlLabel, FormGroup, useTheme, Dialog, FormHelperText, Backdrop, Alert } from '@mui/material';
 import AlertTitle from '@mui/material/AlertTitle';
 import EditIcon from '@mui/icons-material/Edit';
@@ -21,9 +22,13 @@ import axios from '../api/axiosConfig.js'
 import AssociateEnclosure from './AssociateEnclosure.jsx';
 import { getConfig } from '../api/getToken.js';
 import { CityFarm } from '../api/cityfarm.ts';
+import { Theme, ThemeProvider } from '@emotion/react';
+import { Animal } from '../api/animals.ts';
+import { Event, EventOnce, EventRecurring } from '../api/events.ts';
 
-export const EventCreator = ({farms, style, cityfarm, setEvent}: {farms: any, style: any, cityfarm: CityFarm, setEvent: (eventID: string) => void}) => {
-    const [newEvent,setNewEvent] = useState<any>({
+export const EventCreator = ({farms, style, cityfarm, setEvent, modify, setModify, setShowError, initialEvent}
+        : {farms: any, style: any, cityfarm: CityFarm, setEvent: (eventID: string) => void, modify: boolean, setModify: (modify: boolean) => void,setShowError: (show: boolean) => void, initialEvent: Event | null}) => {
+    const [newEvent,setNewEvent] = useState<Event>(initialEvent ? initialEvent : new EventOnce({
         title: "",
         allDay: true,
         start: new Date(),
@@ -32,15 +37,24 @@ export const EventCreator = ({farms, style, cityfarm, setEvent}: {farms: any, st
         animals: [],
         description: "",
         enclosures: []
-    })
+    }))
 
-    const [allEvents,setAllEvents] = useState([]);
-    const [selectedEvent,setSelectedEvent] = useState("");
-    const [visibleFarms, setVisibleFarms] = useState([farms.WH, farms.HC, farms.SW]);
-    const [modifyEvent, setModifyEvent] = useState(false);
-    const [showErr, setShowErr] = useState(false);
     const [inputErr, setInputErr] = useState({newTitle: true});
-    const [recurring, setRecurring] = useState(false);
+    const [recurring, setRecurring] = useState(initialEvent ? initialEvent instanceof EventRecurring : false);
+
+    useEffect(() => {
+        console.log("initialEvent", initialEvent);
+        setNewEvent(initialEvent ? initialEvent: new EventOnce({
+            title: "",
+            allDay: true,
+            start: new Date(),
+            end: new Date(),
+            farms: [],
+            animals: [],
+            description: "",
+            enclosures: []
+        }))
+    }, [modify, initialEvent])
 
     const token = getConfig();
 
@@ -65,9 +79,11 @@ export const EventCreator = ({farms, style, cityfarm, setEvent}: {farms: any, st
     }
 
     useEffect(() => {
-        recurring ?
-            setNewEvent({...newEvent, firstStart: newEvent.start, firstEnd: newEvent.end, delay: 'P1D', finalEnd: null, start: null, end: null})
-            : newEvent.firstStart && setNewEvent({...newEvent, end: newEvent.firstEnd, start: newEvent.firstStart, firstStart: null, firstEnd: null, delay: null, finalEnd: null})
+        if (recurring && newEvent instanceof EventOnce) {
+            setNewEvent(new EventRecurring({...newEvent, firstStart: newEvent.start, firstEnd: newEvent.end, finalEnd: null, delay: 'P1D'}));
+        } else if (!recurring && newEvent instanceof EventRecurring) {
+            setNewEvent(new EventOnce({...newEvent, start: newEvent.firstStart, end: newEvent.firstEnd}));
+        }
     }, [recurring])
 
     const [openAnimalsPopup, setOpenAnimalsPopup] = useState(false)
@@ -82,17 +98,61 @@ export const EventCreator = ({farms, style, cityfarm, setEvent}: {farms: any, st
         setOpenEnclosurePopup(false)
     }
 
+    interface RepeatDelay {
+        years: number | null,
+        months: number | null,
+        weeks: number | null,
+        days: number | null,
+    }
+
+    function parsePeriod(period: string): RepeatDelay {
+        if (!period) {
+            return {years: 0, months: 0, weeks: 0, days: 0};
+        }
+
+        const periodString = period.replace('P', '');
+        const yearIndex = periodString.indexOf('Y');
+        const monthIndex = periodString.indexOf('M');
+        const dayIndex = periodString.indexOf('D');
+
+        const years = yearIndex !== -1 ? parseInt(periodString.substring(0, yearIndex)) : 0;
+        const months = monthIndex !== -1 ? parseInt(periodString.substring(Math.max(yearIndex+1, 0), monthIndex)) : 0;
+        let days = dayIndex !== -1 ? parseInt(periodString.substring(Math.max(monthIndex+1, yearIndex+1, 0), dayIndex)) : 0;
+        const weeks = Math.floor(days / 7);
+        days = days % 7;
+
+        console.log(`Parsed ${period} as ${years} years, ${months} months, ${weeks} weeks, ${days} days`)
+        return {years, months, weeks, days};
+    }
+
+    const [repeatDelay, setRepeatDelay] = useState<RepeatDelay>(initialEvent instanceof EventRecurring ? parsePeriod(initialEvent.delay) : {years: 0, months: 0, weeks: 0, days: 0});
+
+    useEffect(() => {
+        if (!(newEvent instanceof EventRecurring)) return;
+
+        let days = (repeatDelay.days ?? 0) + (repeatDelay.weeks ?? 0) * 7;
+        let period = `P${repeatDelay.years ?? 0}Y${repeatDelay.months ?? 0}M${days}D`;
+        let oldEvent = newEvent;
+        oldEvent.delay = period;
+        setNewEvent(oldEvent);
+    }, [repeatDelay])
+
+
 
     const handleAddEvent = async() => {
         if (Object.values(inputErr).filter((err) => err === true).length > 0) {
-            return setShowErr(true);
+            return setShowError(true);
         }
 
+        console.log("new", newEvent);
+
         try {
-            const response = recurring ? await axios.post(`/events/create/recurring`, newEvent, token)
-                      : await axios.post(`/events/create/once`, newEvent, token)
+            const response = recurring ? await axios.post(`/events/create/recurring`, newEvent as EventRecurring, token)
+                      : await axios.post(`/events/create/once`, newEvent as EventOnce, token)
 
             setEvent(response.data._id);
+            // Update internal events cache
+            await cityfarm.getEvents(false);
         } catch(error) {
             if (error.response.status === 401) {
                 window.location.href = "/login";
@@ -102,7 +162,7 @@ export const EventCreator = ({farms, style, cityfarm, setEvent}: {farms: any, st
             }
         }
         
-        setNewEvent({
+        setNewEvent(new Event({
             title: "",
             allDay: true,
             start: new Date(),
@@ -111,7 +171,7 @@ export const EventCreator = ({farms, style, cityfarm, setEvent}: {farms: any, st
             animals: [],
             description: "",
             enclosures: []
-        });        
+        }));
     }
 
     function showingTime(isShown) {
@@ -119,49 +179,53 @@ export const EventCreator = ({farms, style, cityfarm, setEvent}: {farms: any, st
             return(<>
                 <FormHelperText>Start</FormHelperText>
                 <DateTimePicker
-                    value={recurring ? dayjs(newEvent.firstStart) : dayjs(newEvent.start)}
+                    value={newEvent instanceof EventRecurring ? dayjs(newEvent.firstStart) : dayjs((newEvent as EventOnce).start)}
                     onChange={(e) => {
-                        const dstring = e?.toISOString() ?? "0";
-                        return recurring ?
-                            setNewEvent({...newEvent, firstStart: dstring, firstEnd: newEvent.firstEnd < dstring ? dstring : newEvent.firstEnd})
-                            : setNewEvent({...newEvent, start: dstring ?? newEvent.start, end: newEvent.end < dstring ?? newEvent.end ? dstring : newEvent.end})
+                        let dstring = "";
+                        try {dstring = (e ?? new Date()).toISOString()} catch (_) {dstring = (e ?? "").toString()};
+                        return newEvent instanceof EventRecurring ?
+                            setNewEvent(new EventRecurring({...newEvent, firstStart: dstring, firstEnd: newEvent.firstEnd < new Date(dstring) ? dstring : newEvent.firstEnd}))
+                            : setNewEvent(new EventOnce({...newEvent, start: dstring ?? (newEvent as EventOnce).start, end: (newEvent as EventOnce).end < new Date(dstring) ?? (newEvent as EventOnce).end ? dstring : (newEvent as EventOnce).end}))
                     }}
                     slotProps={{textField: {fullWidth: true, size: 'small'}}}
                 />
                 <FormHelperText>End</FormHelperText>
                 <DateTimePicker
-                    value={recurring ? dayjs(newEvent.firstEnd) : dayjs(newEvent.end)}
+                    value={newEvent instanceof EventRecurring ? dayjs(newEvent.firstEnd) : dayjs((newEvent as EventOnce).end)}
                     onChange={(e) => {
-                        const dstring = e?.toISOString() ?? "0";
-                        recurring ?
-                            setNewEvent({...newEvent, firstEnd: dstring, firstStart: dstring < newEvent.firstStart ? dstring : newEvent.firstStart})
-                            : setNewEvent({...newEvent, end: dstring, start: dstring < newEvent.start ? dstring : newEvent.start})
+                        let dstring = "";
+                        try {dstring = (e ?? new Date()).toISOString()} catch (_) {dstring = (e ?? "").toString()};
+                        newEvent instanceof EventRecurring ?
+                            setNewEvent(new EventRecurring({...newEvent, firstEnd: dstring, firstStart: new Date(dstring) < newEvent.firstStart ? dstring : newEvent.firstStart}))
+                            : setNewEvent(new EventOnce({...newEvent, end: dstring, start: new Date(dstring) < (newEvent as EventOnce).start ? dstring : (newEvent as EventOnce).start}))
                     }}
                     slotProps={{textField: {fullWidth: true, size: 'small'}}}
                 />
             </>)
         } else {
-            return(<>
+            return(<>  
                 <FormHelperText>Start</FormHelperText>
                 <DatePicker
-                    value={recurring ? dayjs(newEvent.firstStart) : dayjs(newEvent.start)}
+                    value={newEvent instanceof EventRecurring ? dayjs(newEvent.firstStart) : dayjs((newEvent as EventOnce).start)}
                     onChange={(e) => {
                         console.log('date changed');
-                        const dstring = e?.toISOString() ?? "0";
-                        recurring ?
-                            setNewEvent({...newEvent, firstStart: dstring, firstEnd: newEvent.firstEnd < dstring ? dstring : newEvent.firstEnd})
-                            : setNewEvent({...newEvent, start: dstring, end: newEvent.end < dstring ? dstring : newEvent.end})
+                        let dstring = "";
+                        try {dstring = (e ?? new Date()).toISOString()} catch (_) {dstring = (e ?? "").toString()};
+                        newEvent instanceof EventRecurring ?
+                            setNewEvent(new EventRecurring({...newEvent, firstStart: dstring, firstEnd: newEvent.firstEnd < new Date(dstring) ? dstring : newEvent.firstEnd}))
+                            : setNewEvent(new EventOnce({...newEvent, start: dstring, end: (newEvent as EventOnce).end < new Date(dstring) ? dstring : (newEvent as EventOnce).end}))
                     }}
                     slotProps={{textField: {fullWidth: true, size: 'small'}}}
                 />
                 <FormHelperText>End</FormHelperText>
                 <DatePicker
-                    value={recurring ? dayjs(newEvent.firstEnd) : dayjs(newEvent.end)}
+                    value={newEvent instanceof EventRecurring ? dayjs(newEvent.firstEnd) : dayjs((newEvent as EventOnce).end)}
                     onChange={(e) => {
-                        const dstring = e?.toISOString() ?? "0";
-                        recurring ?
-                            setNewEvent({...newEvent, firstEnd: dstring, firstStart: dstring < newEvent.firstStart ? dstring : newEvent.firstStart})
-                            : setNewEvent({...newEvent, end: dstring, start: dstring < newEvent.start ? dstring : newEvent.start})
+                        let dstring = "";
+                        try {dstring = (e ?? new Date()).toISOString()} catch (_) {dstring = (e ?? "").toString()};
+                        newEvent instanceof EventRecurring ?
+                            setNewEvent(new EventRecurring({...newEvent, firstEnd: dstring, firstStart: new Date(dstring) < newEvent.firstStart ? dstring : newEvent.firstStart}))
+                            : setNewEvent(new EventOnce({...newEvent, end: dstring, start: new Date(dstring) < (newEvent as EventOnce).start ? dstring : (newEvent as EventOnce).start}))
                     }}
                     slotProps={{textField: {fullWidth: true, size: 'small'}}}
                 />
@@ -169,9 +233,45 @@ export const EventCreator = ({farms, style, cityfarm, setEvent}: {farms: any, st
         }
     }
 
+    const textFieldTheme = () => createTheme({
+        components: {
+            MuiFormHelperText: {
+                styleOverrides: {
+                    root: {
+                        marginLeft: '5%',
+                    }
+                }
+            },
+        }
+    })
+
+    const handlePatchEvent = async() => {
+        if (newEvent === null) {
+            return;
+        }
+
+        try {
+            if (newEvent instanceof EventOnce) {
+                await axios.patch(`/events/once/by_id/${newEvent.id}/update`, newEvent, token);
+            } else {
+                await axios.patch(`/events/recurring/by_id/${newEvent.id}/update`, newEvent, token);
+            }
+        } catch(error) {
+            if (error.response.status === 401) {
+                window.location.href = "/login";
+                return;
+            } else {
+                window.alert(error);
+            }
+        }
+        cityfarm.getEvents(false);
+        setEvent(newEvent.id);
+        setModify(false);
+    }
+
     return (
         <div style={{width: '400px', margin: '0 0 20px 0', padding: '10px', ...style}}>
-            <h2 className='boxTitle'>Create New Event</h2>
+            <h2 className='boxTitle'>{!modify ? "Create New Event" : "Edit Event"}</h2>
             <div>
                 <TextField
                     error={newEvent.title === ''}
@@ -186,31 +286,72 @@ export const EventCreator = ({farms, style, cityfarm, setEvent}: {farms: any, st
             </div>
 
             <div className='smallMarginTop'>
-                <FormControlLabel control={<Checkbox defaultChecked size='small'/>} label="All Day" onChange={() => changeAllDay(!newEvent.allDay)}/>
-                <FormControlLabel control={<Checkbox size='small'/>} label="Recurring" onChange={() => changeRecurring(!recurring)} />
-                <Button variant='contained' style={{float: "right"}} onClick={()=>handleAddEvent()} endIcon={<AddIcon/>}>Create</Button>
+                {
+                    modify ?    <ButtonGroup style={{float: 'right'}}>
+                                    <Button variant='contained' color='warning' onClick={()=>{setModify(false)}}>Discard</Button>
+                                    <Button variant='contained' color='success' onClick={()=>{handlePatchEvent()}}>Update</Button>
+                                </ButtonGroup>
+                            :   <Button variant='contained' style={{float: "right"}} onClick={()=>handleAddEvent()} endIcon={<AddIcon/>}>Create</Button>
+                }
+                <FormGroup>
+                    <FormControlLabel control={<Checkbox checked={newEvent.allDay} size='small'/>} label="All Day" onChange={() => changeAllDay(!newEvent.allDay)}/>
+                </FormGroup>
             </div>
-            {recurring && (
             <div className='smallMarginTop'>
-                <ToggleButtonGroup
-                    fullWidth
-                    orientation='horizontal'
-                    value={newEvent.delay}
-                    exclusive
-                    onChange={(e) => setNewEvent({...newEvent, delay: (e.target as HTMLInputElement).value})}
-                >
-                    <ToggleButton value='P1D'>Daily</ToggleButton>
-                    <ToggleButton value='P7D'>Weekly</ToggleButton>
-                    <ToggleButton value='P28D'>Monthly</ToggleButton>
-                    <ToggleButton value='P265D'>Yearly</ToggleButton>
-                </ToggleButtonGroup>
-            </div>)}
+                <ThemeProvider theme={textFieldTheme()}>
+                    <div style={{display: "flex", alignItems: 'center', width: '100%'}}>
+                        <FormControlLabel style={{flex: '0.01', marginRight: '0'}} label="Repeats" control={<Checkbox checked={recurring} size='small'/>} onChange={() => changeRecurring(!recurring)} />
+                        <p style={{margin: '1%', flex: '0.5', visibility: recurring ? 'visible': 'hidden'}}>every</p>
+
+                        <TextField type="number" onFocus={(e) => e.target.addEventListener("wheel", function (e) { e.preventDefault() }, { passive: false })}
+                            helperText="Years" style={{flex: '1', visibility: recurring ? 'visible': 'hidden', marginRight:'1%'}}
+                            onChange={(e) => setRepeatDelay({...repeatDelay, years: parseInt(e.target.value)})} value={repeatDelay.years?? undefined}
+                            inputProps={{
+                                style: {
+                                padding: 5,
+                                }
+                            }}
+                            size='small'
+                        />
+                        <TextField type="number" onFocus={(e) => e.target.addEventListener("wheel", function (e) { e.preventDefault() }, { passive: false })}
+                            helperText="Months" style={{flex: '1', visibility: recurring ? 'visible': 'hidden', marginRight:'1%'}}
+                            onChange={(e) => setRepeatDelay({...repeatDelay, months: parseInt(e.target.value)})} value={repeatDelay.months?? undefined}
+                            inputProps={{
+                                style: {
+                                padding: 5
+                                }
+                            }}
+                            size='small'
+                        />
+                        <TextField type="number" onFocus={(e) => e.target.addEventListener("wheel", function (e) { e.preventDefault() }, { passive: false })}
+                            helperText="Weeks" style={{flex: '1', visibility: recurring ? 'visible': 'hidden', marginRight:'1%'}}
+                            onChange={(e) => setRepeatDelay({...repeatDelay, weeks: parseInt(e.target.value)})} value={repeatDelay.weeks?? undefined}
+                            inputProps={{
+                                style: {
+                                padding: 5
+                                }
+                            }}
+                            size='small'
+                        />
+                        <TextField type="number" onFocus={(e) => e.target.addEventListener("wheel", function (e) { e.preventDefault() }, { passive: false })}
+                            helperText="Days" style={{flex: '1', visibility: recurring ? 'visible': 'hidden'}}
+                            onChange={(e) => setRepeatDelay({...repeatDelay, days: parseInt(e.target.value)})} value={repeatDelay.days?? undefined}
+                            inputProps={{
+                                style: {
+                                padding: 5
+                                }
+                            }}
+                            size='small'
+                        />
+                    </div>
+                </ThemeProvider>
+            </div>
             <div className='smallMarginTop'>
                 <h3>Farms</h3>
                 <FormGroup>
-                    <FormControlLabel control={<Checkbox color={farms.WH} size='small'/>} label="Windmill Hill" onChange={() => setNewEvent({...newEvent, farms: newEvent.farms.includes(farms.WH) ? newEvent.farms.filter((farm) => farm !== farms.WH) : newEvent.farms.concat(farms.WH)})}/>
-                    <FormControlLabel control={<Checkbox color={farms.HC} size='small'/>} label="Hartcliffe" onChange={()=>setNewEvent({...newEvent, farms: newEvent.farms.includes(farms.HC) ? newEvent.farms.filter((farm) => farm !== farms.HC) : newEvent.farms.concat(farms.HC)})}/>
-                    <FormControlLabel control={<Checkbox color={farms.SW} size='small'/>} label="St Werburghs" onChange={()=>setNewEvent({...newEvent, farms: newEvent.farms.includes(farms.SW) ? newEvent.farms.filter((farm) => farm !== farms.SW) : newEvent.farms.concat(farms.SW)})}/>
+                    <FormControlLabel control={<Checkbox color={farms.WH} checked={newEvent.farms.includes(farms.WH)} size='small'/>} label="Windmill Hill" onChange={() => setNewEvent({...newEvent, farms: newEvent.farms.includes(farms.WH) ? newEvent.farms.filter((farm) => farm !== farms.WH) : newEvent.farms.concat(farms.WH)})}/>
+                    <FormControlLabel control={<Checkbox color={farms.HC} checked={newEvent.farms.includes(farms.HC)} size='small'/>} label="Hartcliffe" onChange={()=>setNewEvent({...newEvent, farms: newEvent.farms.includes(farms.HC) ? newEvent.farms.filter((farm) => farm !== farms.HC) : newEvent.farms.concat(farms.HC)})}/>
+                    <FormControlLabel control={<Checkbox color={farms.SW} checked={newEvent.farms.includes(farms.SW)} size='small'/>} label="St Werburghs" onChange={()=>setNewEvent({...newEvent, farms: newEvent.farms.includes(farms.SW) ? newEvent.farms.filter((farm) => farm !== farms.SW) : newEvent.farms.concat(farms.SW)})}/>
                 </FormGroup>
             </div>
             <div>
@@ -224,6 +365,36 @@ export const EventCreator = ({farms, style, cityfarm, setEvent}: {farms: any, st
                     value={newEvent.description}
                     onChange={(e) => {setNewEvent({...newEvent, description: e.target.value})}}
                 />
+            </div>
+            <div>
+                <span style={{display: 'flex'}}><h3>Animals</h3><IconButton style={{height: '40px', margin: '12px 0 0 5px'}} onClick={() => {functionopenPopup("animals")}}><AddIcon color='primary'/></IconButton></span>
+                {/* idea: make this open the animal table page with a new column of checkboxes. Click on an associate animal(s) button would then pass a list of animal id to the calendar to the new event state. This could be re used in the modification of events.  */}
+                {newEvent.animals.map((animalID) => (
+                    <AnimalPopover key={animalID} animalID={animalID} />
+                ))}
+                <div id="AssociateAnimal" style={{textAlign:'center'}}>
+                    <Dialog fullWidth maxWidth='md' open={openAnimalsPopup} onClose={functionclosePopup}>
+                        <DialogTitle>Add Animal</DialogTitle>
+                        <DialogContent>
+                            <AssociateAnimal setAnimals={setAddEventAnimals} animals={newEvent.animals} close={functionclosePopup}></AssociateAnimal>
+                        </DialogContent>
+                    </Dialog>
+                </div>
+            </div>
+            <div>
+                <span style={{display: 'flex'}}><h3>Enclosures</h3><IconButton style={{height: '40px', margin: '12.5px 0 0 5px'}} onClick={() => {functionopenPopup("enclosures")}}><AddIcon color='primary'/></IconButton></span>
+                {newEvent.enclosures.map((enclosureName, index) => (
+                    <p key={index}>{enclosureName}</p>
+                ))}{/*Add a way to remove enclosures from events */}
+                {/* idea: make this open the enlcosure  page with a new column of checkboxes. Click on an associate enlcosure(s) button would then pass a list of enclosure names to the calendar to be placed in a field*/}
+                <div id="AssociateEnclosure" style={{textAlign:'center'}}>
+                    <Dialog fullWidth maxWidth='md' open={openEnclosurePopup} onClose={functionclosePopup}>
+                        <DialogTitle>Add Enclosure</DialogTitle>
+                        <DialogContent>
+                            <AssociateEnclosure enclosures={newEvent.enclosures} setEnclosures={setAddEventEnclosures} close={functionclosePopup}></AssociateEnclosure>
+                        </DialogContent>
+                    </Dialog>
+                </div>
             </div>
         </div>
     )
