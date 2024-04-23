@@ -16,7 +16,7 @@ import java.util.function.Supplier;
 @Component
 public class AuthManager implements AuthorizationManager<RequestAuthorizationContext> {
     Logger logger = LoggerFactory.getLogger(AuthManager.class);
-
+    
     @Override
     public AuthorizationDecision check(Supplier<Authentication> authentication, RequestAuthorizationContext object) {
         Authentication auth = authentication.get();

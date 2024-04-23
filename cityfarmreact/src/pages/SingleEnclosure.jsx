@@ -10,11 +10,12 @@ import Button from "@mui/material/Button";
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from "@mui/material/IconButton";
 import {DataGrid} from "@mui/x-data-grid";
+import {readableFarm} from "./SingleAnimal";
 
 const SingleEnclosure = (props) => {
   const token = getConfig();
   const enclosureID = useParams().enclosureID
-  const [enclosure, setEnclosure] = useState({name: 'Loading...'})
+  const [enclosure, setEnclosure] = useState({name: 'Loading...',holding:[]})
   const [animalTypes,setAnimalTypes] = useState([])
   const [openAnimalsPopup ,setOpenAnimalsPopup] = useState(false)
   const [allEnclosures,setAllEnclosures] = useState([])
@@ -58,9 +59,9 @@ const SingleEnclosure = (props) => {
   }
 
   const animalTo = (animalList, enc) =>{
-    console.log(animalList)
-    for (const animal of animalList) {
+
       (async () => {
+        for (const animal of animalList) {
         try {
           console.log('SENDING',animal)
           const req = await axios.patch(`/enclosures/moveanimal`,[animal,enc._id,enclosure._id], token)
@@ -75,8 +76,14 @@ const SingleEnclosure = (props) => {
             window.alert(error);
           }
         }
+      }
       })();
-    }
+
+
+  }
+
+  const move = (anId,toId,fromId)=>{
+
   }
 
   const enclosureMove =(animalList) =>{
@@ -90,8 +97,13 @@ const SingleEnclosure = (props) => {
       }
       return(
           <div> Moving {name} to one of: <br/>{
-            allEnclosures.map((enc)=>(<div onClick={()=>animalTo(animalList,enc)}>{enc.name}<br/></div>
-            ))}
+            allEnclosures.map((enc)=>(<>{
+              (enc._id!==enclosure._id)?
+                  <div onClick={()=>{animalTo(animalList,enc);window.location.reload(false);}}>{enc.name}<br/></div>
+            :
+            <></>}
+
+            </>))}
             <Button startIcon={<DeleteIcon />} onClick={closeEnclosureMove}/>
           </div>
             )
@@ -99,6 +111,32 @@ const SingleEnclosure = (props) => {
       return <></>
     }
   }
+
+
+  const updateSelectedAnimals = (ids) => {
+    console.log(ids)
+    setSelectedAnimals((prevSelectedAnimals) => {
+      // Merge the newly selected animals with the already selected ones
+      const newSelectedAnimals = [...prevSelectedAnimals];
+      ids.forEach((id) => {
+        // Check if the id is already in the selected list
+        const index = newSelectedAnimals.indexOf(id);
+        if (index === -1) {
+
+          // If not, add it to the list
+          newSelectedAnimals.push(id);
+
+        } else {
+          console.log("deselecting")
+          // If yes, remove it from the list (deselect)
+          newSelectedAnimals.splice(index, 1);
+        }
+      });
+      return newSelectedAnimals;
+    });
+    console.log(selectedAnimals)
+  };
+
 
 
   const closeEnclosureMove =()=>{
@@ -137,7 +175,7 @@ const SingleEnclosure = (props) => {
               disableRowSelectionOnClick
               checkboxSelection
               onRowSelectionModelChange={(ids) => {
-              setSelectedAnimals(ids.map(name => name));}}
+                updateSelectedAnimals(ids.map(name => name));}}
               />
             <br/>
             </div>
@@ -195,16 +233,17 @@ const SingleEnclosure = (props) => {
   return (
 
   <div className="enclosureView">
-    <h2>{enclosure.name}</h2>
+    <h2>{enclosure.name}</h2><br/>
+    <b>Farm: </b> {readableFarm(enclosure.farm)}<br/>
     <h3 style={{ display: "inline-block" }}>Animal Holdings:</h3><br/>
-    {holdings().map((item)=>(item))}
+    {holdings().map((item,key)=>(item))}
 
     <div id="AssociateAnimal" style={{textAlign:'center'}}>
       <Button onClick={handleOpenAnimalsPopup}>Edit Animals</Button>
       <Dialog fullWidth maxWidth='md' open={openAnimalsPopup} onClose={()=>{setOpenAnimalsPopup(false)}}>
         <DialogTitle>Change Animals</DialogTitle>
         <DialogContent>
-          <AssociateAnimal setAnimals={setEnclosureNewAnimals} animals={enclosure.holding} close={()=>setOpenAnimalsPopup(false)}></AssociateAnimal>
+          <AssociateAnimal setAnimals={setEnclosureNewAnimals} animals={enclosure.holding.map((enc,key)=>(enc._id))} close={()=>{setOpenAnimalsPopup(false);window.location.reload(false);}}></AssociateAnimal>
         </DialogContent>
       </Dialog>
     </div>

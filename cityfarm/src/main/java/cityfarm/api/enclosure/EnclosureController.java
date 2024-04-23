@@ -151,6 +151,11 @@ public class EnclosureController {
         for (String animal: enclosureNew.holding) {
             AnimalCustom anm = animalRepository.findAnimalById(animal);
             holding.add(anm);
+            //change farm
+            if (anm.farm != enclosureNew.farm){
+                anm.farm = enclosureNew.farm;
+                animalRepository.save(anm);
+            }
         }
         long res1 = enclosureRepositoryCustom.updateName(id, enclosureNew.name);
         long res2 = enclosureRepositoryCustom.updateHolding(id,holding);
@@ -167,11 +172,8 @@ public class EnclosureController {
         String anId = ids.get(0);
         String toId = ids.get(1);
         String fromId = ids.get(2);
-
         //gets the animal
-
         AnimalCustom animal = animalRepository.findAnimalById(anId);
-
         //defines home and destination nd also where the animal is getting removed from, can probs be done more elegantly
         Enclosure fromEnclosure = enclosureRepository.findEnclosureById(fromId);
         int removalPoint = -1;
@@ -180,24 +182,19 @@ public class EnclosureController {
                 removalPoint = fromEnclosure.holding.indexOf(a);
             }
         }
-//        if (removalPoint == -1){
-//            return ResponseEntity.notFound().build();
-//        }
-
-
         Enclosure toEnclosure = enclosureRepository.findEnclosureById(toId);
-
-        //checks it's found both enclosures
-//        if (fromEnclosure == null || toEnclosure== null){
-//            return ResponseEntity.notFound().build();
-//        }
-
         //removes then adds the animal
         fromEnclosure.holding.remove(removalPoint);
         long remove = enclosureRepositoryCustom.updateHolding(fromId,fromEnclosure.holding);
         toEnclosure.holding.add(animal);
         long add = enclosureRepositoryCustom.updateHolding(toId,toEnclosure.holding);
 
+
+        //change farm
+        if (animal.farm != toEnclosure.farm){
+            animal.farm = toEnclosure.farm;
+            animalRepository.save(animal);
+        }
 
 
         return ResponseEntity.ok().build();

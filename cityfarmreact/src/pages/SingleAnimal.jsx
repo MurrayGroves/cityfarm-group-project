@@ -11,6 +11,16 @@ import SelectedEvent from "../components/SelectedEvent";
 import { getConfig } from '../api/getToken';
 import FarmMoveButton from "../components/FarmMoveButton";
 
+export function readableFarm(farm) {
+    switch(farm) {
+        case "WH": return <span>Windmill Hill</span>;
+        case "HC": return <span>Hartcliffe</span>;
+        case "SW": return <span>St Werburghs</span>;
+        case '': return <span>None</span>;
+        default: return <span>Loading...</span>;
+    }
+}
+
 const SingleAnimal = (props) => {
 
     const farms = props.farms;
@@ -26,15 +36,7 @@ const SingleAnimal = (props) => {
 
     const token = getConfig();
 
-    function readableFarm(farm) {
-        switch(farm) {
-            case "WH": return <span>Windmill Hill</span>;
-            case "HC": return <span>Hartcliffe</span>;
-            case "SW": return <span>St Werburghs</span>;
-            case '': return <span>None</span>;
-            default: return <span>Loading...</span>;
-        }
-    }
+
 
     useEffect(() => {
         (async () => {
