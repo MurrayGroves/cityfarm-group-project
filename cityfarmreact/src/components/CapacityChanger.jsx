@@ -11,7 +11,6 @@ const CapacityChanger = (props) => {
     const [linkedCapacities, setLinkedCapacities] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [schemaList, setSchemaList] = useState([]); /* The State for the list of schemas. The initial state is [] */
-    const [changed, setChanged] = useState(false);
 
     const token = getConfig();
     
@@ -21,7 +20,6 @@ const CapacityChanger = (props) => {
                 const response = await axios.get(`/schemas`, token);
                 setSchemaList(response.data.reverse());
                 setLinkedCapacities(props.enclosure.capacities);
-                console.log(schemaList[0]);
             } catch (error) {
                 if (error.response.status === 401) {
                     window.location.href = "/login";
@@ -80,7 +78,6 @@ const CapacityChanger = (props) => {
                     disableRowSelectionOnClick
                     processRowUpdate = {(newVal, oldVal) => {
                         if (newVal.number === oldVal.number) { return newVal; }
-                        const newCapacity = newVal.number;
                         props.enclosure.capacities[newVal.id] = newVal.number
                         return newVal;
                     }}
