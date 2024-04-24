@@ -13,7 +13,6 @@ import { CityFarm } from "../api/cityfarm.ts";
 
 const AssociateAnimal = ({ animals, setAnimals, cityfarm, close}: {animals: Animal[], setAnimals: (animals: Animal[]) => void, cityfarm: CityFarm, close: () => void}) => {
     const [animalIDs, setAnimalIDs] = useState<GridRowSelectionModel>([]);
-    const [linkedAnimals, setLinkedAnimals] = useState<Animal[]>([]);
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [animalList, setAnimalList] = useState<Animal[]>([]);
 
@@ -25,19 +24,14 @@ const AssociateAnimal = ({ animals, setAnimals, cityfarm, close}: {animals: Anim
 
     */
 
-    useEffect(() => {
-        setLinkedAnimals(animalIDs.map((id) => animalList.find((animal) => animal.id === id)!))
-    }, [animalIDs])
+    const handleAttach = () => {
+        setAnimals(animalIDs.map((id) => animalList.find((animal) => animal.id === id)!))
+    }
 
     useEffect(() => {
         setAnimalIDs(animals.map((animal) => animal.id));
         console.log('getting animals', animals);
     }, [])
-    
-    useEffect(() => {
-        setAnimals(linkedAnimals);
-        console.log('setting animals', linkedAnimals);
-    }, [linkedAnimals])
     
     function displayAll() {
         (async () => {
@@ -81,16 +75,19 @@ const AssociateAnimal = ({ animals, setAnimals, cityfarm, close}: {animals: Anim
     ];
 
     return (
-        <div>
-            <TextField
-                size='small'
-                placeholder='Search'
-                style={{margin: '0 20px 20px 0'}}
-                onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            <Paper elevation={3} style={{ marginBottom: '20px'}}>
+        <div style={{display: 'flex', flexDirection: 'column', height: 'calc(100vh - 148px)'}}>
+            <span style={{display: 'flex', justifyContent: 'space-between'}}>
+                <TextField
+                    size='small'
+                    placeholder='Search'
+                    style={{margin: '0 20px 20px 0'}}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                />
+                <Button variant='outlined' style={{marginBottom: '20px'}} onClick={() => {handleAttach(); close()}}>Add</Button>
+            </span>
+            <Paper elevation={3} style={{ flex: 1, height: 'calc(100% - 60px)' }}>
                 <DataGrid
-                    autoHeight
+                    keepNonExistentRowsSelected
                     checkboxSelection
                     columns={cols}
                     rows={rows}
@@ -101,7 +98,6 @@ const AssociateAnimal = ({ animals, setAnimals, cityfarm, close}: {animals: Anim
                     }}
                 />
             </Paper>
-            <Button variant='outlined' style={{float: "right"}} onClick={() => {close()}}>Close</Button>
         </div>
     )
 }

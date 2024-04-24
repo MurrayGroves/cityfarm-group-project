@@ -5,7 +5,7 @@ import "../pages/AnimalTable.css";
 import { DataGrid, GridColDef, GridRowSelectionModel } from '@mui/x-data-grid';
 import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
-import {Button} from "@mui/material";
+import { Button } from "@mui/material";
 import EnclosurePopover from "./EnclosurePopover.tsx";
 import { getConfig } from '../api/getToken.js'; 
 import { Enclosure } from "../api/enclosures.ts";
@@ -14,26 +14,19 @@ import { Animal } from "../api/animals.ts";
 
 const AssociateEnclosure = ({enclosures, setEnclosures, cityfarm, close}: {enclosures: Enclosure[], setEnclosures: (enclosures: Enclosure[]) => void, cityfarm: CityFarm, close: () => void}) => {
     const [enclosureIDs, setEnclosureIDs] = useState<GridRowSelectionModel>([])
-    const [linkedEnclosures, setLinkedEnclosures] = useState<Enclosure[]>([]);
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [enclosureList, setEnclosureList] = useState<Enclosure[]>([]);
 
     const token = getConfig();
 
     useEffect(() => {
-        setLinkedEnclosures(enclosureIDs.map((id) => enclosureList.find((enclosure) => enclosure.id === id)!));
-        console.log('list vs ids:', enclosureList, enclosureIDs)
-    }, [enclosureIDs])
-
-    useEffect(() => {
         setEnclosureIDs(enclosures.map((enclosure) => enclosure.id));
         console.log('getting enclosures', enclosures);
     }, [])
     
-    useEffect(() => {
-        setEnclosures(linkedEnclosures);
-        console.log('setting enclosures', linkedEnclosures);
-    }, [linkedEnclosures])
+    const handleAttach = () => {
+        setEnclosures(enclosureIDs.map((id) => enclosureList.find((enclosure) => enclosure.id === id)!));
+    }
 
     function displayAll() {
         (async () => {
@@ -91,16 +84,19 @@ const AssociateEnclosure = ({enclosures, setEnclosures, cityfarm, close}: {enclo
     }))
 
     return (
-        <div>
-            <TextField
-                size='small'
-                placeholder='Search'
-                style={{margin: '0 20px 20px 0'}}
-                onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            <Paper elevation={3} style={{ marginBottom: '20px'}}>
+        <div style={{display: 'flex', flexDirection: 'column', height: 'calc(100vh - 148px)'}}>
+            <span style={{display: 'flex', justifyContent: 'space-between'}}>
+                <TextField
+                    size='small'
+                    placeholder='Search'
+                    style={{margin: '0 20px 20px 0'}}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                />
+                <Button variant='outlined' style={{marginBottom: '20px'}} onClick={() => {handleAttach(); close()}}>Add</Button>
+            </span>
+            <Paper elevation={3} style={{ flex: 1 }}>
                 <DataGrid
-                    autoHeight
+                    keepNonExistentRowsSelected
                     checkboxSelection
                     columns={cols}
                     rows={rows}
@@ -111,7 +107,6 @@ const AssociateEnclosure = ({enclosures, setEnclosures, cityfarm, close}: {enclo
                     }}
                 />
             </Paper>
-            <Button variant='outlined' style={{float: "right"}} onClick={() => {close()}}>Close</Button>
         </div>
     )
 } 
