@@ -5,13 +5,13 @@ import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 import AnimalTable from "./pages/AnimalTable.tsx";
-import NavBar from "./components/NavBar.jsx";
+import NavBar from "./components/NavBar.tsx";
 import Calendar from "./pages/Calendar.tsx";
-import EnclosureTable from "./pages/EnclosureTable.jsx";
-import Schemas from "./pages/Schemas.jsx";
-import Error from "./pages/Error.jsx";
-import Login from './pages/Login.jsx';
-import SingleAnimal from "./pages/SingleAnimal.jsx";
+import EnclosureTable from "./pages/EnclosureTable.tsx";
+import Schemas from "./pages/Schemas.tsx";
+import Error from "./pages/Error.tsx";
+import Login from './pages/Login.tsx';
+import SingleAnimal from "./pages/SingleAnimal.tsx";
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 
@@ -23,10 +23,32 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { PublicClientApplication } from "@azure/msal-browser";
 import Home from "./pages/Home.tsx";
-import Help from "./pages/Help.jsx";
-import usePersistState from './components/PersistentState.jsx'
+import Help from "./pages/Help.tsx";
+import usePersistState from './components/PersistentState.ts'
 
 import { CityFarm } from './api/cityfarm.ts';
+import { Event, EventInstance } from './api/events.ts';
+import { Animal, Schema } from './api/animals.ts';
+
+declare module '@mui/material/styles' {
+    interface Theme {
+        palette: Palette;
+    }
+
+    interface Palette {
+        WH: Palette['primary'];
+        HC: Palette['primary'];
+        SW: Palette['primary'];
+        green: Palette['primary'];
+    }
+  
+    interface PaletteOptions {
+        WH?: PaletteOptions['primary'];
+        HC?: PaletteOptions['primary'];
+        SW?: PaletteOptions['primary'];
+        green?: PaletteOptions['primary'];
+    }
+}
 
 const App = () => {
 
@@ -46,7 +68,7 @@ const App = () => {
         SW: {
             main: "#ffb121"
         },
-        grey: {
+        default: {
             main: "#888888"
         },
         green: {
@@ -75,13 +97,13 @@ const App = () => {
     });
     
     const [theme, setTheme] = usePersistState('light', 'theme');
-    const [msal, setMsal] = useState(null);
+    const [msal, setMsal] = useState<PublicClientApplication | null>(null);
     const [device, setDevice] = useState('');
 
-    const [animals_cache, setAnimalsCache] = useState([]);
-    const [events_cache, setEventsCache] = useState([]);
-    const [schemas_cache, setSchemasCache] = useState([]);
-    const [event_instances_cache, setEventInstancesCache] = useState([]);
+    const [animals_cache, setAnimalsCache] = useState<Animal[]>([]);
+    const [events_cache, setEventsCache] = useState<Event[]>([]);
+    const [schemas_cache, setSchemasCache] = useState<Schema[]>([]);
+    const [event_instances_cache, setEventInstancesCache] = useState<EventInstance[]>([]);
 
     useEffect(() => setDevice(getComputedStyle(document.documentElement).getPropertyValue('--device')), [])
 
@@ -96,11 +118,11 @@ const App = () => {
         }
     };
 
-    if (msal == null) {
+    if (msal === null) {
         const msalInstance = new PublicClientApplication(msalConfig);
         msalInstance.initialize().then(() => {
             setMsal(msalInstance);
-            if (msalInstance.getAllAccounts().length == 0) {
+            if (msalInstance.getAllAccounts().length === 0) {
                 if (!window.location.href.includes("/login")) {
                     window.location.href = "/login";
                 }
@@ -109,7 +131,16 @@ const App = () => {
         return;
     }
 
-    const cityfarm = new CityFarm(animals_cache, setAnimalsCache, events_cache, setEventsCache, schemas_cache, setSchemasCache, event_instances_cache, setEventInstancesCache);
+    if (window.location.href.includes("/login")) {
+        return <Router>
+            <Routes>
+                <Route path="/login" element={<Login msal={msal} setMsal={setMsal} />}/>
+            </Routes>
+        </Router>
+    }
+
+    const cityfarm = new CityFarm(events_cache, setEventsCache, animals_cache, setAnimalsCache, schemas_cache, setSchemasCache, event_instances_cache, setEventInstancesCache);
+
     // when window is resized, check if width thresholds have changed
     window.addEventListener("resize", () => setDevice(getComputedStyle(document.documentElement).getPropertyValue('--device')));
 
@@ -120,17 +151,17 @@ const App = () => {
         <Router>
             <Routes>
                 <Route path="/login" element={<Login msal={msal} setMsal={setMsal} />}/>
-                <Route exact path="*" element={<>
+                <Route path="*" element={<>
                     <NavBar theme={theme} setTheme={setTheme} msal={msal} device={device}/>
                     <div className='Content'>
                         <Routes>
                             <Route path="/" element={<Home farms={farms} cityfarm={cityfarm}/>}/>
                             <Route path="/calendar" element={<Calendar farms={farms} device={device} cityfarm={cityfarm}/>}/>
                             <Route path="/animals" element={<AnimalTable farms={farms} cityfarm={cityfarm} device={device}/>}/>
-                            <Route path="/enclosures" element={<EnclosureTable farms={farms}/>}/>
-                            <Route path="/schemas" element={<Schemas farms={farms}/>}/>
+                            <Route path="/enclosures" element={<EnclosureTable farms={farms} cityfarm={cityfarm}/>}/>
+                            <Route path="/schemas" element={<Schemas farms={farms} cityfarm={cityfarm}/>}/>
                             <Route path="/help" element={<Help/>}/>
-                            <Route path="/single-animal/:animalID" element={<SingleAnimal farms={farms}/>} />
+                            <Route path="/single-animal/:animalID" element={<SingleAnimal farms={farms} cityfarm={cityfarm}/>} />
                             <Route path="*" element={<Error/>}/>
                         </Routes>
                     </div>

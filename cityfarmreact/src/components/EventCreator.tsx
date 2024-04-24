@@ -1,33 +1,33 @@
-import {Calendar as BigCalendar, dayjsLocalizer} from 'react-big-calendar';
-import 'react-big-calendar/lib/css/react-big-calendar.css';
-import React, {useState, useEffect, useCallback, ChangeEvent} from 'react';
+import React, { useState, useEffect } from 'react';
 import dayjs from 'dayjs';
-import "../pages/Calendar.css";
+import AnimalPopover from "./AnimalPopover.tsx";
 import "./EventCreator.css";
-
-import AnimalPopover from "./AnimalPopover.jsx";
-import Close from '@mui/icons-material/Close';
-import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
-import {  DialogActions, DialogContent, DialogContentText, DialogTitle, ToggleButton, ToggleButtonGroup, createTheme } from "@mui/material";
+import { DialogContent, DialogTitle, createTheme } from "@mui/material";
 import { IconButton, Button, ButtonGroup, Checkbox, FormControlLabel, FormGroup, useTheme, Dialog, FormHelperText, Backdrop, Alert } from '@mui/material';
-import AlertTitle from '@mui/material/AlertTitle';
-import EditIcon from '@mui/icons-material/Edit';
 import AddIcon from '@mui/icons-material/Add';
-import Delete from '@mui/icons-material/Delete';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
-import AssociateAnimal from './AssociateAnimal.jsx';
+import AssociateAnimal from './AssociateAnimal.tsx';
 import axios from '../api/axiosConfig.js'
-import AssociateEnclosure from './AssociateEnclosure.jsx';
+import AssociateEnclosure from './AssociateEnclosure.tsx';
 import { getConfig } from '../api/getToken.js';
 import { CityFarm } from '../api/cityfarm.ts';
-import { Theme, ThemeProvider } from '@emotion/react';
-import { Animal } from '../api/animals.ts';
+import { ThemeProvider } from '@emotion/react';
 import { Event, EventOnce, EventRecurring } from '../api/events.ts';
+import Enclosure from './EnclosurePopover.tsx';
 
-export const EventCreator = ({farms, style, cityfarm, setEvent, modify, setModify, setShowError, initialEvent}
-        : {farms: any, style: any, cityfarm: CityFarm, setEvent: (eventID: string) => void, modify: boolean, setModify: (modify: boolean) => void,setShowError: (show: boolean) => void, initialEvent: Event | null}) => {
+interface EventCreatorProp {
+    farms: any
+    style: any
+    cityfarm: CityFarm
+    setEvent: (eventID: string) => void
+    initialEvent?: Event | null
+    modify?: boolean
+    setModify?: (modify: boolean) => void
+}
+
+export const EventCreator: React.FC<EventCreatorProp> = ({farms, style, cityfarm, setEvent, modify, setModify, initialEvent}) => {
     const [newEvent,setNewEvent] = useState<Event>(initialEvent ? initialEvent : new EventOnce({
         title: "",
         allDay: true,
@@ -41,6 +41,7 @@ export const EventCreator = ({farms, style, cityfarm, setEvent, modify, setModif
 
     const [inputErr, setInputErr] = useState({newTitle: true});
     const [recurring, setRecurring] = useState(initialEvent ? initialEvent instanceof EventRecurring : false);
+    const [showErr, setShowErr] = useState(false);
 
     useEffect(() => {
         console.log("initialEvent", initialEvent);
@@ -60,7 +61,6 @@ export const EventCreator = ({farms, style, cityfarm, setEvent, modify, setModif
 
     useEffect(() => {
         setInputErr({...inputErr, newTitle: newEvent.title === ''});
-        console.log(newEvent);
     }, [newEvent]);
 
     const setAddEventEnclosures = (enclosures) => {
@@ -141,7 +141,7 @@ export const EventCreator = ({farms, style, cityfarm, setEvent, modify, setModif
 
     const handleAddEvent = async() => {
         if (Object.values(inputErr).filter((err) => err === true).length > 0) {
-            return setShowError(true);
+            return setShowErr(true);
         }
 
         console.log("new", newEvent);
@@ -266,11 +266,11 @@ export const EventCreator = ({farms, style, cityfarm, setEvent, modify, setModif
         }
         cityfarm.getEvents(false);
         setEvent(newEvent.id);
-        setModify(false);
+        setModify!(false);
     }
 
     return (
-        <div style={{width: '400px', margin: '0 0 20px 0', padding: '10px', ...style}}>
+        <div style={{margin: '0', padding: '10px', ...style}}>
             <h2 className='boxTitle'>{!modify ? "Create New Event" : "Edit Event"}</h2>
             <div>
                 <TextField
@@ -288,7 +288,7 @@ export const EventCreator = ({farms, style, cityfarm, setEvent, modify, setModif
             <div className='smallMarginTop'>
                 {
                     modify ?    <ButtonGroup style={{float: 'right'}}>
-                                    <Button variant='contained' color='warning' onClick={()=>{setModify(false)}}>Discard</Button>
+                                    <Button variant='contained' color='warning' onClick={()=>{setModify!(false)}}>Discard</Button>
                                     <Button variant='contained' color='success' onClick={()=>{handlePatchEvent()}}>Update</Button>
                                 </ButtonGroup>
                             :   <Button variant='contained' style={{float: "right"}} onClick={()=>handleAddEvent()} endIcon={<AddIcon/>}>Create</Button>
@@ -369,33 +369,40 @@ export const EventCreator = ({farms, style, cityfarm, setEvent, modify, setModif
             <div>
                 <span style={{display: 'flex'}}><h3>Animals</h3><IconButton style={{height: '40px', margin: '12px 0 0 5px'}} onClick={() => {functionopenPopup("animals")}}><AddIcon color='primary'/></IconButton></span>
                 {/* idea: make this open the animal table page with a new column of checkboxes. Click on an associate animal(s) button would then pass a list of animal id to the calendar to the new event state. This could be re used in the modification of events.  */}
-                {newEvent.animals.map((animalID) => (
-                    <AnimalPopover key={animalID} animalID={animalID} />
-                ))}
+                {newEvent.animals.map((animal) => {
+                    return (
+                        <AnimalPopover key={animal.id} cityfarm={cityfarm} animalID={animal.id} />
+                    )
+                })}
                 <div id="AssociateAnimal" style={{textAlign:'center'}}>
                     <Dialog fullWidth maxWidth='md' open={openAnimalsPopup} onClose={functionclosePopup}>
                         <DialogTitle>Add Animal</DialogTitle>
                         <DialogContent>
-                            <AssociateAnimal setAnimals={setAddEventAnimals} animals={newEvent.animals} close={functionclosePopup}></AssociateAnimal>
+                            <AssociateAnimal setAnimals={setAddEventAnimals} cityfarm={cityfarm} animals={newEvent.animals} close={functionclosePopup}></AssociateAnimal>
                         </DialogContent>
                     </Dialog>
                 </div>
             </div>
             <div>
                 <span style={{display: 'flex'}}><h3>Enclosures</h3><IconButton style={{height: '40px', margin: '12.5px 0 0 5px'}} onClick={() => {functionopenPopup("enclosures")}}><AddIcon color='primary'/></IconButton></span>
-                {newEvent.enclosures.map((enclosureName, index) => (
-                    <p key={index}>{enclosureName}</p>
+                {newEvent.enclosures.map((enclosure, index) => (
+                    <Enclosure key={index} enclosureID={enclosure.id}/>
                 ))}{/*Add a way to remove enclosures from events */}
                 {/* idea: make this open the enlcosure  page with a new column of checkboxes. Click on an associate enlcosure(s) button would then pass a list of enclosure names to the calendar to be placed in a field*/}
                 <div id="AssociateEnclosure" style={{textAlign:'center'}}>
                     <Dialog fullWidth maxWidth='md' open={openEnclosurePopup} onClose={functionclosePopup}>
                         <DialogTitle>Add Enclosure</DialogTitle>
                         <DialogContent>
-                            <AssociateEnclosure enclosures={newEvent.enclosures} setEnclosures={setAddEventEnclosures} close={functionclosePopup}></AssociateEnclosure>
+                            <AssociateEnclosure enclosures={newEvent.enclosures} cityfarm={cityfarm} setEnclosures={setAddEventEnclosures} close={functionclosePopup}></AssociateEnclosure>
                         </DialogContent>
                     </Dialog>
                 </div>
             </div>
+            <Backdrop style={{zIndex: '1301', background: '#000000AA'}} open={showErr} onClick={() => setShowErr(false)}>
+            <Alert severity='warning'>
+                Please ensure event title is not empty
+            </Alert>
+            </Backdrop>
         </div>
     )
 }

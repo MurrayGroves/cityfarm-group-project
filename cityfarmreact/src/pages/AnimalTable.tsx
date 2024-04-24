@@ -1,17 +1,15 @@
 import React, {useEffect, useState} from "react";
 import axios from '../api/axiosConfig.js'
-import "./AnimalTable.css";
-import { DataGrid, FooterPropsOverrides, GridColDef, GridFilterModel, useGridApiRef } from '@mui/x-data-grid';
-import { Autocomplete, Backdrop, TableContainer, Paper, TextField, Button, Select, MenuItem, Fab, FormControlLabel, FormGroup, FormControl, FormHelperText, IconButton, Divider, Grid, Dialog, DialogContent, Alert, AlertTitle } from '@mui/material';
-import { GridAlignment } from "@mui/x-data-grid";
-
-import { Add as AddIcon, Edit as EditIcon, Delete, Done as DoneIcon, Clear as ClearIcon } from '@mui/icons-material';
-
+import FarmTabs from "../components/FarmTabs.tsx";
+import AnimalPopover from "../components/AnimalPopover.tsx";
 import AnimalCreator from "../components/AnimalCreator.tsx";
-import FarmMoveButton from "../components/FarmMoveButton.jsx";
-import AnimalPopover from "../components/AnimalPopover.jsx";
-import FarmTabs from "../components/FarmTabs.jsx";
-import { EventText } from "../components/EventText.jsx";
+import FarmMoveButton from "../components/FarmMoveButton.tsx";
+import "./AnimalTable.css";
+import { DataGrid, useGridApiRef, FooterPropsOverrides, GridColDef, GridFilterModel } from '@mui/x-data-grid';
+import { Collapse, Autocomplete, Backdrop, Paper, TextField, Button, Select, MenuItem, FormControl, IconButton, Divider, Dialog, DialogContent, Alert, AlertTitle, ButtonGroup } from '@mui/material';
+import { Add as AddIcon, Edit as EditIcon, Delete, Done as DoneIcon, Clear as ClearIcon, ArrowDropDownCircle as Arrow } from '@mui/icons-material';
+
+import { EventText } from "../components/EventText.tsx";
 import { EventSelectorButton } from "../components/EventSelectorButton.tsx";
 
 import { getConfig } from '../api/getToken.js';
@@ -29,14 +27,13 @@ const AnimalTable = ({farms, cityfarm, device}: {farms: any, cityfarm: CityFarm,
     const [filterModel, setFilterModel] = useState<GridFilterModel>({items: []});
     const [schemas, setSchemas] = useState<Schema[]>([]);
     const [selectedSchema, setSelectedSchema] = useState<Schema | null>(null);
-    const [newAnimal, setNewAnimal] = useState( useState({name: '', type: '', father: '', mother: '', male: true, alive: true, fields: {}}));
     const [modifyAnimal, setModifyAnimal] = useState<any>({});
     const [editingRow, setEditingRow] = useState(null);
 
-    const [selectedAnimals,setSelectedAnimals] = useState<string[]>([])
+    const [selectedAnimals, setSelectedAnimals] = useState<string[]>([])
 
     const [rows, setRows] = useState<any[]>([]);
-    const [deleteAnimal, setDeleteAnimal] = useState<Animal | null>(null)
+    const [deleteAnimals, setDeleteAnimals] = useState<Animal[]>(new Array<Animal>)
 
     const [create, setCreate] = useState(false);
     const [del, setDel] = useState(false);
@@ -45,42 +42,32 @@ const AnimalTable = ({farms, cityfarm, device}: {farms: any, cityfarm: CityFarm,
 
     const gridApi = useGridApiRef();
 
-    const handleDelAnimal = (animal) => (async () => {
-        try {
-            const response = await axios.delete(`/animals/by_id/${animal._id}`, token);
-        } catch (error) {
-            if (error.response.status === 401) {
-                window.location.href = "/login";
-                return;
-            } else {
-                window.alert(error);
-            }
-        }
+    const handleDelAnimals = (animals: Animal[]) => {
+        animals.map(async (animal) => {
+            try {
+                const response = await axios.delete(`/animals/by_id/${animal.id}`, token);
+            } catch (error) {
+                if (error.response.status === 401) {
+                    window.location.href = "/login";
+                    return;
+                } else {
+                    window.alert(error);
+                }
+            }})
         window.location.reload();
-    })()
+    }
 
     function displayAll() {
         (async () => {
-            const animals = await cityfarm.getAnimals(true, (animals) => {
-                setAnimalList(animals);
-            });
+            const animals = await cityfarm.getAnimals(false, farm, (animals) => {setAnimalList(animals)});
             setAnimalList(animals);
         })()
     }
 
     function getSchemas() {
         (async () => {
-            try {
-                const response = await axios.get(`/schemas`, token);
-                setSchemaList(response.data.reverse().map((schema) => new Schema(schema)));
-            } catch (error) {
-                if (error.response && error.response.status === 401) {
-                    window.location.href = "/login";
-                    return;
-                } else {
-                    window.alert(error);
-                }
-            }
+            const schemas = await cityfarm.getSchemas(true, (schemas) => {setSchemaList(schemas)});
+            setSchemaList(schemas);
         })()
     }
 
@@ -95,6 +82,7 @@ const AnimalTable = ({farms, cityfarm, device}: {farms: any, cityfarm: CityFarm,
             try {
                 const response = await axios.get(`/animals/by_name/${searchTerm}`, {params: {farm: farm}, ...token});
                 setAnimalList(response.data);
+                console.log(response);
             } catch (error) {
                 if (error.response.status === 401) {
                     window.location.href = "/login";
@@ -106,23 +94,6 @@ const AnimalTable = ({farms, cityfarm, device}: {farms: any, cityfarm: CityFarm,
         })()
     },[searchTerm, farm])
 
-
-    useEffect(() => {
-        (async () => {
-            try {
-                const response = await axios.get(`/schemas`, token);
-                setSchemas(response.data.map((schema) => new Schema(schema)));
-            } catch (error) {
-                if (error.response.status === 401) {
-                    window.location.href = "/login";
-                    return;
-                } else {
-                    window.alert(error);
-                }
-            }
-        })()
-    }, [])
-
     async function calculateColumnsAndRows(schema: Schema | null) {
         let newCols = defaultCols;
 
@@ -130,7 +101,7 @@ const AnimalTable = ({farms, cityfarm, device}: {farms: any, cityfarm: CityFarm,
             for (let key in schema.fields) {
                 if (schema.fields[key].type === "cityfarm.api.calendar.EventRef") {
                     newCols.push({type: 'singleSelect', field: key, headerName: key, headerClassName: 'grid-header', headerAlign: 'left', flex: 1, editable: true, renderEditCell: (params) => {
-                        return <EventSelectorButton key={key} style={{margin: '5%'}} farms={farms} cityfarm={cityfarm} currentEventID={params.row[key]} setEventID={(eventID) => {
+                        return <EventSelectorButton open={key} style={{margin: '5%'}} farms={farms} cityfarm={cityfarm} currentEventID={params.row[key]} setEventID={(eventID) => {
                             console.log("Calling setEventID with ", eventID)
                             let current = {...modifyAnimal};
                             if (current.fields === undefined) {
@@ -158,7 +129,7 @@ const AnimalTable = ({farms, cityfarm, device}: {farms: any, cityfarm: CityFarm,
         const defaultRows = animalList.map((animal) => ({
             id: animal.id,
             name: animal,
-            type: animal.type.charAt(0).toUpperCase() + animal.type.slice(1),
+            type: animal.type,
             father: animal.father !== null ? animal.father : '',
             mother: animal.mother !== null ? animal.mother : '',
             sex: animal.sex,
@@ -350,7 +321,7 @@ const AnimalTable = ({farms, cityfarm, device}: {farms: any, cityfarm: CityFarm,
 
     const defaultCols: GridColDef[] = [
         { field: 'name', type: 'singleSelect', headerName: 'Name', headerClassName: 'grid-header', headerAlign: 'left', flex: 1, editable: true,
-        renderCell: (animal) => {return (animal.value.id ? <AnimalPopover animalID={animal.value.id}/> : <p>Loading...</p>)}, renderEditCell: (params) => {
+        renderCell: (animal) => {return (animal.value.id ? <AnimalPopover cityfarm={cityfarm} animalID={animal.value.id}/> : <p>Loading...</p>)}, renderEditCell: (params) => {
 
                 params.value = params.value.name;
                 return <FormControl sx={{width: '100%'}}>
@@ -382,7 +353,7 @@ const AnimalTable = ({farms, cityfarm, device}: {farms: any, cityfarm: CityFarm,
         { field: 'father', type: 'singleSelect', headerName: 'Father', headerClassName: 'grid-header', headerAlign: 'left', flex: 1, editable: true,
         renderCell:(father)=>{
             return father.value?
-             <AnimalPopover key={father.value} animalID={father.value}/> : "Unregistered"}, renderEditCell: (params) => {
+             <AnimalPopover key={father.value} cityfarm={cityfarm} animalID={father.value}/> : "Unregistered"}, renderEditCell: (params) => {
                 let initial_animal = animalList.find((animal) => {return animal.id === params.value});
                 let initial_name = initial_animal ? initial_animal.name : 'Unregistered';
                 return (
@@ -417,7 +388,7 @@ const AnimalTable = ({farms, cityfarm, device}: {farms: any, cityfarm: CityFarm,
             }},
         { field: 'mother', type: 'singleSelect', headerName: 'Mother', headerClassName: 'grid-header', headerAlign: 'left', flex: 1, editable: true,
             renderCell:(mother)=>{return mother.value?
-                <AnimalPopover key={mother.value} animalID={mother.value}/> : "Unregistered"}, renderEditCell: (params) => {
+                <AnimalPopover key={mother.value} cityfarm={cityfarm} animalID={mother.value}/> : "Unregistered"}, renderEditCell: (params) => {
                     let initial_animal = animalList.find((animal) => {return animal.id === params.value});
                     let initial_name = initial_animal ? initial_animal.name : 'Unregistered';
                     return (<Autocomplete
@@ -508,7 +479,9 @@ const AnimalTable = ({farms, cityfarm, device}: {farms: any, cityfarm: CityFarm,
                 />)
         }},
     ];
+
     const [cols, setCols] = useState(defaultCols);
+    const [createClicked, setCreateClicked] = useState(false);
 
     return(<>
         <h1>Livestock</h1>
@@ -519,7 +492,7 @@ const AnimalTable = ({farms, cityfarm, device}: {farms: any, cityfarm: CityFarm,
                 style={{margin: '0 20px 20px 0'}}
                 onChange={(e) => setSearchTerm(e.target.value)}
             />
-            <FarmTabs farms={farms} selectedFarm={farm} setSelectedFarm={setFarm}/>
+            <FarmTabs farms={farms} setSelectedFarm={setFarm}/>
         </span>
         <div style={{display: 'flex', flexDirection: 'column', height: 'calc(100% - 150.88px)'}}>
         {/* this flex ain't flexing :( */}
@@ -536,7 +509,8 @@ const AnimalTable = ({farms, cityfarm, device}: {farms: any, cityfarm: CityFarm,
                         selectedSchema,
                         setSelectedSchema,
                         create,
-                        setCreate
+                        setCreate,
+                        device
                     } as FooterPropsOverrides
                 }}
                 onRowSelectionModelChange={(ids) => {
@@ -578,8 +552,13 @@ const AnimalTable = ({farms, cityfarm, device}: {farms: any, cityfarm: CityFarm,
                                 <EditIcon/>
                             </IconButton>
                             <IconButton onClick={() => {
-                                let ani = animalList.find((animal) => {return animal.id === params.row.id});
-                                if (ani) setDeleteAnimal(ani);
+                                let animals = new Array<Animal>
+                                if (gridApi.current.getSelectedRows().size > 0) {
+                                    animals = animalList.filter((animal => Array.from(gridApi.current.getSelectedRows().keys()).includes(animal.id)))
+                                } else {
+                                    animals = animalList.filter((animal) => animal.id === params.row.id)
+                                }
+                                setDeleteAnimals(animals);
                                 setDel(true);
                             }}>
                                 <Delete/>
@@ -587,7 +566,8 @@ const AnimalTable = ({farms, cityfarm, device}: {farms: any, cityfarm: CityFarm,
                             </div>
                     }
                 }]}
-                rows={rows} onCellClick={(params, event, details) => {
+                rows={rows}
+                onCellClick={(params, event, details) => {
                     if (params.field === 'type') {
                         const newModel: GridFilterModel = {
                             items: [
@@ -622,16 +602,27 @@ const AnimalTable = ({farms, cityfarm, device}: {farms: any, cityfarm: CityFarm,
         {device === 'mobile' ?
         <Dialog PaperProps={{sx: {overflow: 'visible'}}} fullWidth maxWidth='xl' open={create} onClose={() => setCreate(false)}>
             <DialogContent sx={{p: 0}}>
-                <AnimalCreator cityfarm={cityfarm} animalList={animalList} schemaList={schemaList} farms={farms} device={device}/>
+                <AnimalCreator cityfarm={cityfarm} animalList={animalList} schemaList={schemaList} create={create} createClicked={createClicked} setCreateClicked={setCreateClicked} farms={farms} device={device}/>
             </DialogContent>
         </Dialog>
-        :
-        <>{create && <Paper sx={{mt: '10px'}} elevation={3}><AnimalCreator cityfarm={cityfarm} animalList={animalList} schemaList={schemaList} farms={farms} device={device}/></Paper>}</>}
-        <div className="fmButtons">{
-            selectedAnimals.length > 0 ? (
-                Object.entries(farms).map((farm) => (
-                        <React.Fragment key={String(farm)}>
-                            <FarmMoveButton farm={farm} ids={selectedAnimals}/>
+        : <>
+        <div style={{marginTop: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+            <h2 style={{margin: '0'}}>Create Animal</h2>
+            <ButtonGroup>
+                {create && <Button variant='contained' onClick={() => setCreateClicked(true)} color='success' endIcon={<AddIcon/>}>Create</Button>}
+                <Button variant='contained' onClick={() => setCreate(!create)} color={create ? 'warning' : 'primary'} endIcon={create ? <Delete/> : <Arrow/>}>{create ? 'Discard' : 'Expand'}</Button>
+            </ButtonGroup>
+        </div>
+        <Collapse in={create}>
+            <Paper sx={{mt: '10px'}} elevation={3}>
+                <AnimalCreator cityfarm={cityfarm} animalList={animalList} schemaList={schemaList} create={create} createClicked={createClicked} setCreateClicked={setCreateClicked} farms={farms} device={device}/>
+            </Paper>
+        </Collapse></>}
+        <div className="fmButtons">
+            {selectedAnimals.length > 0 ? (
+                Object.values(farms).map((farm, index) => (
+                        <React.Fragment key={index}>
+                            <FarmMoveButton cityfarm={cityfarm} farm={farm as string} ids={selectedAnimals}/>
                         </React.Fragment>
                     )))
             :  ''}
@@ -640,10 +631,12 @@ const AnimalTable = ({farms, cityfarm, device}: {farms: any, cityfarm: CityFarm,
         <Backdrop style={{zIndex: '4', background: '#000000AA'}} open={del} onClick={() => {setDel(false);}}>
             <Alert
                 severity='warning'
-                action={<Button color='warning' variant='contained' onClick={() => handleDelAnimal(deleteAnimal)}>Yes</Button>}
+                action={<Button color='warning' variant='contained' onClick={() => handleDelAnimals(deleteAnimals)}>Yes</Button>}
             >
                 <AlertTitle>Confirmation</AlertTitle>
-                Are you sure you want to delete {deleteAnimal?.name}?
+                {deleteAnimals.length > 1
+                    ? <p>Are you sure you want to delete {deleteAnimals.at(0)?.name} and {deleteAnimals.length - 1} other(s)?</p>
+                    : deleteAnimals.length > 0 && <p>Are you sure you want to delete {deleteAnimals.at(0)?.name}?</p>}
             </Alert>
         </Backdrop>
     </>)
@@ -654,10 +647,11 @@ type CustomFooterProps = {
     selectedSchema: any,
     setSelectedSchema: any,
     create: any,
-    setCreate: any
+    setCreate: any,
+    device: any
 }
 
-const CustomFooter: React.FC<CustomFooterProps> = ({setFilterModel, selectedSchema, setSelectedSchema, create, setCreate}: {setFilterModel: any, selectedSchema: Schema, setSelectedSchema: (schema: Schema | null) => void, create: boolean, setCreate: (create: boolean) => void}) => {
+const CustomFooter: React.FC<CustomFooterProps> = ({setFilterModel, selectedSchema, setSelectedSchema, create, setCreate, device}: {setFilterModel: any, selectedSchema: Schema, setSelectedSchema: (schema: Schema | null) => void, create: boolean, setCreate: (create: boolean) => void, device: String}) => {
     return (<>
         <Divider/>
         <div style={{maxHeight: '56px', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
@@ -668,10 +662,7 @@ const CustomFooter: React.FC<CustomFooterProps> = ({setFilterModel, selectedSche
             }}>Clear Filter</Button>
             {selectedSchema ? <p style={{margin: '10px 15px 10px 5px'}}>Showing {selectedSchema.name}s</p> : <></>}
             </span>
-            {create ?
-            <Button sx={{width: '100px', margin: '10px'}} endIcon={<Delete/>} variant='contained' color='warning' onClick={() => setCreate(false)}>Discard</Button>
-            : <Button sx={{width: '100px', margin: '10px'}} variant="contained" color='primary' onClick={() => setCreate(true)} endIcon={<AddIcon/>}>Create</Button>
-            }
+            {device === 'mobile' && <Button sx={{width: '100px', margin: '10px'}} variant="contained" color='primary' onClick={() => setCreate(true)} endIcon={<AddIcon/>}>Create</Button>}
         </div>
     </>)
 }

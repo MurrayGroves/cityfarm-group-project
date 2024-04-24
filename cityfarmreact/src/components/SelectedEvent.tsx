@@ -1,17 +1,17 @@
-import AnimalPopover from "./AnimalPopover";
+import AnimalPopover from "./AnimalPopover.tsx";
 import * as React from "react";
-import CloseIconLight from "../assets/close-512-light.webp";
-import CloseIconDark from "../assets/close-512-dark.webp";
+import Close from "@mui/icons-material/Close";
 import IconButton from "@mui/material/IconButton";
 import { useTheme } from "@mui/material";
+import { Event } from '../api/events.ts';
 
 const SelectedEvent = (props) => {
 
-  const event = props.event;
+  const event: Event = props.event;
   const farms = props.farms;
   const theme = useTheme().palette;
 
-  if (!event || event === "No event selected") {
+  if (!event) {
     return <></>;
   }
 
@@ -19,7 +19,7 @@ const SelectedEvent = (props) => {
       <div>
         <div style={{display: "flex", justifyContent: "space-between"}}>
           <h2 className='boxTitle'>Selected Event</h2>
-          <IconButton className='closeButton' onClick={() => props.setEvent("No event selected")}><img src={theme.mode === 'light' ? CloseIconLight : CloseIconDark} alt='close button'/></IconButton>
+          <IconButton className='closeButton' onClick={() => props.setEvent("")}><Close/></IconButton>
         </div>
         <div>
           <h3>{event.title}</h3>
@@ -41,7 +41,7 @@ const SelectedEvent = (props) => {
           {event.animals.length !== 0 && <h3>Animals</h3>}
 
           {event.animals.map((animal) => (
-              <AnimalPopover key={animal._id} animalID={animal._id}/>
+              <AnimalPopover key={animal.id} cityfarm={props.cityfarm} animalID={animal.id}/>
           ))}
         </div>
       </div>

@@ -1,35 +1,20 @@
-import React, {useState, useEffect} from 'react';
+import React from 'react';
 import "../pages/Calendar.css";
-import AnimalPopover from "./AnimalPopover";
-import Close from '@mui/icons-material/Close';
-import Paper from '@mui/material/Paper';
-import TextField from '@mui/material/TextField';
-import {  DialogContent, DialogTitle, Fab, ToggleButton, ToggleButtonGroup } from "@mui/material";
-import { IconButton, Button, ButtonGroup, Checkbox, FormControlLabel, FormGroup, Dialog, } from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit';
-import AddIcon from '@mui/icons-material/Add';
-import Delete from '@mui/icons-material/Delete';
-import AssociateAnimal from './AssociateAnimal';
-import AssociateEnclosure from './AssociateEnclosure';
+import AnimalPopover from "./AnimalPopover.tsx";
+import { Close, Edit as EditIcon, Delete } from '@mui/icons-material';
+import { IconButton } from '@mui/material';
 import { EventCreator } from './EventCreator.tsx';
 import { EventInstance, Event, EventRecurring, EventOnce } from '../api/events.ts';
 import { CityFarm } from '../api/cityfarm.ts';
+import Enclosure from './EnclosurePopover.tsx';
 
 
 const EventDisplay = ({
-    selectedEvent, setSelectedEvent,
-    modifiedEvent, modifyEvent, setModifiedEvent, setModifiedEventAnimals, setModifiedEventEnclosures, setModifyEvent,
-    createEvent,
-    handleDelEvent, handlePatchEvent,
-    showingTime, functionopenPopup, functionclosePopup,
-    openAnimalsPopup, openEnclosurePopup,
-    changeAllDay,
-    farms, cityfarm,
-    setShowErr
-    }: {selectedEvent: EventInstance | null, setSelectedEvent: (eventInstance: EventInstance | null) => void, modifiedEvent: Event | null, modifyEvent: boolean, setModifiedEvent: (event: Event | null) => void,
-        setModifiedEventAnimals: (animals: string[]) => void, setModifiedEventEnclosures: (enclosures: string[]) => void, setModifyEvent: (modify: boolean)=>void,
-        createEvent: boolean, handleDelEvent: () => void, handlePatchEvent: () => void, showingTime: (show: boolean) => JSX.Element, functionopenPopup: (type: string) => void, functionclosePopup: () => void,
-        openAnimalsPopup: boolean, openEnclosurePopup: boolean, changeAllDay: (allDay: boolean, type: string) => void, farms: any, cityfarm: CityFarm, setShowErr: (show: boolean) => void
+    selectedEvent, setSelectedEvent, modifyEvent, setModifyEvent,
+    handleDelEvent, farms, cityfarm }:
+    {selectedEvent: EventInstance | null, setSelectedEvent: (eventInstance: EventInstance | null) => void, modifyEvent: boolean, setModifiedEvent: (event: Event | null) => void,
+        setModifyEvent: (modify: boolean)=>void,
+        handleDelEvent: () => void, farms: any, cityfarm: CityFarm
     }) => {
     
         console.log("selected", selectedEvent);
@@ -65,14 +50,16 @@ const EventDisplay = ({
                         {selectedEvent.event.farms?.includes(farms.SW) ? <p>St Werburghs</p> : <></>}
                         {selectedEvent.event.animals?.length > 0 ? <h3>Animals</h3> : <></>}
                         {selectedEvent.event.animals?.map((animal) => (
-                            <AnimalPopover key={animal._id} animalID={animal._id}/>
+                            <AnimalPopover key={animal.id} cityfarm={cityfarm} animalID={animal.id}/>
                         ))}
                         {selectedEvent.event.enclosures?.length > 0 &&
                         <div>
                             <h3>Enclosures</h3>
-                            {selectedEvent.event.enclosures.map((enclosure, index) => (
-                                <p key={index} className='noMarginTop'>{enclosure.name}</p>
-                            ))}
+                            {selectedEvent.event.enclosures.map((enclosure, index) => {
+                                return (
+                                    <Enclosure key={index} enclosureID={enclosure.id}/>
+                                )
+                            })}
                         </div>}
                         {selectedEvent.event.description !== "" ?
                         <div>
@@ -83,7 +70,7 @@ const EventDisplay = ({
                 </>
                 :
                 <>
-                <EventCreator initialEvent={selectedEvent?.event ?? null} modify={modifyEvent} setModify={setModifyEvent} setShowError={setShowErr} farms={farms} cityfarm={cityfarm} setEvent={(eventID)=>{cityfarm.getEvent(eventID, false).then((event) => {
+                <EventCreator initialEvent={selectedEvent?.event ?? null} modify={modifyEvent} setModify={setModifyEvent} farms={farms} cityfarm={cityfarm} setEvent={(eventID)=>{cityfarm.getEvent(eventID, false).then((event) => {
                     if (event === null) {
                         setSelectedEvent(null);
                         return;
