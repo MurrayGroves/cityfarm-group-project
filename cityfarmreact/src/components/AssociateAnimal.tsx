@@ -19,6 +19,12 @@ const AssociateAnimal = ({ animals, setAnimals, cityfarm, close}: {animals: Anim
 
     const token = getConfig();
 
+    /*
+    
+    ADJUST TO USE CONFIRM BUTTON SO IT DOESN'T REMOVE ANIMALS WHEN THEY DON'T APPEAR IN SEARCH RESULTS
+
+    */
+
     useEffect(() => {
         setLinkedAnimals(animalIDs.map((id) => animalList.find((animal) => animal.id === id)!))
     }, [animalIDs])

@@ -32,8 +32,8 @@ export const EventSelectorButton = (
         currentEventID === null || currentEventID === '' ?
             <div style={style}>
                 <Button variant="contained" onClick={() => setEventDialog(open)}>Select Event</Button>
-                <Dialog open={eventDialog === open} onClose={() => setEventDialog(null)}>
-                    <FindOrCreateEvent style={{padding: '1%', width: '30vw', height: '80vh'}} farms={farms} cityfarm={cityfarm} setEvent={(eventID) => {
+                <Dialog fullWidth maxWidth='xs' open={eventDialog === open} onClose={() => setEventDialog(null)}>
+                    <FindOrCreateEvent style={{padding: '10px', height: '60vw'}} farms={farms} cityfarm={cityfarm} setEvent={(eventID) => {
                         setEventID(eventID);
                     }}/>
                 </Dialog>

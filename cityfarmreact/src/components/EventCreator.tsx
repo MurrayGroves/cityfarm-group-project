@@ -270,7 +270,7 @@ export const EventCreator: React.FC<EventCreatorProp> = ({farms, style, cityfarm
     }
 
     return (
-        <div style={{width: '400px', margin: '0 0 20px 0', padding: '10px', ...style}}>
+        <div style={{margin: '0', padding: '10px', ...style}}>
             <h2 className='boxTitle'>{!modify ? "Create New Event" : "Edit Event"}</h2>
             <div>
                 <TextField
