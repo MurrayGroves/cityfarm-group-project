@@ -41,9 +41,6 @@ public abstract class Event {
 
     public Boolean allDay;
 
-    public ZonedDateTime start;
-    public ZonedDateTime end;
-
     @Id
     @Nullable
     public String id;

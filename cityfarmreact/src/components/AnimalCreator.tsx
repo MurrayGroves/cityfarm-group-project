@@ -10,7 +10,7 @@ import { CityFarm } from '../api/cityfarm.ts';
 import { Schema, Animal, Sex } from '../api/animals.ts';
 import { EventSelectorButton } from './EventSelectorButton.tsx';
 
-const AnimalCreator = ({farms, schemaList, animalList, device, create, createClicked, setCreateClicked}: {farms: any, schemaList: Schema[], animalList: Animal[], device: any, create: boolean, createClicked: boolean, setCreateClicked: (clicked: boolean) => void}) => {
+const AnimalCreator = ({cityfarm, farms, schemaList, animalList, device, create, createClicked, setCreateClicked}: {cityfarm: CityFarm, farms: any, schemaList: Schema[], animalList: Animal[], device: any, create: boolean, createClicked: boolean, setCreateClicked: (clicked: boolean) => void}) => {
     const [newAnimal, setNewAnimal] = useState<any>(new Animal({name: '', type: '', father: '', mother: '', sex: '', alive: true, farm: '', fields: {}, notes: ''}));
     const [schema, setSchema] = useState<Schema | null>();
     const [fieldList, setFieldList] = useState<string[]>([]);
@@ -145,7 +145,7 @@ const AnimalCreator = ({farms, schemaList, animalList, device, create, createCli
                 );
             case "cityfarm.api.calendar.EventRef":
                 return (
-                    <EventSelectorButton open={key} cityfarm={new CityFarm} farms={farms} currentEventID={newAnimal.fields[field]} setEventID={(eventID) => {
+                    <EventSelectorButton open={key} cityfarm={cityfarm} farms={farms} currentEventID={newAnimal.fields[field]} setEventID={(eventID) => {
                         let newFields = newAnimal.fields;
                         newFields[field] = eventID;
                         setNewAnimal({...newAnimal, fields: newFields});

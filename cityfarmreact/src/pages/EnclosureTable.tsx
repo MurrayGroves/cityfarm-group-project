@@ -11,7 +11,8 @@ import AnimalPopover from "../components/AnimalPopover.tsx";
 import EnclosureCreator from "../components/EnclosureCreator.jsx";
 import { getConfig } from '../api/getToken.js';
 import { Schema } from '../api/animals.ts';
-import Enclosure from "../components/Enclosure.tsx";
+import EnclosurePopover from "../components/EnclosurePopover.tsx";
+import { Enclosure } from "../api/enclosures.ts";
 
 declare module '@mui/x-data-grid' {
     interface FooterPropsOverrides {
@@ -25,10 +26,10 @@ declare module '@mui/x-data-grid' {
 }
 
 const EnclosureTable = ({farms, cityfarm}) => {
-    const [enclosureList, setEnclosureList] = useState([]); /* The State for the list of enclosures. The initial state is [] */
-    const [searchTerm, setSearchTerm] = useState(''); /* The term being search for in the searchbar */
-    const [editMode, setEditMode] = useState(false); /* Whether edit mode is on. Initial state is false */
-    const [create, setCreate] = useState(false);
+    const [enclosureList, setEnclosureList] = useState<Enclosure[]>([]); /* The State for the list of enclosures. The initial state is [] */
+    const [searchTerm, setSearchTerm] = useState<string>(''); /* The term being search for in the searchbar */
+    const [editMode, setEditMode] = useState<boolean>(false); /* Whether edit mode is on. Initial state is false */
+    const [create, setCreate] = useState<boolean>(false);
 
     const token = getConfig();
 
@@ -38,7 +39,7 @@ const EnclosureTable = ({farms, cityfarm}) => {
         (async () => {
             try {
                 const response = await axios.get(`/enclosures`, {params: {farm: farm}, ...token});
-                setEnclosureList(response.data);
+                setEnclosureList(response.data.map((enclosure) => new Enclosure(enclosure)));
             } catch (error) {
                 if (error.response.status === 401) {
                     window.location.href = "/login";
@@ -72,18 +73,18 @@ const EnclosureTable = ({farms, cityfarm}) => {
 
     const cols: GridColDef[] = [
         { field: 'name', editable: true, headerName: 'Name', headerClassName: 'grid-header', headerAlign: 'left', flex: 1,
-            renderCell: (enclosure) => <Enclosure enclosureID={enclosure.value._id} />
+            renderCell: (enclosure) => <EnclosurePopover enclosureID={enclosure.value.id} />
         },
         { field: 'holding', headerName: 'Holding', headerClassName: 'grid-header', headerAlign: 'left', flex: 1, cellClassName: 'scroll-cell',
-            renderCell: (animalList) => <ul>{animalList.value.map(animal => {console.log(animal); return(<li key={animal._id}><AnimalPopover cityfarm={cityfarm} animalID={animal._id}/></li>)})}</ul>
+            renderCell: (animalList) => <ul>{animalList.value.map(animal => {return(<li key={animal.id}><AnimalPopover cityfarm={cityfarm} animalID={animal.id}/></li>)})}</ul>
         },
         { field: 'capacities', headerName: 'Capacities', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
     ]
 
     console.log(enclosureList)
 
-    const rows = enclosureList.map((enclosure: any) => ({
-        id: enclosure._id,
+    const rows = enclosureList.map((enclosure: Enclosure) => ({
+        id: enclosure.id,
         name: enclosure,
         holding: enclosure.holding,
         capacities: Object.keys(enclosure.capacities).map((key) => {

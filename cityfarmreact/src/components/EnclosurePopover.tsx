@@ -3,13 +3,14 @@ import Popover from '@mui/material/Popover';
 import Typography from '@mui/material/Typography';
 import {Link} from "react-router-dom";
 import axios from '../api/axiosConfig.js'
-import { getConfig } from '../api/getToken';
+import { getConfig } from '../api/getToken.js';
+import { Enclosure } from '../api/enclosures.ts';
 
-const Enclosure = ({enclosureID}) => {
+const EnclosurePopover = ({ enclosureID }) => {
     const token = getConfig();
 
     const [anchorEl, setAnchorEl] = useState(null);
-    const [chosenEnclosure, setChosenEnclosure] = useState({name: 'Loading...', holding: 'Loading...', capacities: 'Loading...'});
+    const [chosenEnclosure, setChosenEnclosure] = useState<Enclosure>(new Enclosure({name: 'Loading...', holding: [], capacities: {}}));
 
     const handlePopoverOpen = (event) => {
         setAnchorEl(event.currentTarget);
@@ -25,8 +26,9 @@ const Enclosure = ({enclosureID}) => {
         console.log(enclosureID);
         enclosureID &&
         (async () => {
-            const enclosure = await axios.get(`/enclosures/by_id/${enclosureID}`, token)
-            setChosenEnclosure(enclosure.data);
+            const response = await axios.get(`/enclosures/by_id/${enclosureID}`, token)
+            const enclosure = response.data;
+            setChosenEnclosure(new Enclosure(enclosure));
         })()
     }, [enclosureID]);
 
@@ -68,4 +70,4 @@ const Enclosure = ({enclosureID}) => {
     );
 }
 
-export default Enclosure;
+export default EnclosurePopover;

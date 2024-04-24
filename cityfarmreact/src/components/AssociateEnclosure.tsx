@@ -1,29 +1,37 @@
 import React, { useState, useEffect } from "react";
-import axios from '../api/axiosConfig'
-import AnimalPopover from "../components/AnimalPopover.tsx";
+import axios from '../api/axiosConfig.js'
+import AnimalPopover from "./AnimalPopover.tsx";
 import "../pages/AnimalTable.css";
-import { DataGrid } from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridRowSelectionModel } from '@mui/x-data-grid';
 import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
 import {Button} from "@mui/material";
+import EnclosurePopover from "./EnclosurePopover.tsx";
+import { getConfig } from '../api/getToken.js'; 
+import { Enclosure } from "../api/enclosures.ts";
+import { CityFarm } from "../api/cityfarm.ts";
+import { Animal } from "../api/animals.ts";
 
-import { getConfig } from '../api/getToken';
-
-const AssociateEnclosure = (props) => {
-    const [linkedEnclosures, setLinkedEnclosures] = useState([]);
-    const [searchTerm, setSearchTerm] = useState('');
-    const [enclosureList, setEnclosureList] = useState([]);
-    const [changed, setChanged] = useState(false);
+const AssociateEnclosure = ({enclosures, setEnclosures, cityfarm, close}: {enclosures: Enclosure[], setEnclosures: (enclosures: Enclosure[]) => void, cityfarm: CityFarm, close: () => void}) => {
+    const [enclosureIDs, setEnclosureIDs] = useState<GridRowSelectionModel>([])
+    const [linkedEnclosures, setLinkedEnclosures] = useState<Enclosure[]>([]);
+    const [searchTerm, setSearchTerm] = useState<string>('');
+    const [enclosureList, setEnclosureList] = useState<Enclosure[]>([]);
 
     const token = getConfig();
 
     useEffect(() => {
-        setLinkedEnclosures(props.enclosures);
-        console.log('getting enclosures', props.enclosures);
+        setLinkedEnclosures(enclosureIDs.map((id) => enclosureList.find((enclosure) => enclosure.id === id)!));
+        console.log('list vs ids:', enclosureList, enclosureIDs)
+    }, [enclosureIDs])
+
+    useEffect(() => {
+        setEnclosureIDs(enclosures.map((enclosure) => enclosure.id));
+        console.log('getting enclosures', enclosures);
     }, [])
     
     useEffect(() => {
-        changed && props.setEnclosures(linkedEnclosures);
+        setEnclosures(linkedEnclosures);
         console.log('setting enclosures', linkedEnclosures);
     }, [linkedEnclosures])
 
@@ -31,7 +39,7 @@ const AssociateEnclosure = (props) => {
         (async () => {
             try {
                 const response = await axios.get(`/enclosures`, token);
-                setEnclosureList(response.data);
+                setEnclosureList(response.data.map((enclosure) => new Enclosure(enclosure)));
             } catch (error) {
                 if (error.response.status === 401) {
                     window.location.href = "/login";
@@ -51,7 +59,7 @@ const AssociateEnclosure = (props) => {
             }
             try {
                 const response = await axios.get(`/enclosures/by_name/${searchTerm}`, token);
-                setEnclosureList(response.data);
+                setEnclosureList(response.data.map((enclosure) => new Enclosure(enclosure)));
             } catch (error) {
                 if (error.response.status === 401) {
                     window.location.href = "/login";
@@ -63,17 +71,19 @@ const AssociateEnclosure = (props) => {
         })()
     },[searchTerm])
 
-    const cols =  [
-        { field: 'name', editable: true, headerName: 'Name', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
+    const cols: GridColDef[] = [
+        { field: 'name', editable: true, headerName: 'Name', headerClassName: 'grid-header', headerAlign: 'left', flex: 1,
+            renderCell: (enclosure) => <EnclosurePopover enclosureID={enclosure.value.id}/>
+        },
         { field: 'holding', headerName: 'Holding', headerClassName: 'grid-header', headerAlign: 'left', flex: 1, cellClassName: 'scroll-cell',
-            renderCell: (animalList) => <ul>{animalList.value.map(animal => {console.log(animal); return(<li key={animal._id}><AnimalPopover cityfarm={props.cityfarm} animalID={animal._id}/></li>)})}</ul>
+            renderCell: (animalList) => <ul>{animalList.value.map((animal: Animal) => {return(<li key={animal.id}><AnimalPopover cityfarm={cityfarm} animalID={animal.id}/></li>)})}</ul>
         },
         { field: 'capacities', headerName: 'Capacities', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
     ]
 
-    const rows = enclosureList.map((enclosure) => ({
-        id: enclosure._id,
-        name: enclosure.name,
+    const rows = enclosureList.map((enclosure: Enclosure) => ({
+        id: enclosure.id,
+        name: enclosure,
         holding: enclosure.holding,
         capacities: Object.keys(enclosure.capacities).map((key) => {
             return (` ${key}: ${enclosure.capacities[key]}`)
@@ -88,7 +98,6 @@ const AssociateEnclosure = (props) => {
                 style={{margin: '0 20px 20px 0'}}
                 onChange={(e) => setSearchTerm(e.target.value)}
             />
-        {/*<FarmTabs selectedFarm={farm} setSelectedFarm={setFarm}/>*/}
             <Paper elevation={3} style={{ marginBottom: '20px'}}>
                 <DataGrid
                     autoHeight
@@ -96,14 +105,13 @@ const AssociateEnclosure = (props) => {
                     columns={cols}
                     rows={rows}
                     disableRowSelectionOnClick
-                    rowSelectionModel={linkedEnclosures}
+                    rowSelectionModel={enclosureIDs}
                     onRowSelectionModelChange={(ids) => {
-                        (changed || linkedEnclosures.length < 1) && setLinkedEnclosures(ids);
-                        setChanged(true);
+                        setEnclosureIDs(ids);
                     }}
                 />
             </Paper>
-            <Button variant='outlined' style={{float: "right"}} onClick={() => {props.close()}}>Close</Button>
+            <Button variant='outlined' style={{float: "right"}} onClick={() => {close()}}>Close</Button>
         </div>
     )
 } 

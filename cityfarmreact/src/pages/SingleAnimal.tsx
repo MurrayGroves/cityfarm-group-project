@@ -9,7 +9,7 @@ import { CityFarm } from "../api/cityfarm.ts";
 import { Animal, Schema, Sex } from "../api/animals.ts";
 import { Event } from "../api/events.ts";
 import { Grid } from "@mui/material";
-import Enclosure from "../components/Enclosure.tsx";
+import Enclosure from "../components/EnclosurePopover.tsx";
 
 const SingleAnimal = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
 

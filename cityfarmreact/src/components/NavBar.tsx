@@ -4,7 +4,6 @@ import {Link} from "react-router-dom";
 import Button from '@mui/material/Button';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { useNavigate } from "react-router-dom";
-import question from "../assets/question mark.png"
 import Switch from '@mui/material/Switch';
 import QuestionPopover from "./QuestionPopover.tsx";
 import Drawer from '@mui/material/Drawer';

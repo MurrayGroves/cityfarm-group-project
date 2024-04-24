@@ -602,7 +602,7 @@ const AnimalTable = ({farms, cityfarm, device}: {farms: any, cityfarm: CityFarm,
         {device === 'mobile' ?
         <Dialog PaperProps={{sx: {overflow: 'visible'}}} fullWidth maxWidth='xl' open={create} onClose={() => setCreate(false)}>
             <DialogContent sx={{p: 0}}>
-                <AnimalCreator animalList={animalList} schemaList={schemaList} create={create} createClicked={createClicked} setCreateClicked={setCreateClicked} farms={farms} device={device}/>
+                <AnimalCreator cityfarm={cityfarm} animalList={animalList} schemaList={schemaList} create={create} createClicked={createClicked} setCreateClicked={setCreateClicked} farms={farms} device={device}/>
             </DialogContent>
         </Dialog>
         : <>
@@ -615,7 +615,7 @@ const AnimalTable = ({farms, cityfarm, device}: {farms: any, cityfarm: CityFarm,
         </div>
         <Collapse in={create}>
             <Paper sx={{mt: '10px'}} elevation={3}>
-                <AnimalCreator animalList={animalList} schemaList={schemaList} create={create} createClicked={createClicked} setCreateClicked={setCreateClicked} farms={farms} device={device}/>
+                <AnimalCreator cityfarm={cityfarm} animalList={animalList} schemaList={schemaList} create={create} createClicked={createClicked} setCreateClicked={setCreateClicked} farms={farms} device={device}/>
             </Paper>
         </Collapse></>}
         <div className="fmButtons">

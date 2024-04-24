@@ -2,11 +2,11 @@ import * as React from 'react';
 import Popover from '@mui/material/Popover';
 import Typography from '@mui/material/Typography';
 import {Link,  useLocation} from "react-router-dom";
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useTheme } from '@mui/material/styles';
 import {calData, liveData, encData, typeData, singleData} from '../pages/Help.tsx'
-import question from "../assets/question mark.png";
-import singleAnimal from "../pages/SingleAnimal.tsx";
+import { Help } from '@mui/icons-material';
+import { IconButton } from '@mui/material';
 
 const QuestionPopover = () => {
 
@@ -48,7 +48,7 @@ const QuestionPopover = () => {
 
 
     return (
-        <div>
+        <Link to="/help">
             <Typography
                 aria-owns={open ? 'mouse-over-popover' : undefined}
                 aria-haspopup="true"
@@ -56,7 +56,7 @@ const QuestionPopover = () => {
                 onMouseLeave={handlePopoverClose}
                 style={{display: 'inline-block', margin: '2.5px 0'}}
             >
-                <Link to="/help"><img src={question} width={24} height={24}/></Link>
+                <Help/>
             </Typography>
             <Popover
                 id="mouse-over-popover"
@@ -78,7 +78,7 @@ const QuestionPopover = () => {
                     {getContentForCurrentPath()}
                 </Typography>
             </Popover>
-        </div>
+        </Link>
     );
 }
 

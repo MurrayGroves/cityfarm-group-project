@@ -7,7 +7,7 @@ import { Paper, Popover } from '@mui/material';
 
 import AnimalPopover from './AnimalPopover.tsx';
 import { Event } from '../api/events.ts';
-import Enclosure from './Enclosure.tsx';
+import Enclosure from './EnclosurePopover.tsx';
 
 export const EventPopover = (props) => {
     const farms = props.farms;

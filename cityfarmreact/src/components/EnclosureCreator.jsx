@@ -18,7 +18,7 @@ import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 import { getConfig } from '../api/getToken';
 
-import AssociateAnimal from '../components/AssociateAnimal';
+import AssociateAnimal from '../components/AssociateAnimal.tsx';
 import CapacityChanger from '../components/CapacityChanger';
 import { Unstable_Popup as BasePopup } from '@mui/base/Unstable_Popup';
 import { styled } from '@mui/system';

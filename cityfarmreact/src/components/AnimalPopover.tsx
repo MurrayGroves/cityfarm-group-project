@@ -37,7 +37,7 @@ const AnimalPopover = ({cityfarm, animalID}: {cityfarm: CityFarm, animalID: stri
     useEffect(() => {
         (async () => {
             const animal = await cityfarm.getAnimal(animalID, true, (animal) => setChosenAnimal(animal));
-            setChosenAnimal(animal!);
+            animal ? setChosenAnimal(animal) : console.error('animal not found.');
         })()
     }, [animalID]);
 
