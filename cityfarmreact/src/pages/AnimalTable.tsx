@@ -11,7 +11,7 @@ import AnimalCreator from "../components/AnimalCreator.tsx";
 import FarmMoveButton from "../components/FarmMoveButton.jsx";
 import AnimalPopover from "../components/AnimalPopover.jsx";
 import FarmTabs from "../components/FarmTabs.jsx";
-import { EventText } from "../components/EventText.jsx";
+import { EventText } from "../components/EventText.tsx";
 import { EventSelectorButton } from "../components/EventSelectorButton.tsx";
 
 import { getConfig } from '../api/getToken.js';
@@ -144,7 +144,7 @@ const AnimalTable = ({farms, cityfarm, device}: {farms: any, cityfarm: CityFarm,
                     }, renderCell: (params) => {
                         console.log("params.row[key]: ", params.row[key]);
                         const animal = animalList.find((animal) => animal.id === params.row.id);
-                        return <EventText eventID={params.row[key] ? params.row[key] : animal ? animal.fields[key] : null} farms={farms}/>
+                        return <EventText cityfarm={cityfarm} eventID={params.row[key] ? params.row[key] : animal ? animal.fields[key] : null} farms={farms}/>
                     }});
                 } else {
                     newCols.push({type: 'singleSelect', field: key, headerName: key, headerClassName: 'grid-header', headerAlign: 'left', flex: 1, editable: true, renderEditCell: (params) => {

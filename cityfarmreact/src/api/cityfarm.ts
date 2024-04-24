@@ -62,7 +62,7 @@ export class CityFarm {
                 });
                 return cached_events;
             } catch (error) {
-                if (error.response.status === 401) {
+                if (error.response?.status === 401) {
                     console.log('Token expired');
                     window.location.href = "/login";
                     return [];
@@ -118,7 +118,7 @@ export class CityFarm {
                 });
                 return cached_events;
             } catch (error) {
-                if (error.response.status === 401) {
+                if (error.response?.status === 401) {
                     console.log('Token expired');
                     window.location.href = "/login";
                     return [];
@@ -133,7 +133,7 @@ export class CityFarm {
                 console.log("New events cache", this.events_cache);
                 return this.events_cache;
             } catch (error) {
-                if (error.response.status === 401) {
+                if (error.response?.status === 401) {
                     console.log('Token expired');
                     window.location.href = "/login";
                     return [];
@@ -157,13 +157,13 @@ export class CityFarm {
                 try {
                     const response = await axios.get(`/events/by_id/${id}`, this.token);
                     this.setEventsCache([...this.events_cache, response.data.type === "once" ? new EventOnce(response.data) : new EventRecurring(response.data)]);
-                    return new response.data.type === "once" ? new EventOnce(response.data) : new EventRecurring(response.data);
+                    return response.data.type === "once" ? new EventOnce(response.data) : new EventRecurring(response.data);
                 } catch (error) {
-                    if (error.response.status === 401) {
+                    if (error.response?.status === 401) {
                         console.log('Token expired');
                         window.location.href = "/login";
                         throw new Error('Token expired');
-                    } else if (error.response.status === 404) {
+                    } else if (error.response?.status === 404) {
                         return null;
                     }
                     throw error;
@@ -181,11 +181,11 @@ export class CityFarm {
                     })
                     return cached_event;
                 } catch (error) {
-                    if (error.response.status === 401) {
+                    if (error.response?.status === 401) {
                         console.log('Token expired');
                         window.location.href = "/login";
                         throw new Error('Token expired');
-                    } else if (error.response.status === 404) {
+                    } else if (error.response?.status === 404) {
                         return null;
                     }
                     throw error;
@@ -217,11 +217,11 @@ export class CityFarm {
                     this.setAnimalsCache([...this.animals_cache, new Animal(response.data)]);
                     return new Animal(response.data);
                 } catch (error) {
-                    if (error.response.status === 401) {
+                    if (error.response?.status === 401) {
                         console.log('Token expired');
                         window.location.href = "/login";
                         throw new Error('Token expired');
-                    } else if (error.response.status === 404) {
+                    } else if (error.response?.status === 404) {
                         return null;
                     }
                     throw error;
@@ -239,11 +239,11 @@ export class CityFarm {
                     })
                     return cached_animal;
                 } catch (error) {
-                    if (error.response.status === 401) {
+                    if (error.response?.status === 401) {
                         console.log('Token expired');
                         window.location.href = "/login";
                         throw new Error('Token expired');
-                    } else if (error.response.status === 404) {
+                    } else if (error.response?.status === 404) {
                         return null;
                     }
                     throw error;
@@ -276,7 +276,7 @@ export class CityFarm {
                 });
                 return cached_animals;
             } catch (error) {
-                if (error.response.status === 401) {
+                if (error.response?.status === 401) {
                     console.log('Token expired');
                     window.location.href = "/login";
                     return [];
@@ -290,7 +290,7 @@ export class CityFarm {
                 this.setAnimalsCache(response.data.map((data) => new Animal(data)));
                 return this.animals_cache;
             } catch (error) {
-                if (error.response.status === 401) {
+                if (error.response?.status === 401) {
                     console.log('Token expired');
                     window.location.href = "/login";
                     return [];
@@ -316,7 +316,7 @@ export class CityFarm {
                 });
                 return cached_schemas;
             } catch (error) {
-                if (error.response.status === 401) {
+                if (error.response?.status === 401) {
                     console.log('Token expired');
                     window.location.href = "/login";
                     return [];
@@ -330,7 +330,7 @@ export class CityFarm {
                 this.schemas_cache = response.data.map((data) => new Schema(data));
                 return this.schemas_cache;
             } catch (error) {
-                if (error.response.status === 401) {
+                if (error.response?.status === 401) {
                     console.log('Token expired');
                     window.location.href = "/login";
                     return [];
@@ -356,7 +356,7 @@ export class CityFarm {
                 });
                 return cached_schema;
             } catch (error) {
-                if (error.response.status === 401) {
+                if (error.response?.status === 401) {
                     console.log('Token expired');
                     window.location.href = "/login";
                     return null;
