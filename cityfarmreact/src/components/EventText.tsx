@@ -2,20 +2,20 @@ import { getConfig } from '../api/getToken';
 import axios from "../api/axiosConfig";
 
 import React, {useEffect, useState} from 'react';
-
-import { EventPopover } from './EventPopover';
+import { Event } from '../api/events.ts';
+import { EventPopover } from './EventPopover.tsx';
 
 export const EventText = ({eventID, farms}) => {
-    const [event, setEvent] = useState({event: {title: 'Loading...'}});
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const [anchorEl, setAnchorEl] = useState(null);
+    const [event, setEvent] = useState<Event>(new Event({title: 'Loading...'}));
+    const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<Error | null>(null);
+    const [anchorEl, setAnchorEl] = useState<any>(null);
 
     useEffect(() => {
         console.log("EventText: eventID: ", eventID);
         axios.get(`/events/by_id/${eventID}`, getConfig())
             .then((response) => {
-                setEvent(response.data);
+                setEvent(new Event(response.data));
                 setLoading(false);
             })
             .catch((error) => {
@@ -33,8 +33,8 @@ export const EventText = ({eventID, farms}) => {
     }
 
     return (
-        <div className='event' style={{margin: '0%', width: '12vw', align: 'flex', alignItems: 'left'}} onMouseEnter={(e) => setAnchorEl(e.target)} onMouseLeave={() => setAnchorEl(null)}>
-            <EventPopover eventID={event._id} farms={farms} anchorEl={anchorEl}/>
+        <div className='event' style={{margin: '0%', width: '12vw', display: 'flex', alignItems: 'left'}} onMouseEnter={(e) => setAnchorEl(e.target)} onMouseLeave={() => setAnchorEl(null)}>
+            <EventPopover eventID={event.id} farms={farms} anchorEl={anchorEl}/>
             <p className='noMarginTop'><b>{event.title}</b></p>
             {
                 event.allDay ?
@@ -49,5 +49,4 @@ export const EventText = ({eventID, farms}) => {
             <p>{event.description}</p>
         </div>
     )
-
 }

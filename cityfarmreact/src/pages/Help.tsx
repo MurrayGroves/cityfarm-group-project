@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from "react";
-import Eevent from "../assets/example event.png";
+
+const Eevent = require("../assets/example event.png");
 
 //updating the constants here updates them globally
 export const calData = <>

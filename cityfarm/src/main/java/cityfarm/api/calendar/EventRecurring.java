@@ -14,13 +14,15 @@ import java.time.*;
 import java.util.*;
 
 public class EventRecurring extends Event {
-    private final ZonedDateTime firstStart;
+    public ZonedDateTime firstStart;
 
-    private final ZonedDateTime firstEnd;
+    public ZonedDateTime firstEnd;
 
-    private final ZonedDateTime finalEnd;
+    // The datetime at which the last occurence of the event will end
+    public ZonedDateTime finalEnd;
 
-    private final Duration delay;
+    // The delay between each occurence of the event, Period supports Years, Months, & Days
+    public Period delay;
 
     @Override
     public String get_id() {
@@ -31,18 +33,26 @@ public class EventRecurring extends Event {
     public List<EventInstance> nextOccurences(@Nullable ZonedDateTime from, @Nullable Integer num) {
         List<EventInstance> events = new ArrayList<>();
 
+        // If no `from` is provided, we start from the first occurence
         from = Objects.requireNonNullElse(from, firstStart);
+
+        // Initialise our cursor to the first occurence
         ZonedDateTime currentDatetime = firstStart;
 
+        // Calculate how long each event occurence lasts
         Duration delta = Duration.between(firstStart, firstEnd);
 
+        // Increment the cursor until we reach the `from` datetime (needed if `from` is after the first occurence to ensure occurences don't start before the first occurence)
         while (currentDatetime.isBefore(from)) {
             currentDatetime = currentDatetime.plus(delay);
         }
 
+        // Calculate `num` new occurences, or 1 if `num` is not provided
         for (int i = 0; i < Objects.requireNonNullElse(num, 1); i++) {
+            // Create a new Instance starting at the current cursor position and ending `delta` time later
             EventInstance event = new EventInstance(currentDatetime, currentDatetime.plus(delta), this);
             events.add(event);
+            // Move the cursor to the next occurence
             currentDatetime = currentDatetime.plus(delay);
         }
 
@@ -53,27 +63,35 @@ public class EventRecurring extends Event {
     public List<EventInstance> occurencesBetween(@Nullable ZonedDateTime from, @Nullable ZonedDateTime to) {
         List<EventInstance> events = new ArrayList<>();
 
+        // If no `from` is provided, we start from the first occurence
         from = Objects.requireNonNullElse(from, firstStart);
+        // If no `to` is provided, we end at the final occurence
         to = Objects.requireNonNullElse(to, finalEnd);
 
+        // Initialise our cursor to the first occurence
         ZonedDateTime currentDatetime = firstStart;
 
+        // Calculate how long each event occurence lasts
         Duration delta = Duration.between(firstStart, firstEnd);
 
+        // Increment the cursor until we reach the `from` datetime (needed if `from` is after the first occurence to ensure occurences don't start before the first occurence)
         while (currentDatetime.isBefore(from)) {
             currentDatetime = currentDatetime.plus(delay);
         }
 
+        // Create occurences until we reach the `to` datetime
         while (currentDatetime.isBefore(to)) {
+            // Create a new Instance starting at the current cursor position and ending `delta` time later
             EventInstance event = new EventInstance(currentDatetime, currentDatetime.plus(delta), this);
             events.add(event);
+            // Move the cursor to the next occurence
             currentDatetime = currentDatetime.plus(delay);
         }
 
         return events;
     }
 
-    public EventRecurring(@NonNull ZonedDateTime firstStart,  @NonNull ZonedDateTime firstEnd, @NonNull Duration delay, ZonedDateTime finalEnd, @Nullable String id) {
+    public EventRecurring(@NonNull ZonedDateTime firstStart,  @NonNull ZonedDateTime firstEnd, @NonNull Period delay, ZonedDateTime finalEnd, @Nullable String id) {
         this.firstStart = firstStart;
         this.firstEnd = firstEnd;
         this.finalEnd = Objects.requireNonNullElse(finalEnd, ZonedDateTime.parse("2999-12-31T23:59:59.999Z"));
@@ -86,8 +104,8 @@ public class EventRecurring extends Event {
     public EventRecurring(@JsonProperty("firstStart") @NonNull ZonedDateTime firstStart, @JsonProperty("firstEnd") @Nullable ZonedDateTime firstEnd, @JsonProperty("allDay") @NonNull Boolean allDay,
                           @JsonProperty("title") @NonNull String title, @JsonProperty("description") @Nullable String description,
                           @JsonProperty("enclosures") @Nullable List<Enclosure> enclosures, @JsonProperty("animals") @Nullable List<AnimalCustom> animals, @JsonProperty("farms") @Nullable List<String> farms, @JsonProperty("people") @Nullable List<String> attachedPeople,
-                          @JsonProperty("finalEnd") @Nullable ZonedDateTime finalEnd, @JsonProperty("delay") @NonNull Duration delay, @JsonProperty("_id") @Nullable String id) {
-        if (end == null && !allDay) {
+                          @JsonProperty("finalEnd") @Nullable ZonedDateTime finalEnd, @JsonProperty("delay") @NonNull Period delay, @JsonProperty("_id") @Nullable String id) {
+        if (firstEnd == null && !allDay) {
             throw new IllegalArgumentException("If end isn't present, the event must be marked as all day");
         }
 

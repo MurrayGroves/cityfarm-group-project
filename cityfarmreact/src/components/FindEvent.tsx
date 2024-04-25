@@ -1,8 +1,6 @@
-import { useState, useEffect } from 'react';
-import axios from '../api/axiosConfig';
-import { getConfig } from '../api/getToken';
+import { useState, useEffect, Fragment } from 'react';
 import { List, ListItem, Divider, ListItemButton, ListItemIcon, ListItemText, Checkbox, TextField, CircularProgress } from '@mui/material';
-import { EventPopover } from './EventPopover';
+import { EventPopover } from './EventPopover.tsx';
 import { Event } from '../api/events';
 import React from 'react';
 import { CityFarm } from '../api/cityfarm';
@@ -55,10 +53,9 @@ export const FindEvent = ({style, cityfarm, farms, setEvent}: {style: any, cityf
         <div style={style}>
             <TextField label="Search" sx={{marginLeft: '4%'}} size="small" value={search} onChange={(e) => setSearch(e.target.value)}/>
             <List sx={{height: '1%'}}>
-            {searchResults.map((event, index) => {
-                return (
-                    <>
-                    <ListItem alignItems="flex-start" style={{'width': '40%', textAlign: 'left'}} key={event.id}
+            {searchResults.map((event, index) => (
+                    <Fragment key={index}>
+                    <ListItem alignItems="flex-start" style={{'width': '40%', textAlign: 'left'}}
                     onMouseEnter={(e) => {
                         console.log("Event", event)
                         setMousedEvent(event);
@@ -80,10 +77,10 @@ export const FindEvent = ({style, cityfarm, farms, setEvent}: {style: any, cityf
                         </ListItemButton>
                         <ListItemText onClick={()=>setSelectedEvent(event)} style={{flex: '1'}} primary={event.title} secondary={new Date(event.start).toLocaleDateString()} />
                     </ListItem>
-                    {index === searchResults.length -1 ? <></> :<Divider component="li"/>}</>
+                    {index === searchResults.length -1 ? <></> : <Divider component="li"/>}</Fragment>
                 )
-            })}
-            {showing && mousedEvent ? <EventPopover anchorEl={anchorEl} farms={farms} eventID={mousedEvent.id} /> : null}
+            )}
+            {showing && mousedEvent && <EventPopover anchorEl={anchorEl} cityfarm={cityfarm} farms={farms} eventID={mousedEvent.id} />}
             </List>
         </div>
     )

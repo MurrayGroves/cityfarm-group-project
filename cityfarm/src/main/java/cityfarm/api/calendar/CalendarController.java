@@ -4,10 +4,8 @@ import cityfarm.api.animals.AnimalCustom;
 import cityfarm.api.animals.AnimalRepository;
 import cityfarm.api.enclosure.Enclosure;
 import cityfarm.api.enclosure.EnclosureRepository;
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,10 +28,6 @@ public class CalendarController {
 
     @Autowired
     AnimalRepository animalRepository;
-
-    private final String host_url = "http://localhost:3000";
-
-
 
     @GetMapping("/api/events")
     public ResponseEntity<List<EventInstance>> get_events(
@@ -154,8 +148,8 @@ public class CalendarController {
         return ResponseEntity.ok().body(newEvent);
     }
 
-    @PatchMapping("/api/events/by_id/{id}/update")
-    public ResponseEntity<String> update_event(@PathVariable String id, @RequestBody CreateEventOnceRequest eventReq) {
+    @PatchMapping("/api/events/once/by_id/{id}/update")
+    public ResponseEntity<String> update_once_event(@PathVariable String id, @RequestBody CreateEventOnceRequest eventReq) {
         Event event = eventRepository.findEventById(id);
 
         if (event == null) {
@@ -174,14 +168,62 @@ public class CalendarController {
             animals.add(anm);
         }
 
-        event.start = eventReq.start;
-        event.end = eventReq.end;
         event.allDay = eventReq.allDay;
         event.title = eventReq.title;
         event.description = eventReq.description;
         event.enclosures = enclosures;
         event.animals = animals;
         event.farms = eventReq.farms;
+
+        if (event instanceof EventOnce) {
+            EventOnce eventOnce = (EventOnce) event;
+            eventOnce.start = eventReq.start;
+            eventOnce.end = eventReq.end;
+        } else if (event instanceof EventRecurring) {
+            return ResponseEntity.badRequest().body("Cannot update a recurring event with a once event request");
+        }
+
+        eventRepository.save(event);
+
+        String location = String.format("/api/events/by_id/%s", event.get_id());
+        return ResponseEntity.created(URI.create(location)).body(event.get_id());
+    }
+
+    @PatchMapping("/api/events/recurring/by_id/{id}/update")
+    public ResponseEntity<String> update_recurring_event(@PathVariable String id, @RequestBody CreateEventRecurringRequest eventReq) {
+        Event event = eventRepository.findEventById(id);
+
+        if (event == null) {
+            return ResponseEntity.status(404).build();
+        }
+
+        List<Enclosure> enclosures = new ArrayList<>();
+        for (String enclosure: eventReq.enclosures) {
+            Enclosure enc = enclosureRepository.findEnclosureById(enclosure);
+            enclosures.add(enc);
+        }
+
+        List<AnimalCustom> animals = new ArrayList<>();
+        for (String animal: eventReq.animals) {
+            AnimalCustom anm = animalRepository.findAnimalById(animal);
+            animals.add(anm);
+        }
+
+        event.allDay = eventReq.allDay;
+        event.title = eventReq.title;
+        event.description = eventReq.description;
+        event.enclosures = enclosures;
+        event.animals = animals;
+        event.farms = eventReq.farms;
+
+        if (event instanceof EventRecurring) {
+            EventRecurring eventRecurring = (EventRecurring) event;
+            eventRecurring.firstStart = eventReq.firstStart;
+            eventRecurring.firstEnd = eventReq.firstEnd;
+            eventRecurring.finalEnd = eventReq.end;
+        } else if (event instanceof EventOnce) {
+            return ResponseEntity.badRequest().body("Cannot update a once event with a recurrin event request");
+        }
 
         eventRepository.save(event);
 
