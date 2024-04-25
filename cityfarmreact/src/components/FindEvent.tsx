@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import axios from '../api/axiosConfig';
 import { getConfig } from '../api/getToken';
 import { List, ListItem, Divider, ListItemButton, ListItemIcon, ListItemText, Checkbox, TextField, CircularProgress } from '@mui/material';
-import { EventPopover } from './EventPopover';
+import { EventPopover } from './EventPopover.tsx';
 import { Event } from '../api/events';
 import React from 'react';
 import { CityFarm } from '../api/cityfarm';
