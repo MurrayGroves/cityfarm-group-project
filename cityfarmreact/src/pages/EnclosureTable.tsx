@@ -73,7 +73,7 @@ const EnclosureTable = ({farms, cityfarm}) => {
 
     const cols: GridColDef[] = [
         { field: 'name', editable: true, headerName: 'Name', headerClassName: 'grid-header', headerAlign: 'left', flex: 1,
-            renderCell: (enclosure) => <EnclosurePopover enclosureID={enclosure.value.id} />
+            renderCell: (enclosure) => <EnclosurePopover cityfarm={cityfarm} enclosureID={enclosure.value.id} />
         },
         { field: 'holding', headerName: 'Holding', headerClassName: 'grid-header', headerAlign: 'left', flex: 1, cellClassName: 'scroll-cell',
             renderCell: (animalList) => <ul>{animalList.value.map(animal => {return(<li key={animal.id}><AnimalPopover cityfarm={cityfarm} animalID={animal.id}/></li>)})}</ul>

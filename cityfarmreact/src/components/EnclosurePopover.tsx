@@ -5,8 +5,10 @@ import {Link} from "react-router-dom";
 import axios from '../api/axiosConfig.js'
 import { getConfig } from '../api/getToken.js';
 import { Enclosure } from '../api/enclosures.ts';
+import AnimalPopover from './AnimalPopover.tsx';
+import { CityFarm } from '../api/cityfarm.ts';
 
-const EnclosurePopover = ({ enclosureID }) => {
+const EnclosurePopover = ({ cityfarm, enclosureID }: {cityfarm: CityFarm, enclosureID: string}) => {
     const token = getConfig();
 
     const [anchorEl, setAnchorEl] = useState(null);
@@ -62,7 +64,7 @@ const EnclosurePopover = ({ enclosureID }) => {
             >
                 <Typography sx={{ p: 1,whiteSpace: 'pre-line' }}>
                     {`Name: ${chosenEnclosure.name}`}<br/>
-                    {`Holding: ${chosenEnclosure.holding}`}<br/>
+                    {`Holding: ${chosenEnclosure.holding.map((animal) => <AnimalPopover cityfarm={cityfarm} animalID={animal.id}/>)}`}<br/>
                     {`Capacities: ${chosenEnclosure.capacities}`}<br/>
                 </Typography>
             </Popover>
