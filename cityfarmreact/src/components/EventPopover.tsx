@@ -51,7 +51,6 @@ export const EventPopover = ({farms, cityfarm, eventID, anchorEl}: {farms: any, 
         const weeks = Math.floor(days / 7);
         days = days % 7;
 
-        console.log(`Parsed ${period} as ${years} years, ${months} months, ${weeks} weeks, ${days} days`)
         let yearString = years > 0 ? years + " year" + (years > 1 ? "s" : "") : "";
         let monthString = months > 0 ? months + " month" + (months > 1 ? "s" : "") : "";
         let weekString = weeks > 0 ? weeks + " week" + (weeks > 1 ? "s" : "") : "";
@@ -65,8 +64,6 @@ export const EventPopover = ({farms, cityfarm, eventID, anchorEl}: {farms: any, 
                 && date1.getMonth() === date2.getMonth()
                 && date1.getFullYear() === date2.getFullYear())
     }
-
-    console.log("popover event: ", event)
 
     return (
         <Popover

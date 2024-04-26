@@ -130,7 +130,7 @@ const AnimalTable = ({farms, cityfarm, device}: {farms: any, cityfarm: CityFarm,
             for (let key in schema.fields) {
                 if (schema.fields[key].type === "cityfarm.api.calendar.EventRef") {
                     newCols.push({type: 'singleSelect', field: key, headerName: key, headerClassName: 'grid-header', headerAlign: 'left', flex: 1, editable: true, renderEditCell: (params) => {
-                        return <EventSelectorButton key={key} style={{margin: '5%'}} farms={farms} cityfarm={cityfarm} currentEventID={params.row[key]} setEventID={(eventID) => {
+                        return <EventSelectorButton fieldKey={key} style={{margin: '5%'}} farms={farms} cityfarm={cityfarm} currentEventID={params.row[key]} setEventID={(eventID) => {
                             console.log("Calling setEventID with ", eventID)
                             let current = {...modifyAnimal};
                             if (current.fields === undefined) {
