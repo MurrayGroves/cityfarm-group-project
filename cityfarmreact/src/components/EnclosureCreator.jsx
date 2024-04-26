@@ -22,12 +22,11 @@ import AssociateAnimal from '../components/AssociateAnimal.tsx';
 import CapacityChanger from '../components/CapacityChanger';
 import { Unstable_Popup as BasePopup } from '@mui/base/Unstable_Popup';
 import { styled } from '@mui/system';
-import {  DialogActions, DialogContent, DialogContentText, DialogTitle, Dialog } from "@mui/material";
+import { DialogActions, DialogContent, DialogContentText, DialogTitle, Dialog } from "@mui/material";
+
 
 const EnclosureCreator = ({ setCreateProp, cityfarm}) => {
-    const [newEnclosure, setNewEnclosure] = useState({name: '', holding: {}, capacities: {}, notes: '', farm: ''});
-    const [create, setCreate] = useState(false);
-    const [anchor, setAnchor] = React.useState(null);
+    const [newEnclosure, setNewEnclosure] = useState({name: '', holding: [], capacities: {}, notes: '', farm: ''});
     const [openAnimalsPopup ,setOpenAnimalsPopup] = useState(false)
     const [openCapacitiesPopup ,setOpenCapacitiesPopup] = useState(false)
 
@@ -40,7 +39,7 @@ const EnclosureCreator = ({ setCreateProp, cityfarm}) => {
 
     const reset = () => {
         setCreateProp(false);
-        setNewEnclosure({name: '', holding: {}, capacities: {}, notes: '', farm: ''})
+        setNewEnclosure({name: '', holding: [], capacities: {}, notes: '', farm: ''})
     }
 
     return (<>
@@ -83,7 +82,7 @@ const EnclosureCreator = ({ setCreateProp, cityfarm}) => {
                 onClick={() => {
                     (async () => {
                         try {
-                            await axios.post(`/enclosures/create`, newEnclosure, token)
+                            await axios.post(`/enclosures/create`, {...newEnclosure, holding: newEnclosure.holding.map(animal => animal.id)}, token)
                         } catch(error) {
                             if (error.response.status === 401) {
                                 window.location.href = "/login";
@@ -107,15 +106,14 @@ const EnclosureCreator = ({ setCreateProp, cityfarm}) => {
                 </Dialog>
             </div>
 
-                {/* WIP */}
-            {/* <div id="CapacityChanger" style={{textAlign:'center'}}>
+            <div id="CapacityChanger" style={{textAlign:'center'}}>
                 <Dialog open={openCapacitiesPopup} onClose={()=>{setOpenCapacitiesPopup(false)}}>
                     <DialogTitle>Capacities</DialogTitle>
                     <DialogContent>
                         <CapacityChanger close={()=>setOpenCapacitiesPopup(false)}></CapacityChanger>
                     </DialogContent>
                 </Dialog>
-            </div> */}
+            </div>
         </>)
 }
 

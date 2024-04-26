@@ -2,12 +2,10 @@ import React, { useState, useEffect } from 'react';
 
 import axios from '../api/axiosConfig.js';
 import { getConfig } from '../api/getToken.js';
-
 import { Paper, Popover } from '@mui/material';
-
 import AnimalPopover from './AnimalPopover.tsx';
 import { Event } from '../api/events.ts';
-import Enclosure from './EnclosurePopover.tsx';
+import EnclosurePopover from './EnclosurePopover.tsx';
 
 export const EventPopover = (props) => {
     const farms = props.farms;
@@ -77,7 +75,7 @@ export const EventPopover = (props) => {
                         <div>
                             <h3>Enclosures</h3>
                             {event.enclosures.map((enclosure, index) => (
-                                <Enclosure key={index} enclosureID={enclosure._id} />
+                                <EnclosurePopover key={index} cityfarm={props.cityfarm} enclosureID={enclosure.id} />
                             ))}
                         </div>}
                         {event.description !== "" ?

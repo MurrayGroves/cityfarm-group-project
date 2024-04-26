@@ -9,7 +9,7 @@ import { CityFarm } from "../api/cityfarm.ts";
 import { Animal, Schema, Sex } from "../api/animals.ts";
 import { Event } from "../api/events.ts";
 import { Grid } from "@mui/material";
-import Enclosure from "../components/EnclosurePopover.tsx";
+import EnclosurePopover from "../components/EnclosurePopover.tsx";
 
 const SingleAnimal = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
 
@@ -135,7 +135,7 @@ const SingleAnimal = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
                     <div>
                         <h3>Enclosures</h3>
                         {e.enclosures.map((enclosure, index) => (
-                            <Enclosure key={index} enclosureID={enclosure._id}/>
+                            <EnclosurePopover key={index} cityfarm={cityfarm} enclosureID={enclosure.id}/>
                         ))}
                     </div>}
                 {e.description !== "" ?
