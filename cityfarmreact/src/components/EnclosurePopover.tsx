@@ -42,7 +42,7 @@ const EnclosurePopover = ({ cityfarm, enclosureID }: {cityfarm: CityFarm, enclos
                 onMouseEnter={handlePopoverOpen}
                 onMouseLeave={handlePopoverClose}
             >
-                <Link to="/enclosure"> {chosenEnclosure.name} </Link>
+                <Link to={`/single-enclosure/${chosenEnclosure.id}`}> {chosenEnclosure.name} </Link>
             </Typography>
             <Popover
                 id="mouse-over-popover"

@@ -27,6 +27,7 @@ import Help from "./pages/Help.tsx";
 import usePersistState from './components/PersistentState.ts'
 
 import { CityFarm } from './api/cityfarm.ts';
+import SingleEnclosure from "./pages/SingleEnclosure";
 import { Event, EventInstance } from './api/events.ts';
 import { Animal, Schema } from './api/animals.ts';
 
@@ -41,7 +42,7 @@ declare module '@mui/material/styles' {
         SW: Palette['primary'];
         green: Palette['primary'];
     }
-  
+
     interface PaletteOptions {
         WH?: PaletteOptions['primary'];
         HC?: PaletteOptions['primary'];
@@ -161,6 +162,7 @@ const App = () => {
                             <Route path="/enclosures" element={<EnclosureTable farms={farms} cityfarm={cityfarm}/>}/>
                             <Route path="/schemas" element={<Schemas farms={farms} cityfarm={cityfarm}/>}/>
                             <Route path="/help" element={<Help/>}/>
+                            <Route path="/single-enclosure/:enclosureID" element={<SingleEnclosure farms={{farms}} cityfarm={cityfarm}/>}/>
                             <Route path="/single-animal/:animalID" element={<SingleAnimal farms={farms} cityfarm={cityfarm}/>} />
                             <Route path="*" element={<Error/>}/>
                         </Routes>

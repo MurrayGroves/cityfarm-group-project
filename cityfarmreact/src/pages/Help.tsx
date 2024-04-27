@@ -34,6 +34,11 @@ export const singleData = <>
     click on the text that says linked event, each event name is clickable to see it as a normal selected event.
 </>
 
+export const singleEncData = <>
+    This is the page for viewing a single enclosure, if you click move on the buttons then you
+    will be able to move an animal from one enclosure to another, you can also generally edit the list of animals as a whole and even move them if needed.
+</>
+
 const Help = () => {
 
     const [calShowing,setCalShowing] = useState(false)

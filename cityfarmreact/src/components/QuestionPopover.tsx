@@ -4,9 +4,13 @@ import Typography from '@mui/material/Typography';
 import {Link,  useLocation} from "react-router-dom";
 import { useState } from 'react';
 import { useTheme } from '@mui/material/styles';
-import {calData, liveData, encData, typeData, singleData} from '../pages/Help.tsx'
+
 import { Help } from '@mui/icons-material';
 import { IconButton } from '@mui/material';
+import {calData, liveData, encData, typeData, singleData, singleEncData} from '../pages/Help.tsx'
+import { getConfig } from '../api/getToken';
+import question from "../assets/question mark.png";
+import singleAnimal from "../pages/SingleAnimal";
 
 const QuestionPopover = () => {
 
@@ -27,6 +31,8 @@ const QuestionPopover = () => {
     const getContentForCurrentPath = () => {
         if (location.pathname.startsWith('/single-animal/')){
             return singleData}
+        if (location.pathname.startsWith('/single-enclosure')){
+            return singleEncData}
 
         switch (location.pathname) {
             case '/calendar':
