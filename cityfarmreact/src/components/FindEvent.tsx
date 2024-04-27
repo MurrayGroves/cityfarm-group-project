@@ -79,7 +79,7 @@ export const FindEvent = ({style, cityfarm, farms, setEvent}: {style: any, cityf
                                 />
                             </ListItemIcon>
                         </ListItemButton>
-                        <ListItemText onClick={()=>setSelectedEvent(event)} style={{flex: '1'}} primary={event.title} secondary={new Date(event.start).toLocaleDateString()} />
+                        <ListItemText onClick={()=>setSelectedEvent(event)} style={{flex: '1'}} primary={event.title} secondary={event.description} />
                     </ListItem>
                     {index === searchResults.length -1 ? <></> :<Divider component="li"/>}</>
                 )
