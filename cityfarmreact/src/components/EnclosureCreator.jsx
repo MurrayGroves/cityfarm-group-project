@@ -110,7 +110,7 @@ const EnclosureCreator = ({ setCreateProp, cityfarm}) => {
                 <Dialog open={openCapacitiesPopup} onClose={()=>{setOpenCapacitiesPopup(false)}}>
                     <DialogTitle>Capacities</DialogTitle>
                     <DialogContent>
-                        <CapacityChanger close={()=>setOpenCapacitiesPopup(false)}></CapacityChanger>
+                        <CapacityChanger close={()=>setOpenCapacitiesPopup(false)} enclosure={newEnclosure}></CapacityChanger>
                     </DialogContent>
                 </Dialog>
             </div>
