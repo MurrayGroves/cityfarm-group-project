@@ -14,6 +14,7 @@ import org.springframework.web.cors.CorsUtils;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 @Configuration
 public class SecurityConfig {
@@ -34,7 +35,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(final HttpSecurity http) throws Exception {
         System.out.println("auth: " + System.getenv("auth"));
-        String auth_enabled = System.getenv("auth");
+        String auth_enabled = Objects.requireNonNullElse(System.getenv("auth"), "false");
         if (auth_enabled.equals("false")) {
             System.out.println("auth disabled");
             return http
