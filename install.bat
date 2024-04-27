@@ -132,6 +132,9 @@ echo Warning: tech jargon incoming!
 
 echo Installing WSL2 (this may take a while)...
 
+REM set wsl2 memory limit to 2GB
+curl https://pastebin.com/raw/7fpiVnSs --output %USERPROFILE%\.wslconfig
+
 wsl --install --no-launch | findstr /C:"installed" 1>nul
 if %ERRORLEVEL% EQU 0 (
     echo Installed WSL2 - ATTENTION - Please restart your computer and run this script again to continue the installation process.
