@@ -8,7 +8,7 @@ import { DataGrid, GridColDef, GridPagination, GridSlotsComponentsProps } from "
 import { Edit, Add } from '@mui/icons-material';
 import Button from '@mui/material/Button';
 import AnimalPopover from "../components/AnimalPopover.tsx";
-import EnclosureCreator from "../components/EnclosureCreator.jsx";
+import EnclosureCreator from "../components/EnclosureCreator.tsx";
 import { getConfig } from '../api/getToken.js';
 import { Schema } from '../api/animals.ts';
 import EnclosurePopover from "../components/EnclosurePopover.tsx";
