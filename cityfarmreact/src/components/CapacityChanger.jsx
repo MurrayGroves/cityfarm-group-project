@@ -11,7 +11,6 @@ const CapacityChanger = (props) => {
     const [linkedCapacities, setLinkedCapacities] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [schemaList, setSchemaList] = useState([]); /* The State for the list of schemas. The initial state is [] */
-    const [changed, setChanged] = useState(false);
 
     const token = getConfig();
     
@@ -20,7 +19,7 @@ const CapacityChanger = (props) => {
             try {
                 const response = await axios.get(`/schemas`, token);
                 setSchemaList(response.data.reverse());
-                console.log(schemaList[0]);
+                setLinkedCapacities(props.enclosure.capacities);
             } catch (error) {
                 if (error.response.status === 401) {
                     window.location.href = "/login";
@@ -30,7 +29,7 @@ const CapacityChanger = (props) => {
                 }
             }
         })()
-    }
+    } 
     
     useEffect (() => {
         (async () => {
@@ -53,13 +52,13 @@ const CapacityChanger = (props) => {
     },[searchTerm])
 
     const rows = schemaList.map((schema) => ({
-        id: 1 ,
-        type: schema._name,
-        number: 0
+        id: schema._name,
+        number: linkedCapacities[schema._name] == null ? 0 : linkedCapacities[schema._name],
     }));
+
     const cols = [
-        { field: 'type', headerName: 'Type', headerClassName: 'grid-header', headerAlign: 'left', flex: 1} ,
-        { field: 'number', headerName: 'Capacity', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
+        { field: 'id', headerName: 'Type', headerClassName: 'grid-header', headerAlign: 'left', flex: 1} ,
+        { field: 'number', editable: true, headerName: 'Capacity', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
     ];
 
     return (
@@ -77,6 +76,15 @@ const CapacityChanger = (props) => {
                     columns={cols}
                     rows={rows}
                     disableRowSelectionOnClick
+                    processRowUpdate = {(newVal, oldVal) => {
+                        const newInt = parseInt(newVal.number)
+                        if (!Number.isInteger(newInt)) { return oldVal; }
+                        if (newInt < 0) { return oldVal; }
+                        if (newVal.number === oldVal.number) { return newVal; }
+                        props.enclosure.capacities[newVal.id] = newVal.number
+                        props.enclosure.capacities[newVal.id] = newInt
+                        return newVal;
+                    }}
                 />
             </Paper>
             <Button variant='outlined' style={{float: "right"}} onClick={() => {props.close()}}>Close</Button>

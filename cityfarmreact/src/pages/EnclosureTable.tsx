@@ -1,22 +1,35 @@
 import React, {useEffect, useState} from "react";
-import axios from "../api/axiosConfig";
+import axios from "../api/axiosConfig.js";
 import TextField from '@mui/material/TextField';
 import "../pages/AnimalTable.css";
-import FarmTabs from "../components/FarmTabs";
-import TableContainer from '@mui/material/TableContainer';
+import FarmTabs from "../components/FarmTabs.tsx";
 import { Paper, Divider } from '@mui/material';
-import { DataGrid, GridPagination } from "@mui/x-data-grid";
+import { DataGrid, GridColDef, GridPagination, GridSlotsComponentsProps } from "@mui/x-data-grid";
 import { Edit, Add } from '@mui/icons-material';
 import Button from '@mui/material/Button';
-import AnimalPopover from "../components/AnimalPopover";
-import EnclosureCreator from "../components/EnclosureCreator";
-import { getConfig } from '../api/getToken';
+import AnimalPopover from "../components/AnimalPopover.tsx";
+import EnclosureCreator from "../components/EnclosureCreator.jsx";
+import { getConfig } from '../api/getToken.js';
+import { Schema } from '../api/animals.ts';
+import EnclosurePopover from "../components/EnclosurePopover.tsx";
+import { Enclosure } from "../api/enclosures.ts";
 
-const EnclosureTable = ({farms}) => {
-    const [enclosureList, setEnclosureList] = useState([]); /* The State for the list of enclosures. The initial state is [] */
-    const [searchTerm, setSearchTerm] = useState(''); /* The term being search for in the searchbar */
-    const [editMode, setEditMode] = useState(false); /* Whether edit mode is on. Initial state is false */
-    const [create, setCreate] = useState(false);
+declare module '@mui/x-data-grid' {
+    interface FooterPropsOverrides {
+        setEditMode?: (mode: boolean) => void;
+        setCreate?: (create: boolean) => void;
+        setFilterModel?: any;
+        selectedSchema?: Schema;
+        setSelectedSchema?: (schema: Schema) => void;
+        create?: boolean;
+    }
+}
+
+const EnclosureTable = ({farms, cityfarm}) => {
+    const [enclosureList, setEnclosureList] = useState<Enclosure[]>([]); /* The State for the list of enclosures. The initial state is [] */
+    const [searchTerm, setSearchTerm] = useState<string>(''); /* The term being search for in the searchbar */
+    const [editMode, setEditMode] = useState<boolean>(false); /* Whether edit mode is on. Initial state is false */
+    const [create, setCreate] = useState<boolean>(false);
 
     const token = getConfig();
 
@@ -26,7 +39,7 @@ const EnclosureTable = ({farms}) => {
         (async () => {
             try {
                 const response = await axios.get(`/enclosures`, {params: {farm: farm}, ...token});
-                setEnclosureList(response.data);
+                setEnclosureList(response.data.map((enclosure) => new Enclosure(enclosure)));
             } catch (error) {
                 if (error.response.status === 401) {
                     window.location.href = "/login";
@@ -58,19 +71,21 @@ const EnclosureTable = ({farms}) => {
         })()
     },[searchTerm, farm])
 
-    const cols =  [
-        { field: 'name', editable: true, headerName: 'Name', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
+    const cols: GridColDef[] = [
+        { field: 'name', editable: true, headerName: 'Name', headerClassName: 'grid-header', headerAlign: 'left', flex: 1,
+            renderCell: (enclosure) => <EnclosurePopover cityfarm={cityfarm} enclosureID={enclosure.value.id} />
+        },
         { field: 'holding', headerName: 'Holding', headerClassName: 'grid-header', headerAlign: 'left', flex: 1, cellClassName: 'scroll-cell',
-            renderCell: (animalList) => <ul>{animalList.value.map(animal => {console.log(animal); return(<li key={animal._id}><AnimalPopover animalID={animal._id}/></li>)})}</ul>
+            renderCell: (animalList) => <ul>{animalList.value.map(animal => {return(<li key={animal.id}><AnimalPopover cityfarm={cityfarm} animalID={animal.id}/></li>)})}</ul>
         },
         { field: 'capacities', headerName: 'Capacities', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
     ]
 
     console.log(enclosureList)
 
-    const rows = enclosureList.map((enclosure) => ({
-        id: enclosure._id,
-        name: enclosure.name,
+    const rows = enclosureList.map((enclosure: Enclosure) => ({
+        id: enclosure.id,
+        name: enclosure,
         holding: enclosure.holding,
         capacities: Object.keys(enclosure.capacities).map((key) => {
             return (` ${key}: ${enclosure.capacities[key]}`)
@@ -86,7 +101,7 @@ const EnclosureTable = ({farms}) => {
                 style={{margin: '0 20px 20px 0'}}
                 onChange={(e) => setSearchTerm(e.target.value)}
             ></TextField>
-            <FarmTabs farms={farms} selectedFarm={farm} setSelectedFarm={setFarm}/>
+            <FarmTabs farms={farms} setSelectedFarm={setFarm}/>
         </span>
         <div style={{display: 'flex', flexDirection: 'column', height: 'calc(100% - 150.88px)'}}>
         <Paper elevation={3} style={{flex: 1}}>
@@ -110,7 +125,7 @@ const EnclosureTable = ({farms}) => {
                     try{
                         const response = await axios.patch(`/enclosures/by_id/${_id}/name/${newName}`, null, token)
                         console.log(response);
-                        window.location.reload(false);
+                        window.location.reload();
                     } catch (error) {
                         if (error.response.status === 401) {
                             window.location.href = "/login";
@@ -124,18 +139,18 @@ const EnclosureTable = ({farms}) => {
                 return newVal;
             }}/>
         </Paper>
-        {create && <EnclosureCreator setCreate={setCreate}/>}
+        {create && <EnclosureCreator setCreateProp={setCreate} cityfarm={cityfarm}/>}
         </div>
     </>)
 }
 
-const CustomFooter = ({setEditMode, setCreate}) => {
+const CustomFooter = (props: NonNullable<GridSlotsComponentsProps['footer']>) => {
     return (<>
         <Divider/>
         <div style={{maxHeight: '56.5px', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
             <span style={{display: 'flex', alignItems: 'center'}}>
-            <Button className="tallButton" sx={{margin: '10px'}} aria-label="edit" onClick={() => setEditMode(true)} variant='contained' endIcon={<Edit/>}>Edit</Button>
-            <Button sx={{maxWidth: '100px', float: 'right'}} variant='contained' endIcon={<Add/>} style={{float: 'right'}} onClick={() => setCreate(true)}>Create</Button>
+            <Button className="tallButton" sx={{margin: '10px'}} aria-label="edit" onClick={() => props.setEditMode!(true)} variant='contained' endIcon={<Edit/>}>Edit</Button>
+            <Button sx={{maxWidth: '100px', float: 'right'}} variant='contained' endIcon={<Add/>} style={{float: 'right'}} onClick={() => props.setCreate!(true)}>Create</Button>
             </span>
             <GridPagination/>
         </div>

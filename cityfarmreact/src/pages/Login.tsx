@@ -69,7 +69,7 @@ export default ({msal, setMsal}) => {
                 flexDirection: 'column'
               }}>
                 <h1>Cityfarm Login</h1>
-                <MicrosoftLogin clientId={"5668872b-7957-4c09-a995-56cd915cb4a9"} authCallback={authHandler} useLocalStorageCache={true}/>
+                <MicrosoftLogin children={false} clientId={"5668872b-7957-4c09-a995-56cd915cb4a9"} authCallback={authHandler} useLocalStorageCache={true}/>
               </div>
             :
               <div style={{

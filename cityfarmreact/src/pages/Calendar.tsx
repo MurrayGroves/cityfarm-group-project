@@ -3,21 +3,13 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 import React, {useState, useEffect, useCallback} from 'react';
 import dayjs from 'dayjs';
 import "./Calendar.css";
-import AnimalPopover from "../components/AnimalPopover.jsx";
-import Close from '@mui/icons-material/Close';
 import Paper from '@mui/material/Paper';
-import TextField from '@mui/material/TextField';
-import {  DialogActions, DialogContent, DialogContentText, DialogTitle, Fab, ToggleButton, ToggleButtonGroup } from "@mui/material";
-import { IconButton, Button, ButtonGroup, Checkbox, FormControlLabel, FormGroup, useTheme, Dialog, FormHelperText, Backdrop, Alert } from '@mui/material';
-import AlertTitle from '@mui/material/AlertTitle';
-import EditIcon from '@mui/icons-material/Edit';
+import {  DialogContent, Fab, } from "@mui/material";
+import { Button, Checkbox, FormControlLabel, FormGroup, useTheme, Dialog, FormHelperText, Backdrop, Alert } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
-import Delete from '@mui/icons-material/Delete';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
-import AssociateAnimal from '../components/AssociateAnimal.jsx';
 import axios from '../api/axiosConfig.js'
-import AssociateEnclosure from '../components/AssociateEnclosure.jsx';
 
 import { getConfig } from '../api/getToken.js';
 import { FilterAlt } from '@mui/icons-material';
@@ -42,6 +34,7 @@ const Calendar = ({farms, device, cityfarm}: {farms: any, device: any, cityfarm:
         description: "",
         enclosures: []
     })
+
     const [modifiedEvent,setModifiedEvent] = useState<Event | null>(null)
 
     const [allEvents,setAllEvents] = useState<EventInstance[]>([]);
@@ -56,7 +49,7 @@ const Calendar = ({farms, device, cityfarm}: {farms: any, device: any, cityfarm:
     }, [newEvent]);
 
     useEffect(() =>{
-        selectedEvent && setModifiedEvent({...selectedEvent.event, animals: selectedEvent.event.animals.map(animal => animal._id), enclosures: selectedEvent.event.enclosures.map(enclosure => enclosure._id)});
+        selectedEvent && setModifiedEvent({...selectedEvent.event, animals: selectedEvent.event.animals, enclosures: selectedEvent.event.enclosures});
     },[selectedEvent]);
 
     const setModifiedEventAnimals = (animalList) => {
@@ -127,28 +120,6 @@ const Calendar = ({farms, device, cityfarm}: {farms: any, device: any, cityfarm:
         await cityfarm.getEvents(false);
     }
 
-    const handlePatchEvent = async() => {
-        if (modifiedEvent === null) {
-            return;
-        }
-
-        try {
-            if (modifiedEvent instanceof EventOnce) {
-                await axios.patch(`/events/once/by_id/${modifiedEvent.id}/update`, modifiedEvent, token);
-            } else {
-                await axios.patch(`/events/recurring/by_id/${modifiedEvent.id}/update`, modifiedEvent, token);
-            }
-        } catch(error) {
-            if (error.response.status === 401) {
-                window.location.href = "/login";
-                return;
-            } else {
-                window.alert(error);
-            }
-        }
-        cityfarm.getEvents(false);
-    }
-
     const updateVisibleFarms = (selected) => {
         visibleFarms.includes(selected) ? setVisibleFarms(visibleFarms.filter(farm => farm !== selected)) : setVisibleFarms([...visibleFarms, selected]);
     }
@@ -168,7 +139,7 @@ const Calendar = ({farms, device, cityfarm}: {farms: any, device: any, cityfarm:
         }
         var style = {
             display: visible ? 'block' : 'none',
-            backgroundColor: theme.grey.main,
+            backgroundColor: theme.default.main,
             backgroundImage: `linear-gradient(135deg, ${colour1}, ${colour1} ${100/event.farms.length - offset}%, ${colour2} ${100/event.farms.length + offset}%, ${colour2} ${200/event.farms.length - offset}%, ${theme.SW.main} ${200/event.farms.length + offset}%, ${theme.SW.main})`,
             color: 'white',
             borderRadius: '5px'
@@ -244,38 +215,6 @@ const Calendar = ({farms, device, cityfarm}: {farms: any, device: any, cityfarm:
 
             setModifiedEvent(myEvent);
         }
-    }
-
-    function showingTime(isShown) {
-        if (modifiedEvent === null) {
-            return <></>;
-        }
-
-        if (isShown) {
-            return(<>
-                <FormHelperText>Start</FormHelperText>
-                <DateTimePicker value={modifiedEvent instanceof EventRecurring ? dayjs(modifiedEvent.firstStart) : dayjs((modifiedEvent as EventOnce).start)} onChange={setEventStart} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
-                <FormHelperText>End</FormHelperText>
-                <DateTimePicker value={modifiedEvent instanceof EventRecurring ? dayjs(modifiedEvent.firstEnd) : dayjs((modifiedEvent as EventOnce).end)} onChange={setEventEnd} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
-            </>)
-        } else {
-            return(<>
-                <FormHelperText>Start</FormHelperText>
-                <DatePicker value={modifiedEvent instanceof EventRecurring ? dayjs(modifiedEvent.firstStart) : dayjs((modifiedEvent as EventOnce).start)} onChange={setEventStart} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
-                <FormHelperText>End</FormHelperText>
-                <DatePicker value={modifiedEvent instanceof EventRecurring ? dayjs(modifiedEvent.firstEnd) : dayjs((modifiedEvent as EventOnce).end)} onChange={setEventEnd} slotProps={{textField: {fullWidth: true, size: 'small'}}}/>
-            </>)
-        }
-    }
-    const [openAnimalsPopup, setOpenAnimalsPopup] = useState(false)
-    const [openEnclosurePopup, setOpenEnclosurePopup] = useState(false);
-
-    const functionopenPopup = (type) => { 
-         if (type === "animals") {setOpenAnimalsPopup(true)} else {setOpenEnclosurePopup(true)}
-    }
-    const functionclosePopup = () => {
-        setOpenAnimalsPopup(false)
-        setOpenEnclosurePopup(false)
     }
 
     const onRangeChange = useCallback(async (range) => {
@@ -378,19 +317,22 @@ const Calendar = ({farms, device, cityfarm}: {farms: any, device: any, cityfarm:
                 <BigCalendar
                     culture='en-gb'
                     localizer={dayjsLocalizer(dayjs)}
-                    events={allEvents.map(event => {
-                        return {
+                    events={allEvents.map((event: EventInstance) => {
+                        const newEvent = {
                             title: event.event.title,
                             start: event.start,
                             end: event.end,
                             event: event.event,
-                        }
+                            allDay: event.event.allDay,
+                        };
+                        return newEvent
                     })}
-                    startAccessor="start"
-                    endAccessor="end"
+
                     style={{width: '100%', '--day': dayColour, '--off-range': offRangeColour, '--today': todayColour, '--text': textColour, '--header': headerColour}}
                     showMultiDayTimes
-                    onSelectEvent={setSelectedEvent}
+                    onSelectEvent={(bigCalendarEvent: EventInstance) => {
+                        setSelectedEvent(bigCalendarEvent);
+                    }}
                     eventPropGetter={eventStyleGetter}
                     onRangeChange={onRangeChange}
                 />
@@ -402,13 +344,9 @@ const Calendar = ({farms, device, cityfarm}: {farms: any, device: any, cityfarm:
                 <DialogContent>
                     <EventDisplay
                         selectedEvent={selectedEvent} setSelectedEvent={setSelectedEvent}
-                        modifiedEvent={modifiedEvent} modifyEvent={modifyEvent} setModifiedEvent={setModifiedEvent} setModifiedEventAnimals={setModifiedEventAnimals} setModifiedEventEnclosures={setModifiedEventEnclosures} setModifyEvent={setModifyEvent}
-                        createEvent={createEvent}
-                        handleDelEvent={handleDelEvent} handlePatchEvent={handlePatchEvent}
-                        showingTime={showingTime} functionopenPopup={functionopenPopup} functionclosePopup={functionclosePopup}
-                        openAnimalsPopup={openAnimalsPopup} openEnclosurePopup={openEnclosurePopup}
-                        changeAllDay={changeAllDay}
-                        farms={farms} cityfarm={cityfarm} setShowErr={setShowErr}
+                        modifyEvent={modifyEvent} setModifiedEvent={setModifiedEvent} setModifyEvent={setModifyEvent}
+                        handleDelEvent={handleDelEvent}
+                        farms={farms} cityfarm={cityfarm}
                     />
                 </DialogContent>
             </Dialog>
@@ -416,22 +354,13 @@ const Calendar = ({farms, device, cityfarm}: {farms: any, device: any, cityfarm:
             <Paper elevation={3} style={{padding: '10px', flex: 1, overflowY: 'auto'}}>
                 <EventDisplay
                     selectedEvent={selectedEvent} setSelectedEvent={setSelectedEvent}
-                    modifiedEvent={modifiedEvent} modifyEvent={modifyEvent} setModifiedEvent={setModifiedEvent} setModifiedEventAnimals={setModifiedEventAnimals} setModifiedEventEnclosures={setModifiedEventEnclosures} setModifyEvent={setModifyEvent}
-                    createEvent={true}
-                    handleDelEvent={handleDelEvent} handlePatchEvent={handlePatchEvent}
-                    showingTime={showingTime} functionopenPopup={functionopenPopup} functionclosePopup={functionclosePopup}
-                    openAnimalsPopup={openAnimalsPopup} openEnclosurePopup={openEnclosurePopup}
-                    changeAllDay={changeAllDay}
-                    farms={farms} cityfarm={cityfarm} setShowErr={setShowErr}
+                    modifyEvent={modifyEvent} setModifiedEvent={setModifiedEvent} setModifyEvent={setModifyEvent}
+                    handleDelEvent={handleDelEvent}
+                    farms={farms} cityfarm={cityfarm}
                 />
             </Paper>}
         </div>
         {device !== 'desktopLarge' && <Fab style={{position: 'absolute', bottom: '15px', right: '15px'}} color='primary' onClick={() => setCreateEvent(true)}><AddIcon/></Fab>}
-        <Backdrop style={{zIndex: '1301', background: '#000000AA'}} open={showErr} onClick={() => setShowErr(false)}>
-            <Alert severity='warning'>
-                Please ensure event title is not empty
-            </Alert>
-        </Backdrop>
     </>);
 }
 

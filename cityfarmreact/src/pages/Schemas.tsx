@@ -9,7 +9,6 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import TableFooter from '@mui/material/TableFooter';
 import Paper from '@mui/material/Paper';
 import { IconButton, Select, Backdrop, Alert } from "@mui/material";
 import MenuItem from '@mui/material/MenuItem';
@@ -18,7 +17,8 @@ import Button from '@mui/material/Button';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete'
 import TextField from '@mui/material/TextField';
-
+import { Schema } from '../api/animals.ts';
+import { CityFarm } from "../api/cityfarm.ts";
 import { getConfig } from '../api/getToken';
 
 const classToReadable = {
@@ -29,12 +29,12 @@ const classToReadable = {
     "cityfarm.api.calendar.EventRef": "Event",
 }
 
-const Schemas = () => {
-    const [schemaList, setSchemaList] = useState([]); /* The State for the list of schemas. The initial state is [] */
-    const [searchTerm, setSearchTerm] = useState(''); /* The term being search for in the searchbar */
-    const [newFields, setNewFields] = useState([{"name": "", "type": "", "required": ""}])
-    const [newSchemaName, setNewSchemaName] = useState("");
-    const [showErr, setShowErr] = useState(false);
+const Schemas = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
+    const [schemaList, setSchemaList] = useState<Schema[]>([]); /* The State for the list of schemas. The initial state is [] */
+    const [searchTerm, setSearchTerm] = useState<string>(''); /* The term being search for in the searchbar */
+    const [newFields, setNewFields] = useState<any>([{"name": "", "type": "", "required": ""}])
+    const [newSchemaName, setNewSchemaName] = useState<string>("");
+    const [showErr, setShowErr] = useState<boolean>(false);
 
     const token = getConfig();
 
@@ -67,17 +67,8 @@ const Schemas = () => {
 
     function displayAll() {
         (async () => {
-            try {
-                const response = await axios.get(`/schemas`, token);
-                setSchemaList(response.data.reverse());
-            } catch (error) {
-                if (error.response.status === 401) {
-                    window.location.href = "/login";
-                    return;
-                } else {
-                    window.alert(error);
-                }
-            }
+            const schemas = await cityfarm.getSchemas(true, (schemas) => setSchemaList(schemas));
+            setSchemaList(schemas);
         })()
     }
 
@@ -97,17 +88,8 @@ const Schemas = () => {
                 displayAll();
                 return;
             }
-            try {
-                const response = await axios.get(`/schemas/by_name/${searchTerm}`, token);
-                setSchemaList(response.data.reverse());
-            } catch (error) {
-                if (error.response.status === 401) {
-                    window.location.href = "/login";
-                    return;
-                } else {
-                    window.alert(error);
-                }
-            }
+            const schema = await cityfarm.getSchema(searchTerm, true, (schema) => setSchemaList(new Array (schema)))
+            setSchemaList(new Array(schema!))
         })()
     },[searchTerm])
 
@@ -147,7 +129,7 @@ const Schemas = () => {
                         }
                         try {
                             await axios.post(`/schemas/create`, request, token);
-                            window.location.reload(false);
+                            window.location.reload();
                         } catch(error) {
                             window.alert(error);
                         }
@@ -190,7 +172,7 @@ const Schemas = () => {
                     </TableCell>
                     <TableCell align="left">
                         <FormControl fullWidth error={field["type"] === '' && index !== newFields.length - 1} required sx={{ m: 1, minWidth: 120 }} size="small">
-                            <Select height="10px" value={field["type"] || ''} onChange={(e) => {
+                            <Select size="small" value={field["type"] || ''} onChange={(e) => {
                                 setNewFields(newFields.map((elem, changeIndex) => {
                                     if (changeIndex === index) {
                                         elem["type"] = e.target.value;
@@ -209,10 +191,12 @@ const Schemas = () => {
                     </TableCell>
                     <TableCell align="left">
                         <FormControl fullWidth error={field["required"] === '' && index !== newFields.length - 1} required sx={{ m: 1, minWidth: 120 }} size="small">
-                            <Select height="10px" value={field["required"]} onChange={(e) => {
+                            <Select size="small" value={field["required"]} onChange={(e) => {
                                 setNewFields(newFields.map((elem, changeIndex) => {
                                     if (changeIndex === index) {
-                                        elem["required"] = e.target.value;
+                                        console.log(typeof e.target.value)
+                                        elem["required"] = e.target.value as boolean;
+                                        console.log(elem["required"])
                                         return elem;
                                     } else {
                                         return elem;
@@ -220,8 +204,8 @@ const Schemas = () => {
                                 }))
                                 checkIfNewRowNeeded();
                             }}>
-                                <MenuItem value={true}>Yes</MenuItem>
-                                <MenuItem value={false}>No</MenuItem>
+                                <MenuItem value={1}>Yes</MenuItem>
+                                <MenuItem value={0}>No</MenuItem>
                             </Select>
                         </FormControl>
                     </TableCell>
@@ -250,9 +234,9 @@ const Schemas = () => {
         />
         <Grid container spacing={3} columns={{xs: 1, lg: 2}}>
             {schemaList.map((schema) => (
-                <Grid item xs={1} key={schema._name}>
+                <Grid item xs={1} key={schema.name}>
                     <div className="schema-card">
-                        <h2 style={{margin: '0 0 10px 0'}}>{schema._name}</h2>
+                        <h2 style={{margin: '0 0 10px 0'}}>{schema.name}</h2>
                         <Paper elevation={3}>
                         <TableContainer>
                             <Table aria-label="fields table">
@@ -264,8 +248,8 @@ const Schemas = () => {
                                     <TableCell width='15%'>
                                         <IconButton onClick={async () => {
                                             try {
-                                                await axios.patch(`/schemas/by_name/${schema._name}/hidden`, {hidden: true}, token)
-                                                window.location.reload(false);
+                                                await axios.patch(`/schemas/by_name/${schema.name}/hidden`, {hidden: true}, token)
+                                                window.location.reload();
                                             } catch (error) {
                                                 if (error.response.status === 401) {
                                                     window.location.href = "/login";
@@ -280,7 +264,7 @@ const Schemas = () => {
                                 </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                {Object.entries(schema._fields).map(([name, properties]) => (
+                                {Object.entries(schema.fields).map(([name, properties]) => (
                                     <TableRow
                                     key={name}
                                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
@@ -288,8 +272,8 @@ const Schemas = () => {
                                     <TableCell component="th" scope="row">
                                         {name}
                                     </TableCell>
-                                    <TableCell align="left">{classToReadable[properties._type]}</TableCell>
-                                    <TableCell align="left">{properties._required ? "Yes" : "No"}</TableCell>
+                                    <TableCell align="left">{classToReadable[properties.type]}</TableCell>
+                                    <TableCell align="left">{properties.required ? "Yes" : "No"}</TableCell>
                                     </TableRow>
                                 ))}
                                 </TableBody>

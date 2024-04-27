@@ -1,23 +1,27 @@
 import Tabs, {tabsClasses} from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import "./FarmTabs.css";
-import { React, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ThemeProvider, useTheme } from "@emotion/react";
 import { createTheme } from "@mui/material";
 
-const FarmTabs = (props) => {
-    const farms = props.farms;
+const FarmTabs = ({farms, setSelectedFarm}) => {
 
     var tabTheme = createTheme(useTheme());
-    var mainTheme = useTheme();
+    var mainTheme = createTheme(useTheme());
+    const [farm, setFarm] = useState(null);
 
-    if (props.selectedFarm) {
-        tabTheme.palette.primary.main = mainTheme.palette[farms[props.selectedFarm]].main;
+    if (farm) {
+        tabTheme.palette.primary.main = mainTheme.palette[farms[farm]].main;
     } else {
-        if (props.selectedFarm != null) {
+        if (farm != null) {
             tabTheme.palette.primary.main = mainTheme.palette.green.main;
         }
     }
+
+    useEffect(() => {
+        setTimeout(() => setSelectedFarm(farm), 350);
+    }, [farm])
 
     function readableFarm(farm) {
         switch(farm) {
@@ -34,17 +38,16 @@ const FarmTabs = (props) => {
                 <Tabs
                     variant='scrollable'
                     scrollButtons='auto'
-                    value={props.selectedFarm}
-                    onChange={(e, farm)=>{props.setSelectedFarm(farm)}}
+                    value={farm}
+                    onChange={(_, farm) => {setFarm(farm)}}
                     sx={{
                         [`& .${tabsClasses.scrollButtons}`]: {
                           '&.Mui-disabled': { opacity: 0.3 },
                         },
                     }}
                 >
-                    {console.log('rerendering')}
                     <Tab value={null} label="All"/>
-                    {Object.values(farms).map((farm) => <Tab key={farm} value={farm} label={readableFarm(farm)}/>)}
+                    {Object.values(farms).map((farm, index) => <Tab key={index} value={farm} label={readableFarm(farm)}/>)}
                     {/*<Tab value={farms.WH} label="Windmill Hill"/>
                     <Tab value={farms.HC} label="Hartcliffe"/>
                     <Tab value={farms.SW} label="St Werburghs"/>*/}

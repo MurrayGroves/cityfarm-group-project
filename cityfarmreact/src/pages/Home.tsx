@@ -1,9 +1,6 @@
 import React, {useEffect, useState} from "react";
-import axios from "../api/axiosConfig.js";
 import "./Home.css"
-import { getConfig } from '../api/getToken.js';
-import { Button } from "@mui/material";
-import AnimalPopover from "../components/AnimalPopover.jsx";
+import AnimalPopover from "../components/AnimalPopover.tsx";
 import { useTheme } from "@mui/material";
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
@@ -12,7 +9,7 @@ import { EventInstance } from "../api/events.js";
 
 declare module "react" {
     interface CSSProperties {
-      "--colour"?: string;
+      "--colour"?: string | number;
     }
 }
 
@@ -60,7 +57,7 @@ const Home = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
         {events.length > 0 && <h2>Upcoming Events</h2>}
         {/*  events are mapped below, same as in selected event with some visual changes*/}
         <Grid container spacing={3} columns={{xs: 1, md: 2, lg: 3, xl: 4 }}>
-        {events.slice(0, 4).map((e, index)=>(
+        {events.slice(0, 4).map((e, index) => (
             <Grid item xs={1} key={index}>
             <Paper elevation={3} className="event-box">
                 <h2>{e.event.title}</h2>
@@ -80,8 +77,8 @@ const Home = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
                 {e.event.farms.includes(farms.HC) ? <p>Hartcliffe</p> : <></>}
                 {e.event.farms.includes(farms.SW) ? <p>St Werberghs</p> : <></>}
                 {e.event.animals.length !== 0 ? <h3>Animals</h3> : <></>}
-                {e.event.animals.map((animalID) => (
-                    <AnimalPopover key={animalID._id} animalID={animalID._id}/>
+                {e.event.animals.map((animal) => (
+                    <AnimalPopover key={animal.id} cityfarm={cityfarm} animalID={animal.id}/>
                 ))}
                 {e.event.enclosures.length !== 0 &&
                     <div>

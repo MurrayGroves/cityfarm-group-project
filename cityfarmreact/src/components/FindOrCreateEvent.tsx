@@ -16,9 +16,9 @@ export const FindOrCreateEvent = ({style, farms, cityfarm, setEvent}: {style: an
             </Tabs>
             <Divider/>
             {finding === 1 ?
-                <FindEvent cityfarm={cityfarm} setEvent={setEvent} farms={farms} style={{marginTop: '1%'}}/>
+                <FindEvent cityfarm={cityfarm} setEvent={setEvent} farms={farms} style={{marginTop: '20px'}}/>
             :
-                <EventCreator style={{marginTop: '1%'}} farms={farms} cityfarm={cityfarm} setEvent={setEvent}/>
+                <EventCreator style={{marginTop: '0'}} farms={farms} cityfarm={cityfarm} setEvent={setEvent}/>
             }
         </div>
     )

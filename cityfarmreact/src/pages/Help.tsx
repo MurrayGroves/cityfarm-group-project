@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from "react";
-import Eevent from "../assets/example event.png";
+
+const Eevent = require("../assets/example event.png");
 
 //updating the constants here updates them globally
 export const calData = <>
@@ -31,6 +32,11 @@ export const singleData = <>
     {'\n'}In order to change what farm this animal belongs to,
     press the change farm button on the right. In order to see more events,
     click on the text that says linked event, each event name is clickable to see it as a normal selected event.
+</>
+
+export const singleEncData = <>
+    This is the page for viewing a single enclosure, if you click move on the buttons then you
+    will be able to move an animal from one enclosure to another, you can also generally edit the list of animals as a whole and even move them if needed.
 </>
 
 const Help = () => {

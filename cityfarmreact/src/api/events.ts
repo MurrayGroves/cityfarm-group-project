@@ -1,22 +1,27 @@
 import { Animal } from "./animals.ts";
+import { Enclosure } from "./enclosures.ts";
 
 export class Event {
-    enclosures: any[];
-    animals: any[];
+    enclosures: Enclosure[];
+    animals: Animal[];
     title: string;
     description: string;
     allDay: boolean;
-    id: string;
-    farms: any[];
+    farms: string[];
+    start: Date;
+    end: Date;
+    id: string
 
     constructor(data: any) {
-        this.enclosures = data.enclosures;
-        this.animals = data.animals.map((animal) => new Animal(animal));
+        this.enclosures = data.enclosures?.map((enclosure: any) => new Enclosure(enclosure)) ?? [];
+        this.animals = data.animals?.map((animal: any) => new Animal(animal)) ?? []
         this.title = data.title;
         this.description = data.description;
         this.allDay = data.allDay;
-        this.id = data._id;
-        this.farms = data.farms;
+        this.farms = data.farms ?? [];
+        this.start = new Date(data.start);
+        this.end = new Date(data.end);
+        this.id = data._id ?? data.id;
     }
 }
 
