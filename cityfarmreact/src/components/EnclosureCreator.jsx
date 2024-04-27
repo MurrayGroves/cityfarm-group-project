@@ -18,16 +18,15 @@ import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 import { getConfig } from '../api/getToken';
 
-import AssociateAnimal from '../components/AssociateAnimal';
+import AssociateAnimal from '../components/AssociateAnimal.tsx';
 import CapacityChanger from '../components/CapacityChanger';
 import { Unstable_Popup as BasePopup } from '@mui/base/Unstable_Popup';
 import { styled } from '@mui/system';
-import {  DialogActions, DialogContent, DialogContentText, DialogTitle, Dialog } from "@mui/material";
+import { DialogActions, DialogContent, DialogContentText, DialogTitle, Dialog } from "@mui/material";
 
-const EnclosureCreator = (props) => {
-    const [newEnclosure, setNewEnclosure] = useState({name: '', holding: {}, capacities: {}, notes: '', farm: ''});
-    const [create, setCreate] = useState(false);
-    const [anchor, setAnchor] = React.useState(null);
+
+const EnclosureCreator = ({ setCreateProp, cityfarm}) => {
+    const [newEnclosure, setNewEnclosure] = useState({name: '', holding: [], capacities: {}, notes: '', farm: ''});
     const [openAnimalsPopup ,setOpenAnimalsPopup] = useState(false)
     const [openCapacitiesPopup ,setOpenCapacitiesPopup] = useState(false)
 
@@ -39,14 +38,13 @@ const EnclosureCreator = (props) => {
     }
 
     const reset = () => {
-        setCreate(false);
-        setNewEnclosure({name: '', holding: {}, capacities: {}, notes: '', farm: ''})
+        setCreateProp(false);
+        setNewEnclosure({name: '', holding: [], capacities: {}, notes: '', farm: ''})
     }
 
     return (<>
-        {create ? <>
-            <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '20px'}}>
-            <TableContainer component={Paper} style={{marginRight: '20px'}}>
+            <div style={{display: 'flex', justifyContent: 'space-between', marginTop: '10px'}}>
+            <TableContainer component={Paper} style={{marginRight: '10px'}}>
                 <Table>
                     <TableHead>
                         <TableRow>
@@ -57,34 +55,57 @@ const EnclosureCreator = (props) => {
                     </TableHead>
                     <TableBody>
                         <TableRow>
-                            <TableCell> {/* Table cell for name of enclosure */}
+                            <TableCell sx={{borderBottom: 'none'}}> {/* Table cell for name of enclosure */}
                                 <TextField 
                                     style={{width: '100%'}} 
                                     onChange={(e)=>{setNewEnclosure({...newEnclosure, name: e.target.value})}} label='Name'
                                 />
                             </TableCell> 
-                            <TableCell> {/* Table cell for animals in enclosure */}
+                            <TableCell sx={{borderBottom: 'none'}}> {/* Table cell for animals in enclosure */}
                                 <Button variant='outlined' onClick={() => {setOpenAnimalsPopup(true)}}>Add Animals</Button> 
                             </TableCell>
-                            <TableCell> {/* Table cell for capacities */}
+                            <TableCell sx={{borderBottom: 'none'}}> {/* Table cell for capacities */}
                                 <Button variant='outlined' onClick={() => {setOpenCapacitiesPopup(true)}}>Capacities</Button> 
                             </TableCell>
                         </TableRow>
                     </TableBody>
                 </Table>
             </TableContainer>
-            <Button className='tallButton' variant='contained' endIcon={<DeleteIcon/>} onClick={() => {reset()}}>Discard</Button>
+            <div style={{display: 'flex'}}>
+            <Button sx={{marginRight: '10px'}} color='warning' className='tallButton' variant='contained' endIcon={<DeleteIcon/>} onClick={() => {reset()}}>Discard</Button>
+            <Button
+                className='tallButton'
+                variant="contained"
+                color='success'
+                aria-label="add"
+                endIcon={<AddIcon/>}
+                onClick={() => {
+                    (async () => {
+                        try {
+                            await axios.post(`/enclosures/create`, {...newEnclosure, holding: newEnclosure.holding.map(animal => animal.id)}, token)
+                        } catch(error) {
+                            if (error.response.status === 401) {
+                                window.location.href = "/login";
+                                return;
+                            } else {
+                                window.alert(error);
+                            }
+                        }
+                        window.location.reload(false);
+                    })()
+                }}
+            >Create</Button>
+            </div>
             </div>
             <div id="AssociateAnimal" style={{textAlign:'center'}}>
-                <Dialog open={openAnimalsPopup} onClose={()=>{setOpenAnimalsPopup(false)}}>
+                <Dialog fullWidth maxWidth='md' open={openAnimalsPopup} onClose={()=>{setOpenAnimalsPopup(false)}}>
                     <DialogTitle>Add Animal</DialogTitle>
                     <DialogContent>
-                        <AssociateAnimal setAnimals={setNewEnclosureAnimals} animals={newEnclosure.holding} close={()=>setOpenAnimalsPopup(false)}></AssociateAnimal>
+                        <AssociateAnimal setAnimals={setNewEnclosureAnimals} cityfarm={cityfarm} animals={newEnclosure.holding} close={()=>setOpenAnimalsPopup(false)}></AssociateAnimal>
                     </DialogContent>
                 </Dialog>
             </div>
 
-                {/* WIP */}
             <div id="CapacityChanger" style={{textAlign:'center'}}>
                 <Dialog open={openCapacitiesPopup} onClose={()=>{setOpenCapacitiesPopup(false)}}>
                     <DialogTitle>Capacities</DialogTitle>
@@ -93,33 +114,7 @@ const EnclosureCreator = (props) => {
                     </DialogContent>
                 </Dialog>
             </div>
-
-            <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '20px'}}>
-            <Button
-            className='tallButton'
-            variant="contained"
-            aria-label="add"
-            endIcon={<AddIcon/>}
-            onClick={() => {
-                (async () => {
-                    try {
-                        await axios.post(`/enclosures/create`, newEnclosure, token)
-                    } catch(error) {
-                        if (error.response.status === 401) {
-                            window.location.href = "/login";
-                            return;
-                        } else {
-                            window.alert(error);
-                        }
-                    }
-                    window.location.reload(false);
-                })()
-            }}
-            >Create</Button>
-            </div>
-            : <></></>
-        : <Button variant='contained' endIcon={<AddIcon/>} style={{float: 'right'}} onClick={() => setCreate(true)}>Create</Button>}
-    </>)
+        </>)
 }
 
 export default EnclosureCreator;

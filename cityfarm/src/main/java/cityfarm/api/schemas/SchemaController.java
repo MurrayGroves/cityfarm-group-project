@@ -38,12 +38,12 @@ public class SchemaController {
     }
 
     @GetMapping("/api/schemas/by_name/{name}")
-    public ResponseEntity<List<AnimalSchema>> by_name(@PathVariable String name) {
-        List<AnimalSchema> schema =
-                schemaRepositoryCustom.findSchemaByName(name)
-                .stream()
-                .filter(s -> !s.get_hidden())
-                .toList();
+    public ResponseEntity<AnimalSchema> by_name(@PathVariable String name) {
+        AnimalSchema schema = schemaRepository.findSchemaByName(name);
+
+        if (schema.get_hidden()) {
+            return ResponseEntity.notFound().build();
+        }
 
         return ResponseEntity.ok().body(schema);
     }

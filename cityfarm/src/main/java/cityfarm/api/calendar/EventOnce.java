@@ -19,6 +19,9 @@ import java.util.UUID;
 @JsonTypeName("once")
 @Document("events")
 public class EventOnce extends Event {
+    public ZonedDateTime start;
+    public ZonedDateTime end;
+
     @Override
     public String get_id() {
         return id;

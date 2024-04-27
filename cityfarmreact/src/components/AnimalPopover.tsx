@@ -1,29 +1,28 @@
-import * as React from 'react';
+import React from 'react';
 import Popover from '@mui/material/Popover';
 import Typography from '@mui/material/Typography';
 import {Link} from "react-router-dom";
-import './AnimalPopover.css'
-import axios from "../api/axiosConfig";
 import { useState, useEffect } from 'react';
 import { useTheme } from '@mui/material/styles';
-import { getConfig } from '../api/getToken';
+import { CityFarm } from '../api/cityfarm.js';
+import { Animal, Sex, Schema } from '../api/animals.ts';
 
-const aExamples = [
-    {
-        name: "Loading...",
+declare module "react" {
+    // augment CSSProperties here
+    interface CSSProperties {
+      "--colour"?: string | number;
+      "--hoverColour"?: string | number;
     }
-]
+}
 
-const AnimalPopover = (props) => {
+const AnimalPopover = ({cityfarm, animalID}: {cityfarm: CityFarm, animalID: string}) => {
     const colour = useTheme().palette.mode === 'light' ? 'black' : 'white';
     const hoverColour = '#f1f1f1';
 
     const [anchorEl, setAnchorEl] = useState(null);
-    const [chosenAnimal, setChosenAnimal] = useState(aExamples[0]);
+    const [chosenAnimal, setChosenAnimal] = useState<Animal>(new Animal({name: 'Loading...'}));
     const [animalMother, setMother] = useState("Unregistered")
     const [animalFather, setFather] = useState("Unregistered")
-
-    const token = getConfig();
 
     const handlePopoverOpen = (e) => {
         setAnchorEl(e.currentTarget);
@@ -37,48 +36,23 @@ const AnimalPopover = (props) => {
 
     useEffect(() => {
         (async () => {
-        try {
-            const response = await axios.get(`/animals/by_id/${props.animalID}`, token);
-            setChosenAnimal(response.data);
-        } catch (error) {
-            if (error.response.status === 401) {
-                window.location.href = "/login";
-                return;
-            } else {
-                window.alert(error);
-            }
-        }})()
-    }, [props.animalID]);
+            const animal = await cityfarm.getAnimal(animalID, true, (animal) => setChosenAnimal(animal));
+            animal ? setChosenAnimal(animal) : console.error('animal not found.');
+        })()
+    }, [animalID]);
 
     useEffect(()=>{
         if(chosenAnimal.mother){
             (async ()=>{
-            try{
-                const mother = await axios.get(`/animals/by_id/${chosenAnimal.mother}`, token);
-                setMother(mother.data.name);
-            } catch (error) {
-                if (error.response.status === 401) {
-                    window.location.href = "/login";
-                    return;
-                } else {
-                    window.alert(`mother issue \n ${error}`)
-                }
-            }})()}
+                const mother = await cityfarm.getAnimal(chosenAnimal.mother, true, (animal) => setMother(animal.name));
+                setMother(mother!.name);
+            })()}
         if (chosenAnimal.father){
             (async ()=>{
-            try{
-                const father = await axios.get(`/animals/by_id/${chosenAnimal.father}`, token);
-                setFather(father.data.name);
-            } catch (error) {
-                if (error.response.status === 401) {
-                    window.location.href = "/login";
-                    return;
-                } else {
-                    window.alert(`father issue \n ${error}`)
-                }
-            }})()
+                const father = await cityfarm.getAnimal(chosenAnimal.father, true, (animal) => setFather(animal.name));
+                setFather(father!.name)
+            })()
         }
-
     },[chosenAnimal])
 
     return (
@@ -90,7 +64,7 @@ const AnimalPopover = (props) => {
                 onMouseLeave={handlePopoverClose}
                 style={{display: 'inline-block'}}
             >
-                <Link className='animalLink' style={{'--colour': colour, '--hoverColour': hoverColour}} to={`/single-animal/${chosenAnimal._id}`}>{chosenAnimal.name}</Link>
+                <Link className='animalLink' style={{'--colour': colour, '--hoverColour': hoverColour}} to={`/single-animal/${chosenAnimal.id}`}>{chosenAnimal.name}</Link>
             </Typography>
             <Popover
                 id="mouse-over-popover"
@@ -112,7 +86,7 @@ const AnimalPopover = (props) => {
                     {`Type: ${chosenAnimal.type ? chosenAnimal.type : 'Loading...'}`}<br/>
                     {`Father: ${animalFather}`}<br/>
                     {`Mother: ${animalMother}`}<br/>
-                    {`Sex: ${chosenAnimal.sex === 'f' ? 'Female' : (chosenAnimal.sex === 'm' ? 'Male' : 'Castrated')}`}
+                    {`Sex: ${chosenAnimal.sex === Sex.Female ? 'Female' : (chosenAnimal.sex === Sex.Male ? 'Male' : 'Castrated')}`}
                 </Typography>
             </Popover>
         </div>
