@@ -77,8 +77,12 @@ const CapacityChanger = (props) => {
                     rows={rows}
                     disableRowSelectionOnClick
                     processRowUpdate = {(newVal, oldVal) => {
+                        const newInt = parseInt(newVal.number)
+                        if (!Number.isInteger(newInt)) { return oldVal; }
+                        if (newInt < 0) { return oldVal; }
                         if (newVal.number === oldVal.number) { return newVal; }
                         props.enclosure.capacities[newVal.id] = newVal.number
+                        props.enclosure.capacities[newVal.id] = newInt
                         return newVal;
                     }}
                 />
