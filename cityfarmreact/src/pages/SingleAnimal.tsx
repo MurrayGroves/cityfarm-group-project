@@ -11,6 +11,16 @@ import { Event } from "../api/events.ts";
 import { Grid } from "@mui/material";
 import EnclosurePopover from "../components/EnclosurePopover.tsx";
 
+
+export function readableFarm(farm) {
+    switch(farm) {
+        case "WH": return <span>Windmill Hill</span>;
+        case "HC": return <span>Hartcliffe</span>;
+        case "SW": return <span>St Werburghs</span>;
+        case '': return <span>None</span>;
+        default: return <span>Loading...</span>;
+    }
+}
 const SingleAnimal = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
 
     const { animalID } = useParams<string>();
@@ -23,15 +33,7 @@ const SingleAnimal = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
     const [eventsAll, setEventAll] = useState(false);
     const [animals, setAnimals] = useState<Animal[]>([]);
 
-    function readableFarm(farm) {
-        switch(farm) {
-            case "WH": return <span>Windmill Hill</span>;
-            case "HC": return <span>Hartcliffe</span>;
-            case "SW": return <span>St Werburghs</span>;
-            case '': return <span>None</span>;
-            default: return <span>Loading...</span>;
-        }
-    }
+
 
     useEffect(() => {
         (async () => {

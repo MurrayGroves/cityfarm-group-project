@@ -162,7 +162,7 @@ const App = () => {
                             <Route path="/enclosures" element={<EnclosureTable farms={farms} cityfarm={cityfarm}/>}/>
                             <Route path="/schemas" element={<Schemas farms={farms} cityfarm={cityfarm}/>}/>
                             <Route path="/help" element={<Help/>}/>
-                            <Route path="/single-enclosure/:enclosureID" element={<SingleEnclosure farms={{farms}}/>}/>
+                            <Route path="/single-enclosure/:enclosureID" element={<SingleEnclosure farms={{farms}} cityfarm={cityfarm}/>}/>
                             <Route path="/single-animal/:animalID" element={<SingleAnimal farms={farms} cityfarm={cityfarm}/>} />
                             <Route path="*" element={<Error/>}/>
                         </Routes>

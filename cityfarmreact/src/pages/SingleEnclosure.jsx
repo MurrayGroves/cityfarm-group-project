@@ -2,15 +2,15 @@ import {Link, useParams} from "react-router-dom";
 import React, {useEffect, useState} from "react";
 import axios from "../api/axiosConfig";
 import {getConfig} from "../api/getToken";
-import AnimalPopover from "../components/AnimalPopover";
+import AnimalPopover from "../components/AnimalPopover.tsx";
 import "./SingleEnclosure.css"
-import {Dialog, DialogContent, DialogTitle} from "@mui/material";
-import AssociateAnimal from "../components/AssociateAnimal";
+import {Collapse, Dialog, DialogContent, DialogTitle, Paper} from "@mui/material";
+import AssociateAnimal from "../components/AssociateAnimal.tsx";
 import Button from "@mui/material/Button";
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from "@mui/material/IconButton";
 import {DataGrid} from "@mui/x-data-grid";
-import {readableFarm} from "./SingleAnimal";
+import {readableFarm} from "./SingleAnimal.tsx";
 
 const SingleEnclosure = (props) => {
   const token = getConfig();
@@ -21,7 +21,7 @@ const SingleEnclosure = (props) => {
   const [allEnclosures,setAllEnclosures] = useState([])
   const [animalToMove,setAnimalToMove] = useState(false)
   const [selectedAnimals,setSelectedAnimals] = useState([])
-
+  const cityfarm= props.cityfarm
 
   useEffect(() => {
     (
@@ -63,7 +63,7 @@ const SingleEnclosure = (props) => {
       (async () => {
         for (const animal of animalList) {
         try {
-          console.log('SENDING',animal)
+
           const req = await axios.patch(`/enclosures/moveanimal`,[animal,enc._id,enclosure._id], token)
           // console.log(req);
           //window.location.reload(false);
@@ -82,24 +82,21 @@ const SingleEnclosure = (props) => {
 
   }
 
-  const move = (anId,toId,fromId)=>{
 
-  }
 
   const enclosureMove =(animalList) =>{
 
     let name = ' animal group'
 
 
-    if (animalList.length >0){
       if (animalList.length === 1){
-        name = <AnimalPopover key={animalList[0]} animalID={animalList[0]}/>
+        name = <AnimalPopover key={animalList[0]} animalID={animalList[0]} cityfarm={cityfarm}/>
       }
       return(
           <div> Moving {name} to one of: <br/>{
             allEnclosures.map((enc)=>(<>{
               (enc._id!==enclosure._id)?
-                  <div onClick={()=>{animalTo(animalList,enc);window.location.reload(false);}}>{enc.name}<br/></div>
+                  <Button onClick={()=>{animalTo(animalList,enc);window.location.reload(false);}}>{enc.name}<br/></Button>
             :
             <></>}
 
@@ -107,35 +104,42 @@ const SingleEnclosure = (props) => {
             <Button startIcon={<DeleteIcon />} onClick={closeEnclosureMove}/>
           </div>
             )
-    }else{
-      return <></>
-    }
+
   }
 
 
   const updateSelectedAnimals = (ids) => {
     console.log(ids)
-    setSelectedAnimals((prevSelectedAnimals) => {
+
       // Merge the newly selected animals with the already selected ones
-      const newSelectedAnimals = [...prevSelectedAnimals];
-      ids.forEach((id) => {
-        // Check if the id is already in the selected list
-        const index = newSelectedAnimals.indexOf(id);
-        if (index === -1) {
+     //  const newSelectedAnimals = selectedAnimals;
+    //   ids.forEach((id) => {
+    //     console.log(id)
+    //     // Check if the id is already in the selected list
+    //     const index = newSelectedAnimals.indexOf(id);
+    //     if (index === -1) {
+    //
+    //       // If not, add it to the list
+    //       console.log("ID not found!")
+    //       newSelectedAnimals.push(id);
+    //       console.log("Updated list")
+    //       console.log(newSelectedAnimals)
+    //
+    //     } else {
+    //       console.log("ID found")
+    //       // If yes, remove it from the list (deselect)
+    //       newSelectedAnimals.splice(index, 1);
+    //       console.log("Updated list with remove")
+    //       console.log(newSelectedAnimals)
+    //     }
+    //   });
+    //   setSelectedAnimals(newSelectedAnimals)
+    // console.log(selectedAnimals)
+    // console.log("Function Complete")
+    setSelectedAnimals(ids)
+    }
 
-          // If not, add it to the list
-          newSelectedAnimals.push(id);
 
-        } else {
-          console.log("deselecting")
-          // If yes, remove it from the list (deselect)
-          newSelectedAnimals.splice(index, 1);
-        }
-      });
-      return newSelectedAnimals;
-    });
-    console.log(selectedAnimals)
-  };
 
 
 
@@ -161,13 +165,13 @@ const SingleEnclosure = (props) => {
           rows.push({id: a._id,name : a , move: a})
         }
         holdingDisplay.push(
-            <div>
+            <div key={type}>
             <h3 style={{ display: "inline-block" }}>{type}:</h3><br/>
 
               <DataGrid columns={
                 [
                     { field: 'name', headerName: 'Name', headerClassName: 'grid-header', headerAlign: 'left', flex: 1,
-                  renderCell: (animal) => (<AnimalPopover key={animal.value._id} animalID={animal.value._id}/>)},
+                  renderCell: (animal) => (<AnimalPopover cityfarm={cityfarm} key={animal.value._id} animalID={animal.value._id}/>)},
                   { field: 'move', headerName: '', headerClassName: 'grid-header', headerAlign: 'left', flex: 1,
                   renderCell:(animal)=>(<Button onClick={() => setSelectedAnimals([animal.id])}> Move</Button>)}
                 ]
@@ -177,7 +181,7 @@ const SingleEnclosure = (props) => {
               onRowSelectionModelChange={(ids) => {
                 updateSelectedAnimals(ids.map(name => name));}}
               />
-            <br/>
+
             </div>
         )
 
@@ -202,7 +206,9 @@ const SingleEnclosure = (props) => {
   // }
 
   const setEnclosureNewAnimals = (animalList) => {
-    updateEnclosure(enclosure._id,{name: enclosure.name, holding: animalList,
+
+    console.log("HELLO ",animalList)
+    updateEnclosure(enclosure._id,{name: enclosure.name, holding: animalList.map((animal,key)=>(animal.id)),
           capacities: enclosure.capacities, notes: enclosure.notes, farm: enclosure.farm})
   }
 
@@ -235,20 +241,25 @@ const SingleEnclosure = (props) => {
   <div className="enclosureView">
     <h2>{enclosure.name}</h2><br/>
     <b>Farm: </b> {readableFarm(enclosure.farm)}<br/>
-    <h3 style={{ display: "inline-block" }}>Animal Holdings:</h3><br/>
-    {holdings().map((item,key)=>(item))}
+    <h3 style={{ display: "inline-block" }}>Animal Holdings:</h3>
+    <br/>
+
 
     <div id="AssociateAnimal" style={{textAlign:'center'}}>
       <Button onClick={handleOpenAnimalsPopup}>Edit Animals</Button>
       <Dialog fullWidth maxWidth='md' open={openAnimalsPopup} onClose={()=>{setOpenAnimalsPopup(false)}}>
         <DialogTitle>Change Animals</DialogTitle>
         <DialogContent>
-          <AssociateAnimal setAnimals={setEnclosureNewAnimals} animals={enclosure.holding.map((enc,key)=>(enc._id))} close={()=>{setOpenAnimalsPopup(false);window.location.reload(false);}}></AssociateAnimal>
+          <AssociateAnimal cityfarm={cityfarm}  setAnimals={setEnclosureNewAnimals} animals={enclosure.holding} close={()=>{setOpenAnimalsPopup(false);}}></AssociateAnimal>
         </DialogContent>
       </Dialog>
     </div>
+    {holdings().map((item,key)=>(item))}
+    <div className={`moveContent ${selectedAnimals.length>0 ? 'moveVisible' : 'moveHidden'}`}>
+      <Paper elevation={3} className={'movePaper'}>
     {enclosureMove(selectedAnimals)}
-
+      </Paper>
+    </div>
 
   </div>
   )
