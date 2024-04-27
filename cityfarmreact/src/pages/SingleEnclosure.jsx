@@ -266,16 +266,4 @@ const SingleEnclosure = (props) => {
 
 }
 
-
-//FOR WHEN TYPES ARE COOLER
-// for (const [type,animalList] of Object.entries(enclosure.holding)){
-//   console.log([type,animalList])
-//     holdingDisplay.push(<>
-//         <h4>{type}</h4>
-//         <div>
-//           {animalList.map((animal) => (
-//               <AnimalPopover key={animal} animalID={animal}/>
-//           ))}
-//         </div>
-// </>)
 export default SingleEnclosure
