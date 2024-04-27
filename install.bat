@@ -1,4 +1,5 @@
 @echo off
+SETLOCAL EnableDelayedExpansion
 
 :: BatchGotAdmin
 :-------------------------------------
@@ -29,6 +30,20 @@ if '%errorlevel%' NEQ '0' (
     CD /D "%~dp0"
 :--------------------------------------   
 
+REM Port forward WSL2 to all interfaces
+if "%1" == "start" (
+    wsl echo hostname -I ^> tempfile
+    FOR /F %%i IN ('wsl hostname -I') DO (
+        set WSL_IP=%%i
+    )
+    echo WSL IPs are !WSL_IP!
+
+    netsh interface portproxy set v4tov4 listenport=3000 listenaddress=0.0.0.0 connectport=3000 connectaddress=!WSL_IP!
+    netsh interface portproxy set v4tov4 listenport=8080 listenaddress=0.0.0.0 connectport=8080 connectaddress=!WSL_IP!
+
+    wsl cd /opt/cityfarm ^&^& docker compose up -d
+    exit
+)
 
                                                                                 
 echo      _/_/_/  _/    _/                _/_/_/_/                                   
@@ -145,13 +160,14 @@ wsl mkdir -p /opt/cityfarm
 wsl mkdir -p /opt/cityfarm/mongodb-data
 
 echo Downloading Docker Compose file...
-wsl curl https://pastebin.com/raw/hLbPm1ji --output /opt/cityfarm/docker-compose.yml
+wsl curl https://pastebin.com/raw/JixaVXza --output /opt/cityfarm/docker-compose.yml
 
 echo Starting Docker Compose...
 wsl cd /opt/cityfarm/ ^&^& docker compose up -d
 
 echo Creating scheduled task...
-schtasks /create /tn CityFarm /sc ONSTART /DELAY 0000:30 /RL HIGHEST /tr "wsl cd /opt/cityfarm && docker compose up -d"
+xcopy "%~f0" "%APPDATA%\CityFarm\cityfarm.bat" /Y
+schtasks /create /tn CityFarm /sc ONSTART /DELAY 0000:30 /RL HIGHEST /tr "%APPDATA%\CityFarm\cityfarm.bat start" /ru SYSTEM
 REG ADD HKEY_LOCAL_MACHINE\SOFTWARE\CityFarm /v Installed /t REG_SZ /d "true" /f
 
 echo Done!
