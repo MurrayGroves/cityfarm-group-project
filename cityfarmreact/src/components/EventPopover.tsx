@@ -5,7 +5,7 @@ import { getConfig } from '../api/getToken';
 
 import { Paper, Popover } from '@mui/material';
 
-import AnimalPopover from './AnimalPopover';
+import AnimalPopover from './AnimalPopover.tsx';
 import { Event, EventOnce, EventRecurring } from '../api/events.ts';
 import { CityFarm } from '../api/cityfarm.ts';
 
@@ -125,7 +125,7 @@ export const EventPopover = ({farms, cityfarm, eventID, anchorEl}: {farms: any, 
                         {event.farms.includes(farms.SW) ? <p>St Werburghs</p> : <></>}
                         {event.animals.length > 0 ? <h3>Animals</h3> : <></>}
                         {event.animals.map((animal) => (
-                            <AnimalPopover key={animal.id} animalID={animal.id}/>
+                            <AnimalPopover cityfarm={cityfarm} key={animal.id} animalID={animal.id}/>
                         ))}
                         {event.enclosures.length > 0 &&
                         <div>

@@ -9,12 +9,6 @@ import { DataGrid, useGridApiRef, FooterPropsOverrides, GridColDef, GridFilterMo
 import { Collapse, Autocomplete, Backdrop, Paper, TextField, Button, Select, MenuItem, FormControl, IconButton, Divider, Dialog, DialogContent, Alert, AlertTitle, ButtonGroup } from '@mui/material';
 import { Add as AddIcon, Edit as EditIcon, Delete, Done as DoneIcon, Clear as ClearIcon, ArrowDropDownCircle as Arrow } from '@mui/icons-material';
 
-import { Add as AddIcon, Edit as EditIcon, Delete, Done as DoneIcon, Clear as ClearIcon } from '@mui/icons-material';
-
-import AnimalCreator from "../components/AnimalCreator.tsx";
-import FarmMoveButton from "../components/FarmMoveButton.jsx";
-import AnimalPopover from "../components/AnimalPopover.jsx";
-import FarmTabs from "../components/FarmTabs.jsx";
 import { EventText } from "../components/EventText.tsx";
 import { EventSelectorButton } from "../components/EventSelectorButton.tsx";
 
