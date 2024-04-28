@@ -1,14 +1,14 @@
-import {Link, useParams} from "react-router-dom";
+import {useParams} from "react-router-dom";
 import React, {useEffect, useState} from "react";
 import axios from "../api/axiosConfig";
 import {getConfig} from "../api/getToken";
 import AnimalPopover from "../components/AnimalPopover.tsx";
 import "./SingleEnclosure.css"
-import {Collapse, Dialog, DialogContent, DialogTitle, Paper} from "@mui/material";
+import { Dialog, DialogContent, DialogTitle, Paper} from "@mui/material";
 import AssociateAnimal from "../components/AssociateAnimal.tsx";
 import Button from "@mui/material/Button";
 import DeleteIcon from '@mui/icons-material/Delete';
-import IconButton from "@mui/material/IconButton";
+
 import {DataGrid} from "@mui/x-data-grid";
 import {readableFarm} from "./SingleAnimal.tsx";
 
@@ -21,6 +21,7 @@ const SingleEnclosure = (props) => {
   const [allEnclosures,setAllEnclosures] = useState([])
   const [animalToMove,setAnimalToMove] = useState(false)
   const [selectedAnimals,setSelectedAnimals] = useState([])
+  const [enclosureDelete,setEnclosureDelete]=useState(false)
   const cityfarm= props.cityfarm
 
   useEffect(() => {
@@ -51,9 +52,6 @@ const SingleEnclosure = (props) => {
       if (animal.type === type) {
         animals.push(animal)
       }
-
-
-
     }
     return animals
   }
@@ -139,16 +137,10 @@ const SingleEnclosure = (props) => {
     setSelectedAnimals(ids)
     }
 
-
-
-
-
   const closeEnclosureMove =()=>{
     setAnimalToMove(false)
     setSelectedAnimals([])
   }
-
-
 
 
   const holdings =()=>{
@@ -236,17 +228,48 @@ const SingleEnclosure = (props) => {
     })();
   }
 
+  function handleEnclosureDeletion() {
+    (async ()=>{
+      try {
+        console.log(enclosure)
+        const req = await axios.delete(`/enclosures/by_id/${enclosure._id}/delete`,token)
+
+      } catch (error) {
+        if (error.response.status === 401) {
+          window.location.href = "/login";
+          console.log(error)
+          return;
+        } else {
+          window.alert(error);
+        }
+    }
+    })
+    ()
+    setEnclosureDelete(false)
+    window.location.href="/enclosures";
+  }
+
   return (
 
   <div className="enclosureView">
     <h2>{enclosure.name}</h2><br/>
+    <Button color={'warning'} onClick={()=>setEnclosureDelete(true)}>Delete Enclosure <DeleteIcon /> </Button>
+    <br/>
+    <Dialog open={enclosureDelete} onClose={()=>setEnclosureDelete(false)}>
+      <DialogTitle>Delete {enclosure.name}?</DialogTitle>
+      <DialogContent>
+        Are you sure you want to delete {enclosure.name}? <br/>
+        <Button color={'warning'} onClick={handleEnclosureDeletion}>Delete <DeleteIcon /> </Button>
+        <Button color={'success'} onClick={()=>setEnclosureDelete(false)}>Cancel</Button>
+      </DialogContent>
+    </Dialog>
     <b>Farm: </b> {readableFarm(enclosure.farm)}<br/>
     <h3 style={{ display: "inline-block" }}>Animal Holdings:</h3>
     <br/>
 
-
+    <Button onClick={handleOpenAnimalsPopup}>Edit Animals</Button>
     <div id="AssociateAnimal" style={{textAlign:'center'}}>
-      <Button onClick={handleOpenAnimalsPopup}>Edit Animals</Button>
+
       <Dialog fullWidth maxWidth='md' open={openAnimalsPopup} onClose={()=>{setOpenAnimalsPopup(false)}}>
         <DialogTitle>Change Animals</DialogTitle>
         <DialogContent>

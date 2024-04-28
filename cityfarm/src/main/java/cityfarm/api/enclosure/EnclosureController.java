@@ -34,7 +34,7 @@ public class EnclosureController {
     public ResponseEntity<Enclosure> create_enclosure(@RequestBody CreateEnclosureRequest enclosure) {
 
         List<AnimalCustom> holding = new ArrayList<>();
-        for (String animal: enclosure.holding) {
+        for (String animal : enclosure.holding) {
             AnimalCustom anm = animalRepository.findAnimalById(animal);
             holding.add(anm);
         }
@@ -85,7 +85,7 @@ public class EnclosureController {
     }
 
 //    THIS CODE DOESN'T WORK ANY MORE, NEEDS TO BE ADAPTED
-    
+
 //    @PatchMapping("/api/enclosures/by_id/{id}/holding")
 //    public ResponseEntity<String> set_enclosure_holding(@PathVariable String id, @RequestBody List<AnimalCustom> holding) {
 //        Enclosure enc = enclosureRepository.findEnclosureById(id);
@@ -148,18 +148,18 @@ public class EnclosureController {
     public ResponseEntity<String> set_enclosure_new(@PathVariable String id, @RequestBody CreateEnclosureRequest enclosureNew) {
 
         List<AnimalCustom> holding = new ArrayList<>();
-        for (String animal: enclosureNew.holding) {
+        for (String animal : enclosureNew.holding) {
             AnimalCustom anm = animalRepository.findAnimalById(animal);
             holding.add(anm);
             //change farm
-            if (anm.farm != enclosureNew.farm){
+            if (anm.farm != enclosureNew.farm) {
                 anm.farm = enclosureNew.farm;
                 animalRepository.save(anm);
             }
         }
         long res1 = enclosureRepositoryCustom.updateName(id, enclosureNew.name);
-        long res2 = enclosureRepositoryCustom.updateHolding(id,holding);
-        long res3 = enclosureRepositoryCustom.updateCapacities(id,enclosureNew.capacities);
+        long res2 = enclosureRepositoryCustom.updateHolding(id, holding);
+        long res3 = enclosureRepositoryCustom.updateCapacities(id, enclosureNew.capacities);
 
         // TODO an error check
 
@@ -168,7 +168,7 @@ public class EnclosureController {
     }
 
     @PatchMapping("/api/enclosures/moveanimal")
-    public ResponseEntity<String> change_animal_enclosure( @RequestBody List<String> ids){
+    public ResponseEntity<String> change_animal_enclosure(@RequestBody List<String> ids) {
         String anId = ids.get(0);
         String toId = ids.get(1);
         String fromId = ids.get(2);
@@ -177,21 +177,21 @@ public class EnclosureController {
         //defines home and destination nd also where the animal is getting removed from, can probs be done more elegantly
         Enclosure fromEnclosure = enclosureRepository.findEnclosureById(fromId);
         int removalPoint = -1;
-        for (AnimalCustom a: fromEnclosure.holding) {
-            if (Objects.equals(a.get_id(), animal.get_id())){
+        for (AnimalCustom a : fromEnclosure.holding) {
+            if (Objects.equals(a.get_id(), animal.get_id())) {
                 removalPoint = fromEnclosure.holding.indexOf(a);
             }
         }
         Enclosure toEnclosure = enclosureRepository.findEnclosureById(toId);
         //removes then adds the animal
         fromEnclosure.holding.remove(removalPoint);
-        long remove = enclosureRepositoryCustom.updateHolding(fromId,fromEnclosure.holding);
+        long remove = enclosureRepositoryCustom.updateHolding(fromId, fromEnclosure.holding);
         toEnclosure.holding.add(animal);
-        long add = enclosureRepositoryCustom.updateHolding(toId,toEnclosure.holding);
+        long add = enclosureRepositoryCustom.updateHolding(toId, toEnclosure.holding);
 
 
         //change farm
-        if (animal.farm != toEnclosure.farm){
+        if (animal.farm != toEnclosure.farm) {
             animal.farm = toEnclosure.farm;
             animalRepository.save(animal);
         }
@@ -199,4 +199,14 @@ public class EnclosureController {
 
         return ResponseEntity.ok().build();
     }
+
+    @DeleteMapping("/api/enclosures/by_id/{id}/delete")
+    public ResponseEntity<String> delete_enclosure(@PathVariable String id) {
+        enclosureRepository.deleteById(id);
+        return ResponseEntity.ok(id);
+    }
 }
+
+
+
+
