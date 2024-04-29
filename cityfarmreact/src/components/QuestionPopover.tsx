@@ -7,9 +7,8 @@ import { useTheme } from '@mui/material/styles';
 
 import { Help } from '@mui/icons-material';
 import { IconButton } from '@mui/material';
-import {calData, liveData, encData, typeData, singleData, singleEncData} from '../pages/Help.tsx'
+import { calData, liveData, encData, typeData, singleData, singleEncData} from '../pages/Help.tsx'
 import { getConfig } from '../api/getToken';
-import question from "../assets/question mark.png";
 import singleAnimal from "../pages/SingleAnimal";
 
 const QuestionPopover = () => {
