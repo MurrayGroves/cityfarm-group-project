@@ -245,7 +245,7 @@ const SingleAnimal = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
 
 
         <div>
-            {relEvents.length !== 0 ? <h2 onClick={()=>setEventAll(!eventsAll)}>Linked Event, click for more</h2> : <></>}
+            {relEvents.length !== 0 ? <h2 onClick={()=>setEventAll(!eventsAll)}>Linked Event, click for {!eventsAll ? 'more' : 'less'}</h2> : <></>}
                 <Grid container spacing={3} columns={{xs: 1, md: 2, lg: 3, xl: 4}}>
                     {!eventsAll ? <>
                     {relEvents.slice(0, 3).map((e, index)=>(

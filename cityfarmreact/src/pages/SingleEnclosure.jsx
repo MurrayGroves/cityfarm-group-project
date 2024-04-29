@@ -4,11 +4,11 @@ import axios from "../api/axiosConfig";
 import {getConfig} from "../api/getToken";
 import AnimalPopover from "../components/AnimalPopover.tsx";
 import "./SingleEnclosure.css"
-import {Alert, Dialog, DialogContent, DialogTitle, Paper} from "@mui/material";
+import {Alert, Dialog, DialogContent, DialogTitle, Icon, Paper} from "@mui/material";
 import AssociateAnimal from "../components/AssociateAnimal.tsx";
 import Button from "@mui/material/Button";
 import DeleteIcon from '@mui/icons-material/Delete';
-
+import EditIcon from '@mui/icons-material/Edit';
 import {DataGrid} from "@mui/x-data-grid";
 import {readableFarm} from "./SingleAnimal.tsx";
 import EnclosureMove from "../components/EnclosureMove";
@@ -110,7 +110,7 @@ const SingleEnclosure = (props) => {
         }
         holdingDisplay.push(
             <div key={type}>
-            <h3 style={{ display: "inline-block" }}>{type}:</h3><br/>
+            <h3 style={{ display: "inline-block" }}>{type}: ({rows.length} / {enclosure.capacities[type]})</h3><br/>
 
               <DataGrid columns={
                 [
@@ -234,10 +234,11 @@ const SingleEnclosure = (props) => {
       </DialogContent>
     </Dialog>
     <b>Farm: </b> {readableFarm(enclosure.farm)}<br/>
-    <h3 style={{ display: "inline-block" }}>Animal Holdings:</h3>
+    <b>Notes: </b> {enclosure.notes}<br/>
+    <h3 style={{ display: "inline-block" }}>Animal Holdings:</h3> <Button onClick={handleOpenAnimalsPopup} variant={"contained"}><EditIcon/>Edit </Button>
     <br/>
 
-    <Button onClick={handleOpenAnimalsPopup}>Edit Animals</Button>
+
     <div id="AssociateAnimal" style={{textAlign:'center'}}>
 
       <Dialog fullWidth maxWidth='md' open={openAnimalsPopup} onClose={()=>{setOpenAnimalsPopup(false)}}>
