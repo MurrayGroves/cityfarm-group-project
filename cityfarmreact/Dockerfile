@@ -14,6 +14,6 @@ ENV BROWSER=none
 LABEL org.opencontainers.image.source https://github.com/spe-uob/2023-CityFarm
 
 # Install dependencies
-RUN npm build
+RUN npm run build
 
 CMD ["serve", "-s", "build"]
