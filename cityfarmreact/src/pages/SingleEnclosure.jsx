@@ -11,11 +11,12 @@ import DeleteIcon from '@mui/icons-material/Delete';
 
 import {DataGrid} from "@mui/x-data-grid";
 import {readableFarm} from "./SingleAnimal.tsx";
+import EnclosureMove from "../components/EnclosureMove";
 
 const SingleEnclosure = (props) => {
   const token = getConfig();
   const enclosureID = useParams().enclosureID
-  const [enclosure, setEnclosure] = useState({name: 'Loading...',holding:[]})
+  const [enclosure, setEnclosure] = useState({name: 'Loading...',holding:[],_id : 'wait'})
   const [animalTypes,setAnimalTypes] = useState([])
   const [openAnimalsPopup ,setOpenAnimalsPopup] = useState(false)
   const [allEnclosures,setAllEnclosures] = useState([])
@@ -55,56 +56,6 @@ const SingleEnclosure = (props) => {
     }
     return animals
   }
-
-  const animalTo = (animalList, enc) =>{
-
-      (async () => {
-        for (const animal of animalList) {
-        try {
-
-          const req = await axios.patch(`/enclosures/moveanimal`,[animal,enc._id,enclosure._id], token)
-          // console.log(req);
-          //window.location.reload(false);
-        } catch (error) {
-          if (error.response.status === 401) {
-            window.location.href = "/login";
-            console.log(error)
-            return;
-          } else {
-            window.alert(error);
-          }
-        }
-      }
-      })();
-
-
-  }
-
-
-
-  const enclosureMove =(animalList) =>{
-
-    let name = ' animal group'
-
-
-      if (animalList.length === 1){
-        name = <AnimalPopover key={animalList[0]} animalID={animalList[0]} cityfarm={cityfarm}/>
-      }
-      return(
-          <div> Moving {name} to one of: <br/>{
-            allEnclosures.map((enc)=>(<>{
-              (enc._id!==enclosure._id)?
-                  <Button onClick={()=>{animalTo(animalList,enc);window.location.reload(false);}}>{enc.name}<br/></Button>
-            :
-            <></>}
-
-            </>))}
-            <Button startIcon={<DeleteIcon />} onClick={closeEnclosureMove}/>
-          </div>
-            )
-
-  }
-
 
   const updateSelectedAnimals = (ids) => {
     console.log(ids)
@@ -278,12 +229,8 @@ const SingleEnclosure = (props) => {
       </Dialog>
     </div>
     {holdings().map((item,key)=>(item))}
-    <div className={`moveContent ${selectedAnimals.length>0 ? 'moveVisible' : 'moveHidden'}`}>
-      <Paper elevation={3} className={'movePaper'}>
-    {enclosureMove(selectedAnimals)}
-      </Paper>
-    </div>
-
+    <EnclosureMove cityfarm={cityfarm} excludedEnc={enclosure}
+                   enclosures={allEnclosures} animalList={selectedAnimals} close={closeEnclosureMove} />
   </div>
   )
 
