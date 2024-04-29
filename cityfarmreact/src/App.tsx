@@ -119,7 +119,7 @@ const App = () => {
         }
     };
 
-    if (msal === null) {
+    if (msal == null && process.env.REACT_APP_AUTH == "true") {
         const msalInstance = new PublicClientApplication(msalConfig);
         msalInstance.initialize().then(() => {
             setMsal(msalInstance);

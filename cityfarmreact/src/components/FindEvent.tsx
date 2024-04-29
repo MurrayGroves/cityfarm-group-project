@@ -16,7 +16,7 @@ export const FindEvent = ({style, cityfarm, farms, setEvent}: {style: any, cityf
     const [searchResults, setSearchResults] = useState<Event[]>([]);
 
     useEffect(() => {
-        async function getEvents() {
+        (async () => {
             const response = await cityfarm.getEvents(true, (events) => {
                 setEvents(events);
                 setSearchResults(events);
@@ -25,9 +25,8 @@ export const FindEvent = ({style, cityfarm, farms, setEvent}: {style: any, cityf
             setEvents(response);
             setSearchResults(response);
             setLoading(false);
-        }
-        getEvents();
-    }, []);
+        })();
+    }, [cityfarm.events_cache]);
 
     useEffect(() => {
         if (search === '') {
@@ -35,7 +34,7 @@ export const FindEvent = ({style, cityfarm, farms, setEvent}: {style: any, cityf
         } else {
             setSearchResults(events.filter((event) => event.title.toLowerCase().includes(search.toLowerCase())));
         }
-    }, [search]);
+    }, [search, events]);
 
 
     useEffect(() => {
@@ -48,6 +47,8 @@ export const FindEvent = ({style, cityfarm, farms, setEvent}: {style: any, cityf
     if (loading) {
         return <div style={{height: '80%'}}><CircularProgress style={{position: 'relative', top: '45%', left: '45%', width: '10%', height: '10%'}}/></div>;
     }
+
+    console.log("Search Results", searchResults)
 
     return (
         <div style={style}>
@@ -75,7 +76,7 @@ export const FindEvent = ({style, cityfarm, farms, setEvent}: {style: any, cityf
                                 />
                             </ListItemIcon>
                         </ListItemButton>
-                        <ListItemText onClick={()=>setSelectedEvent(event)} style={{flex: '1'}} primary={event.title} secondary={new Date(event.start).toLocaleDateString()} />
+                        <ListItemText onClick={()=>setSelectedEvent(event)} style={{flex: '1'}} primary={event.title} secondary={event.description} />
                     </ListItem>
                     {index === searchResults.length -1 ? <></> : <Divider component="li"/>}</Fragment>
                 )

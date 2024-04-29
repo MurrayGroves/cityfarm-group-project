@@ -14,6 +14,7 @@ import org.springframework.web.cors.CorsUtils;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 @Configuration
 public class SecurityConfig {
@@ -23,7 +24,7 @@ public class SecurityConfig {
 
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("https://cityfarm.murraygrov.es", "http://localhost:3000"));
+        configuration.setAllowedOrigins(Arrays.asList("https://cityfarm.murraygrov.es", "http://localhost:3000", "*"));
         configuration.setAllowedMethods(Arrays.asList("GET","POST", "OPTIONS", "DELETE", "PATCH"));
         configuration.setAllowedHeaders(Arrays.asList("authorization", "content-type"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
@@ -33,6 +34,21 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(final HttpSecurity http) throws Exception {
+        System.out.println("auth: " + System.getenv("auth"));
+        String auth_enabled = Objects.requireNonNullElse(System.getenv("auth"), "false");
+        if (auth_enabled.equals("false")) {
+            System.out.println("auth disabled");
+            return http
+                    .cors(cors ->
+                            cors.configurationSource(corsConfigurationSource())
+                    ).csrf(AbstractHttpConfigurer::disable)
+                    .authorizeHttpRequests(authorizeRequests ->
+                            authorizeRequests.requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
+                                    .anyRequest().permitAll()
+                    )
+                    .build();
+        }
+
         return http
                 .cors(cors ->
                     cors.configurationSource(corsConfigurationSource())

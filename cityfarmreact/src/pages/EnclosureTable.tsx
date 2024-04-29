@@ -139,7 +139,7 @@ const EnclosureTable = ({farms, cityfarm}) => {
                 return newVal;
             }}/>
         </Paper>
-        {create && <EnclosureCreator setCreateProp={setCreate} cityfarm={cityfarm}/>}
+        {create && <EnclosureCreator setCreateProp={setCreate} cityfarm={cityfarm} farms={farms}/>}
         </div>
     </>)
 }

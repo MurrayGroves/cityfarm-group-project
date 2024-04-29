@@ -2,51 +2,49 @@ import { getConfig } from '../api/getToken';
 import axios from "../api/axiosConfig";
 
 import React, {useEffect, useState} from 'react';
-import { Event } from '../api/events.ts';
-import { EventPopover } from './EventPopover.tsx';
 
-export const EventText = ({eventID, farms}) => {
-    const [event, setEvent] = useState<Event>(new Event({title: 'Loading...'}));
-    const [loading, setLoading] = useState<boolean>(true);
+import { EventPopover } from './EventPopover.tsx';
+import { CityFarm } from '../api/cityfarm';
+import { Event, EventOnce, EventRecurring } from '../api/events.ts';
+
+export const EventText = ({eventID, farms, cityfarm}: {eventID: string, farms: any, cityfarm: CityFarm}) => {
+    const [event, setEvent] = useState<Event | null>(null);
+    const [loading, setLoading] = useState(true);
     const [error, setError] = useState<Error | null>(null);
-    const [anchorEl, setAnchorEl] = useState<any>(null);
+    const [anchorEl, setAnchorEl] = useState<EventTarget | null>(null);
 
     useEffect(() => {
-        console.log("EventText: eventID: ", eventID);
-        axios.get(`/events/by_id/${eventID}`, getConfig())
-            .then((response) => {
-                setEvent(new Event(response.data));
+        (async () => {
+            const resp = await cityfarm.getEvent(eventID, true, (event) => {
+                setEvent(event);
                 setLoading(false);
             })
-            .catch((error) => {
-                setError(error);
+
+            if (resp) {
+                setEvent(resp);
                 setLoading(false);
-            });
+            } else {
+                setError(new Error("Error fetching event"));
+                setLoading(false);
+            }
+        })()
+        
     }, [eventID]);
 
     if (error) {
         return <p>Error: {error.message}</p>;
     }
 
-    if (loading) {
+    if (loading || event == null) {
         return <p>Loading...</p>;
     }
 
     return (
-        <div className='event' style={{margin: '0%', width: '12vw', display: 'flex', alignItems: 'left'}} onMouseEnter={(e) => setAnchorEl(e.target)} onMouseLeave={() => setAnchorEl(null)}>
-            <EventPopover eventID={event.id} farms={farms} anchorEl={anchorEl}/>
+        <div className='event' style={{margin: '0%', width: '12vw', alignItems: 'left'}} onMouseEnter={(e) => setAnchorEl(e.target)} onMouseLeave={() => setAnchorEl(null)}>
+            <EventPopover cityfarm={cityfarm} eventID={event.id} farms={farms} anchorEl={anchorEl}/>
             <p className='noMarginTop'><b>{event.title}</b></p>
-            {
-                event.allDay ?
-                    <div>
-                        <p style={{fontSize: '0.8em'}}>{new Date(event.start).toLocaleDateString()} {event.end == null ? <></> : new Date(event.end).toLocaleDateString() === new Date(event.start).toLocaleDateString() ? <></> : " - " + new Date(event.end).toLocaleDateString()}</p>
-                    </div>
-                    :
-                    <div>
-                        <p>{new Date(event.start).toLocaleDateString()} {event.end == null ? <></> : " - " + new Date(event.end).toLocaleDateString()} {new Date(event.start).toLocaleTimeString()} {event.end == null ? <></> : " - " + new Date(event.end).toLocaleTimeString()}</p>
-                    </div>
-            }
             <p>{event.description}</p>
         </div>
     )
+
 }
