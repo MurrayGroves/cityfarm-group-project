@@ -1,6 +1,6 @@
 export function getConfig() {
     // If authorisation is disabled return an empty object
-    if (process.env.REACT_APP_AUTH === "false") {
+    if (process.env.REACT_APP_AUTH !== "true") {
         return {headers: {'Authorization': ''}};
     }
 

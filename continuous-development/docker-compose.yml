@@ -21,8 +21,6 @@ services:
   frontend:
     container_name: cityfarm-frontend
     image: ghcr.io/spe-uob/2023-cityfarm/frontend:dev
-    environment:
-      - REACT_APP_BASE_URL=https://cityfarm.murraygrov.es/api
     ports:
       - 8919:3000
     pull_policy: always

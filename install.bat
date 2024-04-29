@@ -163,7 +163,7 @@ wsl mkdir -p /opt/cityfarm
 wsl mkdir -p /opt/cityfarm/mongodb-data
 
 echo Downloading Docker Compose file...
-wsl curl https://pastebin.com/raw/JixaVXza --output /opt/cityfarm/docker-compose.yml
+wsl curl https://pastebin.com/raw/E3UCcqjE --output /opt/cityfarm/docker-compose.yml
 
 echo Starting Docker Compose...
 wsl cd /opt/cityfarm/ ^&^& docker compose up -d
@@ -174,4 +174,7 @@ schtasks /create /tn CityFarm /sc ONSTART /DELAY 0000:30 /RL HIGHEST /tr "%APPDA
 REG ADD HKEY_LOCAL_MACHINE\SOFTWARE\CityFarm /v Installed /t REG_SZ /d "true" /f
 
 echo Done!
+for /f "delims=[] tokens=2" %%a in ('ping -4 -n 1 %ComputerName% ^| findstr [') do set NetworkIP=%%a
+echo CityFarm is now accessible at http://%NetworkIP%:3000
+start http://%NetworkIP%:3000
 pause

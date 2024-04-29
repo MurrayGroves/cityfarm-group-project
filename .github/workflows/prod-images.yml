@@ -1,10 +1,10 @@
 #
-name: Build & Publish Images
+name: Build & Publish Prod Images
 
 # Configures this workflow to run every time a change is pushed to the branch called `release`.
 on:
   push:
-    branches: ['dev']
+    branches: ['main']
   workflow_dispatch:
 
 # There is a single job in this workflow. It's configured to run on the latest available version of Ubuntu.
@@ -38,7 +38,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
         with:
-          images: ghcr.io/spe-uob/2023-cityfarm/frontend:dev
+          images: ghcr.io/spe-uob/2023-cityfarm/frontend:release
       # This step uses the `docker/build-push-action` action to build the image, based on your repository's `Dockerfile`. If the build succeeds, it pushes the image to GitHub Packages.
       # It uses the `context` parameter to define the build's context as the set of files located in the specified path. For more information, see "[Usage](https://github.com/docker/build-push-action#usage)" in the README of the `docker/build-push-action` repository.
       # It uses the `tags` and `labels` parameters to tag and label the image with the output from the "meta" step.
@@ -47,7 +47,7 @@ jobs:
         with:
           context: ./cityfarmreact
           push: true
-          tags: ghcr.io/spe-uob/2023-cityfarm/frontend:dev
+          tags: ghcr.io/spe-uob/2023-cityfarm/frontend:release
           build-args: BASE_URL=https://cityfarm.murraygrov.es/api
           labels: ${{ steps.meta.outputs.labels }}
 
@@ -56,7 +56,7 @@ jobs:
         id: meta-spring
         uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
         with:
-          images: ghcr.io/spe-uob/2023-cityfarm/backend:dev
+          images: ghcr.io/spe-uob/2023-cityfarm/backend:release
       # This step uses the `docker/build-push-action` action to build the image, based on your repository's `Dockerfile`. If the build succeeds, it pushes the image to GitHub Packages.
       # It uses the `context` parameter to define the build's context as the set of files located in the specified path. For more information, see "[Usage](https://github.com/docker/build-push-action#usage)" in the README of the `docker/build-push-action` repository.
       # It uses the `tags` and `labels` parameters to tag and label the image with the output from the "meta" step.
@@ -65,13 +65,6 @@ jobs:
         with:
           context: ./cityfarm
           push: true
-          tags:  ghcr.io/spe-uob/2023-cityfarm/backend:dev
+          tags:  ghcr.io/spe-uob/2023-cityfarm/backend:release
           labels: ${{ steps.meta-spring.outputs.labels }}
-
-      - name: Tell server to pull new images and restart
-        uses: distributhor/workflow-webhook@v3
-        with:
-          webhook_url: https://cityfarmhook.murraygrov.es/webhook
-
-
       
