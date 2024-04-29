@@ -119,5 +119,9 @@ public class AnimalCustom implements AnimalUnique {
     public String get_id() {
         return this.id;
     }
+
+    public String getType() {
+        return type;
+    }
 }
 

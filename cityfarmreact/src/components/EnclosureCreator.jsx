@@ -47,7 +47,6 @@ const EnclosureCreator = ({ setCreateProp, cityfarm, farms}) => {
 
     useEffect(() => {
         setInputErr(prevInputErr => ({...prevInputErr, name: newEnclosure.name === ''}));
-        console.log(newEnclosure, inputErr);
     }, [newEnclosure])
 
     return (<>
