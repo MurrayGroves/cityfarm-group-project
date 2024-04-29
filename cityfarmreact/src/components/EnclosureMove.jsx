@@ -10,7 +10,7 @@ import {getConfig} from "../api/getToken";
 const EnclosureMove = (props)=>{
     //animal list, excluded enclosure,cityfarm
 
-    const excludedEnc = props.excludedEnc
+    const excludedEnc = props.excludedEnc===null ? {_id:'0'} : props.excludedEnc
     const cityfarm = props.cityfarm
     const enclosures = props.enclosures
     const close = props.close
@@ -20,7 +20,7 @@ const EnclosureMove = (props)=>{
 
     useEffect(
         ()=>{
-            if (props.animalList.length<0){
+            if (props.animalList.length<1){
                 setAnimalList([])
             }else {
                 (async () => {
@@ -47,7 +47,7 @@ const EnclosureMove = (props)=>{
 
 
     for (const item of Object.entries(props)){
-        if(item[1] ===undefined || item[1] ===null){
+        if(item[1] ===undefined ){
             return <></>
         }
     }
@@ -55,22 +55,20 @@ const EnclosureMove = (props)=>{
     const filteredEnclosures=()=>{
         let animalListTypes={}
         let newEncList=[]
-        for (const animal of animalList){
-            //console.log(animal.type,Object.keys(animalListTypes))
-            if (animal.type in Object.keys(animalListTypes)){
-                console.log("hello")
-                animalListTypes[animal.type] = animalListTypes[animal.type]+1
-            }else{
-                animalListTypes[animal.type] = 1
+        for (const animal of animalList) {
+            if (animalListTypes.hasOwnProperty(animal.type)) {
+                animalListTypes[animal.type] = animalListTypes[animal.type] + 1;
+            } else {
+                animalListTypes[animal.type] = 1;
             }
         }
         //console.log(animalListTypes)
         for (const enc of enclosures){
-            console.log(enc)
+            //console.log(enc)
             let includeFlag = true
             for (const val of Object.entries(animalListTypes)){
-               console.log(val)
-               console.log(enc.capacities[val[0]])
+               //console.log(val)
+               //console.log(enc.capacities[val[0]])
                 if (enc.capacities[val[0]]<val[1] || enc.capacities[val[0]]===undefined){
                     includeFlag=false
                 }
