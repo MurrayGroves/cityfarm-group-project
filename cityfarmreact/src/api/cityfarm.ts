@@ -62,7 +62,7 @@ export class CityFarm {
                 });
                 return cached_events;
             } catch (error) {
-                if (error.response.status === 401) {
+                if (error.response?.status === 401) {
                     console.log('Token expired');
                     window.location.href = "/login";
                     return [];
@@ -107,7 +107,7 @@ export class CityFarm {
         if (use_cache && cached_events.length > 0) {
             try {
                 axios.get(`/events/non_instanced`, this.token).then((response) => {
-                    const events = response.data.map((data) => response.data.type === "once" ? new EventOnce(response.data) : new EventRecurring(response.data));
+                    const events = response.data.map((data) => data.type === "once" ? new EventOnce(data) : new EventRecurring(data));
                     // If the events have changed, update the cache and call the callback
                     if (cached_events !== events) {
                         this.setEventsCache(events);
@@ -118,7 +118,7 @@ export class CityFarm {
                 });
                 return cached_events;
             } catch (error) {
-                if (error.response.status === 401) {
+                if (error.response?.status === 401) {
                     console.log('Token expired');
                     window.location.href = "/login";
                     return [];
@@ -129,11 +129,11 @@ export class CityFarm {
         } else {
             try {
                 const response = await axios.get(`/events/non_instanced`, this.token);
-                this.setEventsCache(response.data.map((data) => data.type === "once" ? new EventOnce(data) : new EventRecurring(data)));
-                console.log("New events cache", this.events_cache);
-                return this.events_cache;
+                const events = response.data.map((data) => data.type === "once" ? new EventOnce(data) : new EventRecurring(data));
+                this.setEventsCache(events);
+                return events;
             } catch (error) {
-                if (error.response.status === 401) {
+                if (error.response?.status === 401) {
                     console.log('Token expired');
                     window.location.href = "/login";
                     return [];
@@ -157,13 +157,13 @@ export class CityFarm {
                 try {
                     const response = await axios.get(`/events/by_id/${id}`, this.token);
                     this.setEventsCache([...this.events_cache, response.data.type === "once" ? new EventOnce(response.data) : new EventRecurring(response.data)]);
-                    return new response.data.type === "once" ? new EventOnce(response.data) : new EventRecurring(response.data);
+                    return response.data.type === "once" ? new EventOnce(response.data) : new EventRecurring(response.data);
                 } catch (error) {
-                    if (error.response.status === 401) {
+                    if (error.response?.status === 401) {
                         console.log('Token expired');
                         window.location.href = "/login";
                         throw new Error('Token expired');
-                    } else if (error.response.status === 404) {
+                    } else if (error.response?.status === 404) {
                         return null;
                     }
                     throw error;
@@ -181,11 +181,11 @@ export class CityFarm {
                     })
                     return cached_event;
                 } catch (error) {
-                    if (error.response.status === 401) {
+                    if (error.response?.status === 401) {
                         console.log('Token expired');
                         window.location.href = "/login";
                         throw new Error('Token expired');
-                    } else if (error.response.status === 404) {
+                    } else if (error.response?.status === 404) {
                         return null;
                     }
                     throw error;
@@ -217,11 +217,11 @@ export class CityFarm {
                     this.setAnimalsCache([...this.animals_cache, new Animal(response.data)]);
                     return new Animal(response.data);
                 } catch (error) {
-                    if (error.response.status === 401) {
+                    if (error.response?.status === 401) {
                         console.log('Token expired');
                         window.location.href = "/login";
                         throw new Error('Token expired');
-                    } else if (error.response.status === 404) {
+                    } else if (error.response?.status === 404) {
                         return null;
                     }
                     throw error;
@@ -239,11 +239,11 @@ export class CityFarm {
                     })
                     return cached_animal;
                 } catch (error) {
-                    if (error.response.status === 401) {
+                    if (error.response?.status === 401) {
                         console.log('Token expired');
                         window.location.href = "/login";
                         throw new Error('Token expired');
-                    } else if (error.response.status === 404) {
+                    } else if (error.response?.status === 404) {
                         return null;
                     }
                     throw error;
@@ -276,7 +276,7 @@ export class CityFarm {
                 });
                 return cached_animals;
             } catch (error) {
-                if (error.response.status === 401) {
+                if (error.response?.status === 401) {
                     console.log('Token expired');
                     window.location.href = "/login";
                     return [];
@@ -287,10 +287,11 @@ export class CityFarm {
         } else {
             try {
                 const response = await axios.get(`/animals`, {params: {farm: farm}, ...this.token});
-                this.animals_cache = response.data.map((data) => new Animal(data));
-                return this.animals_cache;
+                const animals = response.data.map((data) => new Animal(data));
+                this.setAnimalsCache(animals);
+                return animals;
             } catch (error) {
-                if (error.response.status === 401) {
+                if (error.response?.status === 401) {
                     console.log('Token expired');
                     window.location.href = "/login";
                     return [];
@@ -316,7 +317,7 @@ export class CityFarm {
                 });
                 return cached_schemas;
             } catch (error) {
-                if (error.response.status === 401) {
+                if (error.response?.status === 401) {
                     console.log('Token expired');
                     window.location.href = "/login";
                     return [];
@@ -327,10 +328,11 @@ export class CityFarm {
         } else {
             try {
                 const response = await axios.get(`/schemas`, this.token);
-                this.schemas_cache = response.data.map((data) => new Schema(data));
-                return this.schemas_cache;
+                const schemas = response.data.map((data) => new Schema(data));
+                this.schemas_cache = schemas
+                return schemas;
             } catch (error) {
-                if (error.response.status === 401) {
+                if (error.response?.status === 401) {
                     console.log('Token expired');
                     window.location.href = "/login";
                     return [];
@@ -356,7 +358,7 @@ export class CityFarm {
                 });
                 return cached_schema;
             } catch (error) {
-                if (error.response.status === 401) {
+                if (error.response?.status === 401) {
                     console.log('Token expired');
                     window.location.href = "/login";
                     return null;

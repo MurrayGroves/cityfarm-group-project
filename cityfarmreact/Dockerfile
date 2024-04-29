@@ -2,6 +2,8 @@ FROM node:18-alpine
 
 WORKDIR /app/
 
+RUN npm install -g serve
+
 # Copy app from host environment into image
 COPY public/ /app/public
 COPY src/ /app/src
@@ -12,6 +14,6 @@ ENV BROWSER=none
 LABEL org.opencontainers.image.source https://github.com/spe-uob/2023-CityFarm
 
 # Install dependencies
-RUN npm install
+RUN npm build
 
-CMD ["npm", "start"]
+CMD ["serve", "-s", "build"]
