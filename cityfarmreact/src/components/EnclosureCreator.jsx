@@ -25,7 +25,7 @@ import { styled } from '@mui/system';
 import { DialogActions, DialogContent, DialogContentText, DialogTitle, Dialog } from "@mui/material";
 
 
-const EnclosureCreator = ({ setCreateProp, cityfarm}) => {
+const EnclosureCreator = ({ setCreateProp, cityfarm, farms}) => {
     const [newEnclosure, setNewEnclosure] = useState({name: '', holding: [], capacities: {}, notes: '', farm: ''});
     const [openAnimalsPopup ,setOpenAnimalsPopup] = useState(false)
     const [openCapacitiesPopup ,setOpenCapacitiesPopup] = useState(false)
@@ -51,6 +51,8 @@ const EnclosureCreator = ({ setCreateProp, cityfarm}) => {
                             <TableCell width='20%'>Name</TableCell>
                             <TableCell width='20%'>Holding</TableCell>
                             <TableCell width='20%'>Capacities</TableCell>
+                            <TableCell width='20%'>Farm</TableCell>
+                            <TableCell width='20%'>Notes</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -61,12 +63,30 @@ const EnclosureCreator = ({ setCreateProp, cityfarm}) => {
                                     onChange={(e)=>{setNewEnclosure({...newEnclosure, name: e.target.value})}} label='Name'
                                 />
                             </TableCell> 
+
                             <TableCell sx={{borderBottom: 'none'}}> {/* Table cell for animals in enclosure */}
                                 <Button variant='outlined' onClick={() => {setOpenAnimalsPopup(true)}}>Add Animals</Button> 
                             </TableCell>
+
                             <TableCell sx={{borderBottom: 'none'}}> {/* Table cell for capacities */}
                                 <Button variant='outlined' onClick={() => {setOpenCapacitiesPopup(true)}}>Capacities</Button> 
                             </TableCell>
+
+                            <TableCell sx={{borderBottom: 'none'}}> {/* Table cell for farm*/}
+                                <TextField select fullWidth label='Farm' value={newEnclosure.farm} size='small' onChange={(e) => { setNewEnclosure({ ...newEnclosure, farm: e.target.value }); } }>
+                                    <MenuItem value={''}><em>Empty</em></MenuItem>
+                                    <MenuItem value={farms.WH}>Windmill Hill</MenuItem>
+                                    <MenuItem value={farms.HC}>Hartcliffe</MenuItem>
+                                    <MenuItem value={farms.SW}>St Werburghs</MenuItem>
+                                </TextField>
+                            </TableCell>
+
+                            <TableCell sx={{borderBottom: 'none'}}> {/* Table cell for notes of enclosure */}
+                                <TextField 
+                                    style={{width: '100%'}} 
+                                    onChange={(e)=>{setNewEnclosure({...newEnclosure, notes: e.target.value})}} label='Notes'
+                                />
+                            </TableCell> 
                         </TableRow>
                     </TableBody>
                 </Table>
@@ -97,6 +117,7 @@ const EnclosureCreator = ({ setCreateProp, cityfarm}) => {
             >Create</Button>
             </div>
             </div>
+
             <div id="AssociateAnimal" style={{textAlign:'center'}}>
                 <Dialog fullWidth maxWidth='md' open={openAnimalsPopup} onClose={()=>{setOpenAnimalsPopup(false)}}>
                     <DialogTitle>Add Animal</DialogTitle>
@@ -114,6 +135,7 @@ const EnclosureCreator = ({ setCreateProp, cityfarm}) => {
                     </DialogContent>
                 </Dialog>
             </div>
+
         </>)
 }
 
