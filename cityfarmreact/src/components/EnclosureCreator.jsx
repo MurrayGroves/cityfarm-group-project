@@ -22,13 +22,15 @@ import AssociateAnimal from '../components/AssociateAnimal.tsx';
 import CapacityChanger from '../components/CapacityChanger';
 import { Unstable_Popup as BasePopup } from '@mui/base/Unstable_Popup';
 import { styled } from '@mui/system';
-import { DialogActions, DialogContent, DialogContentText, DialogTitle, Dialog } from "@mui/material";
+import { DialogActions, DialogContent, DialogContentText, DialogTitle, Dialog, Backdrop, Alert } from "@mui/material";
 
 
 const EnclosureCreator = ({ setCreateProp, cityfarm, farms}) => {
     const [newEnclosure, setNewEnclosure] = useState({name: '', holding: [], capacities: {}, notes: '', farm: ''});
     const [openAnimalsPopup ,setOpenAnimalsPopup] = useState(false)
     const [openCapacitiesPopup ,setOpenCapacitiesPopup] = useState(false)
+    const [inputErr, setInputErr] = useState({});
+    const [showErr, setShowErr] = useState(false);
 
     const token = getConfig();
 
@@ -39,8 +41,14 @@ const EnclosureCreator = ({ setCreateProp, cityfarm, farms}) => {
 
     const reset = () => {
         setCreateProp(false);
-        setNewEnclosure({name: '', holding: [], capacities: {}, notes: '', farm: ''})
+        setNewEnclosure({name: '', holding: [], capacities: {}, notes: '', farm: ''});
+        setInputErr(new Object);
     }
+
+    useEffect(() => {
+        setInputErr(prevInputErr => ({...prevInputErr, name: newEnclosure.name === ''}));
+        console.log(newEnclosure, inputErr);
+    }, [newEnclosure])
 
     return (<>
             <div style={{display: 'flex', justifyContent: 'space-between', marginTop: '10px'}}>
@@ -59,6 +67,7 @@ const EnclosureCreator = ({ setCreateProp, cityfarm, farms}) => {
                         <TableRow>
                             <TableCell sx={{borderBottom: 'none'}}> {/* Table cell for name of enclosure */}
                                 <TextField 
+                                    required
                                     style={{width: '100%'}} 
                                     onChange={(e)=>{setNewEnclosure({...newEnclosure, name: e.target.value})}} label='Name'
                                 />
@@ -100,6 +109,9 @@ const EnclosureCreator = ({ setCreateProp, cityfarm, farms}) => {
                 aria-label="add"
                 endIcon={<AddIcon/>}
                 onClick={() => {
+                    if (Object.values(inputErr).filter((err) => err === true).length > 0) {
+                        return setShowErr(true);
+                    }
                     (async () => {
                         try {
                             await axios.post(`/enclosures/create`, {...newEnclosure, holding: newEnclosure.holding.map(animal => animal.id)}, token)
@@ -135,6 +147,12 @@ const EnclosureCreator = ({ setCreateProp, cityfarm, farms}) => {
                     </DialogContent>
                 </Dialog>
             </div>
+
+            <Backdrop style={{zIndex: '4', background: '#000000AA'}} open={showErr} onClick={() => setShowErr(false)}>
+                <Alert severity='warning'>
+                    Please ensure all required fields are filled
+                </Alert>
+            </Backdrop>
 
         </>)
 }
