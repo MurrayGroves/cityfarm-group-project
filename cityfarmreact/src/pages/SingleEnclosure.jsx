@@ -4,7 +4,7 @@ import axios from "../api/axiosConfig";
 import {getConfig} from "../api/getToken";
 import AnimalPopover from "../components/AnimalPopover.tsx";
 import "./SingleEnclosure.css"
-import { Dialog, DialogContent, DialogTitle, Paper} from "@mui/material";
+import {Alert, Dialog, DialogContent, DialogTitle, Paper} from "@mui/material";
 import AssociateAnimal from "../components/AssociateAnimal.tsx";
 import Button from "@mui/material/Button";
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -23,6 +23,7 @@ const SingleEnclosure = (props) => {
   const [animalToMove,setAnimalToMove] = useState(false)
   const [selectedAnimals,setSelectedAnimals] = useState([])
   const [enclosureDelete,setEnclosureDelete]=useState(false)
+  const [capacitiesWarning,setCapacitiesWarning] = useState('')
   const cityfarm= props.cityfarm
 
   useEffect(() => {
@@ -150,9 +151,26 @@ const SingleEnclosure = (props) => {
 
   const setEnclosureNewAnimals = (animalList) => {
 
+    //iterate thru each type in capacity
+    for (const type of Object.entries(enclosure.capacities)){
+      let typeTotal=0
+      for (const animal of animalList){
+        if(animal.type===type[0]){
+          typeTotal+=1
+        }
+
+      }
+      if (typeTotal>type[1]){
+        setCapacitiesWarning(
+            `There are too many of ${type[0]} in this enclosure, you need to assign less`
+        )
+        return
+      }
+    }
     console.log("HELLO ",animalList)
     updateEnclosure(enclosure._id,{name: enclosure.name, holding: animalList.map((animal,key)=>(animal.id)),
           capacities: enclosure.capacities, notes: enclosure.notes, farm: enclosure.farm})
+    window.location.reload()
   }
 
 
@@ -200,11 +218,12 @@ const SingleEnclosure = (props) => {
     window.location.href="/enclosures";
   }
 
+
   return (
 
   <div className="enclosureView">
-    <h2>{enclosure.name}</h2><br/>
-    <Button color={'warning'} onClick={()=>setEnclosureDelete(true)}>Delete Enclosure <DeleteIcon /> </Button>
+    <h2>{enclosure.name}</h2>
+    <Button color={'warning'} onClick={()=>setEnclosureDelete(true)} variant="outlined">Delete Enclosure <DeleteIcon /> </Button>
     <br/>
     <Dialog open={enclosureDelete} onClose={()=>setEnclosureDelete(false)}>
       <DialogTitle>Delete {enclosure.name}?</DialogTitle>
@@ -231,6 +250,15 @@ const SingleEnclosure = (props) => {
     {holdings().map((item,key)=>(item))}
     <EnclosureMove cityfarm={cityfarm} excludedEnc={enclosure}
                    enclosures={allEnclosures} animalList={selectedAnimals} close={closeEnclosureMove} />
+
+      <Dialog open={capacitiesWarning !==''} onClose={()=>{setCapacitiesWarning('')}}>
+        <DialogTitle>Capacity issue for enclosure movement</DialogTitle>
+          <DialogContent >
+            <Alert severity={'warning'}>
+              {capacitiesWarning}
+            </Alert>
+          </DialogContent>
+      </Dialog>
   </div>
   )
 
