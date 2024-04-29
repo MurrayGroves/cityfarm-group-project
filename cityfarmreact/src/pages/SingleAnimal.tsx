@@ -234,7 +234,7 @@ const SingleAnimal = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
 
             </div>
         )}
-        <Button onClick={openEnclosureMove}> Move Enclosure</Button>
+        <Button onClick={openEnclosureMove} variant="contained"> Move Enclosure</Button>
         <div className="farmButtons">
             {Object.values(farms).map((farm, index) => (
                 <Fragment key={index}>
