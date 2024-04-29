@@ -104,7 +104,7 @@ const EnclosureMove = (props)=>{
         (async () => {
             for (const animal of animalList) {
                 try {
-                    const req = await axios.patch(`/enclosures/moveanimal`,[animal._d,enc._id,excludedEnc._id], token)
+                    const req = await axios.patch(`/enclosures/moveanimal`,[animal._id,enc._id,excludedEnc._id], token)
                     // console.log(req);
                     //window.location.reload(false);
                 } catch (error) {
