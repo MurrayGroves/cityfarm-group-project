@@ -12,16 +12,14 @@ services:
   
   backend:
     container_name: cityfarm-backend
-    image: ghcr.io/spe-uob/2023-cityfarm/backend:dev
+    image: ghcr.io/spe-uob/2023-cityfarm/backend:release
     ports:
       - 8080:8080
     pull_policy: always
 
   frontend:
     container_name: cityfarm-frontend
-    image: ghcr.io/spe-uob/2023-cityfarm/frontend:dev
-    environment:
-      - REACT_APP_BASE_URL=https://cityfarm.murraygrov.es/api
+    image: ghcr.io/spe-uob/2023-cityfarm/frontend:release
     ports:
       - 3000:3000
     pull_policy: always

@@ -59,11 +59,13 @@ echo.
 echo Hello, my name is C.H.I.P ^(CityFarm Helpful Installation Program^)! I'm here to help you install CityFarm on your computer :^)
 echo.
 
+for /f "delims=[] tokens=2" %%a in ('ping -4 -n 1 %ComputerName% ^| findstr [') do set NetworkIP=%%a
 
 :alreadyinstalled
 reg query HKEY_LOCAL_MACHINE\SOFTWARE\CityFarm 2>nul 1>nul
 if %ERRORLEVEL% EQU 0 (
     echo I can see that CityFarm is already installed on this computer.
+    echo It is accessible at http://%NetworkIP%:3000
     echo.
     echo Please select an option by number below:
     echo 1^) Uninstall CityFarm :^(
@@ -163,7 +165,7 @@ wsl mkdir -p /opt/cityfarm
 wsl mkdir -p /opt/cityfarm/mongodb-data
 
 echo Downloading Docker Compose file...
-wsl curl https://pastebin.com/raw/JixaVXza --output /opt/cityfarm/docker-compose.yml
+wsl curl https://pastebin.com/raw/E3UCcqjE --output /opt/cityfarm/docker-compose.yml
 
 echo Starting Docker Compose...
 wsl cd /opt/cityfarm/ ^&^& docker compose up -d
@@ -174,4 +176,6 @@ schtasks /create /tn CityFarm /sc ONSTART /DELAY 0000:30 /RL HIGHEST /tr "%APPDA
 REG ADD HKEY_LOCAL_MACHINE\SOFTWARE\CityFarm /v Installed /t REG_SZ /d "true" /f
 
 echo Done!
+echo CityFarm is now accessible at http://%NetworkIP%:3000
+start http://%NetworkIP%:3000
 pause

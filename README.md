@@ -29,18 +29,12 @@ As an animal breeder, I want to securely trade animals with other farms within t
 
 As a livestock manager, I want to access animal data and inventory on my phone during power outages, so that I can ensure animal well-being even when computers are unavailable.
 
-# Project Structure 
-## Spring boot
-Spring boot is our front-end hosting framework, it allows us to host our webpages and link them to our java backend, it is what's used to get all the internal http requests and then send them on to the server as well as providing the structure for how the actual pages are laid out.
-### ThymeLeaf
-A special mention to thymeleaf, which is a spring boot library. It provides an incredibly useful templating features for formatting the actual front-end pages as well as providing actual means to return and index the pages to the java back-end.
-## React 
-React is a web front-end javascript library, it is used to make easy to design and clean looking buttons that also provide markup for holding and hosting text that is easily read by the user.
-## MongoDB
-Mongo DB is our database back-end language, it allows for easy intergration within java which makes the elements incredibly easy to access and manipulate in an object oriented fashion. The flexibility of Mongo allows us to quickly and easily add and edit animals to the database without having to adjust the entire schema of the setup.
-## Java
-All our calculations and backend legic is done within java since it is increadibly easy to then interface with both our database and web frontend due to its object oriented nature allowing us to store tables and records as classes along with doing the same for individual pages for the react files.
+# Tech Stack
+## Frontend
+The frontend is a standard TypeScript/Javascript React SPA. It makes calls to our backend over HTTP, making read requests via our API library and caching layer.
 
+## Backend
+The backend is a Java Spring Boot application. It performs some pretty basic data handling to retrieve and update documents in MongoDB.
 
 # Management Tools
 
@@ -51,18 +45,23 @@ All our calculations and backend legic is done within java since it is increadib
 
 * [ERD](https://tinyurl.com/erddraft)
 
-## Development Installation
+## Development Instructions
 
 ### Requirements
-
 - JDK 21
-
-- [Docker Compose](https://docs.docker.com/compose/install/)
+- Docker
 
 ### Usage
 
-- Run `docker compose up -d` to bring up MongoDB
+- Run a MongoDB container (`docker run --name mongodb -p 27017:27017 mongo`)
+- Run `mvn spring-boot:run` in `cityfarm` to bring up the backend
+- Run `npm start` in `cityfarmreact` to bring up the frontend
+- Website available at http://localhost:3000
 
-- Run `CityFarmApplication` within IntelliJ
+# Deployment
+## Continuous Deployment during development
+We have a GitHub action that builds docker containers for all the components and calls a webhook on a server that restarts the Docker Compose configuration.
+## Production
+For production on an actual server, just run `docker compose up -d` in the `continuous-deployment` folder. You'll want a reverse proxy to make the frontend and backend available over HTTPS on the same domain. You'll need to change the backend address in the Docker Compose file.
 
-- App available at http://localhost:8080
+Additionally, the entire app can be setup to run on a Windows desktop (only available on the same network). Running `install.bat` will install the app under WSL2 and bring it up every boot. It will then open the appropriate page.
