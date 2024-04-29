@@ -107,7 +107,7 @@ export class CityFarm {
         if (use_cache && cached_events.length > 0) {
             try {
                 axios.get(`/events/non_instanced`, this.token).then((response) => {
-                    const events = response.data.map((data) => data.type === "once" ? new EventOnce(response.data) : new EventRecurring(response.data));
+                    const events = response.data.map((data) => data.type === "once" ? new EventOnce(data) : new EventRecurring(data));
                     // If the events have changed, update the cache and call the callback
                     if (cached_events !== events) {
                         this.setEventsCache(events);
