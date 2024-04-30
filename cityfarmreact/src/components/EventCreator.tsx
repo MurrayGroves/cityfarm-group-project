@@ -57,6 +57,10 @@ export const EventCreator: React.FC<EventCreatorProp> = ({farms, style, cityfarm
         }))
     }, [modify, initialEvent])
 
+    useEffect(() => {
+        console.log("newEvent", newEvent);
+    }, [newEvent])
+
     const token = getConfig();
 
     useEffect(() => {
@@ -64,18 +68,42 @@ export const EventCreator: React.FC<EventCreatorProp> = ({farms, style, cityfarm
     }, [newEvent]);
 
     const setAddEventEnclosures = (enclosures) => {
-        setNewEvent({...newEvent, enclosures: enclosures})
+        let ev;
+        if (newEvent instanceof EventRecurring) {
+            ev = new EventRecurring({...newEvent, enclosures: enclosures})
+        } else {
+            ev = new EventOnce({...newEvent, enclosures: enclosures})
+        }
+        setNewEvent(ev)
     }
     const setAddEventAnimals = (animalList) => {
-        setNewEvent({...newEvent, animals: animalList})
+        let ev;
+        if (newEvent instanceof EventRecurring) {
+            ev = new EventRecurring({...newEvent, animals: animalList})
+        } else {
+            ev = new EventOnce({...newEvent, animals: animalList})
+        }
+        setNewEvent(ev)
     }
     
     const changeAllDay = (isAllDay) => {
-        setNewEvent({...newEvent, allDay: isAllDay})
+        let ev;
+        if (newEvent instanceof EventRecurring) {
+            ev = new EventRecurring({...newEvent, allDay: isAllDay})
+        } else {
+            ev = new EventOnce({...newEvent, allDay: isAllDay})
+        }
+        setNewEvent(ev)
     }
 
-    const changeRecurring = (isRecurring) => {
-        setRecurring(isRecurring);
+    const toggleFarm = (farm: any) => {
+        let ev;
+        if (newEvent instanceof EventRecurring) {
+            ev = new EventRecurring({...newEvent, farms: newEvent.farms.includes(farm) ? newEvent.farms.filter((f) => f !== farm) : newEvent.farms.concat(farm)})
+        } else {
+            ev = new EventOnce({...newEvent, farms: newEvent.farms.includes(farm) ? newEvent.farms.filter((f) => f !== farm) : newEvent.farms.concat(farm)})
+        }
+        setNewEvent(ev)
     }
 
     useEffect(() => {
@@ -250,6 +278,8 @@ export const EventCreator: React.FC<EventCreatorProp> = ({farms, style, cityfarm
             return;
         }
 
+        console.log("patching event", newEvent);
+
         try {
             if (newEvent instanceof EventOnce) {
                 await axios.patch(`/events/once/by_id/${newEvent.id}/update`, newEvent, token);
@@ -280,7 +310,15 @@ export const EventCreator: React.FC<EventCreatorProp> = ({farms, style, cityfarm
                     placeholder="Add Title"
                     label='Title'
                     value={newEvent.title}
-                    onChange={(e)=>setNewEvent({...newEvent, title: e.target.value})}
+                    onChange={(e)=>{
+                        let ev;
+                        if (newEvent instanceof EventRecurring) {
+                            ev = new EventRecurring({...ev, title: e.target.value})
+                        } else {
+                            ev = new EventOnce({...ev, title: e.target.value})
+                        }
+                        setNewEvent(ev)
+                    }}
                 />
                 {showingTime(!newEvent.allDay)}
             </div>
@@ -300,7 +338,7 @@ export const EventCreator: React.FC<EventCreatorProp> = ({farms, style, cityfarm
             <div className='smallMarginTop'>
                 <ThemeProvider theme={textFieldTheme()}>
                     <div style={{display: "flex", alignItems: 'center', width: '100%'}}>
-                        <FormControlLabel style={{flex: '0.01', marginRight: '0'}} label="Repeats" control={<Checkbox checked={recurring} size='small'/>} onChange={() => changeRecurring(!recurring)} />
+                        <FormControlLabel style={{flex: '0.01', marginRight: '0'}} label="Repeats" control={<Checkbox checked={recurring} size='small'/>} onChange={() => setRecurring(!recurring)} />
                         <p style={{margin: '1%', flex: '0.5', visibility: recurring ? 'visible': 'hidden'}}>every</p>
 
                         <TextField type="number" onFocus={(e) => e.target.addEventListener("wheel", function (e) { e.preventDefault() }, { passive: false })}
@@ -349,9 +387,9 @@ export const EventCreator: React.FC<EventCreatorProp> = ({farms, style, cityfarm
             <div className='smallMarginTop'>
                 <h3>Farms</h3>
                 <FormGroup>
-                    <FormControlLabel control={<Checkbox color={farms.WH} checked={newEvent.farms.includes(farms.WH)} size='small'/>} label="Windmill Hill" onChange={() => setNewEvent({...newEvent, farms: newEvent.farms.includes(farms.WH) ? newEvent.farms.filter((farm) => farm !== farms.WH) : newEvent.farms.concat(farms.WH)})}/>
-                    <FormControlLabel control={<Checkbox color={farms.HC} checked={newEvent.farms.includes(farms.HC)} size='small'/>} label="Hartcliffe" onChange={()=>setNewEvent({...newEvent, farms: newEvent.farms.includes(farms.HC) ? newEvent.farms.filter((farm) => farm !== farms.HC) : newEvent.farms.concat(farms.HC)})}/>
-                    <FormControlLabel control={<Checkbox color={farms.SW} checked={newEvent.farms.includes(farms.SW)} size='small'/>} label="St Werburghs" onChange={()=>setNewEvent({...newEvent, farms: newEvent.farms.includes(farms.SW) ? newEvent.farms.filter((farm) => farm !== farms.SW) : newEvent.farms.concat(farms.SW)})}/>
+                    <FormControlLabel control={<Checkbox color={farms.WH} checked={newEvent.farms.includes(farms.WH)} size='small'/>} label="Windmill Hill" onChange={() => toggleFarm(farms.WH)}/>
+                    <FormControlLabel control={<Checkbox color={farms.HC} checked={newEvent.farms.includes(farms.HC)} size='small'/>} label="Hartcliffe" onChange={() => toggleFarm(farms.HC)}/>
+                    <FormControlLabel control={<Checkbox color={farms.SW} checked={newEvent.farms.includes(farms.SW)} size='small'/>} label="St Werburghs" onChange={() => toggleFarm(farms.SW)}/>
                 </FormGroup>
             </div>
             <div>
@@ -363,7 +401,15 @@ export const EventCreator: React.FC<EventCreatorProp> = ({farms, style, cityfarm
                     rows={3}
                     placeholder='Enter Description'
                     value={newEvent.description}
-                    onChange={(e) => {setNewEvent({...newEvent, description: e.target.value})}}
+                    onChange={(e) => {
+                        let ev;
+                        if (newEvent instanceof EventRecurring) {
+                            ev = new EventRecurring({...newEvent, description: e.target.value})
+                        } else {
+                            ev = new EventOnce({...newEvent, description: e.target.value})
+                        }
+                        setNewEvent(ev)
+                    }}
                 />
             </div>
             <div>
@@ -386,7 +432,7 @@ export const EventCreator: React.FC<EventCreatorProp> = ({farms, style, cityfarm
             <div>
                 <span style={{display: 'flex'}}><h3>Enclosures</h3><IconButton style={{height: '40px', margin: '12.5px 0 0 5px'}} onClick={() => {functionopenPopup("enclosures")}}><AddIcon color='primary'/></IconButton></span>
                 {newEvent.enclosures.map((enclosure, index) => (
-                    <Enclosure key={index} enclosureID={enclosure.id}/>
+                    <Enclosure cityfarm={cityfarm} key={index} enclosureID={enclosure.id}/>
                 ))}{/*Add a way to remove enclosures from events */}
                 {/* idea: make this open the enlcosure  page with a new column of checkboxes. Click on an associate enlcosure(s) button would then pass a list of enclosure names to the calendar to be placed in a field*/}
                 <div id="AssociateEnclosure" style={{textAlign:'center'}}>
