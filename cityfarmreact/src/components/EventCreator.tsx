@@ -280,13 +280,16 @@ export const EventCreator: React.FC<EventCreatorProp> = ({ farms, style, cityfar
             return;
         }
 
+        let event: any = {...newEvent};
+        event.animals = event.animals.map((animal) => animal.id);
+        event.enclosures = event.enclosures.map((enclosure) => enclosure.id);
         console.log("patching event", newEvent);
 
         try {
             if (newEvent instanceof EventOnce) {
-                await axios.patch(`/events/once/by_id/${newEvent.id}/update`, newEvent, token);
+                await axios.patch(`/events/once/by_id/${newEvent.id}/update`, event, token);
             } else {
-                await axios.patch(`/events/recurring/by_id/${newEvent.id}/update`, newEvent, token);
+                await axios.patch(`/events/recurring/by_id/${newEvent.id}/update`, event, token);
             }
         } catch (error) {
             if (error.response.status === 401) {
