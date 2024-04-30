@@ -59,8 +59,11 @@ const EnclosurePopover = ({ cityfarm, enclosureID }: {cityfarm: CityFarm, enclos
             >
                 <Typography sx={{ p: 1,whiteSpace: 'pre-line' }}>
                     {`Name: ${chosenEnclosure.name}`}<br/>
-                    {`Holding: ${chosenEnclosure.holding.map((animal) => <AnimalPopover cityfarm={cityfarm} animalID={animal.id}/>)}`}<br/>
-                    {`Capacities: ${chosenEnclosure.capacities}`}<br/>
+                    {`Holding: `}
+                    {chosenEnclosure.holding.map((animal) => (
+                        animal.name + ' '))}<br/>
+                    {`Capacities: ${Object.keys(chosenEnclosure.capacities).map((key) => {
+                        return (` ${key}: ${chosenEnclosure.capacities[key]}`)})}`}<br/>
                 </Typography>
             </Popover>
         </div>

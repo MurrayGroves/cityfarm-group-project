@@ -3,6 +3,7 @@ import React, {ReactNode, useEffect, useState} from "react";
 import AnimalPopover from "./AnimalPopover.tsx";
 import Button from "@mui/material/Button";
 import DeleteIcon from "@mui/icons-material/Delete";
+import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import axios from "../api/axiosConfig.js";
 import './EnclosureMove.css'
 import {getConfig} from "../api/getToken.js";
@@ -56,14 +57,14 @@ const EnclosureMove = ({cityfarm, excludedEnc, enclosures, animalList, close}: {
                 animalListTypes[animal.type] = 1;
             }
         }
-        //console.log(animalListTypes)
+        console.log(animalListTypes)
         for (const enc of enclosures){
             //console.log(enc)
             let includeFlag = true
             for (const entry of Object.entries(animalListTypes)){
                //console.log(val)
                //console.log(enc.capacities[val[0]])
-                if (enc.capacities[entry[0]] < entry[1] || enc.capacities[entry[0]] === undefined){
+                if (enc.capacities[entry[0]] <= entry[1] || enc.capacities[entry[0]] === undefined){
                     includeFlag = false
                 }
             }
@@ -80,7 +81,10 @@ const EnclosureMove = ({cityfarm, excludedEnc, enclosures, animalList, close}: {
             name = <AnimalPopover key={animalList[0].id} animalID={animalList[0].id} cityfarm={cityfarm}/>
         }
         return(
-            <div> Moving {name} to one of: <br/>{
+            <div> Moving {name} to one of: <br/>
+                {console.log(filteredEnclosures())}
+                {(filteredEnclosures().length==0 || (filteredEnclosures().length==1 && filteredEnclosures()[0].id ==excludedEnc.id))
+                ? <><WarningAmberIcon/> No enclosures with space available, change selection<br/></>:
                 filteredEnclosures().map((enc) => (
                     enc.id !== excludedEnc?.id ? (
                         <Button key={enc.id} onClick={() => {animalTo(enc);window.location.reload();}}>

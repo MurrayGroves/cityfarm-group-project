@@ -49,8 +49,8 @@ const SingleEnclosure = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) =>
     return animals
   }
 
-  const updateSelectedAnimals = (ids) => {
-    console.log(ids)
+  const updateSelectedAnimals = (as) => {
+    console.log(as)
 
       // Merge the newly selected animals with the already selected ones
      //  const newSelectedAnimals = selectedAnimals;
@@ -77,7 +77,7 @@ const SingleEnclosure = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) =>
     //   setSelectedAnimals(newSelectedAnimals)
     // console.log(selectedAnimals)
     // console.log("Function Complete")
-    setSelectedAnimals(ids)
+    setSelectedAnimals(as)
     }
 
   const closeEnclosureMove =()=>{
@@ -122,7 +122,10 @@ const SingleEnclosure = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) =>
                 }}
                 disableRowSelectionOnClick
                 checkboxSelection
-                onRowSelectionModelChange={(ids) => updateSelectedAnimals(ids)}
+                onRowSelectionModelChange={(ids) => {
+                  const selectedAnimalObjects = rows.filter(row => ids.includes(row.id)).map(row => row.name);
+                  updateSelectedAnimals(selectedAnimalObjects);
+                }}
               />
             </div>
         )
