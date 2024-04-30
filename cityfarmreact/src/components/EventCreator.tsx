@@ -30,9 +30,9 @@ interface EventCreatorProp {
 export const EventCreator: React.FC<EventCreatorProp> = ({farms, style, cityfarm, setEvent, modify, setModify, initialEvent}) => {
     const [newEvent,setNewEvent] = useState<Event>(initialEvent ? initialEvent : new EventOnce({
         title: "",
-        allDay: true,
-        start: new Date(),
-        end: new Date(),
+        allDay: false,
+        start: null,
+        end: null,
         farms: [],
         animals: [],
         description: "",
@@ -186,7 +186,7 @@ export const EventCreator: React.FC<EventCreatorProp> = ({farms, style, cityfarm
             }
         }
         
-        setNewEvent(new Event({
+        setNewEvent(new EventOnce({
             title: "",
             allDay: true,
             start: new Date(),
@@ -196,6 +196,7 @@ export const EventCreator: React.FC<EventCreatorProp> = ({farms, style, cityfarm
             description: "",
             enclosures: []
         }));
+        setRecurring(false);
     }
 
     function showingTime(isShown) {
