@@ -10,12 +10,9 @@ import { Animal, Schema, Sex } from "../api/animals.ts";
 import { Event } from "../api/events.ts";
 import { Grid } from "@mui/material";
 import EnclosurePopover from "../components/EnclosurePopover.tsx";
-import EnclosureMove from '../components/EnclosureMove'
+import EnclosureMove from '../components/EnclosureMove.tsx';
 import {Enclosure} from "../api/enclosures";
 import Button from "@mui/material/Button";
-import axios from "../api/axiosConfig";
-import {getConfig} from "../api/getToken";
-
 
 export function readableFarm(farm) {
     switch(farm) {
@@ -40,8 +37,6 @@ const SingleAnimal = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
     const [animalEnclosure , setAnimalEnclosure] = useState<Enclosure | null>(null)
     const [allEnclosures,setAllEnclosures] =useState <Enclosure[]>([])
     const [animalMoving,setAnimalMoving] = useState<Animal[]>([])
-    const token=getConfig()
-
 
     useEffect(() => {
         (async () => {
@@ -49,25 +44,10 @@ const SingleAnimal = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
             setChosenAnimal(animal!);
             const events = await cityfarm.getEvents(true, (events) => {setRelEvents(events)})
             setRelEvents(events);
-    })();
-    (async()=>{
-        try {
-            const req = await axios.get('/enclosures',token)
-            setAllEnclosures(req.data)
-        } catch (error) {
-            if (error.response.status === 401) {
-                window.location.href = "/login";
-                return;
-            } else {
-                window.alert(error);
-            }
-        }
-    })();
-
-
-
-
-    }, [animalID]);
+            const enclosures = await cityfarm.getEnclosures(true, null, (enclosures) => setAllEnclosures(enclosures));
+            setAllEnclosures(enclosures);
+        })();
+    },[animalID]);
 
     useEffect(()=>{
         let kids = new Array<string>();

@@ -9,7 +9,7 @@ import AssociateAnimal from "../components/AssociateAnimal.tsx";
 import Button from "@mui/material/Button";
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
-import EnclosureMove from "../components/EnclosureMove";
+import EnclosureMove from "../components/EnclosureMove.tsx";
 import IconButton from "@mui/material/IconButton";
 import {DataGrid, GridColDef} from "@mui/x-data-grid";
 import {readableFarm} from "./SingleAnimal.tsx";
@@ -17,9 +17,9 @@ import { Enclosure } from "../api/enclosures.ts";
 import { CityFarm } from "../api/cityfarm.ts";
 import { Animal } from "../api/animals.ts";
 
-const SingleEnclosure = (farms: any, cityfarm: CityFarm) => {
+const SingleEnclosure = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
   const token = getConfig();
-  const enclosureID = useParams().enclosureID
+  const enclosureID = useParams().enclosureID!
   const [enclosure, setEnclosure] = useState<Enclosure>(new Enclosure({name: 'Loading...', holding: [], capacities: {}}))
   const [animalTypes, setAnimalTypes] = useState<string[]>(new Array<string>())
   const [openAnimalsPopup, setOpenAnimalsPopup] = useState<boolean>(false)
@@ -31,22 +31,11 @@ const SingleEnclosure = (farms: any, cityfarm: CityFarm) => {
 
   useEffect(() => {
     (async () => {
-    try {
-      const req1 = await axios.get(`/enclosures/by_id/${enclosureID}`, token)
-      setEnclosure(new Enclosure(req1.data))
-      const req2 = await axios.get('/enclosures',token)
-      setAllEnclosures(req2.data)
-
-
-    } catch (error) {
-      if (error.response.status === 401) {
-        window.location.href = "/login";
-        return;
-      } else {
-        window.alert(error);
-      }
-    }
-  })();
+      const enclosure = await cityfarm.getEnclosure(enclosureID, true, (enclosure) => setEnclosure(enclosure));
+      setEnclosure(enclosure!);
+      const enclosures = await cityfarm.getEnclosures(true, null, (enclosures) => setAllEnclosures(enclosures));
+      setAllEnclosures(enclosures);
+    })();
   }, [enclosureID])
 
 
@@ -113,16 +102,15 @@ const SingleEnclosure = (farms: any, cityfarm: CityFarm) => {
         }
       }
       for (const type of animalTypes){
-        let rows = []
-        animalsByType(type).map((a) => {return({
+        let rows: any[] = []
+        rows = animalsByType(type).map((a) => ({
           id: a.id,
           name: a,
           move: a
-        })})
+        }))
         holdingDisplay.push(
             <div key={type}>
             <h3 style={{ display: "inline-block" }}>{type}: ({rows.length} / {enclosure.capacities[type]})</h3><br/>
-
               <DataGrid columns={cols} rows={rows}
                 disableRowSelectionOnClick
                 checkboxSelection
@@ -223,19 +211,19 @@ const SingleEnclosure = (farms: any, cityfarm: CityFarm) => {
   return (
   <div className="enclosureView">
     <h2>{enclosure.name}</h2>
-    <Button color={'warning'} onClick={()=>setEnclosureDelete(true)} variant="outlined">Delete Enclosure <DeleteIcon /> </Button>
+    <Button color={'warning'} onClick={()=>setEnclosureDelete(true)} variant="outlined" endIcon={<DeleteIcon/>}>Delete Enclosure</Button>
     <br/>
     <Dialog open={enclosureDelete} onClose={()=>setEnclosureDelete(false)}>
       <DialogTitle>Delete {enclosure.name}?</DialogTitle>
       <DialogContent>
         Are you sure you want to delete {enclosure.name}? <br/>
-        <Button color={'warning'} onClick={handleEnclosureDeletion}>Delete <DeleteIcon /> </Button>
+        <Button color={'warning'} onClick={handleEnclosureDeletion} endIcon={<DeleteIcon/>}>Delete</Button>
         <Button color={'success'} onClick={()=>setEnclosureDelete(false)}>Cancel</Button>
       </DialogContent>
     </Dialog>
     <b>Farm: </b> {readableFarm(enclosure.farm)}<br/>
-    <b>Notes: </b> {enclosure.notes}<br/>
-    <h3 style={{ display: "inline-block" }}>Animal Holdings:</h3> <Button onClick={handleOpenAnimalsPopup} variant={"contained"}><EditIcon/>Edit </Button>
+    {enclosure.notes !== '' && <b>Notes: </b>} {enclosure.notes}<br/>
+    <h3 style={{ display: "inline-block" }}>Animal Holdings:</h3> <Button onClick={handleOpenAnimalsPopup} variant={"contained"} endIcon={<EditIcon/>}>Edit</Button>
     <br/>
 
 

@@ -30,17 +30,8 @@ const AssociateEnclosure = ({enclosures, setEnclosures, cityfarm, close}: {enclo
 
     function displayAll() {
         (async () => {
-            try {
-                const response = await axios.get(`/enclosures`, token);
-                setEnclosureList(response.data.map((enclosure) => new Enclosure(enclosure)));
-            } catch (error) {
-                if (error.response.status === 401) {
-                    window.location.href = "/login";
-                    return;
-                } else {
-                    window.alert(error);
-                }
-            }
+            const enclosures = await cityfarm.getEnclosures(true, null, (enclosures) => setEnclosureList(enclosures));
+            setEnclosureList(enclosures);
         })()
     }
 

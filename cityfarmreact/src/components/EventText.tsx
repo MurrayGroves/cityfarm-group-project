@@ -1,6 +1,3 @@
-import { getConfig } from '../api/getToken';
-import axios from "../api/axiosConfig";
-
 import React, {useEffect, useState} from 'react';
 
 import { EventPopover } from './EventPopover.tsx';

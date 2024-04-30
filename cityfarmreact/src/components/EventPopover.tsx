@@ -1,8 +1,5 @@
 import React, { useState, useEffect } from 'react';
 
-import axios from '../api/axiosConfig';
-import { getConfig } from '../api/getToken';
-
 import { Paper, Popover } from '@mui/material';
 
 import AnimalPopover from './AnimalPopover.tsx';

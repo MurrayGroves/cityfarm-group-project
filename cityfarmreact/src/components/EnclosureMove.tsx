@@ -115,8 +115,6 @@ const EnclosureMove = ({cityfarm, excludedEnc, enclosures, animalList, close}: {
         })();
     }
 
-    if(excludedEnc === null) return <p>Error</p>
-
     return (
         <div>
             <div className={`moveContent ${animalList.length>0 ? 'moveVisible' : 'moveHidden'}`}>
