@@ -80,7 +80,7 @@ const AssociateAnimal = ({ animals, setAnimals, cityfarm, close}: {animals: Anim
     const rows = animalList.map((animal: Animal) => ({
         id: animal.id,
         name: animal,
-        type: animal.type,
+        type: <ul>animal.type</ul>,
         sex: animal.sex === Sex.Female ? 'Female' : animal.sex === Sex.Male ? 'Male' : 'Castrated',
     }));
     const cols: GridColDef[] = [
@@ -120,7 +120,7 @@ const AssociateAnimal = ({ animals, setAnimals, cityfarm, close}: {animals: Anim
                 disableRestoreFocus
             >
                 <Typography sx={{ p: 1, whiteSpace: 'pre-line' }} maxHeight={400} maxWidth={500}>
-                    Click the checkbox on the left side of the table to select the animal(s).
+                    Click the checkbox on the left side of the table to select the animal(s). You can filter the table by animal type by clicking on the animal type's name.
                     <br/>Click on the Add button to add them.
                 </Typography>
             </Popover>
