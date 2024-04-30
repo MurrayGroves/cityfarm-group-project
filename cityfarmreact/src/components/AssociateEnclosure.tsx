@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from "react";
 import axios from '../api/axiosConfig.js'
 import AnimalPopover from "./AnimalPopover.tsx";
+import Popover from '@mui/material/Popover';
+import Typography from '@mui/material/Typography';
+import {Link} from "react-router-dom";
+import { Help } from '@mui/icons-material';
 import "../pages/AnimalTable.css";
 import { DataGrid, GridColDef, GridRowSelectionModel } from '@mui/x-data-grid';
 import Paper from '@mui/material/Paper';
@@ -10,15 +14,26 @@ import EnclosurePopover from "./EnclosurePopover.tsx";
 import { getConfig } from '../api/getToken.js'; 
 import { Enclosure } from "../api/enclosures.ts";
 import { CityFarm } from "../api/cityfarm.ts";
+import { useTheme } from '@mui/material/styles';
 import { Animal } from "../api/animals.ts";
 
 const AssociateEnclosure = ({enclosures, setEnclosures, cityfarm, close}: {enclosures: Enclosure[], setEnclosures: (enclosures: Enclosure[]) => void, cityfarm: CityFarm, close: () => void}) => {
     const [enclosureIDs, setEnclosureIDs] = useState<GridRowSelectionModel>([])
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [enclosureList, setEnclosureList] = useState<Enclosure[]>([]);
+    const colour = useTheme().palette.mode === 'light' ? 'black' : 'white';
 
     const token = getConfig();
+    const [anchorEl, setAnchorEl] = useState(null);
+    const open = Boolean(anchorEl);
 
+    const handlePopoverOpen = (e) => {
+        setAnchorEl(e.currentTarget);
+    };
+
+    const handlePopoverClose = () => {
+        setAnchorEl(null);
+    };
     useEffect(() => {
         setEnclosureIDs(enclosures.map((enclosure) => enclosure.id));
         console.log('getting enclosures', enclosures);
@@ -85,6 +100,40 @@ const AssociateEnclosure = ({enclosures, setEnclosures, cityfarm, close}: {enclo
 
     return (
         <div style={{display: 'flex', flexDirection: 'column', height: 'calc(100vh - 148px)'}}>
+            <div style={{top: '15px', right:'20px', position: "absolute"}}>
+            <Link to="/help">
+            <Typography
+                aria-owns={open ? 'mouse-over-popover' : undefined}
+                aria-haspopup="true"
+                onMouseEnter={handlePopoverOpen}
+                onMouseLeave={handlePopoverClose}
+                style={{display: 'inline-block', margin: '2.5px 0'}}
+            >
+                <Help/>
+            </Typography>
+            <Popover
+                id="mouse-over-popover"
+                sx={{pointerEvents: 'none'}}
+                open={open}
+                anchorEl={anchorEl}
+                anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'left',
+                }}
+                transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'left',
+                }}
+                onClose={handlePopoverClose}
+                disableRestoreFocus
+            >
+                <Typography sx={{ p: 1, whiteSpace: 'pre-line' }} maxHeight={400} maxWidth={500}>
+                    Click the checkbox on the left side of the table to select the enclosure(s).
+                    <br/>Click on the Add button to add them.
+                </Typography>
+            </Popover>
+        </Link>
+        </div>
             <span style={{display: 'flex', justifyContent: 'space-between'}}>
                 <TextField
                     size='small'
