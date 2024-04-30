@@ -9,9 +9,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @RestController
 @CrossOrigin(origins = {"http://localhost:3000", "https://cityfarm.murraygrov.es"}, methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE, RequestMethod.PATCH})
@@ -31,7 +29,7 @@ public class EnclosureController {
     //HttpHeaders responseHeaders = new HttpHeaders();
 
     @PostMapping("/api/enclosures/create")
-    public ResponseEntity<Enclosure> create_enclosure(@RequestBody CreateEnclosureRequest enclosure) {
+    public ResponseEntity<String> create_enclosure(@RequestBody CreateEnclosureRequest enclosure) {
 
         List<AnimalCustom> holding = new ArrayList<>();
         for (String animal : enclosure.holding) {
@@ -39,12 +37,17 @@ public class EnclosureController {
             holding.add(anm);
         }
 
+        if (!check_capacity(holding, enclosure.capacities)){
+            return ResponseEntity.badRequest().body("Capacity too low for current inhabitants");
+        }
+
         Enclosure new_enclosure = new Enclosure(enclosure.name, enclosure.capacities, holding, enclosure.notes, enclosure.farm);
 
         enclosureRepository.save(new_enclosure);
 
         String location = String.format("/enclosures/by_id/%s", new_enclosure.get_id());
-        return ResponseEntity.created(URI.create(location)).body(new_enclosure);
+        return ResponseEntity.created(URI.create(location)).build();
+        //return ResponseEntity.ok().build();
     }
 
     @GetMapping("/api/enclosures")
@@ -84,52 +87,6 @@ public class EnclosureController {
         return ResponseEntity.ok().body(enclosures);
     }
 
-//    THIS CODE DOESN'T WORK ANY MORE, NEEDS TO BE ADAPTED
-
-//    @PatchMapping("/api/enclosures/by_id/{id}/holding")
-//    public ResponseEntity<String> set_enclosure_holding(@PathVariable String id, @RequestBody List<AnimalCustom> holding) {
-//        Enclosure enc = enclosureRepository.findEnclosureById(id);
-//
-//        for (String type : holding.keySet()) {
-//            if (!enc.capacities.containsKey(type)) {
-//                continue;
-//            }
-//            if (holding.get(type).size() > enc.capacities.get(type)) {
-//                return ResponseEntity.badRequest().body("Holding exceeds capacity");
-//            }
-//        }
-//
-//        long res = enclosureRepositoryCustom.updateHolding(id, holding);
-//
-//        // If no documents updated
-//        if (res == 0) {
-//            return ResponseEntity.notFound().build();
-//        }
-//
-//        return ResponseEntity.ok().build();
-//    }
-
-//    @PatchMapping("/api/enclosures/by_id/{id}/capacities")
-//    public ResponseEntity<String> set_enclosure_capacities(@PathVariable String id, @RequestBody HashMap<String, Integer> capacities) {
-//        Enclosure enc = enclosureRepository.findEnclosureById(id);
-//
-//        for (int i = 0; i < enc.holding.size(); i++) {
-//         List<AnimalCustom> holds = new ArrayList(Objects.requireNonNullElse(enc.holding.get(type), new HashSet<>()));
-//            if (holds.size() > capacities.get(type)) {
-//                return ResponseEntity.badRequest().body("Capacity too low for current inhabitants");
-//            }
-//        }
-//
-//        long res = enclosureRepositoryCustom.updateCapacities(id, capacities);
-//
-//        // If no documents updated
-//        if (res == 0) {
-//            return ResponseEntity.notFound().build();
-//        }
-//
-//        return ResponseEntity.ok().build();
-//    }
-
     @PatchMapping("/api/enclosures/by_id/{id}/name/{newName}")
     public ResponseEntity<String> set_enclosure_name(@PathVariable String id, @PathVariable String newName) {
         //console.log("name: " + newName);
@@ -157,6 +114,11 @@ public class EnclosureController {
                 animalRepository.save(anm);
             }
         }
+
+        if (!check_capacity(holding, enclosureNew.capacities)){
+            return ResponseEntity.badRequest().body("Capacity too low for current inhabitants");
+        }
+
         long res1 = enclosureRepositoryCustom.updateName(id, enclosureNew.name);
         long res2 = enclosureRepositoryCustom.updateHolding(id, holding);
         long res3 = enclosureRepositoryCustom.updateCapacities(id, enclosureNew.capacities);
@@ -196,7 +158,6 @@ public class EnclosureController {
             animalRepository.save(animal);
         }
 
-
         return ResponseEntity.ok().build();
     }
 
@@ -204,6 +165,26 @@ public class EnclosureController {
     public ResponseEntity<String> delete_enclosure(@PathVariable String id) {
         enclosureRepository.deleteById(id);
         return ResponseEntity.ok(id);
+    }
+
+    private Boolean check_capacity(List<AnimalCustom> holding, HashMap<String, Integer> capacities){
+        Map<String, Integer> holds = new HashMap<>();
+
+        for (int i = 0; i < holding.size(); i++) {
+            String animalType = holding.get(i).getType();
+            if (holds.get(animalType) == null) {
+                holds.put(animalType, 1);
+            } else {
+                holds.replace(animalType, holds.get(animalType) + 1);
+            }
+        }
+
+        for (Map.Entry<String,Integer> entry: holds.entrySet()){
+            if (capacities.get(entry.getKey()) == null || entry.getValue() > capacities.get(entry.getKey())) {
+                return false;
+            }
+        }
+        return true;
     }
 }
 
