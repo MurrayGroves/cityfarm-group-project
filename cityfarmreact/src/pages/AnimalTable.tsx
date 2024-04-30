@@ -129,7 +129,7 @@ const AnimalTable = ({farms, cityfarm, device}: {farms: any, cityfarm: CityFarm,
         const defaultRows = animalList.map((animal) => ({
             id: animal.id,
             name: animal,
-            type: animal.type,
+            type: <ul>animal.type</ul>,
             father: animal.father !== null ? animal.father : '',
             mother: animal.mother !== null ? animal.mother : '',
             sex: animal.sex,
