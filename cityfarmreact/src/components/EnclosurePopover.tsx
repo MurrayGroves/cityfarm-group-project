@@ -2,15 +2,11 @@ import React, { useState, useEffect } from 'react';
 import Popover from '@mui/material/Popover';
 import Typography from '@mui/material/Typography';
 import {Link} from "react-router-dom";
-import axios from '../api/axiosConfig.js'
-import { getConfig } from '../api/getToken.js';
 import { Enclosure } from '../api/enclosures.ts';
 import AnimalPopover from './AnimalPopover.tsx';
 import { CityFarm } from '../api/cityfarm.ts';
 
 const EnclosurePopover = ({ cityfarm, enclosureID }: {cityfarm: CityFarm, enclosureID: string}) => {
-    const token = getConfig();
-
     const [anchorEl, setAnchorEl] = useState(null);
     const [chosenEnclosure, setChosenEnclosure] = useState<Enclosure>(new Enclosure({name: 'Loading...', holding: [], capacities: {}}));
 
@@ -25,12 +21,11 @@ const EnclosurePopover = ({ cityfarm, enclosureID }: {cityfarm: CityFarm, enclos
     const open = Boolean(anchorEl);
 
     useEffect(() => {
-        console.log(enclosureID);
+        //console.log(enclosureID);
         enclosureID &&
         (async () => {
-            const response = await axios.get(`/enclosures/by_id/${enclosureID}`, token)
-            const enclosure = response.data;
-            setChosenEnclosure(new Enclosure(enclosure));
+            const enclosure = await cityfarm.getEnclosure(enclosureID, true, (enclosure) => setChosenEnclosure(enclosure));
+            setChosenEnclosure(enclosure!);
         })()
     }, [enclosureID]);
 
@@ -64,8 +59,11 @@ const EnclosurePopover = ({ cityfarm, enclosureID }: {cityfarm: CityFarm, enclos
             >
                 <Typography sx={{ p: 1,whiteSpace: 'pre-line' }}>
                     {`Name: ${chosenEnclosure.name}`}<br/>
-                    {`Holding: ${chosenEnclosure.holding.map((animal) => <AnimalPopover cityfarm={cityfarm} animalID={animal.id}/>)}`}<br/>
-                    {`Capacities: ${chosenEnclosure.capacities}`}<br/>
+                    {`Holding: `}
+                    {chosenEnclosure.holding.map((animal) => (
+                        animal.name + ' '))}<br/>
+                    {`Capacities: ${Object.keys(chosenEnclosure.capacities).map((key) => {
+                        return (` ${key}: ${chosenEnclosure.capacities[key]}`)})}`}<br/>
                 </Typography>
             </Popover>
         </div>
