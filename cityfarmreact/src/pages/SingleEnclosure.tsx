@@ -24,7 +24,6 @@ const SingleEnclosure = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) =>
   const [animalTypes, setAnimalTypes] = useState<string[]>(new Array<string>())
   const [openAnimalsPopup, setOpenAnimalsPopup] = useState<boolean>(false)
   const [allEnclosures, setAllEnclosures] = useState<Enclosure[]>([])
-  const [animalToMove, setAnimalToMove] = useState<boolean>(false)
   const [selectedAnimals, setSelectedAnimals] = useState<Animal[]>([])
   const [enclosureDelete, setEnclosureDelete] = useState<boolean>(false)
   const [capacitiesWarning, setCapacitiesWarning] = useState<string>('')
@@ -57,24 +56,22 @@ const SingleEnclosure = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) =>
     return animals
   }
 
-  useEffect(()=>{
-
+  useEffect(() => {
     // send whole thing into selectedanimals
     const selectedList = Object.values(animalsCurrentlySelected).flat();
     setSelectedAnimals(selectedList);
-    },[animalsCurrentlySelected])
+  },[animalsCurrentlySelected])
+
   const updateSelectedAnimals = (as: Animal[], type: string) => {
     // update by modifying the specific type
     setAnimalsCurrentlySelected(prevState => ({
       ...prevState,
       [type]: as
     }));
-
   }
 
 
-  const closeEnclosureMove =()=>{
-    setAnimalToMove(false)
+  const closeEnclosureMove = () => {
     setSelectedAnimals([])
   }
 
@@ -117,7 +114,7 @@ const SingleEnclosure = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) =>
                 checkboxSelection
                 onRowSelectionModelChange={(ids) => {
                   const selectedAnimalObjects = rows.filter(row => ids.includes(row.id)).map(row => row.name);
-                  updateSelectedAnimals(selectedAnimalObjects,type);
+                  updateSelectedAnimals(selectedAnimalObjects, type);
                 }}
               />
             </div>
@@ -127,23 +124,7 @@ const SingleEnclosure = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) =>
     return holdingDisplay
   }
 
-  // const setEnclosureNewAnimals = async (animalList) => {
-  //   try {
-  //     const newHolding = await Promise.all(animalList.map(async (id) => {
-  //       const response = await axios.get(`/animals/by_id/${id}`, token);
-  //       return response.data;
-  //     }));
-  //
-  //     console.log('newholding', newHolding);
-  //     updateEnclosure({name: enclosure.name, holding: newHolding,
-  //       capacities: enclosure.capacities, notes: enclosure.notes, farm: enclosure.farm});
-  //   } catch (error) {
-  //     window.alert(error);
-  //   }
-  // }
-
   const setEnclosureNewAnimals = (animalList: Animal[]) => {
-
     //iterate thru each type in capacity
     for (const type of Object.entries(enclosure.capacities)){
       let typeTotal=0
@@ -171,6 +152,7 @@ const SingleEnclosure = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) =>
   const handleOpenAnimalsPopup = () => {
     setOpenAnimalsPopup(!openAnimalsPopup);
   }
+
   const updateEnclosure = (id: string, enclosure: Enclosure) =>{
     (async() => {
       try {
@@ -241,7 +223,6 @@ const SingleEnclosure = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) =>
     {holdings()}
     <EnclosureMove cityfarm={cityfarm} excludedEnc={enclosure}
                    enclosures={allEnclosures} animalList={selectedAnimals} close={closeEnclosureMove} />
-
       <Dialog open={capacitiesWarning !==''} onClose={()=>{setCapacitiesWarning('')}}>
         <DialogTitle>Capacity issue for enclosure movement</DialogTitle>
           <DialogContent >
