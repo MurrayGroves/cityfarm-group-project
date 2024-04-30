@@ -27,7 +27,7 @@ import Help from "./pages/Help.tsx";
 import usePersistState from './components/PersistentState.ts'
 
 import { CityFarm } from './api/cityfarm.ts';
-import SingleEnclosure from "./pages/SingleEnclosure";
+import SingleEnclosure from "./pages/SingleEnclosure.tsx";
 import { Event, EventInstance } from './api/events.ts';
 import { Animal, Schema } from './api/animals.ts';
 
@@ -162,7 +162,7 @@ const App = () => {
                             <Route path="/enclosures" element={<EnclosureTable farms={farms} cityfarm={cityfarm}/>}/>
                             <Route path="/schemas" element={<Schemas farms={farms} cityfarm={cityfarm}/>}/>
                             <Route path="/help" element={<Help/>}/>
-                            <Route path="/single-enclosure/:enclosureID" element={<SingleEnclosure farms={{farms}} cityfarm={cityfarm}/>}/>
+                            <Route path="/single-enclosure/:enclosureID" element={<SingleEnclosure farms={farms} cityfarm={cityfarm}/>}/>
                             <Route path="/single-animal/:animalID" element={<SingleAnimal farms={farms} cityfarm={cityfarm}/>} />
                             <Route path="*" element={<Error/>}/>
                         </Routes>

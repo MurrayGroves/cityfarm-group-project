@@ -30,7 +30,7 @@ const AssociateAnimal = ({ animals, setAnimals, cityfarm, close}: {animals: Anim
     }
 
     useEffect(() => {
-        setAnimalIDs(animals.map((animal) => animal._id));
+        setAnimalIDs(animals.map((animal) => animal.id));
         console.log('getting animals', animals);
     }, [])
     

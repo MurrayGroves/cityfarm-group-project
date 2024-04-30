@@ -37,7 +37,7 @@ const SingleAnimal = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
     const [children, setChildren] = useState<string[]>(new Array<string>());
     const [eventsAll, setEventAll] = useState(false);
     const [animals, setAnimals] = useState<Animal[]>([]);
-    const [animalEnclosure , setAnimalEnclosure] = useState(null)
+    const [animalEnclosure , setAnimalEnclosure] = useState<Enclosure | null>(null)
     const [allEnclosures,setAllEnclosures] =useState <Enclosure[]>([])
     const [animalMoving,setAnimalMoving] = useState<Animal[]>([])
     const token=getConfig()
@@ -181,13 +181,13 @@ const SingleAnimal = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
         console.log(allEnclosures,chosenAnimal)
         for (const enclosure of allEnclosures){
             for (const an of enclosure.holding){
-                if (chosenAnimal.id === an._id){
+                if (chosenAnimal.id === an.id){
                     setAnimalEnclosure(enclosure)
                 }
             }
         }
 
-        setAnimalMoving([chosenAnimal.id])
+        setAnimalMoving([chosenAnimal])
         console.log(animalMoving)
     }
     const closeEnclosureMove =()=>{
