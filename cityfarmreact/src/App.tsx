@@ -31,6 +31,9 @@ import SingleEnclosure from "./pages/SingleEnclosure";
 import { Event, EventInstance } from './api/events.ts';
 import { Animal, Schema } from './api/animals.ts';
 
+import dayjs from 'dayjs';
+import timezone from 'dayjs/plugin/timezone';
+
 declare module '@mui/material/styles' {
     interface Theme {
         palette: Palette;
@@ -107,6 +110,9 @@ const App = () => {
     const [event_instances_cache, setEventInstancesCache] = useState<EventInstance[]>([]);
 
     useEffect(() => setDevice(getComputedStyle(document.documentElement).getPropertyValue('--device')), [])
+
+    dayjs.extend(timezone);
+    dayjs.tz.setDefault("Europe/London");
 
     const msalConfig = {
         auth: {
