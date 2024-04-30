@@ -74,7 +74,7 @@ const EnclosureTable = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => 
         { field: 'capacities', headerName: 'Capacities', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
     ]
 
-    console.log(enclosureList)
+    //console.log(enclosureList)
 
     const rows = enclosureList.map((enclosure: Enclosure) => ({
         id: enclosure.id,

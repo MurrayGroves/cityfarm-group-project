@@ -28,6 +28,7 @@ const SingleEnclosure = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) =>
   const [selectedAnimals, setSelectedAnimals] = useState<Animal[]>([])
   const [enclosureDelete, setEnclosureDelete] = useState<boolean>(false)
   const [capacitiesWarning, setCapacitiesWarning] = useState<string>('')
+  const [animalsCurrentlySelected, setAnimalsCurrentlySelected] = useState<{ [key: string]: Animal[] }>({});
 
   useEffect(() => {
     (async () => {
@@ -36,7 +37,14 @@ const SingleEnclosure = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) =>
       const enclosures = await cityfarm.getEnclosures(true, null, (enclosures) => setAllEnclosures(enclosures));
       setAllEnclosures(enclosures);
     })();
-  }, [enclosureID])
+
+    const tempAnimalsCurrentlySelected: { [key: string]: Animal[] } = {};
+    for (const type of Object.keys(enclosure.holding)){
+      tempAnimalsCurrentlySelected[type] = [];
+    }
+    setAnimalsCurrentlySelected(tempAnimalsCurrentlySelected);
+  }, [enclosureID]);
+
 
 
   const animalsByType = (type: string)=> {
@@ -49,36 +57,21 @@ const SingleEnclosure = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) =>
     return animals
   }
 
-  const updateSelectedAnimals = (as) => {
-    console.log(as)
+  useEffect(()=>{
 
-      // Merge the newly selected animals with the already selected ones
-     //  const newSelectedAnimals = selectedAnimals;
-    //   ids.forEach((id) => {
-    //     console.log(id)
-    //     // Check if the id is already in the selected list
-    //     const index = newSelectedAnimals.indexOf(id);
-    //     if (index === -1) {
-    //
-    //       // If not, add it to the list
-    //       console.log("ID not found!")
-    //       newSelectedAnimals.push(id);
-    //       console.log("Updated list")
-    //       console.log(newSelectedAnimals)
-    //
-    //     } else {
-    //       console.log("ID found")
-    //       // If yes, remove it from the list (deselect)
-    //       newSelectedAnimals.splice(index, 1);
-    //       console.log("Updated list with remove")
-    //       console.log(newSelectedAnimals)
-    //     }
-    //   });
-    //   setSelectedAnimals(newSelectedAnimals)
-    // console.log(selectedAnimals)
-    // console.log("Function Complete")
-    setSelectedAnimals(as)
-    }
+    // send whole thing into selectedanimals
+    const selectedList = Object.values(animalsCurrentlySelected).flat();
+    setSelectedAnimals(selectedList);
+    },[animalsCurrentlySelected])
+  const updateSelectedAnimals = (as: Animal[], type: string) => {
+    // update by modifying the specific type
+    setAnimalsCurrentlySelected(prevState => ({
+      ...prevState,
+      [type]: as
+    }));
+
+  }
+
 
   const closeEnclosureMove =()=>{
     setAnimalToMove(false)
@@ -124,7 +117,7 @@ const SingleEnclosure = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) =>
                 checkboxSelection
                 onRowSelectionModelChange={(ids) => {
                   const selectedAnimalObjects = rows.filter(row => ids.includes(row.id)).map(row => row.name);
-                  updateSelectedAnimals(selectedAnimalObjects);
+                  updateSelectedAnimals(selectedAnimalObjects,type);
                 }}
               />
             </div>

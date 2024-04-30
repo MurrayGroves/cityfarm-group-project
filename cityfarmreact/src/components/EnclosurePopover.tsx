@@ -21,7 +21,7 @@ const EnclosurePopover = ({ cityfarm, enclosureID }: {cityfarm: CityFarm, enclos
     const open = Boolean(anchorEl);
 
     useEffect(() => {
-        console.log(enclosureID);
+        //console.log(enclosureID);
         enclosureID &&
         (async () => {
             const enclosure = await cityfarm.getEnclosure(enclosureID, true, (enclosure) => setChosenEnclosure(enclosure));

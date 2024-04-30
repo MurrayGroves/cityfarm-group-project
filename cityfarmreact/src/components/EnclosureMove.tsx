@@ -57,7 +57,7 @@ const EnclosureMove = ({cityfarm, excludedEnc, enclosures, animalList, close}: {
                 animalListTypes[animal.type] = 1;
             }
         }
-        console.log(animalListTypes)
+        //console.log(animalListTypes)
         for (const enc of enclosures){
             //console.log(enc)
             let includeFlag = true
@@ -82,7 +82,6 @@ const EnclosureMove = ({cityfarm, excludedEnc, enclosures, animalList, close}: {
         }
         return(
             <div> Moving {name} to one of: <br/>
-                {console.log(filteredEnclosures())}
                 {(filteredEnclosures().length==0 || (filteredEnclosures().length==1 && filteredEnclosures()[0].id ==excludedEnc.id))
                 ? <><WarningAmberIcon/> No enclosures with space available, change selection<br/></>:
                 filteredEnclosures().map((enc) => (
