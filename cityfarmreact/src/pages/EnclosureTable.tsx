@@ -23,6 +23,7 @@ declare module '@mui/x-data-grid' {
         selectedSchema?: Schema;
         setSelectedSchema?: (schema: Schema) => void;
         create?: boolean;
+        handleOpenAnimalsPopup?: () => void;
     }
 }
 
@@ -105,8 +106,7 @@ const EnclosureTable = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => 
                 footer: {
                     setEditMode,
                     setCreate
-                }
-            }}
+                }}}
             style={{fontSize: '1rem'}}
             isCellEditable={() => editMode}
             processRowUpdate = {(newVal, oldVal) => {

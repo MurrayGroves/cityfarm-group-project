@@ -10,41 +10,18 @@ import { CityFarm } from "../api/cityfarm";
 import { Enclosure } from "../api/enclosures";
 import { Schema } from "../api/animals";
 
-const CapacityChanger = ({enclosure, cityfarm, close}: {enclosure: Enclosure, cityfarm: CityFarm, close: () => void}) => {
+const CapacityChanger = ({enclosure, cityfarm}: {enclosure: Enclosure, cityfarm: CityFarm}) => {
     const [linkedCapacities, setLinkedCapacities] = useState<any>([]);
-    const [searchTerm, setSearchTerm] = useState<string>('');
     const [schemaList, setSchemaList] = useState<Schema[]>([]); /* The State for the list of schemas. The initial state is [] */
     const [showErr, setShowErr] = useState<boolean>(false);
-
-    const token = getConfig();
     
-    function displayAll() {
+    useEffect(() => {
         (async () => {
             const schemas = await cityfarm.getSchemas(true, (schemas) => setSchemaList(schemas));
             setSchemaList(schemas);
             setLinkedCapacities(enclosure.capacities);
         })()
-    } 
-    
-    useEffect (() => {
-        (async () => {
-            if (searchTerm === '') {
-                displayAll();
-                return;
-            }
-            try {
-                const response = await axios.get(`/schemas/by_name/${searchTerm}`, token);
-                setSchemaList(response.data.reverse());
-            } catch (error) {
-                if (error.response.status === 401) {
-                    window.location.href = "/login";
-                    return;
-                } else {
-                    window.alert(error);
-                }
-            }
-        })()
-    },[searchTerm])
+    },[])
 
     const rows = schemaList.map((schema) => ({
         id: schema.name,
@@ -58,12 +35,6 @@ const CapacityChanger = ({enclosure, cityfarm, close}: {enclosure: Enclosure, ci
 
     return (
         <div>
-            <TextField
-                size='small'
-                placeholder='Search'
-                style={{margin: '0 20px 20px 0'}}
-                onChange={(e) => setSearchTerm(e.target.value)}
-            />
             <Paper elevation={3} style={{ marginBottom: '20px'}}>
                 <DataGrid
                     autoHeight
@@ -80,8 +51,6 @@ const CapacityChanger = ({enclosure, cityfarm, close}: {enclosure: Enclosure, ci
                     }}
                 />
             </Paper>
-            <Button variant='outlined' style={{float: "right"}} onClick={() => {close()}}>Close</Button>
-            
             <Backdrop style={{zIndex: '4', background: '#000000AA'}} open={showErr} onClick={() => setShowErr(false)}>
                 <Alert severity='warning'>
                     Make sure values are integers

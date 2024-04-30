@@ -4,14 +4,14 @@ import axios from "../api/axiosConfig.js";
 import {getConfig} from "../api/getToken.js";
 import AnimalPopover from "../components/AnimalPopover.tsx";
 import "./SingleEnclosure.css"
-import {Alert, Dialog, DialogContent, DialogTitle, Icon, Paper} from "@mui/material";
+import {Alert, Dialog, DialogContent, DialogTitle, Divider, Icon, Paper} from "@mui/material";
 import AssociateAnimal from "../components/AssociateAnimal.tsx";
 import Button from "@mui/material/Button";
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import EnclosureMove from "../components/EnclosureMove.tsx";
 import IconButton from "@mui/material/IconButton";
-import {DataGrid, GridColDef} from "@mui/x-data-grid";
+import {DataGrid, FooterPropsOverrides, GridColDef, GridSlotsComponentsProps} from "@mui/x-data-grid";
 import {readableFarm} from "./SingleAnimal.tsx";
 import { Enclosure } from "../api/enclosures.ts";
 import { CityFarm } from "../api/cityfarm.ts";
@@ -112,6 +112,14 @@ const SingleEnclosure = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) =>
             <div key={type}>
             <h3 style={{ display: "inline-block" }}>{type}: ({rows.length} / {enclosure.capacities[type]})</h3><br/>
               <DataGrid columns={cols} rows={rows}
+                slots={{
+                    footer: CustomFooter
+                }}
+                slotProps={{
+                    footer: {
+                        handleOpenAnimalsPopup
+                    } as FooterPropsOverrides
+                }}
                 disableRowSelectionOnClick
                 checkboxSelection
                 onRowSelectionModelChange={(ids) => updateSelectedAnimals(ids)}
@@ -169,11 +177,9 @@ const SingleEnclosure = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) =>
   }
   const updateEnclosure = (id: string, enclosure: Enclosure) =>{
     (async() => {
-      try{
-        console.log(enclosure)
-        const response = await axios.patch(`/enclosures/by_id/${id}/update`, enclosure, token)
+      try {
+        const response = await axios.patch(`/enclosures/by_id/${id}/update`, {...enclosure, holding: enclosure.holding.map((animal => animal.id))}, token)
         console.log(response);
-        //window.location.reload(false);
       } catch (error) {
         console.log(error)
         if (error.response.status === 401) {
@@ -187,11 +193,11 @@ const SingleEnclosure = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) =>
   }
 
   function handleEnclosureDeletion() {
-    (async ()=>{
+    (async () => {
       try {
         console.log(enclosure)
-        const req = await axios.delete(`/enclosures/by_id/${enclosure.id}/delete`,token)
-
+        const req = await axios.delete(`/enclosures/by_id/${enclosure.id}/delete`, token)
+        console.log(req);
       } catch (error) {
         if (error.response.status === 401) {
           window.location.href = "/login";
@@ -201,8 +207,7 @@ const SingleEnclosure = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) =>
           window.alert(error);
         }
     }
-    })
-    ()
+    })()
     setEnclosureDelete(false)
     window.location.href="/enclosures";
   }
@@ -210,22 +215,24 @@ const SingleEnclosure = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) =>
 
   return (
   <div className="enclosureView">
-    <h2>{enclosure.name}</h2>
-    <Button color={'warning'} onClick={()=>setEnclosureDelete(true)} variant="outlined" endIcon={<DeleteIcon/>}>Delete Enclosure</Button>
-    <br/>
+    <span style={{display: 'flex'}}>
+      <h2>{enclosure.name}</h2>
+      <IconButton style={{marginLeft: '20px', marginTop: '20px', maxHeight: '40px'}} color={'warning'} onClick={()=>setEnclosureDelete(true)}><DeleteIcon/></IconButton>
+    </span>
     <Dialog open={enclosureDelete} onClose={()=>setEnclosureDelete(false)}>
       <DialogTitle>Delete {enclosure.name}?</DialogTitle>
       <DialogContent>
-        Are you sure you want to delete {enclosure.name}? <br/>
-        <Button color={'warning'} onClick={handleEnclosureDeletion} endIcon={<DeleteIcon/>}>Delete</Button>
-        <Button color={'success'} onClick={()=>setEnclosureDelete(false)}>Cancel</Button>
+        Are you sure you want to delete {enclosure.name}? <br/><br/>
+        <span style={{display: 'flex', justifyContent: 'space-between'}}>
+            <Button variant='contained' color={'warning'} onClick={handleEnclosureDeletion} endIcon={<DeleteIcon/>}>Delete</Button>
+            <Button variant='contained' color={'success'} onClick={()=>setEnclosureDelete(false)}>Cancel</Button>
+        </span>
       </DialogContent>
     </Dialog>
     <b>Farm: </b> {readableFarm(enclosure.farm)}<br/>
     {enclosure.notes !== '' && <b>Notes: </b>} {enclosure.notes}<br/>
-    <h3 style={{ display: "inline-block" }}>Animal Holdings:</h3> <Button onClick={handleOpenAnimalsPopup} variant={"contained"} endIcon={<EditIcon/>}>Edit</Button>
+    <h3 style={{ display: "inline-block" }}>Livestock:</h3>
     <br/>
-
 
     <div id="AssociateAnimal" style={{textAlign:'center'}}>
       <Dialog fullWidth maxWidth='md' open={openAnimalsPopup} onClose={()=>{setOpenAnimalsPopup(false)}}>
@@ -249,7 +256,15 @@ const SingleEnclosure = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) =>
       </Dialog>
   </div>
   )
+}
 
+const CustomFooter = (props: NonNullable<GridSlotsComponentsProps['footer']>) => {
+    return (<>
+        <Divider/>
+        <div style={{maxHeight: '56.5px', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+            <Button sx={{margin: '10px'}} aria-label="edit" onClick={() => props.handleOpenAnimalsPopup()} variant='contained' endIcon={<EditIcon/>}>Edit</Button>
+        </div>
+    </>)
 }
 
 export default SingleEnclosure
