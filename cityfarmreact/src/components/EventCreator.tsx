@@ -57,10 +57,6 @@ export const EventCreator: React.FC<EventCreatorProp> = ({farms, style, cityfarm
         }))
     }, [modify, initialEvent])
 
-    useEffect(() => {
-        console.log("newEvent", newEvent);
-    }, [newEvent])
-
     const token = getConfig();
 
     useEffect(() => {
@@ -203,30 +199,42 @@ export const EventCreator: React.FC<EventCreatorProp> = ({farms, style, cityfarm
     }
 
     function showingTime(isShown) {
+        const startHandler = (e) => {
+            let dstring = "";
+            try {dstring = (e ?? new Date()).toISOString()} catch (_) {dstring = (e ?? "").toString()};
+            if (newEvent instanceof EventRecurring) {
+                setNewEvent(new EventRecurring({...newEvent, firstStart: dstring}))
+            } else if (newEvent instanceof EventOnce) {
+                setNewEvent(new EventRecurring({...newEvent, start: dstring}))
+            } else {
+                throw new Error("Event is not of type EventOnce or EventRecurring")
+            }
+        }
+
+        const endHandler = (e) => {
+            let dstring = "";
+            try {dstring = (e ?? new Date()).toISOString()} catch (_) {dstring = (e ?? "").toString()};
+            if (newEvent instanceof EventRecurring) {
+                setNewEvent(new EventRecurring({...newEvent, firstEnd: dstring}))
+            } else if (newEvent instanceof EventOnce) {
+                setNewEvent(new EventRecurring({...newEvent, end: dstring}))
+            } else {
+                throw new Error("Event is not of type EventOnce or EventRecurring")
+            }
+        }
+
         if (isShown){
             return(<>
                 <FormHelperText>Start</FormHelperText>
                 <DateTimePicker
                     value={newEvent instanceof EventRecurring ? dayjs(newEvent.firstStart) : dayjs((newEvent as EventOnce).start)}
-                    onChange={(e) => {
-                        let dstring = "";
-                        try {dstring = (e ?? new Date()).toISOString()} catch (_) {dstring = (e ?? "").toString()};
-                        return newEvent instanceof EventRecurring ?
-                            setNewEvent(new EventRecurring({...newEvent, firstStart: dstring, firstEnd: newEvent.firstEnd < new Date(dstring) ? dstring : newEvent.firstEnd}))
-                            : setNewEvent(new EventOnce({...newEvent, start: dstring ?? (newEvent as EventOnce).start, end: (newEvent as EventOnce).end < new Date(dstring) ?? (newEvent as EventOnce).end ? dstring : (newEvent as EventOnce).end}))
-                    }}
+                    onChange={startHandler}
                     slotProps={{textField: {fullWidth: true, size: 'small'}}}
                 />
                 <FormHelperText>End</FormHelperText>
                 <DateTimePicker
                     value={newEvent instanceof EventRecurring ? dayjs(newEvent.firstEnd) : dayjs((newEvent as EventOnce).end)}
-                    onChange={(e) => {
-                        let dstring = "";
-                        try {dstring = (e ?? new Date()).toISOString()} catch (_) {dstring = (e ?? "").toString()};
-                        newEvent instanceof EventRecurring ?
-                            setNewEvent(new EventRecurring({...newEvent, firstEnd: dstring, firstStart: new Date(dstring) < newEvent.firstStart ? dstring : newEvent.firstStart}))
-                            : setNewEvent(new EventOnce({...newEvent, end: dstring, start: new Date(dstring) < (newEvent as EventOnce).start ? dstring : (newEvent as EventOnce).start}))
-                    }}
+                    onChange={endHandler}
                     slotProps={{textField: {fullWidth: true, size: 'small'}}}
                 />
             </>)
@@ -235,26 +243,13 @@ export const EventCreator: React.FC<EventCreatorProp> = ({farms, style, cityfarm
                 <FormHelperText>Start</FormHelperText>
                 <DatePicker
                     value={newEvent instanceof EventRecurring ? dayjs(newEvent.firstStart) : dayjs((newEvent as EventOnce).start)}
-                    onChange={(e) => {
-                        console.log('date changed');
-                        let dstring = "";
-                        try {dstring = (e ?? new Date()).toISOString()} catch (_) {dstring = (e ?? "").toString()};
-                        newEvent instanceof EventRecurring ?
-                            setNewEvent(new EventRecurring({...newEvent, firstStart: dstring, firstEnd: newEvent.firstEnd < new Date(dstring) ? dstring : newEvent.firstEnd}))
-                            : setNewEvent(new EventOnce({...newEvent, start: dstring, end: (newEvent as EventOnce).end < new Date(dstring) ? dstring : (newEvent as EventOnce).end}))
-                    }}
+                    onChange={startHandler}
                     slotProps={{textField: {fullWidth: true, size: 'small'}}}
                 />
                 <FormHelperText>End</FormHelperText>
                 <DatePicker
                     value={newEvent instanceof EventRecurring ? dayjs(newEvent.firstEnd) : dayjs((newEvent as EventOnce).end)}
-                    onChange={(e) => {
-                        let dstring = "";
-                        try {dstring = (e ?? new Date()).toISOString()} catch (_) {dstring = (e ?? "").toString()};
-                        newEvent instanceof EventRecurring ?
-                            setNewEvent(new EventRecurring({...newEvent, firstEnd: dstring, firstStart: new Date(dstring) < newEvent.firstStart ? dstring : newEvent.firstStart}))
-                            : setNewEvent(new EventOnce({...newEvent, end: dstring, start: new Date(dstring) < (newEvent as EventOnce).start ? dstring : (newEvent as EventOnce).start}))
-                    }}
+                    onChange={endHandler}
                     slotProps={{textField: {fullWidth: true, size: 'small'}}}
                 />
             </>)
