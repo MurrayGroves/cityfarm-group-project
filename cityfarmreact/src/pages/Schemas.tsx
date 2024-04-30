@@ -20,6 +20,11 @@ import TextField from '@mui/material/TextField';
 import { Schema } from '../api/animals.ts';
 import { CityFarm } from "../api/cityfarm.ts";
 import { getConfig } from '../api/getToken';
+import Popover from '@mui/material/Popover';
+import Typography from '@mui/material/Typography';
+import {Link} from "react-router-dom";
+import { Help } from '@mui/icons-material';
+import { useTheme } from '@mui/material/styles';
 
 const classToReadable = {
     "java.lang.Boolean": "Yes/No",
@@ -35,8 +40,29 @@ const Schemas = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
     const [newFields, setNewFields] = useState<any>([{"name": "", "type": "", "required": ""}])
     const [newSchemaName, setNewSchemaName] = useState<string>("");
     const [showErr, setShowErr] = useState<boolean>(false);
+    const colour = useTheme().palette.mode === 'light' ? 'black' : 'white';
+    const [anchorE2, setAnchorE2] = useState(null);
+    const open2 = Boolean(anchorE2);
+
+    const handlePopoverOpen2 = (e) => {
+        setAnchorE2(e.currentTarget);
+    };
+
+    const handlePopoverClose2 = () => {
+        setAnchorE2(null);
+    };
 
     const token = getConfig();
+    const [anchorEl, setAnchorEl] = useState(null);
+    const open = Boolean(anchorEl);
+
+    const handlePopoverOpen = (e) => {
+        setAnchorEl(e.currentTarget);
+    };
+
+    const handlePopoverClose = () => {
+        setAnchorEl(null);
+    };
 
     const [inputErr, setInputErr] = useState({});
 
@@ -146,6 +172,41 @@ const Schemas = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
                         <TableCell width='30%'>Data Type</TableCell>
                         <TableCell width='30%'>Required</TableCell>
                         <TableCell width='10%'/>
+            <div style={{top: '15px', right:'20px', position: "relative"}}>
+            <Link to="/help">
+            <Typography
+                aria-owns={open ? 'mouse-over-popover' : undefined}
+                aria-haspopup="true"
+                onMouseEnter={handlePopoverOpen}
+                onMouseLeave={handlePopoverClose}
+                style={{display: 'inline-block', margin: '2.5px 0'}}
+            >
+                <Help/>
+            </Typography>
+            <Popover
+                id="mouse-over-popover"
+                sx={{pointerEvents: 'none'}}
+                open={open}
+                anchorEl={anchorEl}
+                anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'left',
+                }}
+                transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'left',
+                }}
+                onClose={handlePopoverClose}
+                disableRestoreFocus
+            >
+                <Typography sx={{ p: 1, whiteSpace: 'pre-line' }} maxHeight={400} maxWidth={500}>
+                    A property of an animal type is any information you'd like to track for all animals of that type E.g. Whether the animal has been vaccinated for tb. <br/>
+                    You specify whether the information is a date, number, text, yes/no, or an event associated with that animal type.<br/> 
+                    Required toggles whether the piece of information is mandoratory for all animals of that type.
+                </Typography>
+            </Popover>
+        </Link>
+        </div>
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -224,8 +285,40 @@ const Schemas = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
             </Table>
         </TableContainer>
         </Paper>
-
         <h2>Existing Animal Types</h2>
+        <div style={{ marginRight:"20px" , float: "right"}}>
+            <Link to="/help">
+            <Typography
+                aria-owns={open ? 'mouse-over-popover' : undefined}
+                aria-haspopup="true"
+                onMouseEnter={handlePopoverOpen2}
+                onMouseLeave={handlePopoverClose2}
+                style={{display: 'inline-block', margin: '2.5px 0'}}
+            >
+                <Help/>
+            </Typography>
+            <Popover
+                id="mouse-over-popover"
+                sx={{pointerEvents: 'none'}}
+                open={open2}
+                anchorEl={anchorE2}
+                anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'left',
+                }}
+                transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'left',
+                }}
+                onClose={handlePopoverClose2}
+                disableRestoreFocus
+            >
+                <Typography sx={{ p: 1, whiteSpace: 'pre-line' }} maxHeight={400} maxWidth={500}>
+                    Listed below are all the animal types that have been created. You can use the search bar to find one by name. 
+                </Typography>
+            </Popover>
+        </Link>
+        </div>
 
         <TextField style={{margin: '10px 0 20px 0'}} placeholder="Search" value={searchTerm} size="small"
             onChange={(e) => {
