@@ -181,10 +181,15 @@ export const EventCreator: React.FC<EventCreatorProp> = ({ farms, style, cityfar
         }
 
         console.log("new", newEvent);
+        let event = {...newEvent};
+        if ((event as EventRecurring).firstStart && event instanceof EventOnce) {
+            event.start = event.firstStart;
+            event.end = event.firstEnd;
+        }
 
         try {
-            const response = recurring ? await axios.post(`/events/create/recurring`, {...newEvent as EventRecurring, animals: newEvent.animals.map(animal => animal.id), enclosures: newEvent.enclosures.map(enclosure => enclosure.id)}, token)
-                      : await axios.post(`/events/create/once`, {...newEvent as EventOnce, animals: newEvent.animals.map(animal => animal.id), enclosures: newEvent.enclosures.map(enclosure => enclosure.id)}, token)
+            const response = recurring ? await axios.post(`/events/create/recurring`, {...event as EventRecurring, animals: newEvent.animals.map(animal => animal.id), enclosures: newEvent.enclosures.map(enclosure => enclosure.id)}, token)
+                      : await axios.post(`/events/create/once`, {...event as EventOnce, animals: newEvent.animals.map(animal => animal.id), enclosures: newEvent.enclosures.map(enclosure => enclosure.id)}, token)
 
             setEvent(response.data._id);
             // Update internal events cache
@@ -216,9 +221,10 @@ export const EventCreator: React.FC<EventCreatorProp> = ({ farms, style, cityfar
             let dstring = "";
             try { dstring = (e ?? new Date()).toISOString() } catch (_) { dstring = (e ?? "").toString() };
             if (newEvent instanceof EventRecurring) {
+                console.debug("Is eventrecurring")
                 setNewEvent(new EventRecurring({ ...newEvent, firstStart: dstring }))
             } else if (newEvent instanceof EventOnce) {
-                setNewEvent(new EventRecurring({ ...newEvent, start: dstring }))
+                setNewEvent(new EventOnce({ ...newEvent, start: dstring }))
             } else {
                 throw new Error("Event is not of type EventOnce or EventRecurring")
             }
@@ -230,7 +236,7 @@ export const EventCreator: React.FC<EventCreatorProp> = ({ farms, style, cityfar
             if (newEvent instanceof EventRecurring) {
                 setNewEvent(new EventRecurring({ ...newEvent, firstEnd: dstring }))
             } else if (newEvent instanceof EventOnce) {
-                setNewEvent(new EventRecurring({ ...newEvent, end: dstring }))
+                setNewEvent(new EventOnce({ ...newEvent, end: dstring }))
             } else {
                 throw new Error("Event is not of type EventOnce or EventRecurring")
             }
@@ -274,19 +280,7 @@ export const EventCreator: React.FC<EventCreatorProp> = ({ farms, style, cityfar
         }
     }
 
-    const textFieldTheme = () => createTheme({
-        components: {
-            MuiFormHelperText: {
-                styleOverrides: {
-                    root: {
-                        marginLeft: '5%',
-                    }
-                }
-            },
-        }
-    })
-
-    const handlePatchEvent = async () => {
+    const handlePatchEvent = async() => {
         if (newEvent === null) {
             return;
         }
@@ -295,6 +289,11 @@ export const EventCreator: React.FC<EventCreatorProp> = ({ farms, style, cityfar
         event.animals = event.animals.map((animal) => animal.id);
         event.enclosures = event.enclosures.map((enclosure) => enclosure.id);
         console.log("patching event", newEvent);
+
+        if ((event as EventRecurring).firstStart && event instanceof EventOnce) {
+            event.start = event.firstStart;
+            event.end = event.firstEnd;
+        }
 
         try {
             if (newEvent instanceof EventOnce) {
@@ -352,10 +351,9 @@ export const EventCreator: React.FC<EventCreatorProp> = ({ farms, style, cityfar
                 </FormGroup>
             </div>
             <div className='smallMarginTop'>
-                <ThemeProvider theme={textFieldTheme()}>
-                    <div style={{ display: "flex", alignItems: 'center', width: '100%' }}>
-                        <FormControlLabel style={{ flex: '0.01', marginRight: '0' }} label="Repeats" control={<Checkbox checked={recurring ?? false} size='small' />} onChange={() => setRecurring(!recurring)} />
-                        <p style={{ margin: '1%', flex: '0.5', visibility: recurring ? 'visible' : 'hidden' }}>every</p>
+                    <div style={{display: "flex", alignItems: 'center', width: '100%'}}>
+                        <FormControlLabel style={{flex: '0.01', marginRight: '0', marginBottom: '20px'}} label="Repeat" control={<Checkbox checked={recurring ?? false} size='small'/>} onChange={() => setRecurring(!recurring)} />
+                        <p style={{margin: '0 10px 20px 1%', marginBottom: '20px', flex: '0.5', visibility: recurring ? 'visible': 'hidden'}}>every</p>
 
                         <TextField type="number" onFocus={(e) => e.target.addEventListener("wheel", function (e) { e.preventDefault() }, { passive: false })}
                             helperText="Years" style={{ flex: '1', visibility: recurring ? 'visible' : 'hidden', marginRight: '1%' }}
@@ -398,7 +396,6 @@ export const EventCreator: React.FC<EventCreatorProp> = ({ farms, style, cityfar
                             size='small'
                         />
                     </div>
-                </ThemeProvider>
             </div>
             <div className='smallMarginTop'>
                 <h3>Farms</h3>

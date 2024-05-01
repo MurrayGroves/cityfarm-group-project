@@ -2,6 +2,7 @@ import React, {useEffect, useState} from "react";
 import axios from "../api/axiosConfig.js";
 import TextField from '@mui/material/TextField';
 import "../pages/AnimalTable.css";
+import { Link } from 'react-router-dom';
 import FarmTabs from "../components/FarmTabs.tsx";
 import { Paper, Divider } from '@mui/material';
 import { DataGrid, GridColDef, GridPagination, GridSlotsComponentsProps } from "@mui/x-data-grid";
@@ -66,7 +67,7 @@ const EnclosureTable = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => 
 
     const cols: GridColDef[] = [
         { field: 'name', editable: true, headerName: 'Name', headerClassName: 'grid-header', headerAlign: 'left', flex: 1,
-            renderCell: (enclosure) => <EnclosurePopover cityfarm={cityfarm} enclosureID={enclosure.value.id} />
+            renderCell: (enclosure) => <Link to={`/single-enclosure/${enclosure.value.id}`}> {enclosure.value.name} </Link>
         },
         { field: 'holding', headerName: 'Holding', headerClassName: 'grid-header', headerAlign: 'left', flex: 1, cellClassName: 'scroll-cell',
             renderCell: (animalList) => <ul>{animalList.value.map(animal => {return(<li key={animal.id}><AnimalPopover cityfarm={cityfarm} animalID={animal.id}/></li>)})}</ul>
