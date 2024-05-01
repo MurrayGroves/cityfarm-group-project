@@ -10,7 +10,6 @@ import { Help } from '@mui/icons-material';
 import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
 import {Button} from "@mui/material";
-import { useTheme } from '@mui/material/styles';
 import { getConfig } from '../api/getToken.js';
 import { Animal, Sex } from "../api/animals.ts";
 import { CityFarm } from "../api/cityfarm.ts";
@@ -19,15 +18,9 @@ const AssociateAnimal = ({ animals, setAnimals, cityfarm, close}: {animals: Anim
     const [animalIDs, setAnimalIDs] = useState<GridRowSelectionModel>([]);
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [animalList, setAnimalList] = useState<Animal[]>([]);
-    const colour = useTheme().palette.mode === 'light' ? 'black' : 'white';
 
     const token = getConfig();
 
-    /*
-    
-    ADJUST TO USE CONFIRM BUTTON SO IT DOESN'T REMOVE ANIMALS WHEN THEY DON'T APPEAR IN SEARCH RESULTS
-
-    */
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
 
@@ -80,7 +73,7 @@ const AssociateAnimal = ({ animals, setAnimals, cityfarm, close}: {animals: Anim
     const rows = animalList.map((animal: Animal) => ({
         id: animal.id,
         name: animal,
-        type: <ul>animal.type</ul>,
+        type: animal.type,
         sex: animal.sex === Sex.Female ? 'Female' : animal.sex === Sex.Male ? 'Male' : 'Castrated',
     }));
     const cols: GridColDef[] = [
