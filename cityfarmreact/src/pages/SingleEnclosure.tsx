@@ -65,8 +65,16 @@ const SingleEnclosure = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) =>
 
   useEffect(()=>{
     if(!openCapacitiesPopup){
-      updateEnclosure(enclosure.id, new Enclosure({name: enclosure.name, holding: enclosure.holding,
-        capacities: enclosure.capacities, notes: enclosure.notes, farm: enclosure.farm}));
+      const badCapacity = setEnclosureNewAnimals(enclosure.holding);
+      if(badCapacity != null){
+        let typeTotal = 0
+        for (const animal of enclosure.holding){
+          if(animal.type===badCapacity){
+            typeTotal+=1
+          }
+        }
+        enclosure.capacities[badCapacity] = typeTotal
+      }
     }
   },[openCapacitiesPopup])
 
@@ -192,14 +200,13 @@ const SingleEnclosure = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) =>
       }
       if (typeTotal>type[1]){
         setCapacitiesWarning(
-            `There are too many ${type[0]}(s) in this enclosure, you need to assign less`
+            `There are too many ${type[0]}(s) in this enclosure, you need to assign less or change capacities`
         )
-        return
+        return type[0]
       }
     }
     updateEnclosure(enclosure.id, new Enclosure({name: enclosure.name, holding: animalList,
           capacities: enclosure.capacities, notes: enclosure.notes, farm: enclosure.farm}))
-    window.location.reload()
   }
 
   const handleOpenAnimalsPopup = () => {
@@ -278,7 +285,7 @@ const SingleEnclosure = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) =>
       <Dialog fullWidth maxWidth='md' open={openAnimalsPopup} onClose={()=>{setOpenAnimalsPopup(false)}}>
         <DialogTitle>Change Animals</DialogTitle>
         <DialogContent>
-          <AssociateAnimal cityfarm={cityfarm} setAnimals={setEnclosureNewAnimals} animals={enclosure.holding} close={()=>{setOpenAnimalsPopup(false)}}></AssociateAnimal>
+          <AssociateAnimal cityfarm={cityfarm} setAnimals={setEnclosureNewAnimals} animals={enclosure.holding} close={()=>{setOpenAnimalsPopup(false); window.location.reload()}}></AssociateAnimal>
         </DialogContent>
       </Dialog>
     </div>
@@ -304,7 +311,7 @@ const SingleEnclosure = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) =>
 
       </div>
       <Dialog open={capacitiesWarning !==''} onClose={()=>{setCapacitiesWarning('')}}>
-        <DialogTitle>Capacity issue for enclosure movement</DialogTitle>
+        <DialogTitle>Capacity issue</DialogTitle>
           <DialogContent >
             <Alert severity={'warning'}>
               {capacitiesWarning}
