@@ -21,6 +21,7 @@ import EnclosurePopover from "../components/EnclosurePopover.tsx";
 import CapacityChanger from "../components/CapacityChanger.tsx";
 import { IndividualEvent } from "../components/IndividualEvent.tsx";
 import Masonry from '@mui/lab/Masonry';
+import SelectedEvent from "../components/SelectedEvent.tsx";
 
 const SingleEnclosure = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
   const token = getConfig();
