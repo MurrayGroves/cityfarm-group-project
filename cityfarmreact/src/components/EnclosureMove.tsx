@@ -1,4 +1,4 @@
-import {Alert, Dialog, DialogContent, DialogTitle, Paper} from "@mui/material";
+import {Alert, Dialog, DialogContent, DialogTitle, IconButton, Paper} from "@mui/material";
 import React, {ReactNode, useEffect, useState} from "react";
 import AnimalPopover from "./AnimalPopover.tsx";
 import Button from "@mui/material/Button";
@@ -10,12 +10,17 @@ import {getConfig} from "../api/getToken.js";
 import { CityFarm } from "../api/cityfarm.ts";
 import { Enclosure } from "../api/enclosures.ts";
 import { Animal } from "../api/animals.ts";
+import { Close } from "@mui/icons-material";
 
 const EnclosureMove = ({cityfarm, excludedEnc, enclosures, animalList, close}: {cityfarm: CityFarm, excludedEnc: Enclosure | null, enclosures: Enclosure[], animalList: Animal[], close: () => void})=>{
     //animal list, excluded enclosure,cityfarm
 
     const token = getConfig()
     const [capacitiesWarning, setCapacitiesWarning] = useState('')
+
+    useEffect(() => {
+        console.log(animalList);
+    }, [animalList])
 
     /*
     useEffect(
@@ -64,7 +69,7 @@ const EnclosureMove = ({cityfarm, excludedEnc, enclosures, animalList, close}: {
             for (const entry of Object.entries(animalListTypes)){
                //console.log(val)
                //console.log(enc.capacities[val[0]])
-                if (enc.capacities[entry[0]] <= entry[1] || enc.capacities[entry[0]] === undefined){
+                if (enc.capacities[entry[0]] < enc.holding.length + entry[1] || enc.capacities[entry[0]] === undefined) {
                     includeFlag = false
                 }
             }
@@ -76,35 +81,35 @@ const EnclosureMove = ({cityfarm, excludedEnc, enclosures, animalList, close}: {
     }
 
     const enclosureMove = (animalList: Animal[]) =>{
-        let name: string | ReactNode = 'animal group'
+        let name: string = 'livestock'
         if (animalList.length === 1) {
-            name = <AnimalPopover key={animalList[0].id} animalID={animalList[0].id} cityfarm={cityfarm}/>
+            name = animalList[0].name;
         }
         return(
-            <div> Moving {name} to one of: <br/>
-                {(filteredEnclosures().length==0 || (filteredEnclosures().length==1 && filteredEnclosures()[0].id ==excludedEnc.id))
-                ? <><WarningAmberIcon/> No enclosures with space available, change selection<br/></>:
-                filteredEnclosures().map((enc) => (
+            <div> Move {name} to one of: <br/>
+                {(filteredEnclosures().length == 0 || (filteredEnclosures().length == 1 && filteredEnclosures()[0].id == excludedEnc?.id))
+                ? <><WarningAmberIcon sx={{position: 'relative', top: '3px'}} color="warning" fontSize="small" /> No enclosures with space available.<br/></>
+                : filteredEnclosures().map((enc) => (
                     enc.id !== excludedEnc?.id ? (
-                        <Button key={enc.id} onClick={() => {animalTo(enc);window.location.reload();}}>
+                        <Button key={enc.id} onClick={() => {animalTo(enc)}}>
                             {enc.name}<br/>
                         </Button>
                     ) : (
                         <React.Fragment key={enc.id} />
                     )
                 ))}
-                <Button startIcon={<DeleteIcon />} onClick={()=> close()}/>
+                <br/>
+                <IconButton style={{position: 'relative', left: '80%'}} onClick={()=> close()}><Close/></IconButton>
             </div>
         )
     }
 
-    const animalTo = (enc: Enclosure) =>{
+    const animalTo = (enc: Enclosure) => {
         (async () => {
             for (const animal of animalList) {
                 try {
-                    const req = await axios.patch(`/enclosures/moveanimal`, [animal.id, enc.id, excludedEnc?.id], token)
+                    const response = await axios.patch(`/enclosures/moveanimal`, [animal.id, enc.id, excludedEnc?.id], token)
                     // console.log(req);
-                    //window.location.reload(false);
                 } catch (error) {
                     if (error.response.status === 401) {
                         window.location.href = "/login";
@@ -115,18 +120,19 @@ const EnclosureMove = ({cityfarm, excludedEnc, enclosures, animalList, close}: {
                     }
                 }
             }
+            window.location.reload();
         })();
     }
 
     return (
         <div>
-            <div className={`moveContent ${animalList.length>0 ? 'moveVisible' : 'moveHidden'}`}>
+            <div className={`moveContent ${animalList.length > 0 ? 'moveVisible' : 'moveHidden'}`}>
                 <Paper elevation={3} className={'movePaper'}>
                     {enclosureMove(animalList)}
                 </Paper>
             </div>
             <div>
-                <Dialog open={capacitiesWarning !==''} onClose={()=>{setCapacitiesWarning('')}}>
+                <Dialog open={capacitiesWarning !== ''} onClose={()=>{setCapacitiesWarning('')}}>
                     <DialogTitle>Capacity issue for enclosure movement</DialogTitle>
                     <DialogContent >
                         <Alert severity={'warning'}>

@@ -32,6 +32,8 @@ import { Event, EventInstance } from './api/events.ts';
 import { Animal, Schema } from './api/animals.ts';
 import { Enclosure } from './api/enclosures.ts';
 
+import dayjs from 'dayjs';
+
 declare module '@mui/material/styles' {
     interface Theme {
         palette: Palette;

@@ -32,7 +32,6 @@ public class AnimalSchema {
     @NonNull
     private final Map<String, SchemaValue> fields;
 
-    @NonNull
     private boolean hidden;
 
     @JsonCreator

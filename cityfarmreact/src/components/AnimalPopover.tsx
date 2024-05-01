@@ -86,7 +86,8 @@ const AnimalPopover = ({cityfarm, animalID}: {cityfarm: CityFarm, animalID: stri
                     {`Type: ${chosenAnimal.type ? chosenAnimal.type : 'Loading...'}`}<br/>
                     {`Father: ${animalFather}`}<br/>
                     {`Mother: ${animalMother}`}<br/>
-                    {`Sex: ${chosenAnimal.sex === Sex.Female ? 'Female' : (chosenAnimal.sex === Sex.Male ? 'Male' : 'Castrated')}`}
+                    {`Sex: ${chosenAnimal.sex === Sex.Female ? 'Female' : (chosenAnimal.sex === Sex.Male ? 'Male' : 'Castrated')}`} <br/><br/>
+                    <b>{`Click name for more info`}</b>
                 </Typography>
             </Popover>
         </div>

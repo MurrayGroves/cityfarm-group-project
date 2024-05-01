@@ -4,6 +4,9 @@ import java.time.Period;
 import java.time.ZonedDateTime;
 import java.util.List;
 
+import cityfarm.api.animals.AnimalCustom;
+import cityfarm.api.enclosure.Enclosure;
+
 public class CreateEventRecurringRequest {
     public List<String> enclosures;
 

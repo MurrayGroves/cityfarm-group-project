@@ -27,7 +27,6 @@ const SingleEnclosure = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) =>
   const [animalTypes, setAnimalTypes] = useState<string[]>(new Array<string>())
   const [openAnimalsPopup, setOpenAnimalsPopup] = useState<boolean>(false)
   const [allEnclosures, setAllEnclosures] = useState<Enclosure[]>([])
-  const [animalToMove, setAnimalToMove] = useState<boolean>(false)
   const [selectedAnimals, setSelectedAnimals] = useState<Animal[]>([])
   const [enclosureDelete, setEnclosureDelete] = useState<boolean>(false)
   const [capacitiesWarning, setCapacitiesWarning] = useState<string>('')
@@ -92,15 +91,15 @@ const SingleEnclosure = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) =>
     }));
   }
 
-  const closeEnclosureMove =()=>{
-    setAnimalToMove(false)
+
+  const closeEnclosureMove = () => {
     setSelectedAnimals([])
   }
 
   const cols: GridColDef [] = [
     {field: 'name', headerName: 'Name', headerClassName: 'grid-header', headerAlign: 'left', flex: 1,
     renderCell: (animal) => (<AnimalPopover cityfarm={cityfarm} key={animal.value.id} animalID={animal.value.id}/>)},
-    { field: 'move', headerName: '', headerClassName: 'grid-header', headerAlign: 'left', flex: 1,
+    { field: 'move', headerName: '', headerClassName: 'grid-header', headerAlign: 'left', width: 85,
     renderCell:(animal)=>(<Button onClick={() => setSelectedAnimals([animal.value])}>Move</Button>)}
   ]
 
@@ -135,7 +134,7 @@ const SingleEnclosure = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) =>
                 checkboxSelection
                 onRowSelectionModelChange={(ids) => {
                   const selectedAnimalObjects = rows.filter(row => ids.includes(row.id)).map(row => row.name);
-                  updateSelectedAnimals(selectedAnimalObjects,type);
+                  updateSelectedAnimals(selectedAnimalObjects, type);
                 }}
               />
             </div>
@@ -212,6 +211,7 @@ const SingleEnclosure = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) =>
   const handleOpenAnimalsPopup = () => {
     setOpenAnimalsPopup(!openAnimalsPopup);
   }
+
   const updateEnclosure = (id: string, enclosure: Enclosure) =>{
     (async() => {
       try {
@@ -293,6 +293,7 @@ const SingleEnclosure = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) =>
     {holdings()}
     <EnclosureMove cityfarm={cityfarm} excludedEnc={enclosure}
                    enclosures={allEnclosures} animalList={selectedAnimals} close={closeEnclosureMove} />
+
     <div>
           {relEvents.length !== 0 ? <h2 onClick={()=>setEventAll(!eventsAll)}>Linked Event, click for {!eventsAll ? 'more' : 'less'}</h2> : <></>}
               <Grid container spacing={3} columns={{xs: 1, md: 2, lg: 3, xl: 4}}>
@@ -310,6 +311,7 @@ const SingleEnclosure = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) =>
               </Grid>
 
       </div>
+
       <Dialog open={capacitiesWarning !==''} onClose={()=>{setCapacitiesWarning('')}}>
         <DialogTitle>Capacity issue</DialogTitle>
           <DialogContent >
