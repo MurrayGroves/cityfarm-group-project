@@ -37,7 +37,6 @@ const SingleAnimal = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
     const [selectedEvent, setSelectedEvent] = useState<Event>();
     const [schema, setSchema] = useState<Schema>();
     const [children, setChildren] = useState<string[]>(new Array<string>());
-    const [eventsAll, setEventAll] = useState(false);
     const [animals, setAnimals] = useState<Animal[]>([]);
     const [animalEnclosure , setAnimalEnclosure] = useState<Enclosure | null>(null)
     const [allEnclosures,setAllEnclosures] =useState <Enclosure[]>([])
