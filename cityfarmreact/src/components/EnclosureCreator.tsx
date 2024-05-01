@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from "../api/axiosConfig";
+import axios from "../api/axiosConfig.js";
 import './AnimalCreator.css';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -8,40 +8,36 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import { IconButton, Select } from "@mui/material";
 import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
 import Button from '@mui/material/Button';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import TextField from '@mui/material/TextField';
-import Autocomplete from '@mui/material/Autocomplete';
-import { getConfig } from '../api/getToken';
+import { getConfig } from '../api/getToken.js';
 
-import AssociateAnimal from '../components/AssociateAnimal.tsx';
-import CapacityChanger from '../components/CapacityChanger';
-import { Unstable_Popup as BasePopup } from '@mui/base/Unstable_Popup';
-import { styled } from '@mui/system';
-import { DialogActions, DialogContent, DialogContentText, DialogTitle, Dialog, Backdrop, Alert } from "@mui/material";
-
+import AssociateAnimal from './AssociateAnimal.tsx';
+import CapacityChanger from './CapacityChanger.tsx';
+import { DialogContent, DialogTitle, Dialog, Backdrop, Alert } from "@mui/material";
+import { Enclosure } from '../api/enclosures.ts';
+import { Animal } from '../api/animals.ts';
 
 const EnclosureCreator = ({ setCreateProp, cityfarm, farms}) => {
-    const [newEnclosure, setNewEnclosure] = useState({name: '', holding: [], capacities: {}, notes: '', farm: ''});
-    const [openAnimalsPopup ,setOpenAnimalsPopup] = useState(false)
-    const [openCapacitiesPopup ,setOpenCapacitiesPopup] = useState(false)
+    const [newEnclosure, setNewEnclosure] = useState<Enclosure>(new Enclosure({name: '', holding: [], capacities: {}, notes: '', farm: ''}));
+    const [openAnimalsPopup, setOpenAnimalsPopup] = useState<boolean>(false)
+    const [openCapacitiesPopup, setOpenCapacitiesPopup] = useState<boolean>(false)
     const [inputErr, setInputErr] = useState({});
     const [showErr, setShowErr] = useState(false);
 
     const token = getConfig();
 
-    const setNewEnclosureAnimals = (animalList) => {
+    const setNewEnclosureAnimals = (animalList: Animal[]) => {
         console.log(animalList);
         setNewEnclosure({...newEnclosure, holding: animalList})
     }
 
     const reset = () => {
         setCreateProp(false);
-        setNewEnclosure({name: '', holding: [], capacities: {}, notes: '', farm: ''});
+        setNewEnclosure(new Enclosure({name: '', holding: [], capacities: {}, notes: '', farm: ''}))
         setInputErr(new Object);
     }
 
@@ -122,7 +118,7 @@ const EnclosureCreator = ({ setCreateProp, cityfarm, farms}) => {
                                 window.alert(error);
                             }
                         }
-                        window.location.reload(false);
+                        window.location.reload();
                     })()
                 }}
             >Create</Button>
@@ -140,9 +136,9 @@ const EnclosureCreator = ({ setCreateProp, cityfarm, farms}) => {
 
             <div id="CapacityChanger" style={{textAlign:'center'}}>
                 <Dialog open={openCapacitiesPopup} onClose={()=>{setOpenCapacitiesPopup(false)}}>
-                    <DialogTitle>Capacities</DialogTitle>
+                    <DialogTitle><span style={{display: 'flex', justifyContent: 'space-between'}}>Capacities<Button variant='outlined' onClick={() => setOpenCapacitiesPopup(false)}>Close</Button></span></DialogTitle>
                     <DialogContent>
-                        <CapacityChanger close={()=>setOpenCapacitiesPopup(false)} enclosure={newEnclosure}></CapacityChanger>
+                        <CapacityChanger enclosure={newEnclosure} cityfarm={cityfarm}/>
                     </DialogContent>
                 </Dialog>
             </div>

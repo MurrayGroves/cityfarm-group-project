@@ -8,11 +8,12 @@ import { DataGrid, GridColDef, GridPagination, GridSlotsComponentsProps } from "
 import { Edit, Add } from '@mui/icons-material';
 import Button from '@mui/material/Button';
 import AnimalPopover from "../components/AnimalPopover.tsx";
-import EnclosureCreator from "../components/EnclosureCreator.jsx";
+import EnclosureCreator from "../components/EnclosureCreator.tsx";
 import { getConfig } from '../api/getToken.js';
 import { Schema } from '../api/animals.ts';
 import EnclosurePopover from "../components/EnclosurePopover.tsx";
 import { Enclosure } from "../api/enclosures.ts";
+import { CityFarm } from "../api/cityfarm.ts";
 
 declare module '@mui/x-data-grid' {
     interface FooterPropsOverrides {
@@ -22,10 +23,11 @@ declare module '@mui/x-data-grid' {
         selectedSchema?: Schema;
         setSelectedSchema?: (schema: Schema) => void;
         create?: boolean;
+        handleOpenAnimalsPopup?: () => void;
     }
 }
 
-const EnclosureTable = ({farms, cityfarm}) => {
+const EnclosureTable = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
     const [enclosureList, setEnclosureList] = useState<Enclosure[]>([]); /* The State for the list of enclosures. The initial state is [] */
     const [searchTerm, setSearchTerm] = useState<string>(''); /* The term being search for in the searchbar */
     const [editMode, setEditMode] = useState<boolean>(false); /* Whether edit mode is on. Initial state is false */
@@ -37,17 +39,8 @@ const EnclosureTable = ({farms, cityfarm}) => {
 
     function displayAll() {
         (async () => {
-            try {
-                const response = await axios.get(`/enclosures`, {params: {farm: farm}, ...token});
-                setEnclosureList(response.data.map((enclosure) => new Enclosure(enclosure)));
-            } catch (error) {
-                if (error.response.status === 401) {
-                    window.location.href = "/login";
-                    return;
-                } else {
-                    window.alert(error);
-                }
-            }
+            const enclosures = await cityfarm.getEnclosures(true, farm, (enclosures) => setEnclosureList(enclosures));
+            setEnclosureList(enclosures);
         })()
     }
 
@@ -81,7 +74,7 @@ const EnclosureTable = ({farms, cityfarm}) => {
         { field: 'capacities', headerName: 'Capacities', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
     ]
 
-    console.log(enclosureList)
+    //console.log(enclosureList)
 
     const rows = enclosureList.map((enclosure: Enclosure) => ({
         id: enclosure.id,
@@ -113,8 +106,7 @@ const EnclosureTable = ({farms, cityfarm}) => {
                 footer: {
                     setEditMode,
                     setCreate
-                }
-            }}
+                }}}
             style={{fontSize: '1rem'}}
             isCellEditable={() => editMode}
             processRowUpdate = {(newVal, oldVal) => {

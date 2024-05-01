@@ -6,7 +6,7 @@ import { IconButton } from '@mui/material';
 import { EventCreator } from './EventCreator.tsx';
 import { EventInstance, Event, EventRecurring, EventOnce } from '../api/events.ts';
 import { CityFarm } from '../api/cityfarm.ts';
-import Enclosure from './EnclosurePopover.tsx';
+import EnclosurePopover from './EnclosurePopover.tsx';
 
 
 const EventDisplay = ({
@@ -56,7 +56,7 @@ const EventDisplay = ({
                             <h3>Enclosures</h3>
                             {selectedEvent.event.enclosures.map((enclosure, index) => {
                                 return (
-                                    <Enclosure cityfarm={cityfarm} key={index} enclosureID={enclosure.id}/>
+                                    <EnclosurePopover cityfarm={cityfarm} key={index} enclosureID={enclosure.id}/>
                                 )
                             })}
                         </div>}

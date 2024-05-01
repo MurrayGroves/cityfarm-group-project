@@ -4,6 +4,7 @@ import { EventOnce, EventRecurring, Event, EventInstance } from './events.ts'
 import { Animal, Schema } from './animals.ts';
 
 import { useState } from 'react';
+import { Enclosure } from './enclosures.ts';
 
 export class CityFarm {
     events_cache: Event[];
@@ -12,6 +13,8 @@ export class CityFarm {
     setEventInstanceCache: (instances: EventInstance[]) => void;
     animals_cache: Animal[];
     setAnimalsCache: (animals: Animal[]) => void;
+    enclosures_cache: Enclosure[];
+    setEnclosuresCache: (enclosures: Enclosure[]) => void;
     schemas_cache: Schema[];
     setSchemasCache: (schemas: Schema[]) => void;
     private token: {headers: {Authorization: string}};
@@ -19,11 +22,12 @@ export class CityFarm {
     farms: string[];
 
     constructor(events_cache: Event[], setEventsCache: (events: Event[]) => void, animals_cache: Animal[], setAnimalsCache: (animals: Animal[]) => void,
-                    schemas_cache: Schema[], setSchemasCache: (schemas: Schema[]) => void,
+                    schemas_cache: Schema[], setSchemasCache: (schemas: Schema[]) => void, enclosures_cache: Enclosure[], setEnclosuresCache: (enclosures: Enclosure[]) => void,
                     event_instance_cache: EventInstance[], setEventInstanceCache: (instances: EventInstance[]) => void
                 ){
         [this.events_cache, this.setEventsCache] = [events_cache, setEventsCache];
         [this.animals_cache, this.setAnimalsCache] = [animals_cache, setAnimalsCache];
+        [this.enclosures_cache, this.setEnclosuresCache] = [enclosures_cache, setEnclosuresCache];
         [this.schemas_cache, this.setSchemasCache] = [schemas_cache, setSchemasCache];
         [this.event_instance_cache, this.setEventInstanceCache] = [event_instance_cache, setEventInstanceCache];
         this.farms = ["Windmill Hill", "St Werburghs", "Hartcliffe"];
@@ -386,6 +390,105 @@ export class CityFarm {
                     console.log('Token expired');
                     window.location.href = "/login";
                     return null;
+                }
+                throw error;
+            }
+        }
+    }
+
+    async getEnclosure(id: string, use_cache: boolean, callback?: (enclosure: Enclosure) => void): Promise<Enclosure | null> {
+        if (!id) {
+            return null;
+        }
+
+        // If the user wants to utilise the cache: return stale data and then call the callback when the new data has arrived
+        if (use_cache) {
+            // If the enclosure isn't in the cache, can't return anything so wait to fetch it
+            const cached_enclosure = this.enclosures_cache.find((enclosure) => enclosure.id === id);
+            if (!cached_enclosure) {
+                try {
+                    const response = await axios.get(`/enclosures/by_id/${id}`, this.token);
+                    this.setEnclosuresCache([...this.enclosures_cache, new Enclosure(response.data)]);
+                    return new Enclosure(response.data);
+                } catch (error) {
+                    if (error.response?.status === 401) {
+                        console.log('Token expired');
+                        window.location.href = "/login";
+                        throw new Error('Token expired');
+                    } else if (error.response?.status === 404) {
+                        return null;
+                    }
+                    throw error;
+                }
+            } else { // If the enclosure is in the cache, return it and then fetch the new data
+                try {
+                    axios.get(`/enclosures/by_id/${id}`, this.token).then((response) => {
+                        // If the enclosure has changed, update the cache and call the callback
+                        if (this.enclosures_cache !== response.data) {
+                            this.setEnclosuresCache(this.enclosures_cache.map((enclosure) => enclosure.id !== id ? enclosure : new Enclosure(response.data)));
+                            if (callback) {
+                                callback(new Enclosure(response.data));
+                            }
+                        }
+                    })
+                    return cached_enclosure;
+                } catch (error) {
+                    if (error.response?.status === 401) {
+                        console.log('Token expired');
+                        window.location.href = "/login";
+                        throw new Error('Token expired');
+                    } else if (error.response?.status === 404) {
+                        return null;
+                    }
+                    throw error;
+                }
+            }
+        } else { // The user needs the most up-to-date data so wait to fetch and return it
+            const response = await axios.get(`/enclosures/by_id/${id}`, this.token);
+            // Update cache
+            this.setEnclosuresCache(this.enclosures_cache.map((enclosure) => enclosure.id !== id ? enclosure : new Enclosure(response.data)));
+            if (this.enclosures_cache.find((enclosure) => enclosure.id === id) === undefined) {
+                this.setEnclosuresCache([...this.enclosures_cache, new Enclosure(response.data)]);
+            }
+            return new Enclosure(response.data);
+        }
+    }
+
+    async getEnclosures(use_cache: boolean, farm: string | null, callback?: (enclosures) => void) : Promise<Enclosure[]> {
+        const cached_enclosures = this.enclosures_cache;
+        if (use_cache && cached_enclosures.length > 0) {
+            try {
+                axios.get(`/enclosures`, {params: {farm: farm}, ...this.token}).then((response) => {
+                    const enclosures = response.data.map((data) => new Enclosure(data));
+                    // If the enclosures have changed, update the cache and call the callback
+                    if (cached_enclosures !== enclosures) {
+                        this.setEnclosuresCache(enclosures)
+                        if (callback) {
+                            callback(enclosures);
+                        }
+                    }
+                });
+                return cached_enclosures;
+            } catch (error) {
+                if (error.response?.status === 401) {
+                    console.log('Token expired');
+                    window.location.href = "/login";
+                    return [];
+                }
+                throw error;
+            }
+
+        } else {
+            try {
+                const response = await axios.get(`/enclosures`, {params: {farm: farm}, ...this.token});
+                const enclosures = response.data.map((data) => new Enclosure(data));
+                this.setEnclosuresCache(enclosures);
+                return enclosures;
+            } catch (error) {
+                if (error.response?.status === 401) {
+                    console.log('Token expired');
+                    window.location.href = "/login";
+                    return [];
                 }
                 throw error;
             }

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+
 import { Paper, Popover } from '@mui/material';
 
 import AnimalPopover from './AnimalPopover.tsx';
