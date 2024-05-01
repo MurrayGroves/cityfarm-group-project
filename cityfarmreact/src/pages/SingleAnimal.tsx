@@ -8,7 +8,7 @@ import FarmMoveButton from "../components/FarmMoveButton.tsx";
 import { CityFarm } from "../api/cityfarm.ts";
 import { Animal, Schema, Sex } from "../api/animals.ts";
 import { Event } from "../api/events.ts";
-import { Grid, List, ListItem } from "@mui/material";
+import { Grid, IconButton, List, ListItem } from "@mui/material";
 import Masonry from '@mui/lab/Masonry';
 import EditIcon from "@mui/icons-material/Edit";
 import { IndividualEvent } from "../components/IndividualEvent.tsx";
@@ -59,7 +59,7 @@ const SingleAnimal = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
 
             for (const enclosure of enclosures){
                 for (const an of enclosure.holding){
-                    if (animal.id === an.id){
+                    if (animal?.id === an.id){
                         setAnimalEnclosure(enclosure)
                     }
                 }
@@ -130,7 +130,7 @@ const SingleAnimal = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
                             <div style={{marginRight: '1em'}}>
                                 <u><b>{name}</b></u>
                             </div>
-                            <Paper style={{padding: '0.3em'}}>
+                            <Paper elevation={3} style={{padding: '0.3em', marginBottom: '10px'}}>
                                 <EventText secondary={false} cityfarm={cityfarm} eventID={value} farms={farms}/>
                             </Paper>
                         </div>
@@ -201,8 +201,8 @@ const SingleAnimal = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
                 </List>
             </div>
         )}
-        <div style={{display:'flex'}}><b>Enclosure: </b> {animalEnclosure!=null ? <><EnclosurePopover cityfarm={cityfarm} enclosureID={animalEnclosure.id}/>{' '}
-             </>: 'None'}<Button onClick={openEnclosureMove} variant='outlined'><EditIcon/></Button></div>
+        <div style={{display:'flex'}}><b style={{marginRight: '5px'}}>Enclosure: </b>{animalEnclosure != null ? <EnclosurePopover cityfarm={cityfarm} enclosureID={animalEnclosure.id}/>
+        : 'None'}<Button onClick={openEnclosureMove} style={{marginLeft: '10px'}} size="small" variant='contained'><EditIcon/></Button></div>
         
         <div className="farmButtons">
             {Object.values(farms).map((farm, index) => (
