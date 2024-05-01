@@ -5,29 +5,3 @@
     flex-direction: row;
 }
 
-.moveContent {
-    transition: transform 0.2s ease-in-out;
-    position: absolute;
-    top: 30%;
-    right: 0;
-    transform: translate(0, -50%);
-
-    background-color: #ffffff;
-    /*padding: 20px;*/
-    border-radius: 5px;
-    width: 15%;
-
-}
-
-.moveVisible {
-    transform: translateX(0%);
-}
-
-.moveHidden {
-    transform: translateX(100%);
-}
-
-.movePaper{
-    padding: 15px;
-
-}

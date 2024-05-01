@@ -14,6 +14,10 @@ import Masonry from '@mui/lab/Masonry';
 import { IndividualEvent } from "../components/IndividualEvent.tsx";
 import { EventText } from "../components/EventText.tsx";
 
+import EnclosurePopover from "../components/EnclosurePopover.tsx";
+import EnclosureMove from '../components/EnclosureMove.tsx';
+import {Enclosure} from "../api/enclosures";
+import Button from "@mui/material/Button";
 
 export function readableFarm(farm) {
     switch(farm) {
@@ -35,8 +39,9 @@ const SingleAnimal = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
     const [children, setChildren] = useState<string[]>(new Array<string>());
     const [eventsAll, setEventAll] = useState(false);
     const [animals, setAnimals] = useState<Animal[]>([]);
-
-
+    const [animalEnclosure , setAnimalEnclosure] = useState<Enclosure | null>(null)
+    const [allEnclosures,setAllEnclosures] =useState <Enclosure[]>([])
+    const [animalMoving,setAnimalMoving] = useState<Animal[]>([])
 
     useEffect(() => {
         (async () => {
@@ -48,6 +53,8 @@ const SingleAnimal = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
             setRelEvents(events.filter((event) => {
                 return event.animals.map((animal) => animal.id).includes(animalID!)
             }));
+            const enclosures = await cityfarm.getEnclosures(true, null, (enclosures) => setAllEnclosures(enclosures));
+            setAllEnclosures(enclosures);
     })()}, [animalID]);
 
     useEffect(()=>{
@@ -132,6 +139,26 @@ const SingleAnimal = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
         )
     }
 
+
+    const openEnclosureMove =()=>{
+        console.log(allEnclosures,chosenAnimal)
+        for (const enclosure of allEnclosures){
+            for (const an of enclosure.holding){
+                if (chosenAnimal.id === an.id){
+                    setAnimalEnclosure(enclosure)
+                }
+            }
+        }
+
+        setAnimalMoving([chosenAnimal])
+        console.log(animalMoving)
+    }
+    const closeEnclosureMove =()=>{
+        setAnimalMoving([])
+    }
+
+
+
     return (<>
         <h1>{chosenAnimal.name}</h1>
         <div className='details'>
@@ -169,10 +196,9 @@ const SingleAnimal = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
                         return (<ListItem style={{margin: '0', padding: '0'}}><p style={{marginRight: '4px'}}>-</p><AnimalPopover key={index} cityfarm={cityfarm} animalID={animalID} /></ListItem>);
                     })}
                 </List>
-
-                
             </div>
         )}
+        <Button onClick={openEnclosureMove} variant="contained"> Move Enclosure</Button>
         <div className="farmButtons">
             {Object.values(farms).map((farm, index) => (
                 <Fragment key={index}>
@@ -195,6 +221,8 @@ const SingleAnimal = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
                 <SelectedEvent event={selectedEvent} setEvent={setSelectedEvent} cityfarm={cityfarm} farms={farms}/>
             </Paper>
         )}
+        <EnclosureMove cityfarm={cityfarm} excludedEnc={animalEnclosure}
+                       enclosures={allEnclosures} animalList={animalMoving} close={closeEnclosureMove} />
     </>);
 }
 

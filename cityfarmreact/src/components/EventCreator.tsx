@@ -14,7 +14,7 @@ import { getConfig } from '../api/getToken.js';
 import { CityFarm } from '../api/cityfarm.ts';
 import { ThemeProvider } from '@emotion/react';
 import { Event, EventOnce, EventRecurring } from '../api/events.ts';
-import Enclosure from './EnclosurePopover.tsx';
+import EnclosurePopover from './EnclosurePopover.tsx';
 
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
@@ -183,8 +183,8 @@ export const EventCreator: React.FC<EventCreatorProp> = ({ farms, style, cityfar
         console.log("new", newEvent);
 
         try {
-            const response = recurring ? await axios.post(`/events/create/recurring`, newEvent as EventRecurring, token)
-                : await axios.post(`/events/create/once`, newEvent as EventOnce, token)
+            const response = recurring ? await axios.post(`/events/create/recurring`, {...newEvent as EventRecurring, animals: newEvent.animals.map(animal => animal.id), enclosures: newEvent.enclosures.map(enclosure => enclosure.id)}, token)
+                      : await axios.post(`/events/create/once`, {...newEvent as EventOnce, animals: newEvent.animals.map(animal => animal.id), enclosures: newEvent.enclosures.map(enclosure => enclosure.id)}, token)
 
             setEvent(response.data._id);
             // Update internal events cache
@@ -448,7 +448,7 @@ export const EventCreator: React.FC<EventCreatorProp> = ({ farms, style, cityfar
             <div>
                 <span style={{ display: 'flex' }}><h3>Enclosures</h3><IconButton style={{ height: '40px', margin: '12.5px 0 0 5px' }} onClick={() => { functionopenPopup("enclosures") }}><AddIcon color='primary' /></IconButton></span>
                 {(newEvent?.enclosures ?? []).map((enclosure, index) => (
-                    <Enclosure cityfarm={cityfarm} key={index} enclosureID={enclosure.id} />
+                    <EnclosurePopover cityfarm={cityfarm} key={index} enclosureID={enclosure.id} />
                 ))}{/*Add a way to remove enclosures from events */}
                 {/* idea: make this open the enlcosure  page with a new column of checkboxes. Click on an associate enlcosure(s) button would then pass a list of enclosure names to the calendar to be placed in a field*/}
                 <div id="AssociateEnclosure" style={{ textAlign: 'center' }}>

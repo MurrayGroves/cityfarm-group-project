@@ -41,7 +41,7 @@ public class SchemaController {
     public ResponseEntity<AnimalSchema> by_name(@PathVariable String name) {
         AnimalSchema schema = schemaRepository.findSchemaByName(name);
 
-        if (schema.get_hidden()) {
+        if (schema == null || schema.get_hidden()) {
             return ResponseEntity.notFound().build();
         }
 
