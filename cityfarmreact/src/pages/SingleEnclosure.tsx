@@ -1,10 +1,10 @@
 import {Link, useParams} from "react-router-dom";
-import React, {ReactNode, useEffect, useState} from "react";
+import React, {Fragment, ReactNode, useEffect, useState} from "react";
 import axios from "../api/axiosConfig.js";
 import {getConfig} from "../api/getToken.js";
 import AnimalPopover from "../components/AnimalPopover.tsx";
 import "./SingleEnclosure.css"
-import {Alert, Dialog, DialogContent, DialogTitle, Divider, Icon, Paper} from "@mui/material";
+import {Alert, Dialog, DialogContent, DialogTitle, Divider, Grid, Icon, Paper} from "@mui/material";
 import AssociateAnimal from "../components/AssociateAnimal.tsx";
 import Button from "@mui/material/Button";
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -16,6 +16,12 @@ import {readableFarm} from "./SingleAnimal.tsx";
 import { Enclosure } from "../api/enclosures.ts";
 import { CityFarm } from "../api/cityfarm.ts";
 import { Animal } from "../api/animals.ts";
+import { Event, EventInstance, EventOnce, EventRecurring } from '../api/events.ts';
+import EnclosurePopover from "../components/EnclosurePopover.tsx";
+import CapacityChanger from "../components/CapacityChanger.tsx";
+import { IndividualEvent } from "../components/IndividualEvent.tsx";
+import Masonry from '@mui/lab/Masonry';
+import SelectedEvent from "../components/SelectedEvent.tsx";
 
 const SingleEnclosure = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
   const token = getConfig();
@@ -28,6 +34,9 @@ const SingleEnclosure = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) =>
   const [enclosureDelete, setEnclosureDelete] = useState<boolean>(false)
   const [capacitiesWarning, setCapacitiesWarning] = useState<string>('')
   const [animalsCurrentlySelected, setAnimalsCurrentlySelected] = useState<{ [key: string]: Animal[] }>({});
+  const [relEvents,setRelEvents] = useState<Event[]>([])
+  const [openCapacitiesPopup, setOpenCapacitiesPopup] = useState<boolean>(false)
+  const [selectedEvent, setSelectedEvent] = useState<Event>();
 
   useEffect(() => {
     (async () => {
@@ -35,6 +44,12 @@ const SingleEnclosure = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) =>
       setEnclosure(enclosure!);
       const enclosures = await cityfarm.getEnclosures(true, null, (enclosures) => setAllEnclosures(enclosures));
       setAllEnclosures(enclosures);
+      const events = await cityfarm.getEvents(true, (events) => {setRelEvents(events.filter((event) => {
+        return event.enclosure.map((enclosure) => enclosure.id).includes(enclosureID)
+      }))})
+      setRelEvents(events.filter((event) => {
+        return event.enclosures.map((enclosure) => enclosure.id).includes(enclosureID!)
+    }));
     })();
 
     const tempAnimalsCurrentlySelected: { [key: string]: Animal[] } = {};
@@ -43,8 +58,6 @@ const SingleEnclosure = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) =>
     }
     setAnimalsCurrentlySelected(tempAnimalsCurrentlySelected);
   }, [enclosureID]);
-
-
 
   const animalsByType = (type: string)=> {
     let animals: Animal[] = []
@@ -56,7 +69,22 @@ const SingleEnclosure = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) =>
     return animals
   }
 
-  useEffect(() => {
+  useEffect(()=>{
+    if(!openCapacitiesPopup){
+      const badCapacity = setEnclosureNewAnimals(enclosure.holding);
+      if(badCapacity != null){
+        let typeTotal = 0
+        for (const animal of enclosure.holding){
+          if(animal.type===badCapacity){
+            typeTotal+=1
+          }
+        }
+        enclosure.capacities[badCapacity] = typeTotal
+      }
+    }
+  },[openCapacitiesPopup])
+
+  useEffect(()=>{
     // send whole thing into selectedanimals
     const selectedList = Object.values(animalsCurrentlySelected).flat();
     setSelectedAnimals(selectedList);
@@ -74,7 +102,6 @@ const SingleEnclosure = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) =>
   const closeEnclosureMove = () => {
     setSelectedAnimals([])
   }
-
 
   const cols: GridColDef [] = [
     {field: 'name', headerName: 'Name', headerClassName: 'grid-header', headerAlign: 'left', flex: 1,
@@ -124,8 +151,20 @@ const SingleEnclosure = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) =>
     return holdingDisplay
   }
 
+  const handleEventClick=(event: Event) => {
+    //nothing
+  }
+
+  const singleEvent = (e: Event)=>{
+    return(
+        <Grid item xs={1}>
+            <IndividualEvent cityfarm={cityfarm} eventID={e.id} farms={farms}/>
+        </Grid>
+    )
+  }
+
   const setEnclosureNewAnimals = (animalList: Animal[]) => {
-    //iterate thru each type in capacity
+    //iterate through each type in capacity
     for (const type of Object.entries(enclosure.capacities)){
       let typeTotal=0
       for (const animal of animalList){
@@ -136,18 +175,14 @@ const SingleEnclosure = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) =>
       }
       if (typeTotal>type[1]){
         setCapacitiesWarning(
-            `There are too many of ${type[0]} in this enclosure, you need to assign less`
+            `There are too many ${type[0]}(s) in this enclosure, you need to assign less or change capacities`
         )
-        return
+        return type[0]
       }
     }
-    console.log("HELLO ",animalList)
     updateEnclosure(enclosure.id, new Enclosure({name: enclosure.name, holding: animalList,
           capacities: enclosure.capacities, notes: enclosure.notes, farm: enclosure.farm}))
-    window.location.reload()
   }
-
-
 
   const handleOpenAnimalsPopup = () => {
     setOpenAnimalsPopup(!openAnimalsPopup);
@@ -190,7 +225,6 @@ const SingleEnclosure = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) =>
     window.location.href="/enclosures";
   }
 
-
   return (
   <div className="enclosureView">
     <span style={{display: 'flex'}}>
@@ -212,19 +246,46 @@ const SingleEnclosure = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) =>
     <h3 style={{ display: "inline-block" }}>Livestock:</h3>
     <br/>
 
+    <Button variant='outlined' onClick={() => {setOpenCapacitiesPopup(true)}}>Capacities</Button> 
+
+    <div id="CapacityChanger" style={{textAlign:'center'}}>
+      <Dialog open={openCapacitiesPopup} onClose={()=>{setOpenCapacitiesPopup(false)}}>
+        <DialogTitle><span style={{display: 'flex', justifyContent: 'space-between'}}>Change Capacities<Button variant='outlined' onClick={() => setOpenCapacitiesPopup(false)}>Close</Button></span></DialogTitle>
+        <DialogContent>
+          <CapacityChanger enclosure={enclosure} cityfarm={cityfarm}/>
+        </DialogContent>
+      </Dialog>
+    </div>
+
     <div id="AssociateAnimal" style={{textAlign:'center'}}>
       <Dialog fullWidth maxWidth='md' open={openAnimalsPopup} onClose={()=>{setOpenAnimalsPopup(false)}}>
         <DialogTitle>Change Animals</DialogTitle>
         <DialogContent>
-          <AssociateAnimal cityfarm={cityfarm} setAnimals={setEnclosureNewAnimals} animals={enclosure.holding} close={()=>{setOpenAnimalsPopup(false);}}></AssociateAnimal>
+          <AssociateAnimal cityfarm={cityfarm} setAnimals={setEnclosureNewAnimals} animals={enclosure.holding} close={()=>{setOpenAnimalsPopup(false); window.location.reload()}}></AssociateAnimal>
         </DialogContent>
       </Dialog>
     </div>
+
     {holdings()}
     <EnclosureMove cityfarm={cityfarm} excludedEnc={enclosure}
                    enclosures={allEnclosures} animalList={selectedAnimals} close={closeEnclosureMove} />
+
+    <div>
+        {relEvents.length !== 0 ? <h2 style={{marginTop: '2%'}}>Linked Events</h2> : <></>}
+        <Masonry spacing={3} columns={{xs: 1, md: 2, lg: 3, xl: 4}} sequential>
+            {relEvents.map((e, index)=>(
+                <Fragment key={index}>{singleEvent(e)}</Fragment>
+            ))}
+        </Masonry>
+    </div>
+    {selectedEvent && (
+        <Paper elevation={3} className='selectedBox'>
+            <SelectedEvent event={selectedEvent} setEvent={setSelectedEvent} cityfarm={cityfarm} farms={farms}/>
+        </Paper>
+    )}
+
       <Dialog open={capacitiesWarning !==''} onClose={()=>{setCapacitiesWarning('')}}>
-        <DialogTitle>Capacity issue for enclosure movement</DialogTitle>
+        <DialogTitle>Capacity issue</DialogTitle>
           <DialogContent >
             <Alert severity={'warning'}>
               {capacitiesWarning}

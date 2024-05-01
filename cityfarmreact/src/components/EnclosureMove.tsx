@@ -123,16 +123,17 @@ const EnclosureMove = ({cityfarm, excludedEnc, enclosures, animalList, close}: {
             window.location.reload();
         })();
     }
-
-    return (
+    return(
+    <div className={`moveContent ${animalList.length>0 ? 'moveVisible' : 'moveHidden'}`}>
+        {animalList.length>0 ?
         <div>
-            <div className={`moveContent ${animalList.length > 0 ? 'moveVisible' : 'moveHidden'}`}>
+            <div >
                 <Paper elevation={3} className={'movePaper'}>
                     {enclosureMove(animalList)}
                 </Paper>
             </div>
             <div>
-                <Dialog open={capacitiesWarning !== ''} onClose={()=>{setCapacitiesWarning('')}}>
+                <Dialog open={capacitiesWarning !==''} onClose={()=>{setCapacitiesWarning('')}}>
                     <DialogTitle>Capacity issue for enclosure movement</DialogTitle>
                     <DialogContent >
                         <Alert severity={'warning'}>
@@ -142,6 +143,8 @@ const EnclosureMove = ({cityfarm, excludedEnc, enclosures, animalList, close}: {
                 </Dialog>
             </div>
         </div>
+                :
+                <></>}</div>
     )
 
 

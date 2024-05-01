@@ -10,7 +10,7 @@ import { Animal, Schema, Sex } from "../api/animals.ts";
 import { Event } from "../api/events.ts";
 import { Grid, List, ListItem } from "@mui/material";
 import Masonry from '@mui/lab/Masonry';
-
+import EditIcon from "@mui/icons-material/Edit";
 import { IndividualEvent } from "../components/IndividualEvent.tsx";
 import { EventText } from "../components/EventText.tsx";
 
@@ -37,7 +37,6 @@ const SingleAnimal = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
     const [selectedEvent, setSelectedEvent] = useState<Event>();
     const [schema, setSchema] = useState<Schema>();
     const [children, setChildren] = useState<string[]>(new Array<string>());
-    const [eventsAll, setEventAll] = useState(false);
     const [animals, setAnimals] = useState<Animal[]>([]);
     const [animalEnclosure , setAnimalEnclosure] = useState<Enclosure | null>(null)
     const [allEnclosures,setAllEnclosures] =useState <Enclosure[]>([])
@@ -55,6 +54,15 @@ const SingleAnimal = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
             }));
             const enclosures = await cityfarm.getEnclosures(true, null, (enclosures) => setAllEnclosures(enclosures));
             setAllEnclosures(enclosures);
+
+
+            for (const enclosure of enclosures){
+                for (const an of enclosure.holding){
+                    if (animal.id === an.id){
+                        setAnimalEnclosure(enclosure)
+                    }
+                }
+            }
     })()}, [animalID]);
 
     useEffect(()=>{
@@ -142,13 +150,7 @@ const SingleAnimal = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
 
     const openEnclosureMove =()=>{
         console.log(allEnclosures,chosenAnimal)
-        for (const enclosure of allEnclosures){
-            for (const an of enclosure.holding){
-                if (chosenAnimal.id === an.id){
-                    setAnimalEnclosure(enclosure)
-                }
-            }
-        }
+
 
         setAnimalMoving([chosenAnimal])
         console.log(animalMoving)
@@ -198,7 +200,9 @@ const SingleAnimal = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
                 </List>
             </div>
         )}
-        <Button onClick={openEnclosureMove} variant="contained"> Move Enclosure</Button>
+        <div style={{display:'flex'}}><b>Enclosure: </b> {animalEnclosure!=null ? <><EnclosurePopover cityfarm={cityfarm} enclosureID={animalEnclosure.id}/>{' '}
+             </>: 'None'}<Button onClick={openEnclosureMove} variant='outlined'><EditIcon/></Button></div>
+        
         <div className="farmButtons">
             {Object.values(farms).map((farm, index) => (
                 <Fragment key={index}>
