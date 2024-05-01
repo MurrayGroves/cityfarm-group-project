@@ -70,12 +70,10 @@ const EnclosureTable = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => 
             renderCell: (enclosure) => <Link to={`/single-enclosure/${enclosure.value.id}`}> {enclosure.value.name} </Link>
         },
         { field: 'holding', headerName: 'Holding', headerClassName: 'grid-header', headerAlign: 'left', flex: 1, cellClassName: 'scroll-cell',
-            renderCell: (animalList) => <ul>{animalList.value.map(animal => {return(<li key={animal.id}><AnimalPopover cityfarm={cityfarm} animalID={animal.id}/></li>)})}</ul>
+            renderCell: (animalList) => <ul style={{marginLeft: '1em'}}>{animalList.value.map(animal => {return(<li key={animal.id}><AnimalPopover cityfarm={cityfarm} animalID={animal.id}/></li>)})}</ul>
         },
         { field: 'capacities', headerName: 'Capacities', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
     ]
-
-    //console.log(enclosureList)
 
     const rows = enclosureList.map((enclosure: Enclosure) => ({
         id: enclosure.id,
@@ -109,7 +107,7 @@ const EnclosureTable = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => 
                     setCreate
                 }}}
             style={{fontSize: '1rem'}}
-            isCellEditable={() => editMode}
+            isCellEditable={() => false}
             processRowUpdate = {(newVal, oldVal) => {
                 if (newVal.name === oldVal.name) { return newVal; }
                 const newName = newVal.name;
@@ -140,9 +138,8 @@ const EnclosureTable = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => 
 const CustomFooter = (props: NonNullable<GridSlotsComponentsProps['footer']>) => {
     return (<>
         <Divider/>
-        <div style={{maxHeight: '56.5px', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+        <div style={{maxHeight: '56.5px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginLeft: '0.5em'}}>
             <span style={{display: 'flex', alignItems: 'center'}}>
-            <Button className="tallButton" sx={{margin: '10px'}} aria-label="edit" onClick={() => props.setEditMode!(true)} variant='contained' endIcon={<Edit/>}>Edit</Button>
             <Button sx={{maxWidth: '100px', float: 'right'}} variant='contained' endIcon={<Add/>} style={{float: 'right'}} onClick={() => props.setCreate!(true)}>Create</Button>
             </span>
             <GridPagination/>
