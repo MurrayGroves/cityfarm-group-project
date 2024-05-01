@@ -61,7 +61,37 @@ const AnimalPopover = ({cityfarm, animalID}: {cityfarm: CityFarm, animalID: stri
     },[chosenAnimal])
 
     if (chosenAnimal === null) {
-        return <p style={{color: 'red'}}>Animal Not Found</p>
+        return <div>
+            <Typography
+                aria-owns={open ? 'mouse-over-popover' : undefined}
+                aria-haspopup="true"
+                onMouseEnter={handlePopoverOpen}
+                onMouseLeave={handlePopoverClose}
+                style={{display: 'inline-block'}}
+            >
+                <p style={{color: 'coral'}}>Animal Not Found</p>
+            </Typography>
+            <Popover
+                id="mouse-over-popover"
+                sx={{pointerEvents: 'none'}}
+                open={open}
+                anchorEl={anchorEl}
+                anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'left',
+                }}
+                transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'left',
+                }}
+                onClose={handlePopoverClose}
+                disableRestoreFocus
+            >
+                <Typography sx={{ p: 1, whiteSpace: 'pre-line' }}>
+                    <b>{`You probably deleted it, but dont worry - you can edit this animal and change it to an existing animal.`}</b>
+                </Typography>
+            </Popover>
+            </div>
     }
 
     return (
@@ -73,7 +103,7 @@ const AnimalPopover = ({cityfarm, animalID}: {cityfarm: CityFarm, animalID: stri
                 onMouseLeave={handlePopoverClose}
                 style={{display: 'inline-block'}}
             >
-                <Link className='animalLink' style={{'--colour': colour, '--hoverColour': hoverColour}} to={`/single-animal/${chosenAnimal.id}`}>{chosenAnimal.name}</Link>
+            <Link className='animalLink' style={{'--colour': colour, '--hoverColour': hoverColour}} to={`/single-animal/${chosenAnimal.id}`}>{chosenAnimal.name}</Link>
             </Typography>
             <Popover
                 id="mouse-over-popover"
