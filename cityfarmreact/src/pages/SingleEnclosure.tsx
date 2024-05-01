@@ -45,10 +45,10 @@ const SingleEnclosure = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) =>
       const enclosures = await cityfarm.getEnclosures(true, null, (enclosures) => setAllEnclosures(enclosures));
       setAllEnclosures(enclosures);
       const events = await cityfarm.getEvents(true, (events) => {setRelEvents(events.filter((event) => {
-        return event.animals.map((enclosure) => enclosure.id).includes(enclosureID)
+        return event.enclosure.map((enclosure) => enclosure.id).includes(enclosureID)
       }))})
       setRelEvents(events.filter((event) => {
-        return event.animals.map((enclosure) => enclosure.id).includes(enclosureID!)
+        return event.enclosures.map((enclosure) => enclosure.id).includes(enclosureID!)
     }));
     })();
 
