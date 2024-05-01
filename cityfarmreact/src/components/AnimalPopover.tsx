@@ -67,9 +67,9 @@ const AnimalPopover = ({cityfarm, animalID}: {cityfarm: CityFarm, animalID: stri
                 aria-haspopup="true"
                 onMouseEnter={handlePopoverOpen}
                 onMouseLeave={handlePopoverClose}
-                style={{display: 'inline-block'}}
+                style={{display: 'inline-block', color: 'coral'}}
             >
-                <p style={{color: 'coral'}}>Animal Not Found</p>
+                Animal Not Found
             </Typography>
             <Popover
                 id="mouse-over-popover"

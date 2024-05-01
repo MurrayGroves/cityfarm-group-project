@@ -1,6 +1,6 @@
 import "./SingleAnimal.css"
 import {  useParams } from "react-router-dom";
-import React, { Fragment, useState, useEffect } from 'react';
+import React, { Fragment, useState, useEffect, useCallback } from 'react';
 import AnimalPopover from "../components/AnimalPopover.tsx";
 import Paper from "@mui/material/Paper";
 import SelectedEvent from "../components/SelectedEvent.tsx";
@@ -8,7 +8,7 @@ import FarmMoveButton from "../components/FarmMoveButton.tsx";
 import { CityFarm } from "../api/cityfarm.ts";
 import { Animal, Schema, Sex } from "../api/animals.ts";
 import { Event } from "../api/events.ts";
-import { Grid, List, ListItem } from "@mui/material";
+import { Grid, IconButton, List, ListItem } from "@mui/material";
 import Masonry from '@mui/lab/Masonry';
 import EditIcon from "@mui/icons-material/Edit";
 import { IndividualEvent } from "../components/IndividualEvent.tsx";
@@ -18,6 +18,8 @@ import EnclosurePopover from "../components/EnclosurePopover.tsx";
 import EnclosureMove from '../components/EnclosureMove.tsx';
 import {Enclosure} from "../api/enclosures";
 import Button from "@mui/material/Button";
+
+import lodash from "lodash"
 
 export function readableFarm(farm) {
     switch(farm) {
@@ -65,46 +67,66 @@ const SingleAnimal = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
     })()}, [animalID]);
 
     useEffect(() => {
-        setChosenAnimal(cityfarm.animals_cache.find((animal) => animal.id === animalID) ?? null)
+        const animal = cityfarm.animals_cache.find((animal) => animal.id === animalID)
+        if (!lodash.isEqual(animal, chosenAnimal)) {
+            console.debug("Setting chosen animal")
+            setChosenAnimal(animal ?? null)
+        } else {
+            console.debug("not setting chosen")
+        }
     }, [cityfarm.animals_cache])
 
     useEffect(()=>{
-        let kids = new Array<string>();
         if (chosenAnimal === null) {
             return;
         }
         (async () => {
-            const anis = await cityfarm.getAnimals(true, null, (animals) => {setAnimals(animals)});
-            setAnimals(anis)
+            const update = (anis) => {
+                let kids = new Array<string>();
+                setAnimals(anis);
+                if (chosenAnimal.sex !== Sex.Castrated) {
 
-            if (chosenAnimal.sex !== Sex.Castrated) {
-
-                if (chosenAnimal.sex === Sex.Male) {
-
-                    for (let a of animals) {
-                        if (a.father === chosenAnimal.id) {
-                            kids.push(a.id)
+                    if (chosenAnimal.sex === Sex.Male) {
+                        for (let a of anis) {
+                            if (a.father === chosenAnimal.id) {
+                                kids.push(a.id)
+                            }
+                        }
+                    } else {
+                        for (let a of anis) {
+                            if (a.mother === chosenAnimal.id) {
+                                kids.push(a.id)
+                            }
                         }
                     }
-                } else {
-
-                    for (let a of animals) {
-                        if (a.mother === chosenAnimal.id) {
-                            kids.push(a.id)
-                        }
-                    }
+    
+                    setChildren(kids)
                 }
-
-                setChildren(kids)
-
             }
+            const anis = await cityfarm.getAnimals(true, null, (anis) => {update(anis)});
+            update(anis)
         })()
     },[chosenAnimal])
 
     useEffect(() => {
         if (chosenAnimal === null) return;
         chosenAnimal.type !== 'Loading...' && getSchema();
-    }, [chosenAnimal]);
+    }, [chosenAnimal?.type]);
+
+    const getSchema = useCallback(() => {
+        if (chosenAnimal === null) {
+            return;
+        }
+
+        (async () => {
+            const schema = await cityfarm.getSchema(chosenAnimal.type, true, (schema) => {setSchema(schema)})
+            if (!schema) {
+                console.error(`No schema with name ${chosenAnimal.type} found.`);
+            } else {
+                setSchema(schema);
+            }
+        })()
+    }, [chosenAnimal?.type])
 
 
     if (chosenAnimal === null) {
@@ -138,17 +160,6 @@ const SingleAnimal = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
                 }
                 <div style={{display:'flex'}}><b>Enclosure: </b> Loading...</div>
             </div>
-    }
-
-    const getSchema = () => {
-        (async () => {
-            const schema = await cityfarm.getSchema(chosenAnimal.type, true, (schema) => {setSchema(schema)})
-            if (!schema) {
-                console.error(`No schema with name ${chosenAnimal.type} found.`);
-            } else {
-                setSchema(schema);
-            }
-        })()
     }
 
 
@@ -242,7 +253,7 @@ const SingleAnimal = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
             </div>
         )}
         <div style={{display:'flex'}}><b>Enclosure: </b> {animalEnclosure!=null ? <><EnclosurePopover cityfarm={cityfarm} enclosureID={animalEnclosure.id}/>{' '}
-             </>: 'None'}<Button onClick={openEnclosureMove} variant='outlined'><EditIcon/></Button></div>
+             </>: 'None'}<IconButton onClick={openEnclosureMove} sx={{ p: 0 }} size="small"><EditIcon sx={{fontSize: '1'}}/></IconButton></div>
         
         <div className="farmButtons">
             {Object.values(farms).map((farm, index) => (
