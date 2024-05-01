@@ -8,8 +8,11 @@ import FarmMoveButton from "../components/FarmMoveButton.tsx";
 import { CityFarm } from "../api/cityfarm.ts";
 import { Animal, Schema, Sex } from "../api/animals.ts";
 import { Event } from "../api/events.ts";
-import { Grid } from "@mui/material";
-import EnclosurePopover from "../components/EnclosurePopover.tsx";
+import { Grid, List, ListItem } from "@mui/material";
+import Masonry from '@mui/lab/Masonry';
+
+import { IndividualEvent } from "../components/IndividualEvent.tsx";
+import { EventText } from "../components/EventText.tsx";
 
 
 export function readableFarm(farm) {
@@ -39,8 +42,12 @@ const SingleAnimal = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
         (async () => {
             const animal = await cityfarm.getAnimal(animalID!, true, (animal) => {setChosenAnimal(animal)});
             setChosenAnimal(animal!);
-            const events = await cityfarm.getEvents(true, (events) => {setRelEvents(events)})
-            setRelEvents(events);
+            const events = await cityfarm.getEvents(true, (events) => {setRelEvents(events.filter((event) => {
+                return event.animals.map((animal) => animal.id).includes(animalID)
+            }))})
+            setRelEvents(events.filter((event) => {
+                return event.animals.map((animal) => animal.id).includes(animalID!)
+            }));
     })()}, [animalID]);
 
     useEffect(()=>{
@@ -73,9 +80,6 @@ const SingleAnimal = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
         })()
     },[chosenAnimal])
 
-    const handleEventClick=(event: Event)=>{
-        //setSelectedEvent(event)
-    }
 
     function getSchema() {
         (async () => {
@@ -105,6 +109,15 @@ const SingleAnimal = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
                     return <span key={name}><b>{name.charAt(0).toUpperCase() + name.slice(1)}: </b>{value}</span>;
                 case "java.time.ZonedDateTime":
                     return <span key={name}><b>{name.charAt(0).toUpperCase() + name.slice(1)}: </b>{new Date(value).toLocaleDateString()}</span>;
+                case "cityfarm.api.calendar.EventRef":
+                    return <div style={{display: 'inline-block'}}>
+                            <div style={{marginRight: '1em'}}>
+                                <u><b>{name}</b></u>
+                            </div>
+                            <Paper style={{padding: '0.3em'}}>
+                                <EventText secondary={false} cityfarm={cityfarm} eventID={value} farms={farms}/>
+                            </Paper>
+                        </div>
                 default:
                     return <></>;
             }
@@ -114,38 +127,7 @@ const SingleAnimal = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
     const singleEvent = (e: Event)=>{
         return(
             <Grid item xs={1}>
-            <Paper elevation={3} className="event-box">
-                <h2 onClick={() => handleEventClick(e)}>{e.title}</h2>
-                {
-                    e.allDay ?
-                        <div>
-                            <p>{e.start.toLocaleDateString()} {e.end == null ? <></> : e.end.toLocaleDateString() === e.start.toLocaleDateString() ? <></> : " - " + e.end.toLocaleDateString()}</p>
-                        </div>
-                        :
-                        <div>
-                            <p>{e.start.toLocaleString([], {year: '2-digit', month: '2-digit', day: '2-digit', hour: '2-digit', minute:'2-digit'})} - {e.start.toLocaleDateString() === e.end.toLocaleDateString() ? e.end.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}): e.end.toLocaleString([], {year: '2-digit', month: '2-digit', day: '2-digit', hour: '2-digit', minute:'2-digit'})}</p>
-                        </div>
-
-                }
-                {e.farms.length !== 0 ? <h3>Farms</h3> : <></>}
-                {e.farms.map((farm, index) => <p key={index}>{readableFarm(farm)}</p>)}
-                {e.animals.length !== 0 ? <h3>Animals</h3> : <></>}
-                {e.animals.map((animal: Animal, index) => (
-                    <AnimalPopover key={index} cityfarm={cityfarm} animalID={animal.id}/>
-                ))}
-                {e.enclosures.length !== 0 &&
-                    <div>
-                        <h3>Enclosures</h3>
-                        {e.enclosures.map((enclosure, index) => (
-                            <EnclosurePopover key={index} cityfarm={cityfarm} enclosureID={enclosure.id}/>
-                        ))}
-                    </div>}
-                {e.description !== "" ?
-                    <div>
-                        <h3>Description</h3>
-                        {e.description}
-                    </div> : <></>}
-            </Paper>
+                <IndividualEvent cityfarm={cityfarm} eventID={e.id} farms={farms}/>
             </Grid>
         )
     }
@@ -182,9 +164,13 @@ const SingleAnimal = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
             Array.isArray(children) && children.length > 0 && (
             <div className="children">
                 <b>Children:</b>
-                {children.map((animalID, index) => {
-                    return (<AnimalPopover key={index} cityfarm={cityfarm} animalID={animalID} />);
-                })}
+                <List>
+                    {children.map((animalID, index) => {
+                        return (<ListItem style={{margin: '0', padding: '0'}}><p style={{marginRight: '4px'}}>-</p><AnimalPopover key={index} cityfarm={cityfarm} animalID={animalID} /></ListItem>);
+                    })}
+                </List>
+
+                
             </div>
         )}
         <div className="farmButtons">
@@ -197,21 +183,12 @@ const SingleAnimal = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
 
 
         <div>
-            {relEvents.length !== 0 ? <h2 onClick={()=>setEventAll(!eventsAll)}>Linked Event, click for more</h2> : <></>}
-                <Grid container spacing={3} columns={{xs: 1, md: 2, lg: 3, xl: 4}}>
-                    {!eventsAll ? <>
-                    {relEvents.slice(0, 3).map((e, index)=>(
-                        <Fragment key={index}>{singleEvent(e)}</Fragment>
-                    ))} </>
-                        :
-                    <>
-                        {relEvents.map((e, index)=>(
-                            <Fragment key={index}>{singleEvent(e)}</Fragment>
-                        ))} </>
-
-                    }
-                </Grid>
-
+            {relEvents.length !== 0 ? <h2 style={{marginTop: '2%'}}>Linked Events</h2> : <></>}
+            <Masonry spacing={3} columns={{xs: 1, md: 2, lg: 3, xl: 4}} sequential>
+                {relEvents.map((e, index)=>(
+                    <Fragment key={index}>{singleEvent(e)}</Fragment>
+                ))}
+            </Masonry>
         </div>
         {selectedEvent && (
             <Paper elevation={3} className='selectedBox'>

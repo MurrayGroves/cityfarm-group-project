@@ -17,7 +17,6 @@ const EventDisplay = ({
         handleDelEvent: () => void, farms: any, cityfarm: CityFarm
     }) => {
     
-        console.log("selected", selectedEvent);
 
     return (<>
         <div style={{overflow: 'auto'}}>
@@ -57,7 +56,7 @@ const EventDisplay = ({
                             <h3>Enclosures</h3>
                             {selectedEvent.event.enclosures.map((enclosure, index) => {
                                 return (
-                                    <Enclosure key={index} enclosureID={enclosure.id}/>
+                                    <Enclosure cityfarm={cityfarm} key={index} enclosureID={enclosure.id}/>
                                 )
                             })}
                         </div>}

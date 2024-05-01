@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import dayjs from 'dayjs';
 import AnimalPopover from "./AnimalPopover.tsx";
 import "./EventCreator.css";
 import TextField from '@mui/material/TextField';
@@ -16,6 +15,11 @@ import { CityFarm } from '../api/cityfarm.ts';
 import { ThemeProvider } from '@emotion/react';
 import { Event, EventOnce, EventRecurring } from '../api/events.ts';
 import Enclosure from './EnclosurePopover.tsx';
+
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+
 
 interface EventCreatorProp {
     farms: any
@@ -60,6 +64,9 @@ export const EventCreator: React.FC<EventCreatorProp> = ({ farms, style, cityfar
             setRecurring(initialEvent instanceof EventRecurring);
         }
     }, [modify, initialEvent])
+
+    dayjs.extend(utc);
+    dayjs.extend(timezone);
 
     const token = getConfig();
 
@@ -236,12 +243,14 @@ export const EventCreator: React.FC<EventCreatorProp> = ({ farms, style, cityfar
                     value={newEvent instanceof EventRecurring ? (newEvent.firstStart.getFullYear() === 1970 ? null : dayjs(newEvent.firstStart)) : ((newEvent as EventOnce).start.getFullYear() === 1970 ? null : dayjs((newEvent as EventOnce).start))}
                     onChange={startHandler}
                     slotProps={{ textField: { fullWidth: true, size: 'small' } }}
+                    timezone="Europe/London"
                 />
                 <FormHelperText>End</FormHelperText>
                 <DateTimePicker
                     value={newEvent instanceof EventRecurring ? (newEvent.firstEnd.getFullYear() !== 1970 ? dayjs(newEvent.firstEnd) : null) : ((newEvent as EventOnce).end.getFullYear() !== 1970 ? dayjs((newEvent as EventOnce).end) : null)}
                     onChange={endHandler}
                     slotProps={{ textField: { fullWidth: true, size: 'small' } }}
+                    timezone="Europe/London"
                 />
             </>)
         } else {
@@ -252,12 +261,14 @@ export const EventCreator: React.FC<EventCreatorProp> = ({ farms, style, cityfar
                     value={newEvent instanceof EventRecurring ? (newEvent.firstStart.getFullYear() === 1970 ? null : dayjs(newEvent.firstStart)) : ((newEvent as EventOnce).start.getFullYear() === 1970 ? null : dayjs((newEvent as EventOnce).start))}
                     onChange={startHandler}
                     slotProps={{ textField: { fullWidth: true, size: 'small' } }}
+                    timezone="Europe/London"
                 />
                 <FormHelperText>End</FormHelperText>
                 <DatePicker
                     value={newEvent instanceof EventRecurring ? (newEvent.firstEnd.getFullYear() !== 1970 ? dayjs(newEvent.firstEnd) : null) : ((newEvent as EventOnce).end.getFullYear() !== 1970 ? dayjs((newEvent as EventOnce).end) : null)}
                     onChange={endHandler}
                     slotProps={{ textField: { fullWidth: true, size: 'small' } }}
+                    timezone="Europe/London"
                 />
             </>)
         }
