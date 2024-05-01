@@ -127,24 +127,9 @@ const SingleEnclosure = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) =>
     return holdingDisplay
   }
 
-  // const setEnclosureNewAnimals = async (animalList) => {
-  //   try {
-  //     const newHolding = await Promise.all(animalList.map(async (id) => {
-  //       const response = await axios.get(`/animals/by_id/${id}`, token);
-  //       return response.data;
-  //     }));
-  //
-  //     console.log('newholding', newHolding);
-  //     updateEnclosure({name: enclosure.name, holding: newHolding,
-  //       capacities: enclosure.capacities, notes: enclosure.notes, farm: enclosure.farm});
-  //   } catch (error) {
-  //     window.alert(error);
-  //   }
-  // }
-
   const setEnclosureNewAnimals = (animalList: Animal[]) => {
 
-    //iterate thru each type in capacity
+    //iterate through each type in capacity
     for (const type of Object.entries(enclosure.capacities)){
       let typeTotal=0
       for (const animal of animalList){
@@ -155,12 +140,11 @@ const SingleEnclosure = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) =>
       }
       if (typeTotal>type[1]){
         setCapacitiesWarning(
-            `There are too many of ${type[0]} in this enclosure, you need to assign less`
+            `There are too many ${type[0]}(s) in this enclosure, you need to assign less`
         )
         return
       }
     }
-    console.log("HELLO ",animalList)
     updateEnclosure(enclosure.id, new Enclosure({name: enclosure.name, holding: animalList,
           capacities: enclosure.capacities, notes: enclosure.notes, farm: enclosure.farm}))
     window.location.reload()
