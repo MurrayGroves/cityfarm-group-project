@@ -33,8 +33,7 @@ const SingleAnimal = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
     const { animalID } = useParams<string>();
 
     const [relEvents,setRelEvents] = useState<Event[]>([]);
-    const [chosenAnimal, setChosenAnimal] = useState<Animal>(new Animal({name: 'Loading...', type: 'Loading...'}));
-    const [selectedEvent, setSelectedEvent] = useState<Event>();
+    const [chosenAnimal, setChosenAnimal] = useState<Animal | null>(null);
     const [schema, setSchema] = useState<Schema>();
     const [children, setChildren] = useState<string[]>(new Array<string>());
     const [animals, setAnimals] = useState<Animal[]>([]);
@@ -58,7 +57,7 @@ const SingleAnimal = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
 
             for (const enclosure of enclosures){
                 for (const an of enclosure.holding){
-                    if (animal.id === an.id){
+                    if ((animal ? animal.id : "") === an.id){
                         setAnimalEnclosure(enclosure)
                     }
                 }
@@ -67,6 +66,9 @@ const SingleAnimal = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
 
     useEffect(()=>{
         let kids = new Array<string>();
+        if (chosenAnimal === null) {
+            return;
+        }
         (async () => {
             const anis = await cityfarm.getAnimals(true, null, (animals) => {setAnimals(animals)});
             setAnimals(anis)
@@ -95,8 +97,46 @@ const SingleAnimal = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
         })()
     },[chosenAnimal])
 
+    useEffect(() => {
+        if (chosenAnimal === null) return;
+        chosenAnimal.type !== 'Loading...' && getSchema();
+    }, [chosenAnimal]);
 
-    function getSchema() {
+
+    if (chosenAnimal === null) {
+        return <div>
+            <h1>Loading...</h1>
+            <div className='details'>
+                <div><b>Sex:</b> Loading...</div>
+                <div><b>Species:</b> Loading...</div>
+                <div style={{display: 'flex'}}>
+                    <span style={{marginRight: '0.5em'}}><b>Father:</b></span>
+                    Loading...
+                </div>
+                <div style={{display: 'flex'}}>
+                    <span style={{marginRight: '0.5em'}}><b>Mother:</b></span>
+                    Loading...
+                </div>
+                <div>
+                    <b>Farm:</b> Loading...
+                </div>
+                <div>
+                    <span><b>Notes:</b> Loading...</span>
+                </div>
+                Loading...
+                </div>
+
+                {
+                    <div className="children">
+                        <b>Children:</b>
+                        Loading...
+                    </div>
+                }
+                <div style={{display:'flex'}}><b>Enclosure: </b> Loading...</div>
+            </div>
+    }
+
+    const getSchema = () => {
         (async () => {
             const schema = await cityfarm.getSchema(chosenAnimal.type, true, (schema) => {setSchema(schema)})
             if (!schema) {
@@ -107,9 +147,6 @@ const SingleAnimal = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
         })()
     }
 
-    useEffect(() => {
-        chosenAnimal.type !== 'Loading...' && getSchema();
-    }, [chosenAnimal]);
 
     const fieldTypeSwitch = (name, value) => {
         if (schema && value !== '') {
@@ -220,11 +257,7 @@ const SingleAnimal = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
                 ))}
             </Masonry>
         </div>
-        {selectedEvent && (
-            <Paper elevation={3} className='selectedBox'>
-                <SelectedEvent event={selectedEvent} setEvent={setSelectedEvent} cityfarm={cityfarm} farms={farms}/>
-            </Paper>
-        )}
+
         <EnclosureMove cityfarm={cityfarm} excludedEnc={animalEnclosure}
                        enclosures={allEnclosures} animalList={animalMoving} close={closeEnclosureMove} />
     </>);
