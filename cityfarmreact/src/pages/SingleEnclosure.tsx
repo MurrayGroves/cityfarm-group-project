@@ -17,6 +17,8 @@ import { Enclosure } from "../api/enclosures.ts";
 import { CityFarm } from "../api/cityfarm.ts";
 import { Animal } from "../api/animals.ts";
 import { Event, EventInstance, EventOnce, EventRecurring } from '../api/events.ts';
+import EnclosurePopover from "../components/EnclosurePopover.tsx";
+import CapacityChanger from "../components/CapacityChanger.tsx";
 
 const SingleEnclosure = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
   const token = getConfig();
@@ -32,6 +34,7 @@ const SingleEnclosure = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) =>
   const [animalsCurrentlySelected, setAnimalsCurrentlySelected] = useState<{ [key: string]: Animal[] }>({});
   const [relEvents,setRelEvents] = useState<Event[]>([])
   const [eventsAll, setEventAll] = useState(false);
+  const [openCapacitiesPopup, setOpenCapacitiesPopup] = useState<boolean>(false)
 
   useEffect(() => {
     (async () => {
@@ -59,6 +62,13 @@ const SingleEnclosure = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) =>
     }
     return animals
   }
+
+  useEffect(()=>{
+    if(!openCapacitiesPopup){
+      updateEnclosure(enclosure.id, new Enclosure({name: enclosure.name, holding: enclosure.holding,
+        capacities: enclosure.capacities, notes: enclosure.notes, farm: enclosure.farm}));
+    }
+  },[openCapacitiesPopup])
 
   useEffect(()=>{
     // send whole thing into selectedanimals
@@ -127,7 +137,6 @@ const SingleEnclosure = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) =>
     return holdingDisplay
   }
 
-  const setEnclosureNewAnimals = (animalList: Animal[]) => {
   const handleEventClick=(event: Event) => {
     //nothing
   }
@@ -154,11 +163,11 @@ const SingleEnclosure = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) =>
             {e.animals.map((animal: Animal, index) => (
                 <AnimalPopover key={index} cityfarm={cityfarm} animalID={animal.id}/>
             ))}
-            {e.animals.length !== 0 &&
+            {e.enclosures.length !== 0 &&
                 <div>
-                    <h3>Animals</h3>
-                    {e.enclosures.map((animal, index) => (
-                        <AnimalPopover key={index} cityfarm={cityfarm} animalID={animal.id}/>
+                    <h3>Enclosures</h3>
+                    {e.enclosures.map((enclosure, index) => (
+                        <EnclosurePopover key={index} cityfarm={cityfarm} enclosureID={enclosure.id}/>
                     ))}
                 </div>}
             {e.description !== "" ?
@@ -254,14 +263,26 @@ const SingleEnclosure = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) =>
     <h3 style={{ display: "inline-block" }}>Livestock:</h3>
     <br/>
 
+    <Button variant='outlined' onClick={() => {setOpenCapacitiesPopup(true)}}>Capacities</Button> 
+
+    <div id="CapacityChanger" style={{textAlign:'center'}}>
+      <Dialog open={openCapacitiesPopup} onClose={()=>{setOpenCapacitiesPopup(false)}}>
+        <DialogTitle><span style={{display: 'flex', justifyContent: 'space-between'}}>Change Capacities<Button variant='outlined' onClick={() => setOpenCapacitiesPopup(false)}>Close</Button></span></DialogTitle>
+        <DialogContent>
+          <CapacityChanger enclosure={enclosure} cityfarm={cityfarm}/>
+        </DialogContent>
+      </Dialog>
+    </div>
+
     <div id="AssociateAnimal" style={{textAlign:'center'}}>
       <Dialog fullWidth maxWidth='md' open={openAnimalsPopup} onClose={()=>{setOpenAnimalsPopup(false)}}>
         <DialogTitle>Change Animals</DialogTitle>
         <DialogContent>
-          <AssociateAnimal cityfarm={cityfarm} setAnimals={setEnclosureNewAnimals} animals={enclosure.holding} close={()=>{setOpenAnimalsPopup(false);}}></AssociateAnimal>
+          <AssociateAnimal cityfarm={cityfarm} setAnimals={setEnclosureNewAnimals} animals={enclosure.holding} close={()=>{setOpenAnimalsPopup(false)}}></AssociateAnimal>
         </DialogContent>
       </Dialog>
     </div>
+
     {holdings()}
     <EnclosureMove cityfarm={cityfarm} excludedEnc={enclosure}
                    enclosures={allEnclosures} animalList={selectedAnimals} close={closeEnclosureMove} />
