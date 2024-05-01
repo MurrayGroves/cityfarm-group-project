@@ -2,12 +2,13 @@ package cityfarm.api.enclosure;
 
 import cityfarm.api.animals.AnimalCustom;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.DocumentReference;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Objects;
-import java.util.Set;
+import java.util.List;
 
 @Document("enclosures")
 public class EnclosureGeneric {
@@ -19,10 +20,11 @@ public class EnclosureGeneric {
     public HashMap<String, Integer> capacities;
 
     /**
-     *  A mapping of animal types to lists of animals that the enclosure is holding
+     *  A list of animals that the enclosure is holding
      */
+    @DocumentReference(collection = "animals")
     @NonNull
-    public HashMap<String, Set<AnimalCustom>> holding;
+    public List<AnimalCustom> holding;
     /**
      * String for the name of the enclosure
      */
@@ -35,11 +37,18 @@ public class EnclosureGeneric {
     public String notes;
 
     /**
+     * String to denote the farm the enclosure is at
+     */
+    @NonNull
+    public String farm;
+
+    /**
      * Create new enclosure with no animals, and irrelevant capacity
      */
     public EnclosureGeneric(@NonNull String name) {
-        this.holding = new HashMap<>();
+        this.holding = new ArrayList<>();
         this.name = name;
+        this.farm = farm;
     }
 
     /**
@@ -47,10 +56,11 @@ public class EnclosureGeneric {
      * @param capacities sets the {@link EnclosureGeneric#capacities capacities} field
      * @param holding sets the {@link EnclosureGeneric#holding holding} field, initialising it as empty if null
      */
-    public EnclosureGeneric(@NonNull String name, @Nullable HashMap<String, Integer> capacities, @Nullable HashMap<String, Set<AnimalCustom>> holding, @Nullable String notes) {
+    public EnclosureGeneric(@NonNull String name, @Nullable HashMap<String, Integer> capacities, @Nullable List<AnimalCustom> holding, @Nullable String notes, @NonNull String farm) {
         this.capacities = capacities;
-        this.holding = Objects.requireNonNullElse(holding, new HashMap<>());
+        this.holding = holding;
         this.name = name;
         this.notes = notes;
+        this.farm = farm;
     }
 }

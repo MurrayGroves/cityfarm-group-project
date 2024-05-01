@@ -18,9 +18,11 @@ public class AnimalCreateRequest {
 
     public Boolean alive;
 
-    public Boolean male;
+    public String sex;
 
     public ZonedDateTime dateOfBirth;
 
     public String notes;
+
+    public String farm;
 }

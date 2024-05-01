@@ -1,12 +1,15 @@
 package cityfarm.api.calendar;
 
-import cityfarm.api.animals.*;
+import cityfarm.api.animals.AnimalCustom;
 import cityfarm.api.enclosure.Enclosure;
+import cityfarm.api.schemas.AnimalSchema;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.mongodb.lang.NonNull;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.lang.Nullable;
+import org.springframework.data.mongodb.core.mapping.*;
 
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -19,24 +22,28 @@ import java.util.List;
 @Document("events")
 public abstract class Event {
     // List of IDs of attached enclosures
-    public List<String> attachedEnclosures;
+    @DocumentReference(collection = "enclosures")
+    public List<Enclosure> enclosures;
 
     // List of IDs of attached animals
-    public List<String> attachedAnimals;
+    @DocumentReference(collection = "animals")
+    public List<AnimalCustom> animals;
 
     public String title;
+
+    public List<String> farms;
+
 
     public String description;
 
     // List of IDs of attached people
     public List<String> attachedPeople;
 
-    public Boolean all_day;
+    public Boolean allDay;
 
-    public ZonedDateTime start;
-    public ZonedDateTime end;
-
-    @Nullable private String id;
+    @Id
+    @Nullable
+    public String id;
 
     public abstract String get_id();
 

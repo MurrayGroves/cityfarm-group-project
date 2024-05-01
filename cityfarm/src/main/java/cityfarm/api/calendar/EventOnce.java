@@ -1,6 +1,6 @@
 package cityfarm.api.calendar;
 
-import cityfarm.api.animals.AnimalUnique;
+import cityfarm.api.animals.AnimalCustom;
 import cityfarm.api.enclosure.Enclosure;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -19,8 +19,8 @@ import java.util.UUID;
 @JsonTypeName("once")
 @Document("events")
 public class EventOnce extends Event {
-    @Id
-    private final String id;
+    public ZonedDateTime start;
+    public ZonedDateTime end;
 
     @Override
     public String get_id() {
@@ -34,7 +34,7 @@ public class EventOnce extends Event {
 
     @Override
     public List<EventInstance> occurencesBetween(@NonNull ZonedDateTime from, @NonNull ZonedDateTime to) {
-        if (from.isBefore(start) || to.isAfter(end)) {
+        if (from.isBefore(start) && to.isAfter(end)) {
             return List.of(new EventInstance(start, end, this));
         } else {
             return List.of();
@@ -43,21 +43,28 @@ public class EventOnce extends Event {
 
     @JsonCreator
     @PersistenceCreator
-    public EventOnce(@JsonProperty("start") @NonNull ZonedDateTime start, @JsonProperty("end") @Nullable ZonedDateTime end, @JsonProperty("all_day") @NonNull Boolean all_day,
+    public EventOnce(@JsonProperty("start") @NonNull ZonedDateTime start, @JsonProperty("end") @Nullable ZonedDateTime end, @JsonProperty("allDay") @NonNull Boolean allDay,
                      @JsonProperty("title") @NonNull String title, @JsonProperty("description") @Nullable String description, @JsonProperty("_id") @Nullable String id,
-                     @JsonProperty("enclosures") @Nullable List<String> attachedEnclosures, @JsonProperty("animals") @Nullable List<String> attachedAnimals, @JsonProperty("people") @Nullable List<String> attachedPeople) {
-        if (end == null && !all_day) {
+                     @JsonProperty("enclosures") @Nullable List<Enclosure> enclosures, @JsonProperty("animals") @Nullable List<AnimalCustom> animals, @JsonProperty("farms") @Nullable List<String> farms, @JsonProperty("people") @Nullable List<String> attachedPeople) {
+        if (end == null && !allDay) {
             throw new IllegalArgumentException("If end isn't present, the event must be marked as all day");
         }
         
         this.start = start;
         this.end = end;
-        this.all_day = all_day;
+        this.allDay = allDay;
         this.title = title;
         this.description = description;
-        this.attachedEnclosures = attachedEnclosures;
-        this.attachedAnimals = attachedAnimals;
+        this.enclosures = enclosures;
+        this.animals = animals;
+        this.farms = farms;
         this.attachedPeople = attachedPeople;
         this.id = Objects.requireNonNullElseGet(id, () -> UUID.randomUUID().toString());
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Start: %s\nEnd: %s\nAllDay: %s\nTitle: %s\nDescription: %s\nEnclosures: %s\nAnimals: %s\nFarms: %s\nID: %s\n",
+                start, end, allDay, title, description, enclosures, animals, farms, get_id());
     }
 }

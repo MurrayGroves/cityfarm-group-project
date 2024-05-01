@@ -48,6 +48,7 @@ jobs:
           context: ./cityfarmreact
           push: true
           tags: ghcr.io/spe-uob/2023-cityfarm/frontend:dev
+          build-args: BASE_URL=https://cityfarm.murraygrov.es/api
           labels: ${{ steps.meta.outputs.labels }}
 
       # This step uses [docker/metadata-action](https://github.com/docker/metadata-action#about) to extract tags and labels that will be applied to the specified image. The `id` "meta" allows the output of this step to be referenced in a subsequent step. The `images` value provides the base name for the tags and labels.

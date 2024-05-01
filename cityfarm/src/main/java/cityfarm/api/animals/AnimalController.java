@@ -7,6 +7,7 @@ import org.springframework.boot.actuate.autoconfigure.observation.ObservationPro
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -14,7 +15,6 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@CrossOrigin(origins = {"http://localhost:3000", "https://cityfarm.murraygrov.es"}, methods = {RequestMethod.GET, RequestMethod.POST})
 public class AnimalController {
     @Autowired
     AnimalRepository animalRepository;
@@ -28,17 +28,22 @@ public class AnimalController {
     @Autowired
     MongoTemplate mongoTemplate;
 
-    private final String host_url = "http://localhost:3000";
-
-    HttpHeaders responseHeaders = new HttpHeaders();
-
 
     /**
-     * @return a list of all animals in the DB
+     * @param farm to filter animals by.
+     * @return a list of all animals, filtered by farm.
      */
     @GetMapping("/api/animals")
-    public ResponseEntity<List<AnimalCustom>> get_animals() {
-        return ResponseEntity.ok().body(animalRepository.findAll());
+    public ResponseEntity<List<AnimalCustom>> get_animals(@RequestParam("farm") @Nullable String farm) {
+        List<AnimalCustom> animals = animalRepository.findAll();
+        if (farm != null) {
+            animals = animals
+                    .stream()
+                    .filter((animal) -> animal.farm.equals(farm))
+                    .toList();
+        }
+
+        return ResponseEntity.ok().body(animals);
     }
 
     /**
@@ -58,12 +63,19 @@ public class AnimalController {
 
     /**
      * Get list of animals with a specific name
-     * @param name name of the animals to search for (case-sensitive and must be exact)
+     * @param name name of the animals to search for (fuzzy search)
+     * @param farm name of the farm to filter animal list by
      * @return list of all animals with that name
      */
     @GetMapping("/api/animals/by_name/{name}")
-    public ResponseEntity<List<AnimalCustom>> get_animals_by_name(@PathVariable String name) {
+    public ResponseEntity<List<AnimalCustom>> get_animals_by_name(@PathVariable String name, @RequestParam @Nullable String farm) {
         List<AnimalCustom> animals = animalRepositoryCustom.findAnimalByName(name);
+        if (farm != null) {
+            animals = animals
+                    .stream()
+                    .filter((animal) -> animal.farm.equals(farm))
+                    .toList();
+        }
 
         return ResponseEntity.ok().body(animals);
     }
@@ -76,8 +88,6 @@ public class AnimalController {
      */
     @PostMapping("/api/animals/create")
     public ResponseEntity<String> create_animal(@RequestBody AnimalCreateRequest animalReq) {
-        responseHeaders.set(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, host_url);
-
         AnimalSchema schema = schemaRepository.findSchemaByName(animalReq.type);
 
         if (schema == null) {
@@ -96,5 +106,37 @@ public class AnimalController {
         String location = String.format("/api/animals/by_id/%s", animal.get_id());
 
         return ResponseEntity.created(URI.create(location)).body(animal.get_id());
+    }
+
+    @PatchMapping("/api/animals/by_id/{id}")
+    public ResponseEntity<String> update_animal(@PathVariable String id, @RequestBody AnimalCreateRequest animalReq) {
+        AnimalCustom animal = animalRepository.findAnimalById(id);
+
+        if (animal == null) {
+            return ResponseEntity.status(404).build();
+        }
+
+        animal.fields = animalReq.fields;
+        animal.name = animalReq.name;
+        animal.mother = animalReq.mother;
+        animal.father = animalReq.father;
+        animal.breed = animalReq.breed;
+        animal.alive = animalReq.alive;
+        animal.sex = animalReq.sex;
+        animal.dateOfBirth = animalReq.dateOfBirth;
+        animal.notes = animalReq.notes;
+        animal.farm = animalReq.farm;
+
+        animalRepository.save(animal);
+
+        String location = String.format("/api/animals/by_id/%s", animal.get_id());
+        return ResponseEntity.created(URI.create(location)).body(animal.get_id());
+    }
+
+    @DeleteMapping("/api/animals/by_id/{id}")
+    public ResponseEntity<String> delete_animal(@PathVariable String id) {
+        animalRepository.deleteById(id);
+
+        return ResponseEntity.ok(id);
     }
 }
