@@ -146,6 +146,8 @@ if %ERRORLEVEL% EQU 0 (
     echo WSL2 already installed.
 )
 
+ubuntu config --default-user root
+
 echo Getting ready to install Docker...
 wsl apt-get update -y
 wsl apt-get install -y ca-certificates curl
@@ -154,11 +156,13 @@ wsl curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings
 wsl chmod a+r /etc/apt/keyrings/docker.asc
 
 echo Adding Docker repository...
-wsl echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo $VERSION_CODENAME) stable" ^| tee /etc/apt/sources.list.d/docker.list > /dev/null
+wsl echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo $VERSION_CODENAME) stable" ^| tee /etc/apt/sources.list.d/docker.list
 echo Updating package list...
 wsl apt-get update -y
 echo Installing Docker...
 wsl apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+wsl service docker start
 
 echo Creating CityFarm directory...
 wsl mkdir -p /opt/cityfarm
