@@ -19,6 +19,8 @@ import { Animal } from "../api/animals.ts";
 import { Event, EventInstance, EventOnce, EventRecurring } from '../api/events.ts';
 import EnclosurePopover from "../components/EnclosurePopover.tsx";
 import CapacityChanger from "../components/CapacityChanger.tsx";
+import { IndividualEvent } from "../components/IndividualEvent.tsx";
+import Masonry from '@mui/lab/Masonry';
 
 const SingleEnclosure = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
   const token = getConfig();
@@ -32,8 +34,8 @@ const SingleEnclosure = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) =>
   const [capacitiesWarning, setCapacitiesWarning] = useState<string>('')
   const [animalsCurrentlySelected, setAnimalsCurrentlySelected] = useState<{ [key: string]: Animal[] }>({});
   const [relEvents,setRelEvents] = useState<Event[]>([])
-  const [eventsAll, setEventAll] = useState(false);
   const [openCapacitiesPopup, setOpenCapacitiesPopup] = useState<boolean>(false)
+  const [selectedEvent, setSelectedEvent] = useState<Event>();
 
   useEffect(() => {
     (async () => {
@@ -41,8 +43,12 @@ const SingleEnclosure = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) =>
       setEnclosure(enclosure!);
       const enclosures = await cityfarm.getEnclosures(true, null, (enclosures) => setAllEnclosures(enclosures));
       setAllEnclosures(enclosures);
-      const events = await cityfarm.getEvents(true, (events) => setRelEvents(events));
-      setRelEvents(events);
+      const events = await cityfarm.getEvents(true, (events) => {setRelEvents(events.filter((event) => {
+        return event.animals.map((enclosure) => enclosure.id).includes(enclosureID)
+      }))})
+      setRelEvents(events.filter((event) => {
+        return event.animals.map((enclosure) => enclosure.id).includes(enclosureID!)
+    }));
     })();
 
     const tempAnimalsCurrentlySelected: { [key: string]: Animal[] } = {};
@@ -151,38 +157,7 @@ const SingleEnclosure = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) =>
   const singleEvent = (e: Event)=>{
     return(
         <Grid item xs={1}>
-        <Paper elevation={3} className="event-box">
-            <h2 onClick={() => handleEventClick(e)}>{e.title}</h2>
-            {
-                e.allDay ?
-                    <div>
-                        <p>{e.start.toLocaleDateString()} {e.end == null ? <></> : e.end.toLocaleDateString() === e.start.toLocaleDateString() ? <></> : " - " + e.end.toLocaleDateString()}</p>
-                    </div>
-                    :
-                    <div>
-                        <p>{e.start.toLocaleString([], {year: '2-digit', month: '2-digit', day: '2-digit', hour: '2-digit', minute:'2-digit'})} - {e.start.toLocaleDateString() === e.end.toLocaleDateString() ? e.end.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}): e.end.toLocaleString([], {year: '2-digit', month: '2-digit', day: '2-digit', hour: '2-digit', minute:'2-digit'})}</p>
-                    </div>
-
-            }
-            {e.farms.length !== 0 ? <h3>Farms</h3> : <></>}
-            {e.farms.map((farm, index) => <p key={index}>{readableFarm(farm)}</p>)}
-            {e.animals.length !== 0 ? <h3>Animals</h3> : <></>}
-            {e.animals.map((animal: Animal, index) => (
-                <AnimalPopover key={index} cityfarm={cityfarm} animalID={animal.id}/>
-            ))}
-            {e.enclosures.length !== 0 &&
-                <div>
-                    <h3>Enclosures</h3>
-                    {e.enclosures.map((enclosure, index) => (
-                        <EnclosurePopover key={index} cityfarm={cityfarm} enclosureID={enclosure.id}/>
-                    ))}
-                </div>}
-            {e.description !== "" ?
-                <div>
-                    <h3>Description</h3>
-                    {e.description}
-                </div> : <></>}
-        </Paper>
+            <IndividualEvent cityfarm={cityfarm} eventID={e.id} farms={farms}/>
         </Grid>
     )
   }
@@ -295,22 +270,18 @@ const SingleEnclosure = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) =>
                    enclosures={allEnclosures} animalList={selectedAnimals} close={closeEnclosureMove} />
 
     <div>
-          {relEvents.length !== 0 ? <h2 onClick={()=>setEventAll(!eventsAll)}>Linked Event, click for {!eventsAll ? 'more' : 'less'}</h2> : <></>}
-              <Grid container spacing={3} columns={{xs: 1, md: 2, lg: 3, xl: 4}}>
-                  {!eventsAll ? <>
-                  {relEvents.slice(0, 3).map((e, index)=>(
-                      <Fragment key={index}>{singleEvent(e)}</Fragment>
-                  ))} </>
-                      :
-                  <>
-                      {relEvents.map((e, index)=>(
-                          <Fragment key={index}>{singleEvent(e)}</Fragment>
-                      ))} </>
-
-                  }
-              </Grid>
-
-      </div>
+        {relEvents.length !== 0 ? <h2 style={{marginTop: '2%'}}>Linked Events</h2> : <></>}
+        <Masonry spacing={3} columns={{xs: 1, md: 2, lg: 3, xl: 4}} sequential>
+            {relEvents.map((e, index)=>(
+                <Fragment key={index}>{singleEvent(e)}</Fragment>
+            ))}
+        </Masonry>
+    </div>
+    {selectedEvent && (
+        <Paper elevation={3} className='selectedBox'>
+            <SelectedEvent event={selectedEvent} setEvent={setSelectedEvent} cityfarm={cityfarm} farms={farms}/>
+        </Paper>
+    )}
 
       <Dialog open={capacitiesWarning !==''} onClose={()=>{setCapacitiesWarning('')}}>
         <DialogTitle>Capacity issue</DialogTitle>
