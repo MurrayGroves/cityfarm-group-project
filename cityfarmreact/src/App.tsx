@@ -27,9 +27,12 @@ import Help from "./pages/Help.tsx";
 import usePersistState from './components/PersistentState.ts'
 
 import { CityFarm } from './api/cityfarm.ts';
-import SingleEnclosure from "./pages/SingleEnclosure";
+import SingleEnclosure from "./pages/SingleEnclosure.tsx";
 import { Event, EventInstance } from './api/events.ts';
 import { Animal, Schema } from './api/animals.ts';
+import { Enclosure } from './api/enclosures.ts';
+
+import dayjs from 'dayjs';
 
 declare module '@mui/material/styles' {
     interface Theme {
@@ -104,6 +107,7 @@ const App = () => {
     const [animals_cache, setAnimalsCache] = useState<Animal[]>([]);
     const [events_cache, setEventsCache] = useState<Event[]>([]);
     const [schemas_cache, setSchemasCache] = useState<Schema[]>([]);
+    const [enclosures_cache, setEnclosuresCache] = useState<Enclosure[]>([]);
     const [event_instances_cache, setEventInstancesCache] = useState<EventInstance[]>([]);
 
     useEffect(() => setDevice(getComputedStyle(document.documentElement).getPropertyValue('--device')), [])
@@ -140,7 +144,7 @@ const App = () => {
         </Router>
     }
 
-    const cityfarm = new CityFarm(events_cache, setEventsCache, animals_cache, setAnimalsCache, schemas_cache, setSchemasCache, event_instances_cache, setEventInstancesCache);
+    const cityfarm = new CityFarm(events_cache, setEventsCache, animals_cache, setAnimalsCache, schemas_cache, setSchemasCache, enclosures_cache, setEnclosuresCache, event_instances_cache, setEventInstancesCache);
 
     // when window is resized, check if width thresholds have changed
     window.addEventListener("resize", () => setDevice(getComputedStyle(document.documentElement).getPropertyValue('--device')));
@@ -162,7 +166,7 @@ const App = () => {
                             <Route path="/enclosures" element={<EnclosureTable farms={farms} cityfarm={cityfarm}/>}/>
                             <Route path="/schemas" element={<Schemas farms={farms} cityfarm={cityfarm}/>}/>
                             <Route path="/help" element={<Help/>}/>
-                            <Route path="/single-enclosure/:enclosureID" element={<SingleEnclosure farms={{farms}} cityfarm={cityfarm}/>}/>
+                            <Route path="/single-enclosure/:enclosureID" element={<SingleEnclosure farms={farms} cityfarm={cityfarm}/>}/>
                             <Route path="/single-animal/:animalID" element={<SingleAnimal farms={farms} cityfarm={cityfarm}/>} />
                             <Route path="*" element={<Error/>}/>
                         </Routes>

@@ -45,17 +45,8 @@ const AssociateEnclosure = ({enclosures, setEnclosures, cityfarm, close}: {enclo
 
     function displayAll() {
         (async () => {
-            try {
-                const response = await axios.get(`/enclosures`, token);
-                setEnclosureList(response.data.map((enclosure) => new Enclosure(enclosure)));
-            } catch (error) {
-                if (error.response.status === 401) {
-                    window.location.href = "/login";
-                    return;
-                } else {
-                    window.alert(error);
-                }
-            }
+            const enclosures = await cityfarm.getEnclosures(true, null, (enclosures) => setEnclosureList(enclosures));
+            setEnclosureList(enclosures);
         })()
     }
 
@@ -81,7 +72,7 @@ const AssociateEnclosure = ({enclosures, setEnclosures, cityfarm, close}: {enclo
 
     const cols: GridColDef[] = [
         { field: 'name', editable: true, headerName: 'Name', headerClassName: 'grid-header', headerAlign: 'left', flex: 1,
-            renderCell: (enclosure) => <EnclosurePopover enclosureID={enclosure.value.id}/>
+            renderCell: (enclosure) => <EnclosurePopover cityfarm={cityfarm} enclosureID={enclosure.value.id}/>
         },
         { field: 'holding', headerName: 'Holding', headerClassName: 'grid-header', headerAlign: 'left', flex: 1, cellClassName: 'scroll-cell',
             renderCell: (animalList) => <ul>{animalList.value.map((animal: Animal) => {return(<li key={animal.id}><AnimalPopover cityfarm={cityfarm} animalID={animal.id}/></li>)})}</ul>

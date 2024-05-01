@@ -8,8 +8,6 @@ export class Event {
     description: string;
     allDay: boolean;
     farms: string[];
-    start: Date;
-    end: Date;
     id: string
 
     constructor(data: any) {
@@ -19,8 +17,6 @@ export class Event {
         this.description = data.description;
         this.allDay = data.allDay;
         this.farms = data.farms ?? [];
-        this.start = new Date(data.start);
-        this.end = new Date(data.end);
         this.id = data._id ?? data.id;
     }
 }
