@@ -41,7 +41,6 @@ const Calendar = ({farms, device, cityfarm}: {farms: any, device: any, cityfarm:
     const [selectedEvent,setSelectedEvent] = useState<EventInstance | null>(null);
     const [visibleFarms, setVisibleFarms] = useState([farms.WH, farms.HC, farms.SW]);
     const [modifyEvent, setModifyEvent] = useState(false);
-    const [showErr, setShowErr] = useState(false);
     const [inputErr, setInputErr] = useState({newTitle: true});
 
     useEffect(() => {
@@ -51,28 +50,6 @@ const Calendar = ({farms, device, cityfarm}: {farms: any, device: any, cityfarm:
     useEffect(() =>{
         selectedEvent && setModifiedEvent({...selectedEvent.event, animals: selectedEvent.event.animals, enclosures: selectedEvent.event.enclosures});
     },[selectedEvent]);
-
-    const setModifiedEventAnimals = (animalList) => {
-        if (modifiedEvent === null) {
-            return;
-        }
-        setModifiedEvent({...modifiedEvent, animals: animalList})
-    }
-    const setModifiedEventEnclosures = (enclosures) => {
-        if (modifiedEvent === null) {
-            return;
-        }
-        setModifiedEvent({...modifiedEvent, enclosures: enclosures})
-    }
-    
-    const changeAllDay = (isAllDay, type) => {
-        if (type === 'add') {
-            setNewEvent({...newEvent, allDay: isAllDay});
-        } else if (type === 'modify' && modifiedEvent !== null) {
-            setModifiedEvent({...modifiedEvent, allDay: isAllDay});
-        }
-    }
-
 
     useEffect(() => {
         (async () => {
@@ -147,74 +124,6 @@ const Calendar = ({farms, device, cityfarm}: {farms: any, device: any, cityfarm:
         return {
             style: style
         };
-    }
-
-    function setEventStart(e: dayjs.Dayjs | null) {
-        if (e === null || modifiedEvent === null) {
-            return;
-        }
-        if (modifiedEvent instanceof EventRecurring) {
-            let delta = modifiedEvent.firstEnd.getTime() - modifiedEvent.firstStart.getTime();
-
-            let myEvent = (modifiedEvent as EventRecurring);
-            myEvent.firstStart = new Date(e.toISOString());
-
-            // If the new start time is after the end time, move the end time to be the same distance from the new start time as the old end time was from the old start time
-            // E.g. if the event was 10:00 - 11:00 and you move the start time to 11:00, the end time will be moved to 12:00
-            if (myEvent.firstEnd < myEvent.firstStart) {
-                myEvent.firstEnd = new Date(myEvent.firstStart.getTime() + delta);
-            }
-
-            setModifiedEvent(myEvent);
-        } else {
-            let myEvent = (modifiedEvent as EventOnce);
-
-            let delta = myEvent.end.getTime() - myEvent.start.getTime();
-
-            myEvent.start = new Date(e.toISOString());
-
-            // If the new start time is after the end time, move the end time to be the same distance from the new start time as the old end time was from the old start time
-            // E.g. if the event was 10:00 - 11:00 and you move the start time to 11:00, the end time will be moved to 12:00
-            if (myEvent.end < myEvent.start) {
-                myEvent.end = new Date(myEvent.start.getTime() + delta);
-            }
-
-            setModifiedEvent(myEvent);
-        }
-    }
-
-    function setEventEnd(e: dayjs.Dayjs | null) {
-        if (e === null || modifiedEvent === null) {
-            return;
-        }
-        if (modifiedEvent instanceof EventRecurring) {
-            let delta = modifiedEvent.firstEnd.getTime() - modifiedEvent.firstStart.getTime();
-
-            let myEvent = (modifiedEvent as EventRecurring);
-            myEvent.firstEnd = new Date(e.toISOString());
-
-            // If the new end time is before the start time, move the start time to be the same distance from the new end time as the old start time was from the old end time
-            // E.g. if the event was 10:00 - 11:00 and you move the end time to 11:00, the start time will be moved to 12:00
-            if (myEvent.firstEnd < myEvent.firstStart) {
-                myEvent.firstStart = new Date(myEvent.firstEnd.getTime() - delta);
-            }
-
-            setModifiedEvent(myEvent);
-        } else {
-            let myEvent = (modifiedEvent as EventOnce);
-
-            let delta = myEvent.end.getTime() - myEvent.start.getTime();
-
-            myEvent.end = new Date(e.toISOString());
-
-            // If the new end time is before the start time, move the start time to be the same distance from the new end time as the old start time was from the old end time
-            // E.g. if the event was 10:00 - 11:00 and you move the end time to 11:00, the start time will be moved to 12:00
-            if (myEvent.end < myEvent.start) {
-                myEvent.start = new Date(myEvent.start.getTime() - delta);
-            }
-
-            setModifiedEvent(myEvent);
-        }
     }
 
     const onRangeChange = useCallback(async (range) => {

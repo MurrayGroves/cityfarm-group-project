@@ -17,23 +17,25 @@ export const FindEvent = ({style, cityfarm, farms, setEvent}: {style: any, cityf
 
     useEffect(() => {
         (async () => {
-            const response = await cityfarm.getEvents(true, (events) => {
-                setEvents(events);
-                setSearchResults(events);
-                setLoading(false);
-            });
-            setEvents(response);
-            setSearchResults(response);
+            setEvents(cityfarm.events_cache);
             setLoading(false);
         })();
     }, [cityfarm.events_cache]);
 
     useEffect(() => {
-        if (search === '') {
-            setSearchResults(events);
-        } else {
-            setSearchResults(events.filter((event) => event.title.toLowerCase().includes(search.toLowerCase())));
-        }
+        (async () => {
+            await cityfarm.getEvents(false);
+        })()
+    }, [])
+
+    useEffect(() => {
+        (async () => {
+            if (search === '') {
+                setSearchResults(events);
+            } else {
+                setSearchResults(events.filter((event) => event.title.toLowerCase().includes(search.toLowerCase())));
+            }
+        })()
     }, [search, events]);
 
 
@@ -47,8 +49,6 @@ export const FindEvent = ({style, cityfarm, farms, setEvent}: {style: any, cityf
     if (loading) {
         return <div style={{height: '80%'}}><CircularProgress style={{position: 'relative', top: '45%', left: '45%', width: '10%', height: '10%'}}/></div>;
     }
-
-    console.log("Search Results", searchResults)
 
     return (
         <div style={style}>

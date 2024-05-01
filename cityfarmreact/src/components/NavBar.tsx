@@ -35,7 +35,7 @@ const NavBar = (props) => {
                     boxSizing: 'border-box',
                     backgroundColor: '#000028',
                     width: '150px',
-                    overflow: 'scroll'
+                    overflow: props.device === "mobile" ? 'scroll' : 'hidden'
                 },
               }}
         >
@@ -51,7 +51,8 @@ const NavBar = (props) => {
                 <Switch style={{marginLeft: '5px'}} size='small' checked={props.theme === 'dark'} onChange={(e) => {props.setTheme(e.target.checked ? 'dark' : 'light')}}/>
             </span>
             <span style={{backgroundColor: '#000028', width: '150px', height: '70px', position: 'fixed', bottom: '40px', left: '0'}}>
-            <Button
+            {process.env.REACT_APP_AUTH === "true" ? 
+                <Button
                 variant='outlined'
                 style={{height: '40px', margin: '20px 15px 10px 15px'}}
                 onClick={() => {
@@ -61,7 +62,8 @@ const NavBar = (props) => {
                     navigate('/login');
                 }}
                 endIcon={<LogoutIcon/>}
-            >Logout</Button></span>
+            >Logout</Button> : <></>
+            }</span>
         </Drawer>
     </>)
 }
