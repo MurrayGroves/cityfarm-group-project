@@ -134,7 +134,12 @@ export class CityFarm {
             try {
                 const response = await axios.get(`/events/non_instanced`, this.token);
                 const events = response.data.map((data) => data.type === "once" ? new EventOnce(data) : new EventRecurring(data));
-                this.setEventsCache(events);
+                if (cached_events !== events) {
+                    this.setEventsCache(events);
+                    if (callback) {
+                        callback(events);
+                    }
+                }
                 return events;
             } catch (error) {
                 if (error.response?.status === 401) {

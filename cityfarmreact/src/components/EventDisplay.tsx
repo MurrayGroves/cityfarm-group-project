@@ -17,7 +17,6 @@ const EventDisplay = ({
         handleDelEvent: () => void, farms: any, cityfarm: CityFarm
     }) => {
     
-        console.log("selected", selectedEvent);
 
     return (<>
         <div style={{overflow: 'auto'}}>

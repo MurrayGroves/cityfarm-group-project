@@ -26,7 +26,6 @@ const AnimalTable = ({farms, cityfarm, device}: {farms: any, cityfarm: CityFarm,
     const [farm, setFarm] = useState(null);
 
     const [filterModel, setFilterModel] = useState<GridFilterModel>({items: []});
-    const [schemas, setSchemas] = useState<Schema[]>([]);
     const [selectedSchema, setSelectedSchema] = useState<Schema | null>(null);
     const [modifyAnimal, setModifyAnimal] = useState<any>({});
     const [editingRow, setEditingRow] = useState(null);
@@ -68,6 +67,7 @@ const AnimalTable = ({farms, cityfarm, device}: {farms: any, cityfarm: CityFarm,
     function getSchemas() {
         (async () => {
             const schemas = await cityfarm.getSchemas(true, (schemas) => {setSchemaList(schemas)});
+            console.debug("Fetched schemas: ", schemas);
             setSchemaList(schemas);
         })()
     }
@@ -164,18 +164,18 @@ const AnimalTable = ({farms, cityfarm, device}: {farms: any, cityfarm: CityFarm,
     }, [selectedSchema, animalList])
 
 
-    // useEffect(() => {
-    //     const defaultRows = animalList.map((animal) => ({
-    //         id: animal.id,
-    //         name: animal,
-    //         type: animal.type.charAt(0).toUpperCase() + animal.type.slice(1),
-    //         father: animal.father !== null ? animal.father : '',
-    //         mother: animal.mother !== null ? animal.mother : '',
-    //         sex: animal.sex,
-    //     }));
-    //     setRows(defaultRows);
-    //     calculateColumnsAndRows(selectedSchema);
-    // }, [animalList])
+    useEffect(() => {
+         const defaultRows = animalList.map((animal) => ({
+             id: animal.id,
+             name: animal,
+             type: animal.type.charAt(0).toUpperCase() + animal.type.slice(1),
+             father: animal.father !== null ? animal.father : '',
+             mother: animal.mother !== null ? animal.mother : '',
+             sex: animal.sex,
+         }));
+         setRows(defaultRows);
+         calculateColumnsAndRows(selectedSchema);
+    }, [animalList])
 
 
     async function saveAnimal(animal_id) {
@@ -583,7 +583,10 @@ const AnimalTable = ({farms, cityfarm, device}: {farms: any, cityfarm: CityFarm,
                         setFilterModel(newModel);
                         const schema_name: string = String(params.value).toLowerCase();
 
-                        let schema = schemas.find((schema) => {return schema.name.toLowerCase() === schema_name});
+                        console.debug("Selected schema name: ", schema_name)
+                        console.debug("Schemas: ", schemaList)
+                        let schema = schemaList.find((schema) => {return schema.name.toLowerCase() === schema_name});
+                        console.debug("Selected schema: ", schema);
                         setSelectedSchema(schema ? schema : null);
                     }
                 }}
