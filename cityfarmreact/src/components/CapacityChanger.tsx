@@ -4,7 +4,10 @@ import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
 import {Button, Backdrop, Alert} from "@mui/material";
-
+import Popover from '@mui/material/Popover';
+import Typography from '@mui/material/Typography';
+import {Link} from "react-router-dom";
+import { Help } from '@mui/icons-material';
 import { getConfig } from '../api/getToken';
 import { CityFarm } from "../api/cityfarm";
 import { Enclosure } from "../api/enclosures";
@@ -15,6 +18,17 @@ const CapacityChanger = ({enclosure, cityfarm}: {enclosure: Enclosure, cityfarm:
     const [schemaList, setSchemaList] = useState<Schema[]>([]); /* The State for the list of schemas. The initial state is [] */
     const [showErr, setShowErr] = useState<boolean>(false);
     
+    const [anchorEl, setAnchorEl] = useState(null);
+    const open = Boolean(anchorEl);
+
+    const handlePopoverOpen = (e) => {
+        setAnchorEl(e.currentTarget);
+    };
+
+    const handlePopoverClose = () => {
+        setAnchorEl(null);
+    };
+
     useEffect(() => {
         (async () => {
             const schemas = await cityfarm.getSchemas(true, (schemas) => setSchemaList(schemas));
@@ -35,6 +49,39 @@ const CapacityChanger = ({enclosure, cityfarm}: {enclosure: Enclosure, cityfarm:
 
     return (
         <div>
+            <div style={{top: '20px', right:'120px', position: "absolute"}}>
+            <Link to="/help">
+                <Typography
+                    aria-owns={open ? 'mouse-over-popover' : undefined}
+                    aria-haspopup="true"
+                    onMouseEnter={handlePopoverOpen}
+                    onMouseLeave={handlePopoverClose}
+                    style={{display: 'inline-block', margin: '2.5px 0'}}
+                >
+                    <Help/>
+                </Typography>
+                <Popover
+                    id="mouse-over-popover"
+                    sx={{pointerEvents: 'none'}}
+                    open={open}
+                    anchorEl={anchorEl}
+                    anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'left',
+                    }}
+                    transformOrigin={{
+                        vertical: 'top',
+                        horizontal: 'left',
+                    }}
+                    onClose={handlePopoverClose}
+                    disableRestoreFocus
+                >
+                    <Typography sx={{ p: 1, whiteSpace: 'pre-line' }} maxHeight={400} maxWidth={500}>
+                        To set the maximum amount of animals of an animal type in this enclosure, type the number into the capacity section on the same row as that type. <br/> Multiple animal types can be added to a single enclosure.
+                    </Typography>
+                </Popover>
+            </Link>
+            </div>
             <Paper elevation={3} style={{ marginBottom: '20px'}}>
                 <DataGrid
                     autoHeight
