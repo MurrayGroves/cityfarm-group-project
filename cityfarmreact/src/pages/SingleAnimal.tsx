@@ -64,6 +64,10 @@ const SingleAnimal = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
             }
     })()}, [animalID]);
 
+    useEffect(() => {
+        setChosenAnimal(cityfarm.animals_cache.find((animal) => animal.id === animalID) ?? null)
+    }, [cityfarm.animals_cache])
+
     useEffect(()=>{
         let kids = new Array<string>();
         if (chosenAnimal === null) {
