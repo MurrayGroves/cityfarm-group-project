@@ -274,19 +274,7 @@ export const EventCreator: React.FC<EventCreatorProp> = ({ farms, style, cityfar
         }
     }
 
-    const textFieldTheme = () => createTheme({
-        components: {
-            MuiFormHelperText: {
-                styleOverrides: {
-                    root: {
-                        marginLeft: '5%',
-                    }
-                }
-            },
-        }
-    })
-
-    const handlePatchEvent = async () => {
+    const handlePatchEvent = async() => {
         if (newEvent === null) {
             return;
         }
@@ -352,10 +340,9 @@ export const EventCreator: React.FC<EventCreatorProp> = ({ farms, style, cityfar
                 </FormGroup>
             </div>
             <div className='smallMarginTop'>
-                <ThemeProvider theme={textFieldTheme()}>
-                    <div style={{ display: "flex", alignItems: 'center', width: '100%' }}>
-                        <FormControlLabel style={{ flex: '0.01', marginRight: '0' }} label="Repeats" control={<Checkbox checked={recurring ?? false} size='small' />} onChange={() => setRecurring(!recurring)} />
-                        <p style={{ margin: '1%', flex: '0.5', visibility: recurring ? 'visible' : 'hidden' }}>every</p>
+                    <div style={{display: "flex", alignItems: 'center', width: '100%'}}>
+                        <FormControlLabel style={{flex: '0.01', marginRight: '0', marginBottom: '20px'}} label="Repeat" control={<Checkbox checked={recurring ?? false} size='small'/>} onChange={() => setRecurring(!recurring)} />
+                        <p style={{margin: '0 10px 20px 1%', marginBottom: '20px', flex: '0.5', visibility: recurring ? 'visible': 'hidden'}}>every</p>
 
                         <TextField type="number" onFocus={(e) => e.target.addEventListener("wheel", function (e) { e.preventDefault() }, { passive: false })}
                             helperText="Years" style={{ flex: '1', visibility: recurring ? 'visible' : 'hidden', marginRight: '1%' }}
@@ -398,7 +385,6 @@ export const EventCreator: React.FC<EventCreatorProp> = ({ farms, style, cityfar
                             size='small'
                         />
                     </div>
-                </ThemeProvider>
             </div>
             <div className='smallMarginTop'>
                 <h3>Farms</h3>
