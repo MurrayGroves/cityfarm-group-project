@@ -79,7 +79,7 @@ const SingleEnclosure = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) =>
   const cols: GridColDef [] = [
     {field: 'name', headerName: 'Name', headerClassName: 'grid-header', headerAlign: 'left', flex: 1,
     renderCell: (animal) => (<AnimalPopover cityfarm={cityfarm} key={animal.value.id} animalID={animal.value.id}/>)},
-    { field: 'move', headerName: '', headerClassName: 'grid-header', headerAlign: 'left', flex: 1,
+    { field: 'move', headerName: '', headerClassName: 'grid-header', headerAlign: 'left', width: 85,
     renderCell:(animal)=>(<Button onClick={() => setSelectedAnimals([animal.value])}>Move</Button>)}
   ]
 

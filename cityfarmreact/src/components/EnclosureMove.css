@@ -16,7 +16,6 @@
 
 .moveHidden {
     transform: translateX(100%);
-    display: none;
 }
 
 .movePaper{

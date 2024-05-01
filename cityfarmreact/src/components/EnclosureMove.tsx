@@ -69,7 +69,7 @@ const EnclosureMove = ({cityfarm, excludedEnc, enclosures, animalList, close}: {
             for (const entry of Object.entries(animalListTypes)){
                //console.log(val)
                //console.log(enc.capacities[val[0]])
-                if (enc.capacities[entry[0]] < enc.holding.length + entry[1] || enc.capacities[entry[0]] === undefined){
+                if (enc.capacities[entry[0]] < enc.holding.length + entry[1] || enc.capacities[entry[0]] === undefined) {
                     includeFlag = false
                 }
             }
@@ -88,7 +88,7 @@ const EnclosureMove = ({cityfarm, excludedEnc, enclosures, animalList, close}: {
         return(
             <div> Move {name} to one of: <br/>
                 {(filteredEnclosures().length == 0 || (filteredEnclosures().length == 1 && filteredEnclosures()[0].id == excludedEnc?.id))
-                ? <><WarningAmberIcon/> No enclosures with space available, change selection<br/></>
+                ? <><WarningAmberIcon sx={{position: 'relative', top: '3px'}} color="warning" fontSize="small" /> No enclosures with space available.<br/></>
                 : filteredEnclosures().map((enc) => (
                     enc.id !== excludedEnc?.id ? (
                         <Button key={enc.id} onClick={() => {animalTo(enc)}}>
@@ -132,7 +132,7 @@ const EnclosureMove = ({cityfarm, excludedEnc, enclosures, animalList, close}: {
                 </Paper>
             </div>
             <div>
-                <Dialog open={capacitiesWarning !==''} onClose={()=>{setCapacitiesWarning('')}}>
+                <Dialog open={capacitiesWarning !== ''} onClose={()=>{setCapacitiesWarning('')}}>
                     <DialogTitle>Capacity issue for enclosure movement</DialogTitle>
                     <DialogContent >
                         <Alert severity={'warning'}>
