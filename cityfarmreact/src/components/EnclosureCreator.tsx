@@ -28,11 +28,14 @@ const EnclosureCreator = ({ setCreateProp, cityfarm, farms}) => {
     const [inputErr, setInputErr] = useState({});
     const [showErr, setShowErr] = useState(false);
     const token = getConfig();
-    const [present, setPresent] = useState(false);
+
+    //const [present, setPresent] = useState(false);
+
     const setNewEnclosureAnimals = (animalList: Animal[]) => {
         console.log(animalList);
         for(const animal of animalList){
-            newEnclosure.holding.forEach((heldAnimal) => heldAnimal.id == animal.id && setPresent(true))
+            let present = false
+            newEnclosure.holding.forEach((heldAnimal) => heldAnimal.id == animal.id ? present = true : <></>)
             if(!present){
                 if (newEnclosure.capacities[animal.type] == null){
                     newEnclosure.capacities[animal.type] = 1
@@ -41,7 +44,7 @@ const EnclosureCreator = ({ setCreateProp, cityfarm, farms}) => {
                     newEnclosure.capacities[animal.type] = newEnclosure.capacities[animal.type] + 1
                 }
             }
-            setPresent(false)
+            present = false
         }
         setNewEnclosure({...newEnclosure, holding: animalList})
     }
