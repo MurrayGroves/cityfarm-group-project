@@ -40,7 +40,7 @@ export const IndividualEvent = (
     }
 
 
-    return <Paper style={{overflow: 'auto', padding: '2%'}}>
+    return <Paper elevation={3} style={{overflow: 'auto', padding: '2%'}}>
             { !modifyEvent ?
                 <>
                     <div className='event'>

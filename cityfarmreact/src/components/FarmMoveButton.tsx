@@ -22,7 +22,8 @@ const FarmMoveButton = ({ids, farm, cityfarm}: {ids: string[], farm: string, cit
                     console.log(error.message)
                     window.alert(error.message);
                 }
-                //window.location.reload();
+                // Update cache
+                await cityfarm.getAnimal(animal.id, false);
             }
     })()
     }, [animal])

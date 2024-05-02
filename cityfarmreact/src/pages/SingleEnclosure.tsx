@@ -45,7 +45,7 @@ const SingleEnclosure = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) =>
       const enclosures = await cityfarm.getEnclosures(true, null, (enclosures) => setAllEnclosures(enclosures));
       setAllEnclosures(enclosures);
       const events = await cityfarm.getEvents(true, (events) => {setRelEvents(events.filter((event) => {
-        return event.enclosure.map((enclosure) => enclosure.id).includes(enclosureID)
+        return event.enclosures.map((enclosure) => enclosure.id).includes(enclosureID)
       }))})
       setRelEvents(events.filter((event) => {
         return event.enclosures.map((enclosure) => enclosure.id).includes(enclosureID!)
@@ -228,8 +228,8 @@ const SingleEnclosure = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) =>
   return (
   <div className="enclosureView">
     <span style={{display: 'flex'}}>
-      <h2>{enclosure.name}</h2>
-      <IconButton style={{marginLeft: '20px', marginTop: '20px', maxHeight: '40px'}} color={'warning'} onClick={()=>setEnclosureDelete(true)}><DeleteIcon/></IconButton>
+      <h1>{enclosure.name}</h1>
+      <IconButton style={{marginLeft: '20px', marginTop: '26px', maxHeight: '40px'}} color={'warning'} onClick={()=>setEnclosureDelete(true)}><DeleteIcon/></IconButton>
     </span>
     <Dialog open={enclosureDelete} onClose={()=>setEnclosureDelete(false)}>
       <DialogTitle>Delete {enclosure.name}?</DialogTitle>

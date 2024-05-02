@@ -259,13 +259,24 @@ export class CityFarm {
                 }
             }
         } else { // The user needs the most up-to-date data so wait to fetch and return it
-            const response = await axios.get(`/animals/by_id/${id}`, this.token);
-            // Update cache
-            this.setAnimalsCache(this.animals_cache.map((animal) => animal.id !== id ? animal : new Animal(response.data)));
-            if (this.animals_cache.find((animal) => animal.id === id) === undefined) {
-                this.setAnimalsCache([...this.animals_cache, new Animal(response.data)]);
+            try {
+                const response = await axios.get(`/animals/by_id/${id}`, this.token);
+                // Update cache
+                this.setAnimalsCache(this.animals_cache.map((animal) => animal.id !== id ? animal : new Animal(response.data)));
+                if (this.animals_cache.find((animal) => animal.id === id) === undefined) {
+                    this.setAnimalsCache([...this.animals_cache, new Animal(response.data)]);
+                }
+                return new Animal(response.data);
+            } catch (error) {
+                if (error.response?.status === 401) {
+                    console.log('Token expired');
+                    window.location.href = "/login";
+                    throw new Error('Token expired');
+                } else if (error.response?.status === 404) {
+                    return null;
+                }
+                throw error;
             }
-            return new Animal(response.data);
         }
     }
 
