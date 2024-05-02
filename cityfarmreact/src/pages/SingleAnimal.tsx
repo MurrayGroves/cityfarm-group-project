@@ -1,5 +1,7 @@
 import "./SingleAnimal.css"
 import {  useParams } from "react-router-dom";
+import axios from "../api/axiosConfig.js";
+import {getConfig} from "../api/getToken.js";
 import React, { Fragment, useState, useEffect, useCallback } from 'react';
 import AnimalPopover from "../components/AnimalPopover.tsx";
 import Paper from "@mui/material/Paper";
@@ -18,6 +20,7 @@ import EnclosurePopover from "../components/EnclosurePopover.tsx";
 import EnclosureMove from '../components/EnclosureMove.tsx';
 import {Enclosure} from "../api/enclosures";
 import Button from "@mui/material/Button";
+import { ArrowBack, Bedtime, Close, Edit, Undo } from "@mui/icons-material";
 
 import lodash from "lodash"
 
@@ -33,7 +36,7 @@ export function readableFarm(farm) {
 const SingleAnimal = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
 
     const { animalID } = useParams<string>();
-
+    const token = getConfig();
     const [relEvents,setRelEvents] = useState<Event[]>([]);
     const [chosenAnimal, setChosenAnimal] = useState<Animal | null>(null);
     const [schema, setSchema] = useState<Schema>();
@@ -202,20 +205,44 @@ const SingleAnimal = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
 
     const openEnclosureMove =()=>{
         console.log(allEnclosures,chosenAnimal)
-
-
         setAnimalMoving([chosenAnimal])
         console.log(animalMoving)
     }
+
     const closeEnclosureMove =()=>{
         setAnimalMoving([])
     }
 
+    const handleKill = () => {
+        (async () => {
+            try {
+                const response = await axios.patch(`/animals/by_id/${chosenAnimal.id}`, {...chosenAnimal, alive: !chosenAnimal.alive}, token);
+                console.log(response);
+                window.location.reload();
+            } catch (error) {
+                console.log(error)
+                if (error.response.status === 401) {
+                    window.location.href = "/login";
+                    return;
+                } else {
+                    window.alert(error);
+                }
+            }
+        })()
+    }
 
 
     return (<>
         <h1>{chosenAnimal.name}</h1>
         <div className='details'>
+        <div style={{display: 'flex'}}>
+            <b style={{marginRight: '5px'}}>Status:</b> {chosenAnimal.alive ? <span>Live</span> : <span>Dead</span>}
+            <IconButton sx={{p: 0, ml: '5px'}} color="error" onClick={() => handleKill()}>
+                {chosenAnimal.alive ?
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24"><path fill="#F00000" d="M240-80v-170q-39-17-68.5-45.5t-50-64.5q-20.5-36-31-77T80-520q0-158 112-259t288-101q176 0 288 101t112 259q0 42-10.5 83t-31 77q-20.5 36-50 64.5T720-250v170H240Zm80-80h40v-80h80v80h80v-80h80v80h40v-142q38-9 67.5-30t50-50q20.5-29 31.5-64t11-74q0-125-88.5-202.5T480-800q-143 0-231.5 77.5T160-520q0 39 11 74t31.5 64q20.5 29 50.5 50t67 30v142Zm100-200h120l-60-120-60 120Zm-80-80q33 0 56.5-23.5T420-520q0-33-23.5-56.5T340-600q-33 0-56.5 23.5T260-520q0 33 23.5 56.5T340-440Zm280 0q33 0 56.5-23.5T700-520q0-33-23.5-56.5T620-600q-33 0-56.5 23.5T540-520q0 33 23.5 56.5T620-440ZM480-160Z"/></svg>
+                : <Undo/>}
+            </IconButton>
+        </div>
         <div><b>Sex:</b> {chosenAnimal.sex === undefined ? <span>Loading...</span> : (chosenAnimal.sex === Sex.Female ? <span>Female</span> : (chosenAnimal.sex === Sex.Male ? <span>Male</span> : <span>Castrated</span>))}</div>
         <div><b>Species:</b> {chosenAnimal.type}</div>
         <div style={{display: 'flex'}}>
@@ -262,7 +289,6 @@ const SingleAnimal = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
                 </Fragment>
             ))}
         </div>
-
 
         <div>
             {relEvents.length !== 0 ? <h2 style={{marginTop: '2%'}}>Linked Events</h2> : <></>}

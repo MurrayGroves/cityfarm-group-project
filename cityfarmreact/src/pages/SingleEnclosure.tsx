@@ -228,8 +228,8 @@ const SingleEnclosure = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) =>
   return (
   <div className="enclosureView">
     <span style={{display: 'flex'}}>
-      <h2>{enclosure.name}</h2>
-      <IconButton style={{marginLeft: '20px', marginTop: '20px', maxHeight: '40px'}} color={'warning'} onClick={()=>setEnclosureDelete(true)}><DeleteIcon/></IconButton>
+      <h1>{enclosure.name}</h1>
+      <IconButton style={{marginLeft: '20px', marginTop: '26px', maxHeight: '40px'}} color={'warning'} onClick={()=>setEnclosureDelete(true)}><DeleteIcon/></IconButton>
     </span>
     <Dialog open={enclosureDelete} onClose={()=>setEnclosureDelete(false)}>
       <DialogTitle>Delete {enclosure.name}?</DialogTitle>
