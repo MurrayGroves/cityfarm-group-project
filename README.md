@@ -14,20 +14,14 @@ The stakeholders of this project are the livestock manager and livestock assista
 * St Werburghs City Farm
 
 # User Stories
+## Livestock Manager
+As the livestock manager for Windmill Hill farm I need to be able to keep track of the many many tasks and animals I have to keep track of. I want everything in one easy-to-access place so I can share it with our volunteers.
 
-As a livestock manager, I want to view animal capacities at different farms, so that I can quickly check if there's space before moving an animal. (This avoids overcrowding and ensures animal welfare.)
+## Volunteer
+As a volunteer at Windmill Hill farm, I'm not super experienced at the work we do, and I am not familiar with the complicated excel sheet setup they use now. I need a simple system where I can easily understand what tasks I need to do - and update them as I complete them.
 
-As a livestock manager, I want to create recurring vaccination events for new vaccines, so that I can keep track of updated schedules. (This ensures animal health and avoids missed vaccinations.)
-
-As a chef, I want to see upcoming egg production forecasts, so that I can adjust my weekly supply orders. (This reduces waste and ensures fresh ingredients.)
-
-As a livestock manager, I want to see a combined calendar for all farms, so that I can avoid switching between them. (This saves time and simplifies animal management.)
-
-As an event coordinator, I want to view goat arrival dates, so that I can plan events around their inoculations. (This ensures animal health and avoids scheduling conflicts.)
-
-As an animal breeder, I want to securely trade animals with other farms within the app, so that I can facilitate collaboration and resource sharing.
-
-As a livestock manager, I want to access animal data and inventory on my phone during power outages, so that I can ensure animal well-being even when computers are unavailable.
+## CEO
+As CEO of Windmill Hill farm I sometimes need to be able to see an overview of all our animals and what events are coming up so I can help organise the equipment and people that are needed. Right now I have to ask the Livestock Manager because I don't understand his Excel spreadsheet system. Having a website with all the information in would make this much quicker.
 
 # Tech Stack
 ## Frontend
