@@ -18,7 +18,6 @@ import { CityFarm } from "../api/cityfarm.ts";
 
 declare module '@mui/x-data-grid' {
     interface FooterPropsOverrides {
-        setEditMode?: (mode: boolean) => void;
         setCreate?: (create: boolean) => void;
         setFilterModel?: any;
         selectedSchema?: Schema;
@@ -31,7 +30,6 @@ declare module '@mui/x-data-grid' {
 const EnclosureTable = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
     const [enclosureList, setEnclosureList] = useState<Enclosure[]>([]); /* The State for the list of enclosures. The initial state is [] */
     const [searchTerm, setSearchTerm] = useState<string>(''); /* The term being search for in the searchbar */
-    const [editMode, setEditMode] = useState<boolean>(false); /* Whether edit mode is on. Initial state is false */
     const [create, setCreate] = useState<boolean>(false);
 
     const token = getConfig();
@@ -103,11 +101,9 @@ const EnclosureTable = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => 
             }}
             slotProps={{
                 footer: {
-                    setEditMode,
                     setCreate
                 }}}
             style={{fontSize: '1rem'}}
-            isCellEditable={() => false}
             processRowUpdate = {(newVal, oldVal) => {
                 if (newVal.name === oldVal.name) { return newVal; }
                 const newName = newVal.name;
@@ -126,7 +122,6 @@ const EnclosureTable = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => 
                         }
                     }
                 })();
-                setEditMode(false);
                 return newVal;
             }}/>
         </Paper>
@@ -138,10 +133,8 @@ const EnclosureTable = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => 
 const CustomFooter = (props: NonNullable<GridSlotsComponentsProps['footer']>) => {
     return (<>
         <Divider/>
-        <div style={{maxHeight: '56.5px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginLeft: '0.5em'}}>
-            <span style={{display: 'flex', alignItems: 'center'}}>
-            <Button sx={{maxWidth: '100px', float: 'right'}} variant='contained' endIcon={<Add/>} style={{float: 'right'}} onClick={() => props.setCreate!(true)}>Create</Button>
-            </span>
+        <div style={{maxHeight: '56.5px', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+            <Button sx={{maxWidth: '100px', marginLeft: '10px'}} variant='contained' endIcon={<Add/>} onClick={() => props.setCreate!(true)}>Create</Button>
             <GridPagination/>
         </div>
     </>)
