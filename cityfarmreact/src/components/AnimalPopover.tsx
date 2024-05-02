@@ -20,7 +20,7 @@ const AnimalPopover = ({cityfarm, animalID}: {cityfarm: CityFarm, animalID: stri
     const hoverColour = '#f1f1f1';
 
     const [anchorEl, setAnchorEl] = useState(null);
-    const [chosenAnimal, setChosenAnimal] = useState<Animal>(new Animal({name: 'Loading...'}));
+    const [chosenAnimal, setChosenAnimal] = useState<Animal | null>(null);
     const [animalMother, setMother] = useState("Unregistered")
     const [animalFather, setFather] = useState("Unregistered")
 
@@ -37,23 +37,62 @@ const AnimalPopover = ({cityfarm, animalID}: {cityfarm: CityFarm, animalID: stri
     useEffect(() => {
         (async () => {
             const animal = await cityfarm.getAnimal(animalID, true, (animal) => setChosenAnimal(animal));
-            animal ? setChosenAnimal(animal) : console.error('animal not found.');
+            setChosenAnimal(animal)
         })()
     }, [animalID]);
 
+
     useEffect(()=>{
+        if (chosenAnimal === null) {
+            return;
+        }
+
         if(chosenAnimal.mother){
             (async ()=>{
                 const mother = await cityfarm.getAnimal(chosenAnimal.mother, true, (animal) => setMother(animal.name));
-                setMother(mother!.name);
+                setMother(mother ? mother.name : "Animal Not Found");
             })()}
         if (chosenAnimal.father){
             (async ()=>{
                 const father = await cityfarm.getAnimal(chosenAnimal.father, true, (animal) => setFather(animal.name));
-                setFather(father!.name)
+                setFather(father ? father.name : "Animal Not Found")
             })()
         }
     },[chosenAnimal])
+
+    if (chosenAnimal === null) {
+        return <div>
+            <Typography
+                aria-owns={open ? 'mouse-over-popover' : undefined}
+                aria-haspopup="true"
+                onMouseEnter={handlePopoverOpen}
+                onMouseLeave={handlePopoverClose}
+                style={{display: 'inline-block', color: 'coral'}}
+            >
+                Animal Not Found
+            </Typography>
+            <Popover
+                id="mouse-over-popover"
+                sx={{pointerEvents: 'none'}}
+                open={open}
+                anchorEl={anchorEl}
+                anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'left',
+                }}
+                transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'left',
+                }}
+                onClose={handlePopoverClose}
+                disableRestoreFocus
+            >
+                <Typography sx={{ p: 1, whiteSpace: 'pre-line' }}>
+                    <b>{`You probably deleted it, but dont worry - you can edit this animal and change it to an existing animal.`}</b>
+                </Typography>
+            </Popover>
+            </div>
+    }
 
     return (
         <div>
@@ -64,7 +103,7 @@ const AnimalPopover = ({cityfarm, animalID}: {cityfarm: CityFarm, animalID: stri
                 onMouseLeave={handlePopoverClose}
                 style={{display: 'inline-block'}}
             >
-                <Link className='animalLink' style={{'--colour': colour, '--hoverColour': hoverColour}} to={`/single-animal/${chosenAnimal.id}`}>{chosenAnimal.name}</Link>
+            <Link className='animalLink' style={{'--colour': colour, '--hoverColour': hoverColour}} to={`/single-animal/${chosenAnimal.id}`}>{chosenAnimal.name}</Link>
             </Typography>
             <Popover
                 id="mouse-over-popover"

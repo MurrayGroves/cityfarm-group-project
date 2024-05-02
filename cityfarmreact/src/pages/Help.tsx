@@ -17,8 +17,11 @@ export const liveData = <>
     The add animal button adds an animal where you can selected the types from the ones defined in the animal types page and all the fields can be assigned.
 </>
 export const encData = <>
-    Every enclosure has animals assigned to it.{/* you can give it specific events which will affect all the animals within it.*/}
-Click on an enclosure to expand it, you can edit them by clicking the edit button then pressing a field.
+    For each enclosure you can see which animals it is currently holding - and how many of each type it can hold at most.
+    <br/><br/>
+    Click on an enclosure's name to see all the information about it, or to edit it.
+    <br/><br/>
+    You can hover over an animal's name to see information about it - or click it to see even more information.
 </>
 
 export const typeData = <>

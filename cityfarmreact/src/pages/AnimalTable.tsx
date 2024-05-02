@@ -17,6 +17,7 @@ import { getConfig } from '../api/getToken.js';
 import { Animal, Schema, Sex } from '../api/animals.ts';
 import { CityFarm } from "../api/cityfarm.ts";
 import { Link } from "react-router-dom";
+import { TypePopover } from "../components/TypePopover.tsx";
 
 const AnimalTable = ({farms, cityfarm, device}: {farms: any, cityfarm: CityFarm, device: any}) => {
     const [animalList, setAnimalList] = useState<Animal[]>([]); /* The State for the list of animals. The initial state is [] */
@@ -347,7 +348,7 @@ const AnimalTable = ({farms, cityfarm, device}: {farms: any, cityfarm: CityFarm,
                     }
                 });
                 return exists 
-                    ? <p>{cell.value}</p>
+                    ? <TypePopover schemaName={cell.value}/>
                     : <p style={{color: 'red'}}>{cell.value}</p>
             }
         },

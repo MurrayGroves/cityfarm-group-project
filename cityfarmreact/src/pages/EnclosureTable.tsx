@@ -68,12 +68,10 @@ const EnclosureTable = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => 
             renderCell: (enclosure) => <Link to={`/single-enclosure/${enclosure.value.id}`}> {enclosure.value.name} </Link>
         },
         { field: 'holding', headerName: 'Holding', headerClassName: 'grid-header', headerAlign: 'left', flex: 1, cellClassName: 'scroll-cell',
-            renderCell: (animalList) => <ul>{animalList.value.map(animal => {return(<li key={animal.id}><AnimalPopover cityfarm={cityfarm} animalID={animal.id}/></li>)})}</ul>
+            renderCell: (animalList) => <ul style={{marginLeft: '1em'}}>{animalList.value.map(animal => {return(<li key={animal.id}><AnimalPopover cityfarm={cityfarm} animalID={animal.id}/></li>)})}</ul>
         },
         { field: 'capacities', headerName: 'Capacities', headerClassName: 'grid-header', headerAlign: 'left', flex: 1 },
     ]
-
-    //console.log(enclosureList)
 
     const rows = enclosureList.map((enclosure: Enclosure) => ({
         id: enclosure.id,
