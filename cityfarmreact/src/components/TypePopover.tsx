@@ -13,6 +13,7 @@ export const TypePopover = ({schemaName}: {schemaName: string}) => {
                 aria-haspopup="true"
                 onMouseEnter={(e) => setAnchorEl(e.currentTarget)}
                 onMouseLeave={() => setAnchorEl(null)}
+                style={open ? {opacity: '50%'} : {}}
             >
                 {schemaName}
             </Typography>
