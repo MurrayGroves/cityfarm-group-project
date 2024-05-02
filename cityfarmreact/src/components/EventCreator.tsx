@@ -180,12 +180,7 @@ export const EventCreator: React.FC<EventCreatorProp> = ({ farms, style, cityfar
             return setShowErr(true);
         }
 
-        console.log("new", newEvent);
         let event = {...newEvent};
-        if ((event as EventRecurring).firstStart && event instanceof EventOnce) {
-            event.start = event.firstStart;
-            event.end = event.firstEnd;
-        }
 
         try {
             const response = recurring ? await axios.post(`/events/create/recurring`, {...event as EventRecurring, animals: newEvent.animals.map(animal => animal.id), enclosures: newEvent.enclosures.map(enclosure => enclosure.id)}, token)
@@ -288,12 +283,7 @@ export const EventCreator: React.FC<EventCreatorProp> = ({ farms, style, cityfar
         let event: any = {...newEvent};
         event.animals = event.animals.map((animal) => animal.id);
         event.enclosures = event.enclosures.map((enclosure) => enclosure.id);
-        console.log("patching event", newEvent);
-
-        if ((event as EventRecurring).firstStart && event instanceof EventOnce) {
-            event.start = event.firstStart;
-            event.end = event.firstEnd;
-        }
+        console.debug("patching event", newEvent);
 
         try {
             if (newEvent instanceof EventOnce) {

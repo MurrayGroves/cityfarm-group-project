@@ -136,18 +136,24 @@ public class EnclosureController {
         String fromId = ids.get(2);
         //gets the animal
         AnimalCustom animal = animalRepository.findAnimalById(anId);
-        //defines home and destination nd also where the animal is getting removed from, can probs be done more elegantly
-        Enclosure fromEnclosure = enclosureRepository.findEnclosureById(fromId);
-        int removalPoint = -1;
-        for (AnimalCustom a : fromEnclosure.holding) {
-            if (Objects.equals(a.get_id(), animal.get_id())) {
-                removalPoint = fromEnclosure.holding.indexOf(a);
+        if (fromId != null) {
+            //defines home and destination nd also where the animal is getting removed from, can probs be done more elegantly
+            Enclosure fromEnclosure = enclosureRepository.findEnclosureById(fromId);
+            int removalPoint = -1;
+            for (AnimalCustom a : fromEnclosure.holding) {
+                if (Objects.equals(a.get_id(), animal.get_id())) {
+                    removalPoint = fromEnclosure.holding.indexOf(a);
+                }
             }
+
+            //removes then adds the animal
+            fromEnclosure.holding.remove(removalPoint);
+            long remove = enclosureRepositoryCustom.updateHolding(fromId, fromEnclosure.holding);
+
         }
+
         Enclosure toEnclosure = enclosureRepository.findEnclosureById(toId);
-        //removes then adds the animal
-        fromEnclosure.holding.remove(removalPoint);
-        long remove = enclosureRepositoryCustom.updateHolding(fromId, fromEnclosure.holding);
+
         toEnclosure.holding.add(animal);
         long add = enclosureRepositoryCustom.updateHolding(toId, toEnclosure.holding);
 
