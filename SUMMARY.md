@@ -1,4 +1,4 @@
-# Supported Functions #
+# Supported Functionality #
 
 The project in its current state allows for CRUD operations on Animals, Enclosures, and Calendar Events.
 
@@ -9,7 +9,10 @@ Animal types can be created by the user supporting custom properties of thefollo
 - Decimal
 - Calendar Event
 
-This is a flexible system that relies on the user creating sensible attributes for animals.
+Calendar events can be created that are associated with any number of existing farms, animals and enclosures.
+Events can either be one-time or recurring, with a repeat offset given in days, weeks, months and years.
+
+Enclosures can hold animals up to their capacity, and are assigned to a farm.
 
 # Future Plans #
 
