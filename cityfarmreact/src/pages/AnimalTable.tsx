@@ -81,18 +81,8 @@ const AnimalTable = ({farms, cityfarm, device}: {farms: any, cityfarm: CityFarm,
                 displayAll();
                 return;
             }
-            try {
-                const response = await axios.get(`/animals/by_name/${searchTerm}`, {params: {farm: farm}, ...token});
-                setAnimalList(response.data);
-                console.log(response);
-            } catch (error) {
-                if (error.response.status === 401) {
-                    window.location.href = "/login";
-                    return;
-                } else {
-                    window.alert(error);
-                }
-            }
+            const newList = cityfarm.animals_cache.filter((animal) => animal.name.toLowerCase().includes(searchTerm.toLowerCase()));
+            setAnimalList(newList);
         })()
     },[searchTerm, farm])
 
