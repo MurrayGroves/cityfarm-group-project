@@ -8,6 +8,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.PersistenceCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.data.annotation.ReadOnlyProperty;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.*;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
@@ -18,7 +19,7 @@ import java.util.UUID;
 @Document("animals")
 public class AnimalCustom implements AnimalUnique {
     @ReadOnlyProperty
-    @DocumentReference(lookup="{'_id':?#{#self.type} }", collection = "animal_schemas")
+    @DocumentReference(lookup="{'_id':?#{#self.type} }", collection = "animal_schemas", lazy = true)
     private AnimalSchema schema;
 
     @JsonProperty("type")

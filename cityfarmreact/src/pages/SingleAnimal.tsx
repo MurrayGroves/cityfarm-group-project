@@ -50,9 +50,11 @@ const SingleAnimal = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
         (async () => {
             const animal = await cityfarm.getAnimal(animalID!, true, (animal) => {setChosenAnimal(animal)});
             setChosenAnimal(animal!);
+            console.log("requesting")
             const events = await cityfarm.getEvents(true, (events) => {setRelEvents(events.filter((event) => {
                 return event.animals.map((animal) => animal.id).includes(animalID)
             }))})
+            console.log("got")
             setRelEvents(events.filter((event) => {
                 return event.animals.map((animal) => animal.id).includes(animalID!)
             }));
@@ -275,7 +277,7 @@ const SingleAnimal = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
                 <b>Children:</b>
                 <List>
                     {children.map((animalID, index) => {
-                        return (<ListItem style={{margin: '0', padding: '0'}}><p style={{marginRight: '4px'}}>-</p><AnimalPopover key={index} cityfarm={cityfarm} animalID={animalID} /></ListItem>);
+                        return (<ListItem key={animalID} style={{margin: '0', padding: '0'}}><p style={{marginRight: '4px'}}>-</p><AnimalPopover key={index} cityfarm={cityfarm} animalID={animalID} /></ListItem>);
                     })}
                 </List>
             </div>

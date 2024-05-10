@@ -42,10 +42,17 @@ public class EventRecurring extends Event {
         // Calculate how long each event occurence lasts
         Duration delta = Duration.between(firstStart, firstEnd);
 
-        // Increment the cursor until we reach the `from` datetime (needed if `from` is after the first occurence to ensure occurences don't start before the first occurence)
-        while (currentDatetime.isBefore(from)) {
-            currentDatetime = currentDatetime.plus(delay);
+        // If `from` is after the first occurence, set the cursor to the first occurence after `from`
+        if (firstStart.isBefore(from)) {
+            int days = delay.getDays() + delay.getMonths() * 28 + delay.getYears() * 365;
+            Duration difference = Duration.between(firstStart, from);
+
+            // Calculate how many steps we need to take to get near the `from` datetime
+            int steps = ((int) difference.toDays()) / days + 1;
+
+            currentDatetime = firstStart.plus(delay.multipliedBy(steps));
         }
+
 
         // Calculate `num` new occurences, or 1 if `num` is not provided
         for (int i = 0; i < Objects.requireNonNullElse(num, 1); i++) {
@@ -74,9 +81,15 @@ public class EventRecurring extends Event {
         // Calculate how long each event occurence lasts
         Duration delta = Duration.between(firstStart, firstEnd);
 
-        // Increment the cursor until we reach the `from` datetime (needed if `from` is after the first occurence to ensure occurences don't start before the first occurence)
-        while (currentDatetime.isBefore(from)) {
-            currentDatetime = currentDatetime.plus(delay);
+        // If `from` is after the first occurence, set the cursor to the first occurence after `from`
+        if (firstStart.isBefore(from)) {
+            int days = delay.getDays() + delay.getMonths() * 28 + delay.getYears() * 365;
+            Duration difference = Duration.between(firstStart, from);
+
+            // Calculate how many steps we need to take to get near the `from` datetime            
+            int steps = ((int) difference.toDays()) / days + 1;
+
+            currentDatetime = firstStart.plus(delay.multipliedBy(steps));
         }
 
         // Create occurences until we reach the `to` datetime

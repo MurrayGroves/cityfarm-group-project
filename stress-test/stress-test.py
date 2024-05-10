@@ -1,6 +1,8 @@
 import requests
 import random
 import json
+import time
+from datetime import datetime, timezone
 
 HOST = 'http://localhost:8080/api'
 S = requests.Session()
@@ -11,10 +13,12 @@ with open("names.txt") as f:
 
 FARMS = ["WH", "HC", "SW"]
 SEXES = ["m", "f", "c"]
+NOW = time.time()
 
 schemas = S.get(f'{HOST}/schemas').json()
 animals = S.get(f'{HOST}/animals').json()
 events = S.get(f'{HOST}/events/non_instanced').json()
+enclosures = S.get(f'{HOST}/enclosures').json()
 
 
 def generate_boolean():
@@ -71,10 +75,69 @@ def generate_animal():
 
     return animal
 
-for i in range(900):
-    animal = generate_animal()
-    print(animal)
-    id = S.post(f'{HOST}/animals/create', json=animal).text
-    animal["_id"] = id
-    animals.append(animal)
-    print(f"Created animal with id {id}")
+
+def generate_event():
+    attachedAnimals = random.choices(animals, k=random.randint(0, 10))
+    attachedAnimals = [animal.get('_id') for animal in attachedAnimals]
+
+    attachedEnclosures = random.choices(enclosures, k=random.randint(0, 10))
+    attachedEnclosures = [enclosure.get('_id') for enclosure in attachedEnclosures]
+
+    farms = random.choices(FARMS, k=random.randint(0, 3))
+
+    description = generate_string()
+    name = generate_string()
+
+    allDay = generate_boolean()
+
+    type = "recurring" if random.random() < 0.1 else "once"
+    if type == "recurring":
+        months = random.randint(0, 2)
+        days = random.randint(1, 30)
+
+        delay = f"P0Y{months}M{days}D"
+        # First start is 60-120 days ago
+        firstStart = NOW - random.randint(3600 * 24 * 60, 3600 * 24 * 120)
+        # Event lasts up to 4 days
+        firstEnd = firstStart + random.randint(3600, 3600 * 24 * 4)
+        lastEnd = firstEnd + random.randint(3600 * 24 * 60, 3600 * 24 * 720)
+
+        firstStart = datetime.fromtimestamp(firstStart, timezone.utc).isoformat()
+        firstEnd = datetime.fromtimestamp(firstEnd, timezone.utc).isoformat()
+        lastEnd = datetime.fromtimestamp(lastEnd, timezone.utc).isoformat()
+
+        return {"animals": attachedAnimals, "enclosures": attachedEnclosures, "farms": farms, "description": description, "title": name, "allDay": allDay, "delay": delay, "firstStart": firstStart, "firstEnd": firstEnd, "lastEnd": lastEnd}
+
+    else:
+        start = NOW + random.randint(-3600 * 24 * 120, 3600 * 24 * 120)
+        end = start + random.randint(3600, 3600 * 24 * 4)
+
+        start = datetime.fromtimestamp(start, timezone.utc).isoformat()
+        end = datetime.fromtimestamp(end, timezone.utc).isoformat()
+
+        return {"animals": attachedAnimals, "enclosures": attachedEnclosures, "farms": farms, "description": description, "title": name, "allDay": allDay, "start": start, "end": end}
+
+
+quantity = int(input("How many objects do you want to create? "))
+
+if (answer := input("Animal/Event? (a/e): ")) == "a":
+    for i in range(quantity):
+        animal = generate_animal()
+        print(animal)
+        id = S.post(f'{HOST}/animals/create', json=animal).text
+        animal["_id"] = id
+        animals.append(animal)
+        print(f"Created animal with id {id}")
+
+elif answer == "e":
+    for i in range(quantity):
+        event = generate_event()
+        print(event)
+        if event.get("firstStart") is not None:
+            id = S.post(f'{HOST}/events/create/recurring', json=event).text
+        else:
+            id = S.post(f'{HOST}/events/create/once', json=event).text
+
+        event["_id"] = id
+        events.append(event)
+        print(f"Created event with id {id}")

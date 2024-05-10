@@ -35,7 +35,7 @@ public class CalendarController {
             , @RequestParam("to") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) ZonedDateTime to) {
 
 
-        List<Event> events = eventRepository.findAll();
+        List<Event> events = eventRepositoryCustom.findBetween(from, to);
 
         List<EventInstance> instances = new ArrayList<>();
 
@@ -105,8 +105,6 @@ public class CalendarController {
 
     @PostMapping("/api/events/create/once")
     public ResponseEntity<Event> create_event(@RequestBody CreateEventOnceRequest event) {
-
-
         List<Enclosure> enclosures = new ArrayList<>();
         for (String enclosure: event.enclosures) {
             Enclosure enc = enclosureRepository.findEnclosureById(enclosure);
@@ -128,6 +126,9 @@ public class CalendarController {
 
     @PostMapping("/api/events/create/recurring")
     public ResponseEntity<Event> create_event(@RequestBody CreateEventRecurringRequest event) {
+        if (event.delay.isZero()) {
+            return ResponseEntity.status(400).build();
+        }
 
         List<Enclosure> enclosures = new ArrayList<>();
         for (String enclosure: event.enclosures) {

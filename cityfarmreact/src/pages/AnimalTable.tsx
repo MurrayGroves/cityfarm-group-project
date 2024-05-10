@@ -313,7 +313,9 @@ const AnimalTable = ({farms, cityfarm, device}: {farms: any, cityfarm: CityFarm,
 
     const defaultCols: GridColDef[] = [
         { field: 'name', type: 'singleSelect', headerName: 'Name', headerClassName: 'grid-header', headerAlign: 'left', flex: 1, editable: true,
-        renderCell: (animal) => {return (animal.value.id ? <Link to={`/single-animal/${animal.value.id}`}>{animal.value.name}</Link> : <p>Loading...</p>)}, renderEditCell: (params) => {
+        renderCell: (animal) => {return (animal.value.id ? <Link to={`/single-animal/${animal.value.id}`}>{
+                animal.value.alive ? <p>{animal.value.name}</p> : <del>{animal.value.name}</del>
+                }</Link> : <p>Loading...</p>)}, renderEditCell: (params) => {
 
                 params.value = params.value.name;
                 return <FormControl sx={{width: '100%'}}>
