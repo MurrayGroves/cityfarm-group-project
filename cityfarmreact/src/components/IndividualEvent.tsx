@@ -11,12 +11,13 @@ import EnclosurePopover from "./EnclosurePopover.tsx";
 import { EventDate } from "./EventPopover.tsx";
 
 export const IndividualEvent = (
-    { eventID, cityfarm, farms }
+    { eventID, cityfarm, farms, object }
         :
     {
         eventID: string;
         cityfarm: CityFarm;
         farms: any;
+        object: Event | null;
     }
 ) => {
     const [event, setEvent] = useState<Event | null>(null);
@@ -24,6 +25,11 @@ export const IndividualEvent = (
     const [reload, setReload] = useState(false);
 
     useEffect(() => {
+        if (object && event === null) {
+            setEvent(object);
+            return;
+        }
+
         (async () => {
             const resp = await cityfarm.getEvent(eventID, true, (event) => {
                 setEvent(event);

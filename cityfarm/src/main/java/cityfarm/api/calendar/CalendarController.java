@@ -77,8 +77,6 @@ public class CalendarController {
 
     @GetMapping("/api/events/by_animal/{animal_id}")
     public ResponseEntity<List<Event>> get_events_by_animal(@PathVariable String animal_id) {
-
-
         List<Event> events = eventRepository.findEventByAnimal(animal_id);
 
         return ResponseEntity.ok().body(events);

@@ -61,6 +61,28 @@ public class AnimalController {
         return ResponseEntity.ok().body(animal);
     }
 
+    @GetMapping("/api/animals/by_father/{id}")
+    public ResponseEntity<List<AnimalCustom>> get_animal_by_father(@PathVariable String id) {
+        List<AnimalCustom> animal = animalRepository.findAnimalByFather(id);
+
+        if (animal == null) {
+            return ResponseEntity.status(404).build();
+        }
+
+        return ResponseEntity.ok().body(animal);
+    }
+
+    @GetMapping("/api/animals/by_mother/{id}")
+    public ResponseEntity<List<AnimalCustom>> get_animal_by_mother(@PathVariable String id) {
+        List<AnimalCustom> animal = animalRepository.findAnimalByMother(id);
+
+        if (animal == null) {
+            return ResponseEntity.status(404).build();
+        }
+
+        return ResponseEntity.ok().body(animal);
+    }
+
     /**
      * Get list of animals with a specific name
      * @param name name of the animals to search for (fuzzy search)

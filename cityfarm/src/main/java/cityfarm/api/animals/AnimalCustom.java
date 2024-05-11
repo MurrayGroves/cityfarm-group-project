@@ -41,11 +41,13 @@ public class AnimalCustom implements AnimalUnique {
      * Optional String that contains the ID of the Animal's mother.
      */
     @Nullable
+    @Indexed
     public String mother;
     /**
      * Optional String that contains the ID of the Animal's father.
      */
     @Nullable
+    @Indexed
     public String father;
 
     /**

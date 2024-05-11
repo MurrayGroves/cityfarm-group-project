@@ -15,7 +15,7 @@ declare module "react" {
     }
 }
 
-const AnimalPopover = ({cityfarm, animalID}: {cityfarm: CityFarm, animalID: string}) => {
+const AnimalPopover = ({cityfarm, animalID, object}: {cityfarm: CityFarm, animalID: string, object: Animal | null}) => {
     const colour = useTheme().palette.mode === 'light' ? 'black' : 'white';
     const hoverColour = '#f1f1f1';
 
@@ -36,6 +36,12 @@ const AnimalPopover = ({cityfarm, animalID}: {cityfarm: CityFarm, animalID: stri
     const open = Boolean(anchorEl);
 
     useEffect(() => {
+        if (loading && object) {
+            setChosenAnimal(object)
+            setLoading(false)
+            return;
+        }
+
         (async () => {
             let animal = cityfarm.animals_cache.find((animal) => animal.id === animalID) ?? null;
             if (animal === null) {

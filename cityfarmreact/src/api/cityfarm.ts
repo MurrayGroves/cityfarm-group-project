@@ -152,6 +152,48 @@ export class CityFarm {
         }
     }
 
+    async getEventsByAnimal(animal: string, use_cache: boolean, callback?: (events) => void) : Promise<Event[]> {
+        const cached_events = this.events_cache.filter((event) => event.animals.map(x => x.id).includes(animal));
+        if (use_cache && cached_events.length > 0) {
+            try {
+                axios.get(`/events/by_animal/{${animal}}`, this.token).then((response) => {
+                    const events = response.data.map((data) => data.type === "once" ? new EventOnce(data) : new EventRecurring(data));
+                    if (callback) {
+                        callback(events);
+                    }
+                });
+                return cached_events;
+            } catch (error) {
+                if (error.response?.status === 401) {
+                    console.log('Token expired');
+                    window.location.href = "/login";
+                    return [];
+                }
+                throw error;
+            }
+
+        } else {
+            try {
+                const response = await axios.get(`/events/by_animal/${animal}`, this.token);
+                const events = response.data.map((data) => data.type === "once" ? new EventOnce(data) : new EventRecurring(data));
+                if (cached_events !== events) {
+                    this.setEventsCache(events);
+                    if (callback) {
+                        callback(events);
+                    }
+                }
+                return events;
+            } catch (error) {
+                if (error.response?.status === 401) {
+                    console.log('Token expired');
+                    window.location.href = "/login";
+                    return [];
+                }
+                throw error;
+            }
+        }
+    }
+
 
     async getEvent(id: string, use_cache: boolean, callback?: (event) => void) : Promise<Event | null> {
         if (!id) {
@@ -211,6 +253,8 @@ export class CityFarm {
         }
     }
 
+    
+
     async getAnimal(id: string, use_cache: boolean, callback?: (animal) => void) : Promise<Animal | null> {
         if (!id) {
             return null;
@@ -267,6 +311,137 @@ export class CityFarm {
                     this.setAnimalsCache([...this.animals_cache, new Animal(response.data)]);
                 }
                 return new Animal(response.data);
+            } catch (error) {
+                if (error.response?.status === 401) {
+                    console.log('Token expired');
+                    window.location.href = "/login";
+                    throw new Error('Token expired');
+                } else if (error.response?.status === 404) {
+                    return null;
+                }
+                throw error;
+            }
+        }
+    }
+
+    async getAnimalsByMother(id: string, use_cache: boolean, callback?: (animal) => void) : Promise<Animal[] | null> {
+        if (!id) {
+            return null;
+        }
+
+        // If the user wants to utilise the cache: return stale data and then call the callback when the new data has arrived
+        if (use_cache) {
+            // If the animal isn't in the cache, can't return anything so wait to fetch it
+            const cached_animal = this.animals_cache.filter((animal) => animal.mother === id);
+            if (!cached_animal) {
+                try {
+                    const response = await axios.get(`/animals/by_mother/${id}`, this.token);
+                    this.setAnimalsCache([...this.animals_cache, new Animal(response.data)]);
+                    return response.data.map((data) => new Animal(data));
+                } catch (error) {
+                    if (error.response?.status === 401) {
+                        console.log('Token expired');
+                        window.location.href = "/login";
+                        throw new Error('Token expired');
+                    } else if (error.response?.status === 404) {
+                        return null;
+                    }
+                    throw error;
+                }
+            } else { // If the animal is in the cache, return it and then fetch the new data
+                try {
+                    axios.get(`/animals/by_mother/${id}`, this.token).then((response) => {
+                        // If the animal has changed, update the cache and call the callback
+                        if (this.animals_cache !== response.data) {
+                            this.setAnimalsCache(this.animals_cache.map((animal) => animal.id !== id ? animal : new Animal(response.data)));
+                            if (callback) {
+                                callback(response.data.map((data) => new Animal(data)));
+                            }
+                        }
+                    })
+                    return cached_animal;
+                } catch (error) {
+                    if (error.response?.status === 401) {
+                        console.log('Token expired');
+                        window.location.href = "/login";
+                        throw new Error('Token expired');
+                    } else if (error.response?.status === 404) {
+                        return null;
+                    }
+                    throw error;
+                }
+            }
+        } else { // The user needs the most up-to-date data so wait to fetch and return it
+            try {
+                const response = await axios.get(`/animals/by_mother/${id}`, this.token);
+                // Update cache
+                this.setAnimalsCache(this.animals_cache.map((animal) => animal.id !== id ? animal : new Animal(response.data)));
+                if (this.animals_cache.find((animal) => animal.id === id) === undefined) {
+                    this.setAnimalsCache([...this.animals_cache, ...response.data.map((data) => new Animal(data))]);
+                }
+                return response.data.map((data) => new Animal(data));
+            } catch (error) {
+                if (error.response?.status === 401) {
+                    console.log('Token expired');
+                    window.location.href = "/login";
+                    throw new Error('Token expired');
+                } else if (error.response?.status === 404) {
+                    return null;
+                }
+                throw error;
+            }
+        }
+    }
+
+    async getAnimalsByFather(id: string, use_cache: boolean, callback?: (animal) => void) : Promise<Animal[] | null> {
+        if (!id) {
+            return null;
+        }
+
+        // If the user wants to utilise the cache: return stale data and then call the callback when the new data has arrived
+        if (use_cache) {
+            // If the animal isn't in the cache, can't return anything so wait to fetch it
+            const cached_animal = this.animals_cache.filter((animal) => animal.father === id);
+            if (!cached_animal) {
+                try {
+                    const response = await axios.get(`/animals/by_father/${id}`, this.token);
+                    return response.data.map((data) => new Animal(data));
+                } catch (error) {
+                    if (error.response?.status === 401) {
+                        console.log('Token expired');
+                        window.location.href = "/login";
+                        throw new Error('Token expired');
+                    } else if (error.response?.status === 404) {
+                        return null;
+                    }
+                    throw error;
+                }
+            } else { // If the animal is in the cache, return it and then fetch the new data
+                try {
+                    axios.get(`/animals/by_father/${id}`, this.token).then((response) => {
+                        // If the animal has changed, update the cache and call the callback
+                        if (this.animals_cache !== response.data) {
+                            if (callback) {
+                                callback(response.data.map((data) => new Animal(data)));
+                            }
+                        }
+                    })
+                    return cached_animal;
+                } catch (error) {
+                    if (error.response?.status === 401) {
+                        console.log('Token expired');
+                        window.location.href = "/login";
+                        throw new Error('Token expired');
+                    } else if (error.response?.status === 404) {
+                        return null;
+                    }
+                    throw error;
+                }
+            }
+        } else { // The user needs the most up-to-date data so wait to fetch and return it
+            try {
+                const response = await axios.get(`/animals/by_father/${id}`, this.token);
+                return response.data.map((data) => new Animal(data));
             } catch (error) {
                 if (error.response?.status === 401) {
                     console.log('Token expired');

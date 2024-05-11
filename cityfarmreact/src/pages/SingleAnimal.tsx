@@ -40,8 +40,7 @@ const SingleAnimal = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
     const [relEvents,setRelEvents] = useState<Event[]>([]);
     const [chosenAnimal, setChosenAnimal] = useState<Animal | null>(null);
     const [schema, setSchema] = useState<Schema>();
-    const [children, setChildren] = useState<string[]>(new Array<string>());
-    const [animals, setAnimals] = useState<Animal[]>([]);
+    const [children, setChildren] = useState<Animal[]>([]);
     const [animalEnclosure , setAnimalEnclosure] = useState<Enclosure | null>(null)
     const [allEnclosures,setAllEnclosures] =useState <Enclosure[]>([])
     const [animalMoving,setAnimalMoving] = useState<Animal[]>([])
@@ -50,17 +49,10 @@ const SingleAnimal = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
         (async () => {
             const animal = await cityfarm.getAnimal(animalID!, true, (animal) => {setChosenAnimal(animal)});
             setChosenAnimal(animal!);
-            console.log("requesting")
-            const events = await cityfarm.getEvents(true, (events) => {setRelEvents(events.filter((event) => {
-                return event.animals.map((animal) => animal.id).includes(animalID)
-            }))})
-            console.log("got")
-            setRelEvents(events.filter((event) => {
-                return event.animals.map((animal) => animal.id).includes(animalID!)
-            }));
+            const events = await cityfarm.getEventsByAnimal(animalID!, true, (events) => {setRelEvents(events)})
+            setRelEvents(events);
             const enclosures = await cityfarm.getEnclosures(true, null, (enclosures) => setAllEnclosures(enclosures));
             setAllEnclosures(enclosures);
-
 
             for (const enclosure of enclosures){
                 for (const an of enclosure.holding){
@@ -86,30 +78,13 @@ const SingleAnimal = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
             return;
         }
         (async () => {
-            const update = (anis) => {
-                let kids = new Array<string>();
-                setAnimals(anis);
-                if (chosenAnimal.sex !== Sex.Castrated) {
-
-                    if (chosenAnimal.sex === Sex.Male) {
-                        for (let a of anis) {
-                            if (a.father === chosenAnimal.id) {
-                                kids.push(a.id)
-                            }
-                        }
-                    } else {
-                        for (let a of anis) {
-                            if (a.mother === chosenAnimal.id) {
-                                kids.push(a.id)
-                            }
-                        }
-                    }
-    
-                    setChildren(kids)
-                }
+            if (chosenAnimal.sex === Sex.Female) {
+                const animals = await cityfarm.getAnimalsByMother(chosenAnimal.id, true, (animals) => {setChildren(animals)});
+                if (animals) setChildren(animals);
+            } else {
+                const animals = await cityfarm.getAnimalsByFather(chosenAnimal.id, true, (animals) => {setChildren(animals)});
+                if (animals) setChildren(animals)
             }
-            const anis = await cityfarm.getAnimals(true, null, (anis) => {update(anis)});
-            update(anis)
         })()
     },[chosenAnimal])
 
@@ -200,7 +175,7 @@ const SingleAnimal = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
     const singleEvent = (e: Event)=>{
         return(
             <Grid item xs={1}>
-                <IndividualEvent cityfarm={cityfarm} eventID={e.id} farms={farms}/>
+                <IndividualEvent cityfarm={cityfarm} object={e} eventID={e.id} farms={farms}/>
             </Grid>
         )
     }
@@ -275,11 +250,13 @@ const SingleAnimal = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
             Array.isArray(children) && children.length > 0 && (
             <div className="children">
                 <b>Children:</b>
-                <List>
-                    {children.map((animalID, index) => {
-                        return (<ListItem key={animalID} style={{margin: '0', padding: '0'}}><p style={{marginRight: '4px'}}>-</p><AnimalPopover key={index} cityfarm={cityfarm} animalID={animalID} /></ListItem>);
-                    })}
-                </List>
+                <div style={{overflowY: 'auto', height: '15.6em', overflowX: 'visible', paddingRight: '0.3em'}}>
+                    <List>
+                        {children.map((animal, index) => {
+                            return (<ListItem key={animal.id} style={{margin: '0', padding: '0'}}><p style={{marginRight: '4px'}}>-</p><AnimalPopover object={animal} key={index} cityfarm={cityfarm} animalID={animal.id!} /></ListItem>);
+                        })}
+                    </List>
+                </div>
             </div>
         )}
         <div style={{display:'flex'}}><b style={{marginRight: '5px'}}>Enclosure: </b> {animalEnclosure!=null ? <EnclosurePopover cityfarm={cityfarm} enclosureID={animalEnclosure.id}/> : 'None'}
@@ -293,6 +270,9 @@ const SingleAnimal = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
             ))}
         </div>
 
+        <EnclosureMove cityfarm={cityfarm} excludedEnc={animalEnclosure}
+                       enclosures={allEnclosures} animalList={animalMoving} close={closeEnclosureMove} />
+
         <div>
             {relEvents.length !== 0 ? <h2 style={{marginTop: '2%'}}>Linked Events</h2> : <></>}
             <Masonry spacing={3} columns={{xs: 1, md: 2, lg: 3, xl: 4}} sequential>
@@ -302,8 +282,7 @@ const SingleAnimal = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
             </Masonry>
         </div>
 
-        <EnclosureMove cityfarm={cityfarm} excludedEnc={animalEnclosure}
-                       enclosures={allEnclosures} animalList={animalMoving} close={closeEnclosureMove} />
+
     </>);
 }
 
