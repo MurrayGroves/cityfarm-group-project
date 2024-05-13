@@ -99,7 +99,9 @@ const EnclosurePopover = memo(({ cityfarm, enclosureID, object }: {cityfarm: Cit
                 <Typography sx={{ p: 1,whiteSpace: 'pre-line' }}>
                     {`Name: ${chosenEnclosure.name}`}<br/>
                     {`Holding: `}
-                    {chosenEnclosure.holding.map((animal) => (
+                    {chosenEnclosure.holding.length > 3 ?
+                        chosenEnclosure.holding.slice(0, 3).map(animal => animal.name) + '...'
+                    : chosenEnclosure.holding.map((animal) => (
                         animal.name + ' '))}<br/>
                     {`Capacities: ${Object.keys(chosenEnclosure.capacities).map((key) => {
                         return (` ${key}: ${chosenEnclosure.capacities[key]}`)})}`}<br/>
