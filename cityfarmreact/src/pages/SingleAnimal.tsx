@@ -46,6 +46,7 @@ const SingleAnimal = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
     const [animalMoving,setAnimalMoving] = useState<Animal[]>([])
 
     useEffect(() => {
+        console.log(`Animal ID:${animalID}`);
         (async () => {
             const animal = await cityfarm.getAnimal(animalID!, CachePolicy.USE_CACHE, (animal) => {setChosenAnimal(animal)});
             setChosenAnimal(animal!);

@@ -185,7 +185,7 @@ export class CityFarm {
 
         if (use_cache === CachePolicy.USE_CACHE && cached_events.length > 0) {
             try {
-                axios.get(`/events/by_animal/{${animal}}`, this.token).then((response) => {
+                axios.get(`/events/by_animal/${animal}`, this.token).then((response) => {
                     const events = response.data.map((data) => data.type === "once" ? new EventOnce(data) : new EventRecurring(data));
                     if (callback) {
                         callback(events);
