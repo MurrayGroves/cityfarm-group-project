@@ -223,6 +223,53 @@ export class CityFarm {
         }
     }
 
+    async getEventsByEnclosure(enclosure: string, use_cache: CachePolicy, callback?: (events) => void) : Promise<Event[]> {
+        const cached_events = this.events_cache.filter((event) => event.enclosures.includes(enclosure));
+
+        if (use_cache === CachePolicy.CACHE_ONLY){
+            return cached_events;
+        }
+
+        if (use_cache === CachePolicy.USE_CACHE && cached_events.length > 0) {
+            try {
+                axios.get(`/events/by_enclosure/{${enclosure}}`, this.token).then((response) => {
+                    const events = response.data.map((data) => data.type === "once" ? new EventOnce(data) : new EventRecurring(data));
+                    if (callback) {
+                        callback(events);
+                    }
+                });
+                return cached_events;
+            } catch (error) {
+                if (error.response?.status === 401) {
+                    console.log('Token expired');
+                    window.location.href = "/login";
+                    return [];
+                }
+                throw error;
+            }
+
+        } else {
+            try {
+                const response = await axios.get(`/events/by_enclosure/${enclosure}`, this.token);
+                const events = response.data.map((data) => data.type === "once" ? new EventOnce(data) : new EventRecurring(data));
+                if (!lodash.isEqual(cached_events, events)) {
+                    this.setEventsCache(events);
+                    if (callback) {
+                        callback(events);
+                    }
+                }
+                return events;
+            } catch (error) {
+                if (error.response?.status === 401) {
+                    console.log('Token expired');
+                    window.location.href = "/login";
+                    return [];
+                }
+                throw error;
+            }
+        }
+    }
+
 
     async getEvent(id: string, use_cache: CachePolicy, callback?: (event) => void) : Promise<Event | null> {
         if (!id) {
@@ -703,6 +750,10 @@ export class CityFarm {
         }
 
         if (use_cache === CachePolicy.CACHE_ONLY){
+            return this.enclosures_cache.find((enclosure) => enclosure.id === id) ?? null;
+        }
+
+        if (use_cache === CachePolicy.PREFER_CACHE && this.enclosures_cache.find((enclosure) => enclosure.id === id) !== undefined) {
             return this.enclosures_cache.find((enclosure) => enclosure.id === id) ?? null;
         }
 

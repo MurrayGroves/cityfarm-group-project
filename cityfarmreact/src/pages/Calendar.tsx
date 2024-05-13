@@ -57,11 +57,12 @@ const CalendarUnMemo = ({farms, device, cityfarm, localizer}: {farms: any, devic
                 try {
                     const start = range.start
                     const end = range.end
-                    const resp = await cityfarm.getEventsBetween(CachePolicy.USE_CACHE, start, end, (events => {
+                    const resp = (await cityfarm.getEventsBetween(CachePolicy.USE_CACHE, start, end, (events => {
+                        events = events.filter(event => event.event.farms.some(farm => visibleFarms.includes(farm)));
                         if (!lodash.isEqual(events, allEvents)) {
                             setAllEvents(events);
                         }
-                    }));
+                    }))).filter(event => event.event.farms.some(farm => visibleFarms.includes(farm)));;
                     if (!lodash.isEqual(resp, allEvents)) {
                         setAllEvents(resp);
                     }
@@ -75,11 +76,12 @@ const CalendarUnMemo = ({farms, device, cityfarm, localizer}: {farms: any, devic
                         const start = range[0]
                         const end = range[range.length - 1]
     
-                        const resp = await cityfarm.getEventsBetween(CachePolicy.USE_CACHE, start, end, (events => {
+                        const resp = (await cityfarm.getEventsBetween(CachePolicy.USE_CACHE, start, end, (events => {
+                            events = events.filter(event => event.event.farms.some(farm => visibleFarms.includes(farm)));
                             if (!lodash.isEqual(events, allEvents)) {
                                 setAllEvents(events);
                             }
-                        }));
+                        }))).filter(event => event.event.farms.some(farm => visibleFarms.includes(farm)));;
                         if (!lodash.isEqual(resp, allEvents)) {
                             setAllEvents(resp);
                         }
@@ -93,11 +95,12 @@ const CalendarUnMemo = ({farms, device, cityfarm, localizer}: {farms: any, devic
                         const end = start
                         end.setDate(start.getDate() + 1)
     
-                        const resp = await cityfarm.getEventsBetween(CachePolicy.USE_CACHE, start, end, (events => {
+                        const resp = (await cityfarm.getEventsBetween(CachePolicy.USE_CACHE, start, end, (events => {
+                            events = events.filter(event => event.event.farms.some(farm => visibleFarms.includes(farm)));
                             if (!lodash.isEqual(events, allEvents)) {
                                 setAllEvents(events);
                             }
-                        }));
+                        }))).filter(event => event.event.farms.some(farm => visibleFarms.includes(farm)));
                         if (!lodash.isEqual(resp, allEvents)) {
                             setAllEvents(resp);
                         }
@@ -107,7 +110,7 @@ const CalendarUnMemo = ({farms, device, cityfarm, localizer}: {farms: any, devic
                 }
             }
         })();
-    },[JSON.stringify(cityfarm.event_instance_cache), JSON.stringify(cityfarm.events_cache), range, modifyEvent]);
+    },[JSON.stringify(cityfarm.event_instance_cache), JSON.stringify(cityfarm.events_cache), range, modifyEvent, visibleFarms]);
 
 
     const handleDelEvent = useCallback(async() => {

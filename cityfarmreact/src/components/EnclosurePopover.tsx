@@ -1,12 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, memo } from 'react';
 import Popover from '@mui/material/Popover';
 import Typography from '@mui/material/Typography';
 import {Link} from "react-router-dom";
 import { Enclosure } from '../api/enclosures.ts';
-import AnimalPopover from './AnimalPopover.tsx';
 import { CachePolicy, CityFarm } from '../api/cityfarm.ts';
 
-const EnclosurePopover = ({ cityfarm, enclosureID, object }: {cityfarm: CityFarm, enclosureID: string, object: Enclosure |  null}) => {
+const EnclosurePopover = memo(({ cityfarm, enclosureID, object }: {cityfarm: CityFarm, enclosureID: string, object: Enclosure |  null}) => {
     const [anchorEl, setAnchorEl] = useState(null);
     const [chosenEnclosure, setChosenEnclosure] = useState<Enclosure>(new Enclosure({name: 'Loading...', holding: [], capacities: {}}));
     const [loading, setLoading] = useState(true);
@@ -30,10 +29,44 @@ const EnclosurePopover = ({ cityfarm, enclosureID, object }: {cityfarm: CityFarm
 
         enclosureID &&
         (async () => {
-            let enclosure = await cityfarm.getEnclosure(enclosureID, CachePolicy.USE_CACHE, (enclosure) => setChosenEnclosure(enclosure));
+            let enclosure = await cityfarm.getEnclosure(enclosureID, CachePolicy.PREFER_CACHE, (enclosure) => setChosenEnclosure(enclosure));
             setChosenEnclosure(enclosure!);
         })()
     }, [enclosureID]);
+
+    if (chosenEnclosure === null) {
+        return <div>
+            <Typography
+                aria-owns={open ? 'mouse-over-popover' : undefined}
+                aria-haspopup="true"
+                onMouseEnter={handlePopoverOpen}
+                onMouseLeave={handlePopoverClose}
+                style={{display: 'inline-block', color: 'coral'}}
+            >
+                {loading ? "" : "Enclosure Not Found"}
+            </Typography>
+            <Popover
+                id="mouse-over-popover"
+                sx={{pointerEvents: 'none'}}
+                open={open}
+                anchorEl={anchorEl}
+                anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'left',
+                }}
+                transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'left',
+                }}
+                onClose={handlePopoverClose}
+                disableRestoreFocus
+            >
+                <Typography sx={{ p: 1, whiteSpace: 'pre-line' }}>
+                    <b>{`You probably deleted it, but dont worry - you can edit this event and change it to an existing enclosure`}</b>
+                </Typography>
+            </Popover>
+            </div>
+    }
 
     return (
         <div>
@@ -74,6 +107,6 @@ const EnclosurePopover = ({ cityfarm, enclosureID, object }: {cityfarm: CityFarm
             </Popover>
         </div>
     );
-}
+}, (prevProps, nextProps) => prevProps.enclosureID === nextProps.enclosureID);
 
 export default EnclosurePopover;

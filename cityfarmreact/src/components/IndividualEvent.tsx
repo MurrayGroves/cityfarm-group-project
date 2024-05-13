@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import { CachePolicy, CityFarm } from "../api/cityfarm.ts";
 import { IconButton, Paper } from "@mui/material";
 import { Edit as EditIcon } from '@mui/icons-material';
@@ -10,7 +10,7 @@ import { EventCreator } from "./EventCreator.tsx";
 import EnclosurePopover from "./EnclosurePopover.tsx";
 import { EventDate } from "./EventPopover.tsx";
 
-export const IndividualEvent = (
+export const IndividualEvent = memo((
     { eventID, cityfarm, farms, object, instance }
         :
     {
@@ -32,7 +32,7 @@ export const IndividualEvent = (
         }
 
         (async () => {
-            const resp = await cityfarm.getEvent(eventID, CachePolicy.USE_CACHE, (event) => {
+            const resp = await cityfarm.getEvent(eventID, CachePolicy.PREFER_CACHE, (event) => {
                 setEvent(event);
             })
 
@@ -87,4 +87,6 @@ export const IndividualEvent = (
                 <>
                 <EventCreator initialEvent={event} modify={modifyEvent} setModify={setModifyEvent} farms={farms} cityfarm={cityfarm} setEvent={(_) => setReload(!reload)} style={{width: '100%'}}/></>}
     </Paper>
-}
+}, (prevProps, nextProps) => {
+    return prevProps.eventID === nextProps.eventID
+});

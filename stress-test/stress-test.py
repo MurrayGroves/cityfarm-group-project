@@ -1,3 +1,4 @@
+import sys
 from faker import Faker
 import requests
 import random
@@ -126,7 +127,11 @@ quantity = int(input("How many objects do you want to create? "))
 def create_animal():
     animal = generate_animal()
     print(animal)
-    id = S.post(f'{HOST}/animals/create', json=animal).text
+    res = S.post(f'{HOST}/animals/create', json=animal)
+    if res.status_code != 201:
+        print(res.text)
+        sys.exit(1)
+    id = res.text
     animal["_id"] = id
     animals.append(animal)
     print(f"Created animal with id {id}")
@@ -137,9 +142,17 @@ def create_event():
     event = generate_event()
     print(event)
     if event.get("firstStart") is not None:
-        id = S.post(f'{HOST}/events/create/recurring', json=event).text
+        res = S.post(f'{HOST}/events/create/recurring', json=event)
+        if res.status_code != 200:
+            print(res.text)
+            sys.exit(1)
+        id = res.json().get("_id")
     else:
-        id = S.post(f'{HOST}/events/create/once', json=event).text
+        res = S.post(f'{HOST}/events/create/once', json=event)
+        if res.status_code != 200:
+            print(res.text)
+            sys.exit(1)
+        id = res.json().get("_id")
 
     event["_id"] = id
     events.append(event)

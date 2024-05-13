@@ -7,7 +7,7 @@ import AnimalPopover from "../components/AnimalPopover.tsx";
 import Paper from "@mui/material/Paper";
 import Tooltip from "@mui/material/Tooltip";
 import FarmMoveButton from "../components/FarmMoveButton.tsx";
-import { CityFarm } from "../api/cityfarm.ts";
+import { CachePolicy, CityFarm } from "../api/cityfarm.ts";
 import { Animal, Schema, Sex } from "../api/animals.ts";
 import { Event } from "../api/events.ts";
 import { Grid, IconButton, List, ListItem } from "@mui/material";
@@ -30,7 +30,7 @@ export function readableFarm(farm) {
         case "HC": return <span>Hartcliffe</span>;
         case "SW": return <span>St Werburghs</span>;
         case '': return <span>None</span>;
-        default: return <span>Loading...</span>;
+        default: return <span>None</span>;
     }
 }
 const SingleAnimal = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
@@ -47,11 +47,11 @@ const SingleAnimal = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
 
     useEffect(() => {
         (async () => {
-            const animal = await cityfarm.getAnimal(animalID!, true, (animal) => {setChosenAnimal(animal)});
+            const animal = await cityfarm.getAnimal(animalID!, CachePolicy.USE_CACHE, (animal) => {setChosenAnimal(animal)});
             setChosenAnimal(animal!);
-            const events = await cityfarm.getEventsByAnimal(animalID!, true, (events) => {setRelEvents(events)})
+            const events = await cityfarm.getEventsByAnimal(animalID!, CachePolicy.USE_CACHE, (events) => {setRelEvents(events)})
             setRelEvents(events);
-            const enclosures = await cityfarm.getEnclosures(true, null, (enclosures) => setAllEnclosures(enclosures));
+            const enclosures = await cityfarm.getEnclosures(CachePolicy.USE_CACHE, null, (enclosures) => setAllEnclosures(enclosures));
             setAllEnclosures(enclosures);
 
             for (const enclosure of enclosures){
@@ -79,10 +79,10 @@ const SingleAnimal = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
         }
         (async () => {
             if (chosenAnimal.sex === Sex.Female) {
-                const animals = await cityfarm.getAnimalsByMother(chosenAnimal.id, true, (animals) => {setChildren(animals)});
+                const animals = await cityfarm.getAnimalsByMother(chosenAnimal.id, CachePolicy.USE_CACHE, (animals) => {setChildren(animals)});
                 if (animals) setChildren(animals);
             } else {
-                const animals = await cityfarm.getAnimalsByFather(chosenAnimal.id, true, (animals) => {setChildren(animals)});
+                const animals = await cityfarm.getAnimalsByFather(chosenAnimal.id, CachePolicy.USE_CACHE, (animals) => {setChildren(animals)});
                 if (animals) setChildren(animals)
             }
         })()
@@ -99,7 +99,7 @@ const SingleAnimal = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
         }
 
         (async () => {
-            const schema = await cityfarm.getSchema(chosenAnimal.type, true, (schema) => {setSchema(schema)})
+            const schema = await cityfarm.getSchema(chosenAnimal.type, CachePolicy.USE_CACHE, (schema) => {setSchema(schema)})
             if (!schema) {
                 console.error(`No schema with name ${chosenAnimal.type} found.`);
             } else {

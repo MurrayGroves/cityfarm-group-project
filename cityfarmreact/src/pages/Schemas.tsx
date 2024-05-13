@@ -18,7 +18,7 @@ import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete'
 import TextField from '@mui/material/TextField';
 import { Schema } from '../api/animals.ts';
-import { CityFarm } from "../api/cityfarm.ts";
+import { CachePolicy, CityFarm } from "../api/cityfarm.ts";
 import { getConfig } from '../api/getToken';
 import Popover from '@mui/material/Popover';
 import Typography from '@mui/material/Typography';
@@ -93,7 +93,7 @@ const Schemas = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
 
     function displayAll() {
         (async () => {
-            const schemas = await cityfarm.getSchemas(true, (schemas) => setSchemaList(schemas));
+            const schemas = await cityfarm.getSchemas(CachePolicy.USE_CACHE, (schemas) => setSchemaList(schemas));
             setSchemaList(schemas);
         })()
     }
@@ -114,7 +114,7 @@ const Schemas = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
                 displayAll();
                 return;
             }
-            const schema = await cityfarm.getSchema(searchTerm, true, (schema) => setSchemaList(new Array (schema)))
+            const schema = await cityfarm.getSchema(searchTerm, CachePolicy.USE_CACHE, (schema) => setSchemaList(new Array (schema)))
             setSchemaList(new Array(schema!))
         })()
     },[searchTerm])
