@@ -34,7 +34,7 @@ public class EventRepositoryCustom {
                 String.format("            {start: {$gt: ISODate(\"%s\")}},\n", after.toString()) +
                 "            {$and: [\n" +
                 String.format("                {firstStart: {$lt: ISODate(\"%s\")}},\n", before.toString()) +
-                String.format("                {lastEnd: {$gt: ISODate(\"%s\")}}\n", after.toString()) +
+                String.format("                {finalEnd: {$gt: ISODate(\"%s\")}}\n", after.toString()) +
                 "            ]}\n" +
                 "        ]}\n" +
                 "    ]\n" +

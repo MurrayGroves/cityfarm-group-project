@@ -3,7 +3,7 @@ import React, { useEffect } from "react";
 import { useState } from "react";
 import { FindOrCreateEvent } from "./FindOrCreateEvent.tsx";
 import { Close } from "@mui/icons-material";
-import { CityFarm } from "../api/cityfarm";
+import { CachePolicy, CityFarm } from "../api/cityfarm.ts";
 
 export const EventSelectorButton = (
                                     {farms, open, currentEventID, setEventID, cityfarm, style}:
@@ -14,13 +14,13 @@ export const EventSelectorButton = (
 
     useEffect(() => {
         async function getEvent() {
-            const event = await cityfarm.getEvent(currentEventID, true);
+            const event = await cityfarm.getEvent(currentEventID, CachePolicy.USE_CACHE);
             if (event) {
                 setEventTitle(event.title);
             }
         }
         getEvent();
-    }, [currentEventID, cityfarm.events_cache])
+    }, [currentEventID, cityfarm.getEvents(CachePolicy.CACHE_ONLY)])
 
     // Close the dialog when the event is selected
     useEffect(() => {

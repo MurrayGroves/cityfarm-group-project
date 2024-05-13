@@ -6,7 +6,6 @@ import cityfarm.api.enclosure.Enclosure;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.mongodb.lang.NonNull;
-import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.PersistenceCreator;
 import org.springframework.lang.Nullable;
 
@@ -116,7 +115,9 @@ public class EventRecurring extends Event {
     @PersistenceCreator
     public EventRecurring(@JsonProperty("firstStart") @NonNull ZonedDateTime firstStart, @JsonProperty("firstEnd") @Nullable ZonedDateTime firstEnd, @JsonProperty("allDay") @NonNull Boolean allDay,
                           @JsonProperty("title") @NonNull String title, @JsonProperty("description") @Nullable String description,
-                          @JsonProperty("enclosures") @Nullable List<Enclosure> enclosures, @JsonProperty("animals") @Nullable List<AnimalCustom> animals, @JsonProperty("farms") @Nullable List<String> farms, @JsonProperty("people") @Nullable List<String> attachedPeople,
+                          @JsonProperty("enclosures") @Nullable List<Enclosure> enclosureRefs, @JsonProperty("enclosures") @Nullable List<String> enclosures,
+                          @JsonProperty("animals") @Nullable List<AnimalCustom> animalRefs, @JsonProperty("animals") @Nullable List<String> animals,
+                          @JsonProperty("farms") @Nullable List<String> farms, @JsonProperty("people") @Nullable List<String> attachedPeople,
                           @JsonProperty("finalEnd") @Nullable ZonedDateTime finalEnd, @JsonProperty("delay") @NonNull Period delay, @JsonProperty("_id") @Nullable String id) {
         if (firstEnd == null && !allDay) {
             throw new IllegalArgumentException("If end isn't present, the event must be marked as all day");
@@ -130,15 +131,17 @@ public class EventRecurring extends Event {
         this.allDay = allDay;
         this.title = title;
         this.description = description;
-        this.enclosures = enclosures;
-        this.animals = animals;
+        this.enclosureRefs = enclosureRefs;
+        this.animalRefs = animalRefs;
         this.farms = farms;
         this.attachedPeople = attachedPeople;
+        this.animals = animals;
+        this.enclosures = enclosures;
     }
 
     @Override
     public String toString() {
         return String.format("Start: %s\nEnd: %s\nFinalEnd: %s\nDelay: %s\nAllDay: %s\nTitle: %s\nDescription: %s\nEnclosures: %s\nAnimals: %s\nFarms: %s\nID: %s\n",
-                firstStart, firstEnd, finalEnd, delay, allDay, title, description, enclosures, animals, farms, get_id());
+                firstStart, firstEnd, finalEnd, delay, allDay, title, description, enclosureRefs, animalRefs, farms, get_id());
     }
 }

@@ -2,7 +2,7 @@ package cityfarm.api.calendar;
 
 import cityfarm.api.animals.AnimalCustom;
 import cityfarm.api.enclosure.Enclosure;
-import cityfarm.api.schemas.AnimalSchema;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.mongodb.lang.NonNull;
@@ -25,11 +25,17 @@ import java.util.List;
 public abstract class Event {
     // List of IDs of attached enclosures
     @DocumentReference(collection = "enclosures", lazy = true)
-    public List<Enclosure> enclosures;
+    @JsonIgnore
+    public List<Enclosure> enclosureRefs;
+
+    public List<String> enclosures;
 
     // List of IDs of attached animals
+    @JsonIgnore
     @DocumentReference(collection = "animals", lazy = true)
-    public List<AnimalCustom> animals;
+    public List<AnimalCustom> animalRefs;
+
+    public List<String> animals;
 
     public String title;
 

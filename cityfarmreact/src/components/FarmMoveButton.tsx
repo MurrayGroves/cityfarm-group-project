@@ -4,7 +4,7 @@ import axios from "../api/axiosConfig";
 import {getConfig} from "../api/getToken";
 import "./FarmMoveButton.css"
 import {useTheme} from "@mui/material";
-import { CityFarm } from "../api/cityfarm";
+import { CachePolicy, CityFarm } from "../api/cityfarm.ts";
 import { Animal } from '../api/animals.ts';
 
 const FarmMoveButton = ({ids, farm, cityfarm}: {ids: string[], farm: string, cityfarm: CityFarm}) => {
@@ -23,7 +23,7 @@ const FarmMoveButton = ({ids, farm, cityfarm}: {ids: string[], farm: string, cit
                     window.alert(error.message);
                 }
                 // Update cache
-                await cityfarm.getAnimal(animal.id, false);
+                await cityfarm.getAnimal(animal.id, CachePolicy.NO_CACHE);
             }
     })()
     }, [animal])
@@ -33,7 +33,7 @@ const FarmMoveButton = ({ids, farm, cityfarm}: {ids: string[], farm: string, cit
     function farmMove(ids: string[]){
         for (let a of ids){
             (async () => {
-                const animal = await cityfarm.getAnimal(a, true, (animal) => setAnimal(animal));
+                const animal = await cityfarm.getAnimal(a, CachePolicy.USE_CACHE, (animal) => setAnimal(animal));
                 setAnimal(animal!);
             })()
         }

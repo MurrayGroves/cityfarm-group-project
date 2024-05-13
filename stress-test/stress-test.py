@@ -1,3 +1,4 @@
+from faker import Faker
 import requests
 import random
 import json
@@ -20,6 +21,8 @@ animals = S.get(f'{HOST}/animals').json()
 events = S.get(f'{HOST}/events/non_instanced').json()
 enclosures = S.get(f'{HOST}/enclosures').json()
 
+fake = Faker("en_GB")
+
 
 def generate_boolean():
     return random.choice([True, False])
@@ -31,9 +34,9 @@ def generate_float():
     return random.random() * 100
 
 def generate_string():
-    return ''.join(random.choices('abcdefghijklmnopqrstuvwxyz', k=random.randint(1, 10)))
+    return ''.join(random.sample('abcdefghijklmnopqrstuvwxyz', k=random.randint(1, 10)))
 
-def generate_event():
+def generate_event_ref():
     return random.choice(events).get('_id')
 
 def generate_animal():
@@ -69,7 +72,7 @@ def generate_animal():
         elif field['_type'] == 'java.lang.String':
             fields[fieldName] = generate_string()
         elif field['_type'] == 'cityfarm.api.calendar.EventRef':
-            fields[fieldName] = generate_event()
+            fields[fieldName] = generate_event_ref()
 
     animal = {"name": name, "mother": mother, "father": father, "farm": random.choice(FARMS), "sex": random.choice(SEXES), "type": schema.get('_name'), "fields": fields}
 
@@ -77,16 +80,16 @@ def generate_animal():
 
 
 def generate_event():
-    attachedAnimals = random.choices(animals, k=random.randint(0, 10))
+    attachedAnimals = random.sample(animals, k=min(random.randint(0, 10), len(animals)))
     attachedAnimals = [animal.get('_id') for animal in attachedAnimals]
 
-    attachedEnclosures = random.choices(enclosures, k=random.randint(0, 10))
+    attachedEnclosures = random.sample(enclosures, k=min(random.randint(0, 10), len(enclosures)))
     attachedEnclosures = [enclosure.get('_id') for enclosure in attachedEnclosures]
 
-    farms = random.choices(FARMS, k=random.randint(0, 3))
+    farms = random.sample(FARMS, k=random.randint(0, 3))
 
-    description = generate_string()
-    name = generate_string()
+    description = fake.paragraph(nb_sentences=3)
+    name = fake.sentence(nb_words=3)
 
     allDay = generate_boolean()
 
@@ -120,24 +123,38 @@ def generate_event():
 
 quantity = int(input("How many objects do you want to create? "))
 
+def create_animal():
+    animal = generate_animal()
+    print(animal)
+    id = S.post(f'{HOST}/animals/create', json=animal).text
+    animal["_id"] = id
+    animals.append(animal)
+    print(f"Created animal with id {id}")
+    enclosure = random.choice(enclosures)
+    S.patch(f'{HOST}/api/enclosures/moveanimal', json=[id, enclosure.get('_id')])
+
+def create_event():
+    event = generate_event()
+    print(event)
+    if event.get("firstStart") is not None:
+        id = S.post(f'{HOST}/events/create/recurring', json=event).text
+    else:
+        id = S.post(f'{HOST}/events/create/once', json=event).text
+
+    event["_id"] = id
+    events.append(event)
+    print(f"Created event with id {id}")
+
+
 if (answer := input("Animal/Event? (a/e): ")) == "a":
     for i in range(quantity):
-        animal = generate_animal()
-        print(animal)
-        id = S.post(f'{HOST}/animals/create', json=animal).text
-        animal["_id"] = id
-        animals.append(animal)
-        print(f"Created animal with id {id}")
+        create_animal()
 
 elif answer == "e":
     for i in range(quantity):
-        event = generate_event()
-        print(event)
-        if event.get("firstStart") is not None:
-            id = S.post(f'{HOST}/events/create/recurring', json=event).text
-        else:
-            id = S.post(f'{HOST}/events/create/once', json=event).text
+        create_event()
 
-        event["_id"] = id
-        events.append(event)
-        print(f"Created event with id {id}")
+elif answer == "ae":
+    for i in range(quantity):
+        create_animal()
+        create_event()

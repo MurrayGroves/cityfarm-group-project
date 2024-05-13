@@ -4,7 +4,7 @@ import Typography from '@mui/material/Typography';
 import {Link} from "react-router-dom";
 import { useState, useEffect } from 'react';
 import { useTheme } from '@mui/material/styles';
-import { CityFarm } from '../api/cityfarm.js';
+import { CachePolicy, CityFarm } from '../api/cityfarm.ts';
 import { Animal, Sex, Schema } from '../api/animals.ts';
 
 declare module "react" {
@@ -36,17 +36,15 @@ const AnimalPopover = ({cityfarm, animalID, object}: {cityfarm: CityFarm, animal
     const open = Boolean(anchorEl);
 
     useEffect(() => {
-        if (loading && object) {
+        if (object) {
             setChosenAnimal(object)
             setLoading(false)
             return;
         }
 
         (async () => {
-            let animal = cityfarm.animals_cache.find((animal) => animal.id === animalID) ?? null;
-            if (animal === null) {
-                animal = await cityfarm.getAnimal(animalID, true, (animal) => setChosenAnimal(animal));
-            }
+            let animal = await cityfarm.getAnimal(animalID, CachePolicy.PREFER_CACHE, (animal) => setChosenAnimal(animal));
+
             setChosenAnimal(animal)
             setLoading(false)
         })()
@@ -60,18 +58,12 @@ const AnimalPopover = ({cityfarm, animalID, object}: {cityfarm: CityFarm, animal
 
         if(chosenAnimal.mother){
             (async ()=>{
-                let mother = cityfarm.animals_cache.find((animal) => animal.id === chosenAnimal.mother) ?? null;
-                if (mother === null) {
-                    mother = await cityfarm.getAnimal(chosenAnimal.mother, true, (animal) => setMother(animal));
-                }
+                let mother = await cityfarm.getAnimal(chosenAnimal.mother, CachePolicy.PREFER_CACHE, (animal) => setMother(animal.name));
                 setMother(mother ? mother.name : "Animal Not Found");
             })()}
         if (chosenAnimal.father){
             (async ()=>{
-                let father = cityfarm.animals_cache.find((animal) => animal.id === chosenAnimal.father) ?? null;
-                if (father === null) {
-                    father = await cityfarm.getAnimal(chosenAnimal.father, true, (animal) => setFather(animal));
-                }
+                let father = await cityfarm.getAnimal(chosenAnimal.father, CachePolicy.PREFER_CACHE, (animal) => setFather(animal.name));
                 setFather(father ? father.name : "Animal Not Found")
             })()
         }

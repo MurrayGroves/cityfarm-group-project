@@ -1,5 +1,6 @@
 package cityfarm.api.animals;
 
+import cityfarm.api.enclosure.Enclosure;
 import cityfarm.api.schemas.AnimalSchema;
 import cityfarm.api.schemas.SchemaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -59,6 +61,17 @@ public class AnimalController {
         }
 
         return ResponseEntity.ok().body(animal);
+    }
+
+    @GetMapping("/api/animals/by_ids")
+    public ResponseEntity<List<AnimalCustom>> get_animal_by_ids(@RequestParam List<String> ids) {
+        List<AnimalCustom> animals = new ArrayList<>();
+        for (String id : ids) {
+            AnimalCustom enclosure = animalRepository.findAnimalById(id);
+            animals.add(enclosure);
+        }
+
+        return ResponseEntity.ok().body(animals);
     }
 
     @GetMapping("/api/animals/by_father/{id}")

@@ -22,7 +22,7 @@ public class EnclosureGeneric {
     /**
      *  A list of animals that the enclosure is holding
      */
-    @DocumentReference(collection = "animals")
+    @DocumentReference(collection = "animals", lazy = true)
     @NonNull
     public List<AnimalCustom> holding;
     /**

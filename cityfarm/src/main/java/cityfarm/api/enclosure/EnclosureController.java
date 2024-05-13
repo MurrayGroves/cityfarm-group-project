@@ -74,6 +74,17 @@ public class EnclosureController {
         return ResponseEntity.ok().body(enclosure);
     }
 
+    @GetMapping("/api/enclosures/by_ids")
+    public ResponseEntity<List<Enclosure>> get_enclosure_by_id(@RequestParam List<String> ids) {
+        List<Enclosure> enclosures = new ArrayList<>();
+        for (String id : ids) {
+            Enclosure enclosure = enclosureRepository.findEnclosureById(id);
+            enclosures.add(enclosure);
+        }
+
+        return ResponseEntity.ok().body(enclosures);
+    }
+
     @GetMapping("/api/enclosures/by_name/{name}")
     public ResponseEntity<List<Enclosure>> get_enclosure_by_name(@PathVariable String name, @RequestParam("farm") @Nullable String farm) {
         List<Enclosure> enclosures = enclosureRepositoryCustom.findEnclosureByName(name);

@@ -3,7 +3,7 @@ import { List, ListItem, Divider, ListItemButton, ListItemIcon, ListItemText, Ch
 import { EventPopover } from './EventPopover.tsx';
 import { Event } from '../api/events';
 import React from 'react';
-import { CityFarm } from '../api/cityfarm';
+import { CachePolicy, CityFarm } from '../api/cityfarm.ts';
 
 export const FindEvent = ({style, cityfarm, farms, setEvent}: {style: any, cityfarm: CityFarm, farms: any, setEvent: (string) => void}) => {
     const [events, setEvents] = useState<Event[]>([]);
@@ -17,14 +17,14 @@ export const FindEvent = ({style, cityfarm, farms, setEvent}: {style: any, cityf
 
     useEffect(() => {
         (async () => {
-            setEvents(cityfarm.events_cache);
+            setEvents(await cityfarm.getEvents(CachePolicy.CACHE_ONLY));
             setLoading(false);
         })();
-    }, [cityfarm.events_cache]);
+    }, [cityfarm.getEvents(CachePolicy.CACHE_ONLY)]);
 
     useEffect(() => {
         (async () => {
-            await cityfarm.getEvents(false);
+            await cityfarm.getEvents(CachePolicy.NO_CACHE);
         })()
     }, [])
 

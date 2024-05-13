@@ -115,9 +115,15 @@ public class CalendarController {
             animals.add(anm);
         }
 
-        EventOnce new_event = new EventOnce(event.start, event.end, event.allDay, event.title, event.description, null, enclosures, animals, event.farms, null);
+        EventOnce new_event = new EventOnce(event.start, event.end, event.allDay, event.title, event.description, null, enclosures, event.enclosures, animals, event.animals, event.farms, null);
 
-        eventRepository.save(new_event);
+        System.out.println(new_event);
+        try {
+            eventRepository.save(new_event);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(0);
+        }
 
         return ResponseEntity.ok().body(new_event);
     }
@@ -140,7 +146,7 @@ public class CalendarController {
             animals.add(anm);
         }
 
-        EventRecurring newEvent = new EventRecurring(event.firstStart, event.firstEnd, event.allDay, event.title, event.description, enclosures, animals, event.farms, event.people, event.end, event.delay, null);
+        EventRecurring newEvent = new EventRecurring(event.firstStart, event.firstEnd, event.allDay, event.title, event.description, enclosures, event.enclosures, animals, event.animals, event.farms, event.people, event.end, event.delay, null);
 
         eventRepository.save(newEvent);
 
@@ -170,8 +176,8 @@ public class CalendarController {
         event.allDay = eventReq.allDay;
         event.title = eventReq.title;
         event.description = eventReq.description;
-        event.enclosures = enclosures;
-        event.animals = animals;
+        event.enclosureRefs = enclosures;
+        event.animalRefs = animals;
         event.farms = eventReq.farms;
 
         if (event instanceof EventOnce) {
@@ -211,8 +217,8 @@ public class CalendarController {
         event.allDay = eventReq.allDay;
         event.title = eventReq.title;
         event.description = eventReq.description;
-        event.enclosures = enclosures;
-        event.animals = animals;
+        event.enclosureRefs = enclosures;
+        event.animalRefs = animals;
         event.farms = eventReq.farms;
 
         if (event instanceof EventRecurring) {

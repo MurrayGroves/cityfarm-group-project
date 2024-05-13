@@ -1,6 +1,6 @@
 import {Calendar as BigCalendar, dayjsLocalizer} from 'react-big-calendar';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
-import React, {useState, useEffect, useCallback} from 'react';
+import React, {useState, useEffect, useCallback, memo} from 'react';
 import dayjs from 'dayjs';
 import "./Calendar.css";
 import Paper from '@mui/material/Paper';
@@ -15,25 +15,18 @@ import { getConfig } from '../api/getToken.js';
 import { FilterAlt } from '@mui/icons-material';
 import EventDisplay from '../components/EventDisplay.tsx';
 
-import { CityFarm } from '../api/cityfarm.ts';
+import { CachePolicy, CityFarm } from '../api/cityfarm.ts';
 import { Event, EventInstance, EventOnce, EventRecurring } from '../api/events.ts';
 
+import lodash from "lodash"
 
-const Calendar = ({farms, device, cityfarm}: {farms: any, device: any, cityfarm: CityFarm}) => {
-  
+const BigCalendarMemo = memo(BigCalendar, (prevProps, nextProps) => {
+    return lodash.isEqual(prevProps.events, nextProps.events);
+});
+
+const CalendarUnMemo = ({farms, device, cityfarm}: {farms: any, device: any, cityfarm: CityFarm}) => {
     const token = getConfig();
     const theme: any = useTheme().palette;
-
-    const [newEvent,setNewEvent] = useState<any>({
-        title: "",
-        allDay: true,
-        start: new Date(),
-        end: new Date(),
-        farms: [],
-        animals: [],
-        description: "",
-        enclosures: []
-    })
 
     const [modifiedEvent,setModifiedEvent] = useState<Event | null>(null)
 
@@ -41,42 +34,83 @@ const Calendar = ({farms, device, cityfarm}: {farms: any, device: any, cityfarm:
     const [selectedEvent,setSelectedEvent] = useState<EventInstance | null>(null);
     const [visibleFarms, setVisibleFarms] = useState([farms.WH, farms.HC, farms.SW]);
     const [modifyEvent, setModifyEvent] = useState(false);
-    const [inputErr, setInputErr] = useState({newTitle: true});
-
-    useEffect(() => {
-        setInputErr({...inputErr, newTitle: newEvent.title === ''});
-    }, [newEvent]);
+    const [range, setRange] = useState<any>({start: (() => {
+        let date = new Date();
+        date.setMonth(date.getMonth() - 1);
+        return date;
+    })(), end: (() => {
+        let date = new Date();
+        date.setMonth(date.getMonth() + 1);
+        return date;
+    })()});
 
     useEffect(() =>{
         selectedEvent && setModifiedEvent({...selectedEvent.event, animals: selectedEvent.event.animals, enclosures: selectedEvent.event.enclosures});
     },[selectedEvent]);
 
     useEffect(() => {
+        console.log("Events cache changed");
         (async () => {
             console.log("Refetching events");
-            try {
-                const start = new Date()
-                start.setMonth(start.getMonth()-1)
-                const end =  new Date()
-                end.setMonth(end.getMonth()+1)
-
-                const resp = await cityfarm.getEventsBetween(true, start, end, (events) => {console.log("updated events", events);setAllEvents(events)});
-                console.log("Resp", resp);
-                setAllEvents(resp);
-            } catch (error) {
-                if (error?.response?.status === 401) {
-                    window.location.href = "/login";
-                    return;
-                } else {
+            console.log("Range", range);
+            if (range.start !== undefined){ //month or agenda case start and end are the times displayed on the calendar
+                try {
+                    const start = range.start
+                    const end = range.end
+                    const resp = await cityfarm.getEventsBetween(CachePolicy.USE_CACHE, start, end, (events => {
+                        if (!lodash.isEqual(events, allEvents)) {
+                            setAllEvents(events);
+                        }
+                    }));
+                    if (!lodash.isEqual(resp, allEvents)) {
+                        setAllEvents(resp);
+                    }
+                } catch (error) {
                     console.error(error);
-                    window.alert(error);
+    
+                }
+            } else {
+                if (range[1] !== undefined){ //week case has an array of 7 times
+                    try {
+                        const start = range[0]
+                        const end = range[range.length - 1]
+    
+                        const resp = await cityfarm.getEventsBetween(CachePolicy.USE_CACHE, start, end, (events => {
+                            if (!lodash.isEqual(events, allEvents)) {
+                                setAllEvents(events);
+                            }
+                        }));
+                        if (!lodash.isEqual(resp, allEvents)) {
+                            setAllEvents(resp);
+                        }
+                    } catch (error){
+                        console.error(error);
+                    }
+                }
+                else { // day case has a single element of the start time
+                    try {
+                        const start = range[0]
+                        const end = start
+                        end.setDate(start.getDate() + 1)
+    
+                        const resp = await cityfarm.getEventsBetween(CachePolicy.USE_CACHE, start, end, (events => {
+                            if (!lodash.isEqual(events, allEvents)) {
+                                setAllEvents(events);
+                            }
+                        }));
+                        if (!lodash.isEqual(resp, allEvents)) {
+                            setAllEvents(resp);
+                        }
+                    } catch (error) {
+                        console.error(error)
+                    }
                 }
             }
         })();
-    },[cityfarm.events_cache]);
+    },[JSON.stringify(cityfarm.event_instance_cache), JSON.stringify(cityfarm.events_cache), range, modifyEvent]);
 
 
-    const handleDelEvent = async() => {
+    const handleDelEvent = useCallback(async() => {
         if (selectedEvent === null) {
             console.error("Delete event fired but no event selected")
             return;
@@ -94,8 +128,8 @@ const Calendar = ({farms, device, cityfarm}: {farms: any, device: any, cityfarm:
             }
         }
         setSelectedEvent(null);
-        await cityfarm.getEvents(false);
-    }
+        await cityfarm.getEvents(CachePolicy.NO_CACHE);
+    }, [selectedEvent]);
 
     const updateVisibleFarms = (selected) => {
         visibleFarms.includes(selected) ? setVisibleFarms(visibleFarms.filter(farm => farm !== selected)) : setVisibleFarms([...visibleFarms, selected]);
@@ -126,43 +160,14 @@ const Calendar = ({farms, device, cityfarm}: {farms: any, device: any, cityfarm:
         };
     }
 
-    const onRangeChange = useCallback(async (range) => {
-        if (range.start !== undefined){ //month or agenda case start and end are the times displayed on the calendar
-            try {
-                const start = range.start
-                const end = range.end
-                setAllEvents(await cityfarm.getEventsBetween(true, start, end));
-            } catch (error) {
-                console.error(error);
-
-            }
-        } else {
-            if (range[1] !== undefined){ //week case has an array of 7 times
-                try {
-                    const start = range[0]
-                    const end = range[range.length - 1]
-
-                    setAllEvents(await cityfarm.getEventsBetween(true, start, end));
-                } catch (error){
-                    console.error(error);
-                }
-            }
-            else { // day case has a single element of the start time
-                try {
-                    const start = range[0]
-                    const end = start
-                    end.setDate(start.getDate() + 1)
-
-                    setAllEvents(await cityfarm.getEventsBetween(true, start, end));
-                } catch (error) {
-                    console.error(error)
-                }
-            }
-        }
+    const onRangeChange = useCallback(async (newRange) => {
+        console.log("Range changed", range);
+        setRange(newRange);
     }, [])
   
     const [createEvent, setCreateEvent] = useState(false);
     const [filter, setFilter] = useState(false);
+    const localizer = useCallback(dayjsLocalizer(dayjs), []);
 
     let dayColour = theme.mode === 'dark' ? '#121212': '#fff'
     let offRangeColour = theme.mode === 'dark' ? '#ffffff08' : '#f0f0f0';
@@ -198,9 +203,9 @@ const Calendar = ({farms, device, cityfarm}: {farms: any, device: any, cityfarm:
             {/* if screen is large, make room for selected / create event on the right */}
             {device === 'desktopLarge' ?
             <Paper elevation={3} style={{height: '100%', width: "calc(100% - 420px)", padding: '15px', marginRight: '20px'}}>
-                <BigCalendar
+                <BigCalendarMemo
                     culture='en-gb'
-                    localizer={dayjsLocalizer(dayjs)}
+                    localizer={localizer}
                     events={allEvents.map((event: EventInstance) => {
                         const newEvent = {
                             title: event.event.title,
@@ -223,9 +228,9 @@ const Calendar = ({farms, device, cityfarm}: {farms: any, device: any, cityfarm:
             </Paper>
             :
             <Paper elevation={3} style={{height: '100%', width: '100%', padding: '15px'}}>
-                <BigCalendar
+                <BigCalendarMemo
                     culture='en-gb'
-                    localizer={dayjsLocalizer(dayjs)}
+                    localizer={localizer}
                     events={allEvents.map((event: EventInstance) => {
                         const newEvent = {
                             title: event.event.title,
@@ -272,6 +277,10 @@ const Calendar = ({farms, device, cityfarm}: {farms: any, device: any, cityfarm:
         {device !== 'desktopLarge' && <Fab style={{position: 'absolute', bottom: '15px', right: '15px'}} color='primary' onClick={() => setCreateEvent(true)}><AddIcon/></Fab>}
     </>);
 }
+
+const Calendar = memo(CalendarUnMemo, (prevProps, nextProps) => {
+    return prevProps.device === nextProps.device;
+});
 
 export default Calendar;
 

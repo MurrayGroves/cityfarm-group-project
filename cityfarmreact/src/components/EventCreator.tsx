@@ -11,7 +11,7 @@ import AssociateAnimal from './AssociateAnimal.tsx';
 import axios from '../api/axiosConfig.js'
 import AssociateEnclosure from './AssociateEnclosure.tsx';
 import { getConfig } from '../api/getToken.js';
-import { CityFarm } from '../api/cityfarm.ts';
+import { CachePolicy, CityFarm } from '../api/cityfarm.ts';
 import { ThemeProvider } from '@emotion/react';
 import { Event, EventOnce, EventRecurring } from '../api/events.ts';
 import EnclosurePopover from './EnclosurePopover.tsx';
@@ -20,6 +20,7 @@ import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 
+import lodash from 'lodash';
 
 interface EventCreatorProp {
     farms: any
@@ -49,7 +50,7 @@ export const EventCreator: React.FC<EventCreatorProp> = ({ farms, style, cityfar
 
     useEffect(() => {
         console.log("initialEvent", initialEvent);
-        setNewEvent(initialEvent ? initialEvent : new EventOnce({
+        let newEvent = initialEvent ? initialEvent : new EventOnce({
             title: "",
             allDay: false,
             start: null,
@@ -58,9 +59,11 @@ export const EventCreator: React.FC<EventCreatorProp> = ({ farms, style, cityfar
             animals: [],
             description: "",
             enclosures: [],
-        }))
+        });
 
-        if (initialEvent) {
+        if (!lodash.isEqual(newEvent, newEvent)) setNewEvent(newEvent);
+
+        if (initialEvent && recurring !== (initialEvent instanceof EventRecurring)) {
             setRecurring(initialEvent instanceof EventRecurring);
         }
     }, [modify, initialEvent])
@@ -71,7 +74,8 @@ export const EventCreator: React.FC<EventCreatorProp> = ({ farms, style, cityfar
     const token = getConfig();
 
     useEffect(() => {
-        setInputErr({ ...inputErr, newTitle: newEvent.title === '' });
+        let newErr = { ...inputErr, newTitle: newEvent.title === '' };
+        if (!lodash.isEqual(newErr, inputErr)) setInputErr(newErr);
         console.debug("Current New Event", newEvent);
     }, [newEvent]);
 
@@ -183,12 +187,12 @@ export const EventCreator: React.FC<EventCreatorProp> = ({ farms, style, cityfar
         let event = {...newEvent};
 
         try {
-            const response = recurring ? await axios.post(`/events/create/recurring`, {...event as EventRecurring, animals: newEvent.animals.map(animal => animal.id), enclosures: newEvent.enclosures.map(enclosure => enclosure.id)}, token)
-                      : await axios.post(`/events/create/once`, {...event as EventOnce, animals: newEvent.animals.map(animal => animal.id), enclosures: newEvent.enclosures.map(enclosure => enclosure.id)}, token)
+            const response = recurring ? await axios.post(`/events/create/recurring`, {...event as EventRecurring, animals: newEvent.animals, enclosures: newEvent.enclosures}, token)
+                      : await axios.post(`/events/create/once`, {...event as EventOnce, animals: newEvent.animals, enclosures: newEvent.enclosures}, token)
 
             setEvent(response.data._id);
             // Update internal events cache
-            await cityfarm.getEvents(false);
+            await cityfarm.getEvents(CachePolicy.NO_CACHE);
         } catch (error) {
             if (error.response.status === 401) {
                 window.location.href = "/login";
@@ -281,8 +285,6 @@ export const EventCreator: React.FC<EventCreatorProp> = ({ farms, style, cityfar
         }
 
         let event: any = {...newEvent};
-        event.animals = event.animals.map((animal) => animal.id);
-        event.enclosures = event.enclosures.map((enclosure) => enclosure.id);
         console.debug("patching event", newEvent);
 
         try {
@@ -299,7 +301,7 @@ export const EventCreator: React.FC<EventCreatorProp> = ({ farms, style, cityfar
                 window.alert(error);
             }
         }
-        cityfarm.getEvents(false);
+        cityfarm.getEvents(CachePolicy.NO_CACHE);
         setEvent(newEvent.id);
         setModify!(false);
     }
@@ -420,7 +422,7 @@ export const EventCreator: React.FC<EventCreatorProp> = ({ farms, style, cityfar
                 {/* idea: make this open the animal table page with a new column of checkboxes. Click on an associate animal(s) button would then pass a list of animal id to the calendar to the new event state. This could be re used in the modification of events.  */}
                 {(newEvent?.animals ?? []).map((animal) => {
                     return (
-                        <AnimalPopover key={animal.id} cityfarm={cityfarm} animalID={animal.id} />
+                        <AnimalPopover key={animal} cityfarm={cityfarm} animalID={animal} />
                     )
                 })}
                 <div id="AssociateAnimal" style={{ textAlign: 'center' }}>
@@ -435,7 +437,7 @@ export const EventCreator: React.FC<EventCreatorProp> = ({ farms, style, cityfar
             <div>
                 <span style={{ display: 'flex' }}><h3>Enclosures</h3><IconButton style={{ height: '40px', margin: '12.5px 0 0 5px' }} onClick={() => { functionopenPopup("enclosures") }}><AddIcon color='primary' /></IconButton></span>
                 {(newEvent?.enclosures ?? []).map((enclosure, index) => (
-                    <EnclosurePopover cityfarm={cityfarm} key={index} enclosureID={enclosure.id} />
+                    <EnclosurePopover cityfarm={cityfarm} key={index} enclosureID={enclosure} />
                 ))}{/*Add a way to remove enclosures from events */}
                 {/* idea: make this open the enlcosure  page with a new column of checkboxes. Click on an associate enlcosure(s) button would then pass a list of enclosure names to the calendar to be placed in a field*/}
                 <div id="AssociateEnclosure" style={{ textAlign: 'center' }}>
