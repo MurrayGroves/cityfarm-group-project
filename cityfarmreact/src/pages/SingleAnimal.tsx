@@ -64,16 +64,7 @@ const SingleAnimal = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
             }
     })()}, [animalID]);
 
-    useEffect(() => {
-        const animal = cityfarm.animals_cache.find((animal) => animal.id === animalID)
-        if (!lodash.isEqual(animal, chosenAnimal)) {
-            console.debug("Setting chosen animal")
-            setChosenAnimal(animal ?? null)
-        } else {
-            console.debug("not setting chosen")
-        }
-    }, [cityfarm.animals_cache])
-
+    
     useEffect(()=>{
         if (chosenAnimal === null) {
             return;
