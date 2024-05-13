@@ -41,7 +41,12 @@ public class AnimalController {
         if (farm != null) {
             animals = animals
                     .stream()
-                    .filter((animal) -> animal.farm.equals(farm))
+                    .filter((animal) -> {
+                        if (animal.farm == null) {
+                            return false;
+                        }
+                        return animal.farm.equals(farm);
+                    })
                     .toList();
         }
 
