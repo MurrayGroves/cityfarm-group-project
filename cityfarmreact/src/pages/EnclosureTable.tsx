@@ -14,7 +14,7 @@ import { getConfig } from '../api/getToken.js';
 import { Schema } from '../api/animals.ts';
 import EnclosurePopover from "../components/EnclosurePopover.tsx";
 import { Enclosure } from "../api/enclosures.ts";
-import { CityFarm } from "../api/cityfarm.ts";
+import { CachePolicy, CityFarm } from "../api/cityfarm.ts";
 
 declare module '@mui/x-data-grid' {
     interface FooterPropsOverrides {
@@ -38,7 +38,7 @@ const EnclosureTable = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => 
 
     function displayAll() {
         (async () => {
-            const enclosures = await cityfarm.getEnclosures(true, farm, (enclosures) => setEnclosureList(enclosures));
+            const enclosures = await cityfarm.getEnclosures(CachePolicy.USE_CACHE, farm, (enclosures) => setEnclosureList(enclosures));
             setEnclosureList(enclosures);
         })()
     }

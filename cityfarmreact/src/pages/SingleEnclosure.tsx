@@ -14,7 +14,7 @@ import IconButton from "@mui/material/IconButton";
 import {DataGrid, FooterPropsOverrides, GridColDef, GridSlotsComponentsProps} from "@mui/x-data-grid";
 import {readableFarm} from "./SingleAnimal.tsx";
 import { Enclosure } from "../api/enclosures.ts";
-import { CityFarm } from "../api/cityfarm.ts";
+import { CachePolicy, CityFarm } from "../api/cityfarm.ts";
 import { Animal } from "../api/animals.ts";
 import { Event, EventInstance, EventOnce, EventRecurring } from '../api/events.ts';
 import EnclosurePopover from "../components/EnclosurePopover.tsx";
@@ -40,16 +40,14 @@ const SingleEnclosure = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) =>
 
   useEffect(() => {
     (async () => {
-      const enclosure = await cityfarm.getEnclosure(enclosureID, true, (enclosure) => setEnclosure(enclosure));
+      const enclosure = await cityfarm.getEnclosure(enclosureID, CachePolicy.PREFER_CACHE, (enclosure) => setEnclosure(enclosure));
       setEnclosure(enclosure!);
-      const enclosures = await cityfarm.getEnclosures(true, null, (enclosures) => setAllEnclosures(enclosures));
+      const enclosures = await cityfarm.getEnclosures(CachePolicy.USE_CACHE, null, (enclosures) => setAllEnclosures(enclosures));
       setAllEnclosures(enclosures);
-      const events = await cityfarm.getEvents(true, (events) => {setRelEvents(events.filter((event) => {
-        return event.enclosures.map((enclosure) => enclosure.id).includes(enclosureID)
-      }))})
-      setRelEvents(events.filter((event) => {
-        return event.enclosures.map((enclosure) => enclosure.id).includes(enclosureID!)
-    }));
+      // Prepopulate cache before spawning a billion animal popovers
+      await cityfarm.getAnimals(CachePolicy.NO_CACHE, null);
+      const events = await cityfarm.getEventsByEnclosure(enclosureID, CachePolicy.USE_CACHE, (events) => {setRelEvents(events)})
+      setRelEvents(events);
     })();
 
     const tempAnimalsCurrentlySelected: { [key: string]: Animal[] } = {};
@@ -105,7 +103,7 @@ const SingleEnclosure = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) =>
 
   const cols: GridColDef [] = [
     {field: 'name', headerName: 'Name', headerClassName: 'grid-header', headerAlign: 'left', flex: 1,
-    renderCell: (animal) => (<AnimalPopover cityfarm={cityfarm} key={animal.value.id} animalID={animal.value.id}/>)},
+    renderCell: (animal) => (<AnimalPopover cityfarm={cityfarm} key={animal.value.id} animalID={animal.value.id} object={animal.value}/>)},
     { field: 'move', headerName: '', headerClassName: 'grid-header', headerAlign: 'left', width: 85,
     renderCell:(animal)=>(<Button onClick={() => setSelectedAnimals([animal.value])}>Move</Button>)}
   ]
@@ -151,14 +149,11 @@ const SingleEnclosure = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) =>
     return holdingDisplay
   }
 
-  const handleEventClick=(event: Event) => {
-    //nothing
-  }
 
   const singleEvent = (e: Event)=>{
     return(
         <Grid item xs={1}>
-            <IndividualEvent cityfarm={cityfarm} eventID={e.id} farms={farms}/>
+            <IndividualEvent cityfarm={cityfarm} eventID={e.id} farms={farms} object={e}/>
         </Grid>
     )
   }
@@ -273,7 +268,7 @@ const SingleEnclosure = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) =>
     <div>
         {relEvents.length !== 0 ? <h2 style={{marginTop: '2%'}}>Linked Events</h2> : <></>}
         <Masonry spacing={3} columns={{xs: 1, md: 2, lg: 3, xl: 4}} sequential>
-            {relEvents.map((e, index)=>(
+            {relEvents.slice(0, Math.min(relEvents.length, 50)).map((e, index)=>(
                 <Fragment key={index}>{singleEvent(e)}</Fragment>
             ))}
         </Masonry>
