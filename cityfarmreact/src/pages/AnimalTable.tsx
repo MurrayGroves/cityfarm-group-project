@@ -15,7 +15,7 @@ import { EventSelectorButton } from "../components/EventSelectorButton.tsx";
 import { getConfig } from '../api/getToken.js';
 
 import { Animal, Schema, Sex } from '../api/animals.ts';
-import { CityFarm } from "../api/cityfarm.ts";
+import { CachePolicy, CityFarm } from "../api/cityfarm.ts";
 import { Link } from "react-router-dom";
 import { TypePopover } from "../components/TypePopover.tsx";
 
@@ -60,14 +60,14 @@ const AnimalTable = ({farms, cityfarm, device}: {farms: any, cityfarm: CityFarm,
 
     function displayAll() {
         (async () => {
-            const animals = await cityfarm.getAnimals(false, farm, (animals) => {setAnimalList(animals)});
+            const animals = await cityfarm.getAnimals(CachePolicy.NO_CACHE, farm, (animals) => {setAnimalList(animals)});
             setAnimalList(animals);
         })()
     }
 
     function getSchemas() {
         (async () => {
-            const schemas = await cityfarm.getSchemas(true, (schemas) => {setSchemaList(schemas)});
+            const schemas = await cityfarm.getSchemas(CachePolicy.USE_CACHE, (schemas) => {setSchemaList(schemas)});
             console.debug("Fetched schemas: ", schemas);
             setSchemaList(schemas);
         })()
@@ -87,7 +87,10 @@ const AnimalTable = ({farms, cityfarm, device}: {farms: any, cityfarm: CityFarm,
     },[searchTerm, farm])
 
     async function calculateColumnsAndRows(schema: Schema | null) {
-        let newCols = defaultCols;
+        let newCols = [...defaultCols];
+
+        console.debug("Calculating columns and rows with schema: ", schema);
+        console.debug("Default columns");
 
         if (schema) {
             for (let key in schema.fields) {
@@ -175,7 +178,7 @@ const AnimalTable = ({farms, cityfarm, device}: {farms: any, cityfarm: CityFarm,
         console.log(modifyAnimal)
         let old_animal = animalList.find((animal) => {return animal.id === animal_id});
         if (old_animal === undefined || old_animal === null) return;
-        let schema = await cityfarm.getSchema(old_animal.type, true);
+        let schema = await cityfarm.getSchema(old_animal.type, CachePolicy.USE_CACHE);
         if (!old_animal) {
             console.error("Could not find animal with id ", animal_id);
             return;
