@@ -87,7 +87,7 @@ const AnimalPopover = ({cityfarm, animalID, object}: {cityfarm: CityFarm, animal
                 anchorEl={anchorEl}
                 anchorOrigin={{
                     vertical: 'bottom',
-                    horizontal: 'left',
+                    horizontal: 'right',
                 }}
                 transformOrigin={{
                     vertical: 'top',
@@ -121,7 +121,7 @@ const AnimalPopover = ({cityfarm, animalID, object}: {cityfarm: CityFarm, animal
                 anchorEl={anchorEl}
                 anchorOrigin={{
                     vertical: 'bottom',
-                    horizontal: 'left',
+                    horizontal: 'right',
                 }}
                 transformOrigin={{
                     vertical: 'top',
