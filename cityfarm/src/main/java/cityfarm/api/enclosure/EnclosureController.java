@@ -144,10 +144,10 @@ public class EnclosureController {
     public ResponseEntity<String> change_animal_enclosure(@RequestBody List<String> ids) {
         String anId = ids.get(0);
         String toId = ids.get(1);
-        String fromId = ids.get(2);
         //gets the animal
         AnimalCustom animal = animalRepository.findAnimalById(anId);
-        if (fromId != null) {
+        if (ids.size() == 3) {
+            String fromId = ids.get(2);
             //defines home and destination nd also where the animal is getting removed from, can probs be done more elegantly
             Enclosure fromEnclosure = enclosureRepository.findEnclosureById(fromId);
             int removalPoint = -1;

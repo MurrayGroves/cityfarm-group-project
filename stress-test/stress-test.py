@@ -6,7 +6,7 @@ import json
 import time
 from datetime import datetime, timezone
 
-HOST = 'https://cityfarm.murraygrov.es/api'
+HOST = 'http://localhost:8080/api'
 S = requests.Session()
 
 with open("names.txt") as f:
@@ -136,7 +136,8 @@ def create_animal():
     animals.append(animal)
     print(f"Created animal with id {id}")
     enclosure = random.choice(enclosures)
-    S.patch(f'{HOST}/api/enclosures/moveanimal', json=[id, enclosure.get('_id')])
+    res = S.patch(f'{HOST}/enclosures/moveanimal', json=[id, enclosure.get('_id')])
+    print(res.text)
 
 def create_event():
     event = generate_event()
