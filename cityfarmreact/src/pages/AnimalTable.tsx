@@ -656,7 +656,7 @@ const CustomFooter: React.FC<CustomFooterProps> = ({setFilterModel, selectedSche
         <Divider/>
         <div style={{maxHeight: '56px', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
             <span style={{display: 'flex', alignItems: 'center'}}>
-            <Button sx={{width: '125.9px', margin: '10px'}} variant="contained" onClick={() => {
+            <Button style={{width: '126px', margin: '10px'}} variant="contained" onClick={() => {
                 setFilterModel({items: []});
                 setSelectedSchema(null);
             }}>Clear Filter</Button>
