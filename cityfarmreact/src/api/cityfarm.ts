@@ -800,13 +800,25 @@ export class CityFarm {
                 }
             }
         } else { // The user needs the most up-to-date data so wait to fetch and return it
-            const response = await axios.get(`/enclosures/by_id/${id}`, this.token);
-            // Update cache
-            this.setEnclosuresCache(this.enclosures_cache.map((enclosure) => enclosure.id !== id ? enclosure : new Enclosure(response.data)));
-            if (this.enclosures_cache.find((enclosure) => enclosure.id === id) === undefined) {
-                this.setEnclosuresCache([...this.enclosures_cache, new Enclosure(response.data)]);
+            try {
+                const response = await axios.get(`/enclosures/by_id/${id}`, this.token);
+                // Update cache
+                this.setEnclosuresCache(this.enclosures_cache.map((enclosure) => enclosure.id !== id ? enclosure : new Enclosure(response.data)));
+                if (this.enclosures_cache.find((enclosure) => enclosure.id === id) === undefined) {
+                    this.setEnclosuresCache([...this.enclosures_cache, new Enclosure(response.data)]);
+                }
+                return new Enclosure(response.data);
+            } catch (error) {
+                if (error.response?.status === 401) {
+                    console.log('Token expired');
+                    window.location.href = "/login";
+                    throw new Error('Token expired');
+                } else if (error.response?.status === 404) {
+                    return null;
+                }
+                throw error;
             }
-            return new Enclosure(response.data);
+
         }
     }
 
@@ -866,7 +878,7 @@ export class CityFarm {
         if (use_cache === CachePolicy.USE_CACHE && cached_enclosures.length > 0) {
             try {
                 axios.get(`/enclosures/by_ids`, {params: {"ids": ids.join(",")}, ...this.token}, ).then((response) => {
-                    const enclosures = response.data.map((data) => new Enclosure(data));
+                    const enclosures = response.data.filter(data => data).map((data) => new Enclosure(data));
                     // If the enclosures have changed, update the cache and call the callback
                     if (!lodash.isEqual(cached_enclosures, enclosures)) {
                         if (callback) {
