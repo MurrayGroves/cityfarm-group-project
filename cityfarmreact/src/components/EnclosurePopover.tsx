@@ -4,11 +4,12 @@ import Typography from '@mui/material/Typography';
 import {Link} from "react-router-dom";
 import { Enclosure } from '../api/enclosures.ts';
 import AnimalPopover from './AnimalPopover.tsx';
-import { CityFarm } from '../api/cityfarm.ts';
+import { CachePolicy, CityFarm } from '../api/cityfarm.ts';
 
-const EnclosurePopover = ({ cityfarm, enclosureID }: {cityfarm: CityFarm, enclosureID: string}) => {
+const EnclosurePopover = ({ cityfarm, enclosureID, object }: {cityfarm: CityFarm, enclosureID: string, object: Enclosure |  null}) => {
     const [anchorEl, setAnchorEl] = useState(null);
     const [chosenEnclosure, setChosenEnclosure] = useState<Enclosure>(new Enclosure({name: 'Loading...', holding: [], capacities: {}}));
+    const [loading, setLoading] = useState(true);
 
     const handlePopoverOpen = (event) => {
         setAnchorEl(event.currentTarget);
@@ -21,10 +22,15 @@ const EnclosurePopover = ({ cityfarm, enclosureID }: {cityfarm: CityFarm, enclos
     const open = Boolean(anchorEl);
 
     useEffect(() => {
-        //console.log(enclosureID);
+        if (loading && object) {
+            setChosenEnclosure(object)
+            setLoading(false)
+            return;
+        }
+
         enclosureID &&
         (async () => {
-            const enclosure = await cityfarm.getEnclosure(enclosureID, true, (enclosure) => setChosenEnclosure(enclosure));
+            let enclosure = await cityfarm.getEnclosure(enclosureID, CachePolicy.USE_CACHE, (enclosure) => setChosenEnclosure(enclosure));
             setChosenEnclosure(enclosure!);
         })()
     }, [enclosureID]);

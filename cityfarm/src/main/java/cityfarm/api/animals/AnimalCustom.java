@@ -8,6 +8,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.PersistenceCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.data.annotation.ReadOnlyProperty;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.*;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
@@ -18,7 +19,7 @@ import java.util.UUID;
 @Document("animals")
 public class AnimalCustom implements AnimalUnique {
     @ReadOnlyProperty
-    @DocumentReference(lookup="{'_id':?#{#self.type} }", collection = "animal_schemas")
+    @DocumentReference(lookup="{'_id':?#{#self.type} }", collection = "animal_schemas", lazy = true)
     private AnimalSchema schema;
 
     @JsonProperty("type")
@@ -40,11 +41,13 @@ public class AnimalCustom implements AnimalUnique {
      * Optional String that contains the ID of the Animal's mother.
      */
     @Nullable
+    @Indexed
     public String mother;
     /**
      * Optional String that contains the ID of the Animal's father.
      */
     @Nullable
+    @Indexed
     public String father;
 
     /**
@@ -83,9 +86,9 @@ public class AnimalCustom implements AnimalUnique {
 
     @PersistenceCreator
     @JsonCreator
-    public AnimalCustom(@JsonProperty("type") @NonNull AnimalSchema schema, @Nullable String id, @Nullable JsonNode fields, @JsonProperty("name") @Nullable String name, @Nullable String mother, @Nullable String father, @Nullable String breed, @NonNull Boolean alive, @NonNull String sex, @Nullable ZonedDateTime dateOfBirth, @Nullable String notes, @NonNull String farm) {
+    public AnimalCustom(@JsonProperty("type") @NonNull String type, @JsonProperty("type") @NonNull AnimalSchema schema, @Nullable String id, @Nullable JsonNode fields, @JsonProperty("name") @Nullable String name, @Nullable String mother, @Nullable String father, @Nullable String breed, @NonNull Boolean alive, @NonNull String sex, @Nullable ZonedDateTime dateOfBirth, @Nullable String notes, @NonNull String farm) {
         this.schema = schema;
-        this.type = schema.get_name();
+        this.type = type;
         this.name = name;
         this.mother = mother;
         this.father = father;

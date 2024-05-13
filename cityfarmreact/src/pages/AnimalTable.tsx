@@ -15,7 +15,7 @@ import { EventSelectorButton } from "../components/EventSelectorButton.tsx";
 import { getConfig } from '../api/getToken.js';
 
 import { Animal, Schema, Sex } from '../api/animals.ts';
-import { CityFarm } from "../api/cityfarm.ts";
+import { CachePolicy, CityFarm } from "../api/cityfarm.ts";
 import { Link } from "react-router-dom";
 import { TypePopover } from "../components/TypePopover.tsx";
 
@@ -60,14 +60,14 @@ const AnimalTable = ({farms, cityfarm, device}: {farms: any, cityfarm: CityFarm,
 
     function displayAll() {
         (async () => {
-            const animals = await cityfarm.getAnimals(false, farm, (animals) => {setAnimalList(animals)});
+            const animals = await cityfarm.getAnimals(CachePolicy.NO_CACHE, farm, (animals) => {setAnimalList(animals)});
             setAnimalList(animals);
         })()
     }
 
     function getSchemas() {
         (async () => {
-            const schemas = await cityfarm.getSchemas(true, (schemas) => {setSchemaList(schemas)});
+            const schemas = await cityfarm.getSchemas(CachePolicy.USE_CACHE, (schemas) => {setSchemaList(schemas)});
             console.debug("Fetched schemas: ", schemas);
             setSchemaList(schemas);
         })()
@@ -81,23 +81,16 @@ const AnimalTable = ({farms, cityfarm, device}: {farms: any, cityfarm: CityFarm,
                 displayAll();
                 return;
             }
-            try {
-                const response = await axios.get(`/animals/by_name/${searchTerm}`, {params: {farm: farm}, ...token});
-                setAnimalList(response.data);
-                console.log(response);
-            } catch (error) {
-                if (error.response.status === 401) {
-                    window.location.href = "/login";
-                    return;
-                } else {
-                    window.alert(error);
-                }
-            }
+            const newList = cityfarm.animals_cache.filter((animal) => animal.name.toLowerCase().includes(searchTerm.toLowerCase()));
+            setAnimalList(newList);
         })()
     },[searchTerm, farm])
 
     async function calculateColumnsAndRows(schema: Schema | null) {
-        let newCols = defaultCols;
+        let newCols = [...defaultCols];
+
+        console.debug("Calculating columns and rows with schema: ", schema);
+        console.debug("Default columns");
 
         if (schema) {
             for (let key in schema.fields) {
@@ -185,7 +178,7 @@ const AnimalTable = ({farms, cityfarm, device}: {farms: any, cityfarm: CityFarm,
         console.log(modifyAnimal)
         let old_animal = animalList.find((animal) => {return animal.id === animal_id});
         if (old_animal === undefined || old_animal === null) return;
-        let schema = await cityfarm.getSchema(old_animal.type, true);
+        let schema = await cityfarm.getSchema(old_animal.type, CachePolicy.USE_CACHE);
         if (!old_animal) {
             console.error("Could not find animal with id ", animal_id);
             return;
@@ -323,7 +316,9 @@ const AnimalTable = ({farms, cityfarm, device}: {farms: any, cityfarm: CityFarm,
 
     const defaultCols: GridColDef[] = [
         { field: 'name', type: 'singleSelect', headerName: 'Name', headerClassName: 'grid-header', headerAlign: 'left', flex: 1, editable: true,
-        renderCell: (animal) => {return (animal.value.id ? <Link to={`/single-animal/${animal.value.id}`}>{animal.value.name}</Link> : <p>Loading...</p>)}, renderEditCell: (params) => {
+        renderCell: (animal) => {return (animal.value.id ? <Link to={`/single-animal/${animal.value.id}`}>{
+                animal.value.alive ? <p>{animal.value.name}</p> : <del>{animal.value.name}</del>
+                }</Link> : <p>Loading...</p>)}, renderEditCell: (params) => {
 
                 params.value = params.value.name;
                 return <FormControl sx={{width: '100%'}}>

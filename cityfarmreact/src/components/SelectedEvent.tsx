@@ -41,7 +41,7 @@ const SelectedEvent = (props) => {
           {event.animals.length !== 0 && <h3>Animals</h3>}
 
           {event.animals.map((animal) => (
-              <AnimalPopover key={animal.id} cityfarm={props.cityfarm} animalID={animal.id}/>
+              <AnimalPopover key={animal} cityfarm={props.cityfarm} animalID={animal}/>
           ))}
         </div>
       </div>

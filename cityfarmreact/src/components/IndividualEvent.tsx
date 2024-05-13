@@ -1,22 +1,24 @@
 import { useEffect, useState } from "react";
-import { CityFarm } from "../api/cityfarm";
+import { CachePolicy, CityFarm } from "../api/cityfarm.ts";
 import { IconButton, Paper } from "@mui/material";
 import { Edit as EditIcon } from '@mui/icons-material';
 import React from "react";
 
-import { Event, EventRecurring } from '../api/events.ts';
+import { Event, EventInstance, EventRecurring } from '../api/events.ts';
 import AnimalPopover from "./AnimalPopover.tsx";
 import { EventCreator } from "./EventCreator.tsx";
 import EnclosurePopover from "./EnclosurePopover.tsx";
 import { EventDate } from "./EventPopover.tsx";
 
 export const IndividualEvent = (
-    { eventID, cityfarm, farms }
+    { eventID, cityfarm, farms, object, instance }
         :
     {
         eventID: string;
         cityfarm: CityFarm;
         farms: any;
+        object: Event | null;
+        instance: EventInstance | null;
     }
 ) => {
     const [event, setEvent] = useState<Event | null>(null);
@@ -24,8 +26,13 @@ export const IndividualEvent = (
     const [reload, setReload] = useState(false);
 
     useEffect(() => {
+        if (object && event === null) {
+            setEvent(object);
+            return;
+        }
+
         (async () => {
-            const resp = await cityfarm.getEvent(eventID, true, (event) => {
+            const resp = await cityfarm.getEvent(eventID, CachePolicy.USE_CACHE, (event) => {
                 setEvent(event);
             })
 
@@ -51,21 +58,21 @@ export const IndividualEvent = (
                             </span>
                         </div>
 
-                        <EventDate event={event} />
+                        <EventDate event={event} instance={instance}/>
                         {event.farms?.length > 0 ? <h3>Farms</h3> : <></>}
                         {event.farms?.includes(farms.WH) ? <p>Windmill Hill</p> : <></>}
                         {event.farms?.includes(farms.HC) ? <p>Hartcliffe</p> : <></>}
                         {event.farms?.includes(farms.SW) ? <p>St Werburghs</p> : <></>}
                         {event.animals?.length > 0 ? <h3>Animals</h3> : <></>}
                         {event.animals?.map((animal) => (
-                            <AnimalPopover key={animal.id} cityfarm={cityfarm} animalID={animal.id}/>
+                            <AnimalPopover key={animal} cityfarm={cityfarm} animalID={animal}/>
                         ))}
                         {event.enclosures?.length > 0 &&
                         <div>
                             <h3>Enclosures</h3>
                             {event.enclosures.map((enclosure, index) => {
                                 return (
-                                    <EnclosurePopover cityfarm={cityfarm} key={index} enclosureID={enclosure.id}/>
+                                    <EnclosurePopover cityfarm={cityfarm} key={index} enclosureID={enclosure}/>
                                 )
                             })}
                         </div>}

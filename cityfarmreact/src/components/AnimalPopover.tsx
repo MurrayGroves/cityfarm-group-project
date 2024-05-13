@@ -4,7 +4,7 @@ import Typography from '@mui/material/Typography';
 import {Link} from "react-router-dom";
 import { useState, useEffect } from 'react';
 import { useTheme } from '@mui/material/styles';
-import { CityFarm } from '../api/cityfarm.js';
+import { CachePolicy, CityFarm } from '../api/cityfarm.ts';
 import { Animal, Sex, Schema } from '../api/animals.ts';
 
 declare module "react" {
@@ -15,7 +15,7 @@ declare module "react" {
     }
 }
 
-const AnimalPopover = ({cityfarm, animalID}: {cityfarm: CityFarm, animalID: string}) => {
+const AnimalPopover = ({cityfarm, animalID, object}: {cityfarm: CityFarm, animalID: string, object: Animal | null}) => {
     const colour = useTheme().palette.mode === 'light' ? 'black' : 'white';
     const hoverColour = '#f1f1f1';
 
@@ -23,6 +23,7 @@ const AnimalPopover = ({cityfarm, animalID}: {cityfarm: CityFarm, animalID: stri
     const [chosenAnimal, setChosenAnimal] = useState<Animal | null>(null);
     const [animalMother, setMother] = useState("Unregistered")
     const [animalFather, setFather] = useState("Unregistered")
+    const [loading, setLoading] = useState(true)
 
     const handlePopoverOpen = (e) => {
         setAnchorEl(e.currentTarget);
@@ -35,9 +36,17 @@ const AnimalPopover = ({cityfarm, animalID}: {cityfarm: CityFarm, animalID: stri
     const open = Boolean(anchorEl);
 
     useEffect(() => {
+        if (object) {
+            setChosenAnimal(object)
+            setLoading(false)
+            return;
+        }
+
         (async () => {
-            const animal = await cityfarm.getAnimal(animalID, true, (animal) => setChosenAnimal(animal));
+            let animal = await cityfarm.getAnimal(animalID, CachePolicy.PREFER_CACHE, (animal) => setChosenAnimal(animal));
+
             setChosenAnimal(animal)
+            setLoading(false)
         })()
     }, [animalID]);
 
@@ -49,12 +58,12 @@ const AnimalPopover = ({cityfarm, animalID}: {cityfarm: CityFarm, animalID: stri
 
         if(chosenAnimal.mother){
             (async ()=>{
-                const mother = await cityfarm.getAnimal(chosenAnimal.mother, true, (animal) => setMother(animal.name));
+                let mother = await cityfarm.getAnimal(chosenAnimal.mother, CachePolicy.PREFER_CACHE, (animal) => setMother(animal.name));
                 setMother(mother ? mother.name : "Animal Not Found");
             })()}
         if (chosenAnimal.father){
             (async ()=>{
-                const father = await cityfarm.getAnimal(chosenAnimal.father, true, (animal) => setFather(animal.name));
+                let father = await cityfarm.getAnimal(chosenAnimal.father, CachePolicy.PREFER_CACHE, (animal) => setFather(animal.name));
                 setFather(father ? father.name : "Animal Not Found")
             })()
         }
@@ -69,7 +78,7 @@ const AnimalPopover = ({cityfarm, animalID}: {cityfarm: CityFarm, animalID: stri
                 onMouseLeave={handlePopoverClose}
                 style={{display: 'inline-block', color: 'coral'}}
             >
-                Animal Not Found
+                {loading ? "" : "Animal Not Found"}
             </Typography>
             <Popover
                 id="mouse-over-popover"

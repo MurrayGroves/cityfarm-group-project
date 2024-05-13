@@ -35,7 +35,7 @@ public class CalendarController {
             , @RequestParam("to") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) ZonedDateTime to) {
 
 
-        List<Event> events = eventRepository.findAll();
+        List<Event> events = eventRepositoryCustom.findBetween(from, to);
 
         List<EventInstance> instances = new ArrayList<>();
 
@@ -77,8 +77,6 @@ public class CalendarController {
 
     @GetMapping("/api/events/by_animal/{animal_id}")
     public ResponseEntity<List<Event>> get_events_by_animal(@PathVariable String animal_id) {
-
-
         List<Event> events = eventRepository.findEventByAnimal(animal_id);
 
         return ResponseEntity.ok().body(events);
@@ -105,8 +103,6 @@ public class CalendarController {
 
     @PostMapping("/api/events/create/once")
     public ResponseEntity<Event> create_event(@RequestBody CreateEventOnceRequest event) {
-
-
         List<Enclosure> enclosures = new ArrayList<>();
         for (String enclosure: event.enclosures) {
             Enclosure enc = enclosureRepository.findEnclosureById(enclosure);
@@ -119,15 +115,24 @@ public class CalendarController {
             animals.add(anm);
         }
 
-        EventOnce new_event = new EventOnce(event.start, event.end, event.allDay, event.title, event.description, null, enclosures, animals, event.farms, null);
+        EventOnce new_event = new EventOnce(event.start, event.end, event.allDay, event.title, event.description, null, enclosures, event.enclosures, animals, event.animals, event.farms, null);
 
-        eventRepository.save(new_event);
+        System.out.println(new_event);
+        try {
+            eventRepository.save(new_event);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(0);
+        }
 
         return ResponseEntity.ok().body(new_event);
     }
 
     @PostMapping("/api/events/create/recurring")
     public ResponseEntity<Event> create_event(@RequestBody CreateEventRecurringRequest event) {
+        if (event.delay.isZero()) {
+            return ResponseEntity.status(400).build();
+        }
 
         List<Enclosure> enclosures = new ArrayList<>();
         for (String enclosure: event.enclosures) {
@@ -141,7 +146,7 @@ public class CalendarController {
             animals.add(anm);
         }
 
-        EventRecurring newEvent = new EventRecurring(event.firstStart, event.firstEnd, event.allDay, event.title, event.description, enclosures, animals, event.farms, event.people, event.end, event.delay, null);
+        EventRecurring newEvent = new EventRecurring(event.firstStart, event.firstEnd, event.allDay, event.title, event.description, enclosures, event.enclosures, animals, event.animals, event.farms, event.people, event.end, event.delay, null);
 
         eventRepository.save(newEvent);
 
@@ -171,8 +176,8 @@ public class CalendarController {
         event.allDay = eventReq.allDay;
         event.title = eventReq.title;
         event.description = eventReq.description;
-        event.enclosures = enclosures;
-        event.animals = animals;
+        event.enclosureRefs = enclosures;
+        event.animalRefs = animals;
         event.farms = eventReq.farms;
 
         if (event instanceof EventOnce) {
@@ -212,8 +217,8 @@ public class CalendarController {
         event.allDay = eventReq.allDay;
         event.title = eventReq.title;
         event.description = eventReq.description;
-        event.enclosures = enclosures;
-        event.animals = animals;
+        event.enclosureRefs = enclosures;
+        event.animalRefs = animals;
         event.farms = eventReq.farms;
 
         if (event instanceof EventRecurring) {

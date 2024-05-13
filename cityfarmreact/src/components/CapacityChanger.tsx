@@ -9,7 +9,7 @@ import Typography from '@mui/material/Typography';
 import {Link} from "react-router-dom";
 import { Help } from '@mui/icons-material';
 import { getConfig } from '../api/getToken';
-import { CityFarm } from "../api/cityfarm";
+import { CachePolicy, CityFarm } from "../api/cityfarm.ts";
 import { Enclosure } from "../api/enclosures";
 import { Schema } from "../api/animals";
 
@@ -31,7 +31,7 @@ const CapacityChanger = ({enclosure, cityfarm}: {enclosure: Enclosure, cityfarm:
 
     useEffect(() => {
         (async () => {
-            const schemas = await cityfarm.getSchemas(true, (schemas) => setSchemaList(schemas));
+            const schemas = await cityfarm.getSchemas(CachePolicy.USE_CACHE, (schemas) => setSchemaList(schemas));
             setSchemaList(schemas);
             setLinkedCapacities(enclosure.capacities);
         })()

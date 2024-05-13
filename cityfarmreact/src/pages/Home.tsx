@@ -4,8 +4,9 @@ import AnimalPopover from "../components/AnimalPopover.tsx";
 import { useTheme } from "@mui/material";
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
-import { CityFarm } from "../api/cityfarm.js";
+import { CachePolicy, CityFarm } from "../api/cityfarm.ts";
 import { EventInstance } from "../api/events.js";
+import { IndividualEvent } from "../components/IndividualEvent.tsx";
 
 declare module "react" {
     interface CSSProperties {
@@ -18,15 +19,14 @@ const Home = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
     const colour = useTheme().palette.mode === 'dark' ? 'white' : 'black';
 
 
-
-    //get the events for the next 2 months (IF IT WORKS)
+    //get the events for the next month
     useEffect(() => {
         (async () => {
             try {
                 const start = new Date()
                 const end =  new Date()
-                end.setMonth(end.getMonth()+2)
-                setEvents(await cityfarm.getEventsBetween(true, start, end, (events) => setEvents(events)));
+                end.setMonth(end.getMonth()+1)
+                setEvents((await cityfarm.getEventsBetween(CachePolicy.USE_CACHE, start, end, (events) => setEvents(events))).sort((a, b) => a.start.getTime() - b.start.getTime()));
             } catch (error) {
                 if (error.response?.status === 401) {
                     window.location.href = "/login";
@@ -59,40 +59,7 @@ const Home = ({farms, cityfarm}: {farms: any, cityfarm: CityFarm}) => {
         <Grid container spacing={3} columns={{xs: 1, md: 2, lg: 3, xl: 4 }}>
         {events.slice(0, 4).map((e, index) => (
             <Grid item xs={1} key={index}>
-            <Paper elevation={3} className="event-box">
-                <h2>{e.event.title}</h2>
-                {
-                    e.event.allDay ?
-                        <div>
-                            <p>{e.start.toLocaleDateString()} {e.end == null ? <></> : e.end.toLocaleDateString() === e.start.toLocaleDateString() ? <></> : " - " + e.end.toLocaleDateString()}</p>
-                        </div>
-                        :
-                        <div>
-                            <p>{e.start.toLocaleString([], {year: '2-digit', month: '2-digit', day: '2-digit', hour: '2-digit', minute:'2-digit'})} - {e.start.toLocaleDateString() === e.end.toLocaleDateString() ? e.end.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}): e.end.toLocaleString([], {year: '2-digit', month: '2-digit', day: '2-digit', hour: '2-digit', minute:'2-digit'})}</p>
-                        </div>
-
-                }
-                {e.event.farms.length !== 0 ? <h3>Farms</h3> : <></>}
-                {e.event.farms.includes(farms.WH) ? <p>Windmill Hill</p> : <></>}
-                {e.event.farms.includes(farms.HC) ? <p>Hartcliffe</p> : <></>}
-                {e.event.farms.includes(farms.SW) ? <p>St Werberghs</p> : <></>}
-                {e.event.animals.length !== 0 ? <h3>Animals</h3> : <></>}
-                {e.event.animals.map((animal) => (
-                    <AnimalPopover key={animal.id} cityfarm={cityfarm} animalID={animal.id}/>
-                ))}
-                {e.event.enclosures.length !== 0 &&
-                    <div>
-                        <h3>Enclosures</h3>
-                        {e.event.enclosures.map((enclosure, index) => (
-                            <p key={index}>{enclosure.name}</p>
-                        ))}
-                    </div>}
-                {e.event.description !== "" ?
-                    <div>
-                        <h3>Description</h3>
-                        {e.event.description}
-                    </div> : <></>}
-            </Paper>
+                <IndividualEvent cityfarm={cityfarm} object={e.event} eventID={e.event.id} farms={farms} instance={e}/>
             </Grid>
         ))}
         </Grid>

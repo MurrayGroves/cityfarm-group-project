@@ -15,4 +15,10 @@ public interface AnimalRepository extends MongoRepository<AnimalCustom, String> 
 
     @Query("{ '_id': ?0}")
     AnimalCustom findAnimalById(String id);
+
+    @Query("{ 'father':  ?0}")
+    List<AnimalCustom> findAnimalByFather(String father);
+
+    @Query("{ 'mother':  ?0}")
+    List<AnimalCustom> findAnimalByMother(String mother);
 }

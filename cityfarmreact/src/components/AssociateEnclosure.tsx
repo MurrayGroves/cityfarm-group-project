@@ -13,11 +13,11 @@ import { Button } from "@mui/material";
 import EnclosurePopover from "./EnclosurePopover.tsx";
 import { getConfig } from '../api/getToken.js'; 
 import { Enclosure } from "../api/enclosures.ts";
-import { CityFarm } from "../api/cityfarm.ts";
+import { CachePolicy, CityFarm } from "../api/cityfarm.ts";
 import { useTheme } from '@mui/material/styles';
 import { Animal } from "../api/animals.ts";
 
-const AssociateEnclosure = ({enclosures, setEnclosures, cityfarm, close}: {enclosures: Enclosure[], setEnclosures: (enclosures: Enclosure[]) => void, cityfarm: CityFarm, close: () => void}) => {
+const AssociateEnclosure = ({enclosures, setEnclosures, cityfarm, close}: {enclosures: string[], setEnclosures: (enclosures: string[]) => void, cityfarm: CityFarm, close: () => void}) => {
     const [enclosureIDs, setEnclosureIDs] = useState<GridRowSelectionModel>([])
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [enclosureList, setEnclosureList] = useState<Enclosure[]>([]);
@@ -35,17 +35,17 @@ const AssociateEnclosure = ({enclosures, setEnclosures, cityfarm, close}: {enclo
         setAnchorEl(null);
     };
     useEffect(() => {
-        setEnclosureIDs(enclosures.map((enclosure) => enclosure.id));
+        setEnclosureIDs(enclosures);
         console.log('getting enclosures', enclosures);
     }, [])
     
     const handleAttach = () => {
-        setEnclosures(enclosureIDs.map((id) => enclosureList.find((enclosure) => enclosure.id === id)!));
+        setEnclosures(enclosureIDs as string[]);
     }
 
     function displayAll() {
         (async () => {
-            const enclosures = await cityfarm.getEnclosures(true, null, (enclosures) => setEnclosureList(enclosures));
+            const enclosures = await cityfarm.getEnclosures(CachePolicy.USE_CACHE, null, (enclosures) => setEnclosureList(enclosures));
             setEnclosureList(enclosures);
         })()
     }

@@ -3,8 +3,9 @@ import React, { useState, useEffect } from 'react';
 import { Paper, Popover } from '@mui/material';
 
 import AnimalPopover from './AnimalPopover.tsx';
-import { Event, EventOnce, EventRecurring } from '../api/events.ts';
-import { CityFarm } from '../api/cityfarm.ts';
+import { Event, EventInstance, EventOnce, EventRecurring } from '../api/events.ts';
+import { CachePolicy, CityFarm } from '../api/cityfarm.ts';
+import { Enclosure } from '../api/enclosures.ts';
 
 const dateTimeFormat: any = {year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit'}
 const timeFormat: any = {hour: '2-digit', minute: '2-digit'}
@@ -35,16 +36,29 @@ function sameDay(date1: Date, date2: Date): boolean {
             && date1.getFullYear() === date2.getFullYear())
 }
 
-export const EventDate = ({event}: {event: Event}) => {
+export const EventDate = ({event, instance}: {event: Event, instance: EventInstance | null}) => {
     return event.allDay ?
     <div>
         {(event instanceof EventRecurring) ? 
             <div>
-                {sameDay(event.firstStart, event.firstEnd) ?
+                {instance ? <div>
+                    {sameDay(instance.start, instance.end) ?
+                        <p><b>This occurence: </b> {instance.start.toLocaleDateString()}</p>
+                    :
+                        <p><b>This occurence: </b> {instance.start.toLocaleDateString()} - {instance.end.toLocaleDateString()}</p>
+                    }
+                    {sameDay(event.firstStart, event.firstEnd) ?
+                        <p><b>First occurence: </b>  {event.firstStart.toLocaleDateString()}</p>
+                    :
+                        <p><b>First occurence: </b> {event.firstStart.toLocaleDateString()} - {event.firstEnd.toLocaleDateString()}</p>
+                    }
+                    <br/>
+                </div> : <div>{sameDay(event.firstStart, event.firstEnd) ?
                     <p>{event.firstStart.toLocaleDateString()}</p>
                 :
                     <p>{event.firstStart.toLocaleDateString()} - {event.firstEnd.toLocaleDateString()}</p>
-                }
+                }</div>}
+                
 
                 Repeats every {formatPeriod(event.delay)}
             </div>
@@ -84,10 +98,11 @@ export const EventPopover = ({farms, cityfarm, eventID, anchorEl}: {farms: any, 
     const [event, setEvent] = useState<Event | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<Error | null>(null);
+    const [enclosures, setEnclosures] = useState<Enclosure[]>([]);
 
     useEffect(() => {
         (async () => {
-            const resp = await cityfarm.getEvent(eventID, true, (event) => {
+            const resp = await cityfarm.getEvent(eventID, CachePolicy.USE_CACHE, (event) => {
                 setEvent(event);
                 setLoading(false);
             })
@@ -102,6 +117,15 @@ export const EventPopover = ({farms, cityfarm, eventID, anchorEl}: {farms: any, 
         })()
         
     }, [eventID]);
+
+    useEffect(() => {
+        if (event === null) return;
+        (async () => {
+            const enclosures = await cityfarm.getEnclosuresByIds(event.enclosures, CachePolicy.USE_CACHE, null, (enclosures) => setEnclosures(enclosures));
+            setEnclosures(enclosures);
+        })()
+    
+    }, [event?.enclosures])
 
 
     if (error) {
@@ -136,13 +160,13 @@ export const EventPopover = ({farms, cityfarm, eventID, anchorEl}: {farms: any, 
                         {event.farms.includes(farms.SW) ? <p>St Werburghs</p> : <></>}
                         {event.animals.length > 0 ? <h3>Animals</h3> : <></>}
                         {event.animals.map((animal) => (
-                            <AnimalPopover cityfarm={cityfarm} key={animal.id} animalID={animal.id}/>
+                            <AnimalPopover cityfarm={cityfarm} key={animal} animalID={animal}/>
                         ))}
                         {event.enclosures.length > 0 &&
                         <div>
                             <h3>Enclosures</h3>
                             {event.enclosures.map((enclosure, index) => (
-                                <p key={index} className='noMarginTop'>{enclosure.name}</p>
+                                <p key={index} className='noMarginTop'>{enclosures.find(x => x.id == enclosure)?.name}</p>
                             ))}
                         </div>}
                         {event.description !== "" ?

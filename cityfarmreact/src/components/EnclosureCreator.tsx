@@ -20,8 +20,9 @@ import CapacityChanger from './CapacityChanger.tsx';
 import { DialogContent, DialogTitle, Dialog, Backdrop, Alert } from "@mui/material";
 import { Enclosure } from '../api/enclosures.ts';
 import { Animal } from '../api/animals.ts';
+import { CachePolicy, CityFarm } from '../api/cityfarm.ts';
 
-const EnclosureCreator = ({ setCreateProp, cityfarm, farms}) => {
+const EnclosureCreator = ({ setCreateProp, cityfarm, farms}: {setCreateProp: any, cityfarm: CityFarm, farms: any}) => {
     const [newEnclosure, setNewEnclosure] = useState<Enclosure>(new Enclosure({name: '', holding: [], capacities: {}, notes: '', farm: ''}));
     const [openAnimalsPopup, setOpenAnimalsPopup] = useState<boolean>(false)
     const [openCapacitiesPopup, setOpenCapacitiesPopup] = useState<boolean>(false)
@@ -31,22 +32,25 @@ const EnclosureCreator = ({ setCreateProp, cityfarm, farms}) => {
 
     //const [present, setPresent] = useState(false);
 
-    const setNewEnclosureAnimals = (animalList: Animal[]) => {
-        console.log(animalList);
-        for(const animal of animalList){
-            let present = false
-            newEnclosure.holding.forEach((heldAnimal) => heldAnimal.id == animal.id ? present = true : <></>)
-            if(!present){
-                if (newEnclosure.capacities[animal.type] == null){
-                    newEnclosure.capacities[animal.type] = 1
+    const setNewEnclosureAnimals = (animalList: string[]) => {
+        (async () => {
+            let newList = await cityfarm.getAnimalsByIds(animalList, CachePolicy.CACHE_ONLY, null);
+            for(const animal of newList){
+                let present = false
+                newEnclosure.holding.forEach((heldAnimal) => heldAnimal.id == animal.id ? present = true : <></>)
+                if(!present){
+                    if (newEnclosure.capacities[animal.type] == null){
+                        newEnclosure.capacities[animal.type] = 1
+                    }
+                    else{
+                        newEnclosure.capacities[animal.type] = newEnclosure.capacities[animal.type] + 1
+                    }
                 }
-                else{
-                    newEnclosure.capacities[animal.type] = newEnclosure.capacities[animal.type] + 1
-                }
+                present = false
             }
-            present = false
-        }
-        setNewEnclosure({...newEnclosure, holding: animalList})
+            setNewEnclosure({...newEnclosure, holding: newList})
+        })()
+
     }
 
     const reset = () => {
@@ -143,7 +147,7 @@ const EnclosureCreator = ({ setCreateProp, cityfarm, farms}) => {
                 <Dialog fullWidth maxWidth='md' open={openAnimalsPopup} onClose={()=>{setOpenAnimalsPopup(false)}}>
                     <DialogTitle>Add Animal</DialogTitle>
                     <DialogContent>
-                        <AssociateAnimal setAnimals={setNewEnclosureAnimals} cityfarm={cityfarm} animals={newEnclosure.holding} close={()=>setOpenAnimalsPopup(false)}></AssociateAnimal>
+                        <AssociateAnimal setAnimals={setNewEnclosureAnimals} cityfarm={cityfarm} animals={newEnclosure.holding.map(x => x.id)} close={()=>setOpenAnimalsPopup(false)}></AssociateAnimal>
                     </DialogContent>
                 </Dialog>
             </div>

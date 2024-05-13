@@ -12,9 +12,9 @@ import TextField from '@mui/material/TextField';
 import {Button} from "@mui/material";
 import { getConfig } from '../api/getToken.js';
 import { Animal, Sex } from "../api/animals.ts";
-import { CityFarm } from "../api/cityfarm.ts";
+import { CachePolicy, CityFarm } from "../api/cityfarm.ts";
 
-const AssociateAnimal = ({ animals, setAnimals, cityfarm, close}: {animals: Animal[], setAnimals: (animals: Animal[]) => void, cityfarm: CityFarm, close: () => void}) => {
+const AssociateAnimal = ({ animals, setAnimals, cityfarm, close}: {animals: string[], setAnimals: (animals: string[]) => void, cityfarm: CityFarm, close: () => void}) => {
     const [animalIDs, setAnimalIDs] = useState<GridRowSelectionModel>([]);
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [animalList, setAnimalList] = useState<Animal[]>([]);
@@ -34,17 +34,17 @@ const AssociateAnimal = ({ animals, setAnimals, cityfarm, close}: {animals: Anim
 
     const handleAttach = () => {
         console.log(animals)
-        setAnimals(animalIDs.map((id) => animalList.find((animal) => animal.id === id)!))
+        setAnimals(animalIDs as string[])
     }
 
     useEffect(() => {
-        setAnimalIDs(animals.map((animal) => animal.id));
+        setAnimalIDs(animals);
         console.log('getting animals', animals);
     }, [])
     
     function displayAll() {
         (async () => {
-            const anis = await cityfarm.getAnimals(true, null, (animals) => setAnimalList(animals));
+            const anis = await cityfarm.getAnimals(CachePolicy.USE_CACHE, null, (animals) => setAnimalList(animals));
             setAnimalList(anis);
         })()
     }

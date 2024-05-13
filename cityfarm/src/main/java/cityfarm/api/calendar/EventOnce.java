@@ -5,7 +5,6 @@ import cityfarm.api.enclosure.Enclosure;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.PersistenceCreator;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.lang.NonNull;
@@ -45,7 +44,9 @@ public class EventOnce extends Event {
     @PersistenceCreator
     public EventOnce(@JsonProperty("start") @NonNull ZonedDateTime start, @JsonProperty("end") @Nullable ZonedDateTime end, @JsonProperty("allDay") @NonNull Boolean allDay,
                      @JsonProperty("title") @NonNull String title, @JsonProperty("description") @Nullable String description, @JsonProperty("_id") @Nullable String id,
-                     @JsonProperty("enclosures") @Nullable List<Enclosure> enclosures, @JsonProperty("animals") @Nullable List<AnimalCustom> animals, @JsonProperty("farms") @Nullable List<String> farms, @JsonProperty("people") @Nullable List<String> attachedPeople) {
+                     @JsonProperty("enclosures") @Nullable List<Enclosure> enclosureRefs, @JsonProperty("enclosures") @Nullable List<String> enclosures,
+                     @JsonProperty("animals") @Nullable List<AnimalCustom> animalRefs, @JsonProperty("animals") @Nullable List<String> animals,
+                     @JsonProperty("farms") @Nullable List<String> farms, @JsonProperty("people") @Nullable List<String> attachedPeople) {
         if (end == null && !allDay) {
             throw new IllegalArgumentException("If end isn't present, the event must be marked as all day");
         }
@@ -55,8 +56,10 @@ public class EventOnce extends Event {
         this.allDay = allDay;
         this.title = title;
         this.description = description;
-        this.enclosures = enclosures;
+        this.enclosureRefs = enclosureRefs;
+        this.animalRefs = animalRefs;
         this.animals = animals;
+        this.enclosures = enclosures;
         this.farms = farms;
         this.attachedPeople = attachedPeople;
         this.id = Objects.requireNonNullElseGet(id, () -> UUID.randomUUID().toString());
@@ -65,6 +68,6 @@ public class EventOnce extends Event {
     @Override
     public String toString() {
         return String.format("Start: %s\nEnd: %s\nAllDay: %s\nTitle: %s\nDescription: %s\nEnclosures: %s\nAnimals: %s\nFarms: %s\nID: %s\n",
-                start, end, allDay, title, description, enclosures, animals, farms, get_id());
+                start, end, allDay, title, description, enclosureRefs, animalRefs, farms, get_id());
     }
 }

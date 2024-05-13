@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 
 import { EventPopover } from './EventPopover.tsx';
-import { CityFarm } from '../api/cityfarm';
+import { CachePolicy, CityFarm } from '../api/cityfarm.ts';
 import { Event, EventOnce, EventRecurring } from '../api/events.ts';
 
 export const EventText = ({eventID, farms, cityfarm, style, secondary}: {eventID: string, farms: any, cityfarm: CityFarm, style: (any | undefined), secondary: boolean | undefined}) => {
@@ -12,7 +12,7 @@ export const EventText = ({eventID, farms, cityfarm, style, secondary}: {eventID
 
     useEffect(() => {
         (async () => {
-            const resp = await cityfarm.getEvent(eventID, true, (event) => {
+            const resp = await cityfarm.getEvent(eventID, CachePolicy.USE_CACHE, (event) => {
                 setEvent(event);
                 setLoading(false);
             })
