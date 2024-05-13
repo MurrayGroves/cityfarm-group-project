@@ -31,7 +31,7 @@ def generate_integer():
     return random.randint(0, 100)
 
 def generate_float():
-    return random.random() * 100
+    return round(random.random() * 100, 2)
 
 def generate_string():
     return ''.join(random.sample('abcdefghijklmnopqrstuvwxyz', k=random.randint(1, 10)))

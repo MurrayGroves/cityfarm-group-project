@@ -24,7 +24,7 @@ const BigCalendarMemo = memo(BigCalendar, (prevProps, nextProps) => {
     return lodash.isEqual(prevProps.events, nextProps.events);
 });
 
-const CalendarUnMemo = ({farms, device, cityfarm}: {farms: any, device: any, cityfarm: CityFarm}) => {
+const CalendarUnMemo = ({farms, device, cityfarm, localizer}: {farms: any, device: any, cityfarm: CityFarm, localizer: any}) => {
     const token = getConfig();
     const theme: any = useTheme().palette;
 
@@ -167,7 +167,6 @@ const CalendarUnMemo = ({farms, device, cityfarm}: {farms: any, device: any, cit
   
     const [createEvent, setCreateEvent] = useState(false);
     const [filter, setFilter] = useState(false);
-    const localizer = useCallback(dayjsLocalizer(dayjs), []);
 
     let dayColour = theme.mode === 'dark' ? '#121212': '#fff'
     let offRangeColour = theme.mode === 'dark' ? '#ffffff08' : '#f0f0f0';

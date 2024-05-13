@@ -13,12 +13,13 @@ import Error from "./pages/Error.tsx";
 import Login from './pages/Login.tsx';
 import SingleAnimal from "./pages/SingleAnimal.tsx";
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 
 import 'dayjs/locale/en-gb';
+import { dayjsLocalizer} from 'react-big-calendar';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { PublicClientApplication } from "@azure/msal-browser";
@@ -88,6 +89,8 @@ const App = () => {
         }
     }
 
+    const localizer = useCallback(dayjsLocalizer(dayjs), []);
+
     const darkTheme = createTheme({
         palette: {
             mode: 'dark',
@@ -154,7 +157,7 @@ const App = () => {
                     <div className='Content'>
                         <Routes>
                             <Route path="/" element={<Home farms={farms} cityfarm={cityfarm}/>}/>
-                            <Route path="/calendar" element={<Calendar farms={farms} device={device} cityfarm={cityfarm}/>}/>
+                            <Route path="/calendar" element={<Calendar farms={farms} device={device} cityfarm={cityfarm} localizer={localizer}/>}/>
                             <Route path="/animals" element={<AnimalTable farms={farms} cityfarm={cityfarm} device={device}/>}/>
                             <Route path="/enclosures" element={<EnclosureTable farms={farms} cityfarm={cityfarm}/>}/>
                             <Route path="/schemas" element={<Schemas farms={farms} cityfarm={cityfarm}/>}/>
