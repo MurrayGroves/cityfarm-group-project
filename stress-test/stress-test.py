@@ -6,7 +6,7 @@ import json
 import time
 from datetime import datetime, timezone
 
-HOST = 'http://localhost:8080/api'
+HOST = 'https://cityfarm.murraygrov.es/api'
 S = requests.Session()
 
 with open("names.txt") as f:
